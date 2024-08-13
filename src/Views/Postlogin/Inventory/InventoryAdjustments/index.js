@@ -5,19 +5,17 @@ import Table from "@cloudscape-design/components/table";
 import Box from "@cloudscape-design/components/box";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import Button from "@cloudscape-design/components/button";
-import TextFilter from "@cloudscape-design/components/text-filter";
 import Header from "@cloudscape-design/components/header";
-import Container from "@cloudscape-design/components/container";
 import Toggle from "@cloudscape-design/components/toggle";
 import { toggleStatus } from "Redux-Store/Products/ProductsSlice";
 import Tabs from "@cloudscape-design/components/tabs";
-import Overview from "./drawerTabs/overview";
+import Overview from "../drawerTabs/overview";
 import StatusIndicator from "@cloudscape-design/components/status-indicator";
+import OrderHistory from "../drawerTabs/orderHistory";
+import Movement from "../drawerTabs/movement";
+import ItemVendor from "../drawerTabs/itemVendor";
 
-import OrderHistory from "./drawerTabs/orderHistory";
-import Movement from "./drawerTabs/movement";
-import ItemVendor from "./drawerTabs/itemVendor";
-const Inventory = () => {
+const InventoryAdjustments = () => {
   const [filteringText, setFilteringText] = React.useState("");
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
@@ -65,104 +63,19 @@ const Inventory = () => {
       <div className="flex flex-col gap-3">
         <BreadcrumbGroup
           items={[
-            { text: "Dashboard", href: "#" },
-            { text: "Inventory", href: "#components" },
+            { text: "Dashboard", href: "/app/dashboard" },
+            { text: "Inventory", href: "/app/inventory" },
+            { text: "Inventory adjustments", href: "/app/inventory adjustments" },
           ]}
           ariaLabel="Breadcrumbs"
         />
 
         <div style={{ marginTop: "12px", fontWeight: "900", fontSize: "36px" }}>
           <Header variant="h1">
-            <strong>Inventory</strong>
+            <strong>Inventory Adjustments</strong>
           </Header>
         </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr auto auto",
-            gap: "10px",
-            alignItems: "center",
-            marginTop: "12px",
-          }}
-        >
-          <TextFilter
-            filteringText={filteringText}
-            filteringPlaceholder="Search"
-            filteringAriaLabel="Filter instances"
-            onChange={({ detail }) => setFilteringText(detail.filteringText)}
-          />
-<Button href="/app/Inventory/addItem">Add Item</Button>
-<Button iconName="add-plus" variant="primary">
-            Reorder
-          </Button>
         </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
-            gap: "10px",
-            marginTop: "20px",
-          }}
-        >
-          <div
-            style={{
-              boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-              borderRadius: "15px",
-            }}
-          >
-            <Container
-              variant="borderless"
-              size="xs"
-              header={<Header variant="h2">1921</Header>}
-            >
-              <b>All Products</b>
-            </Container>
-          </div>
-          <div
-            style={{
-              boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-              borderRadius: "15px",
-            }}
-          >
-            <Container
-              variant="borderless"
-              size="xs"
-              header={<Header variant="h2">421</Header>}
-            >
-              <b>Published Stock</b>
-            </Container>
-          </div>
-          <div
-            style={{
-              boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-              borderRadius: "15px",
-            }}
-          >
-            <Container
-              variant="borderless"
-              size="xs"
-              header={<Header variant="h2">212</Header>}
-            >
-              <b>Low Stock Alert</b>
-            </Container>
-          </div>
-          <div
-            style={{
-              boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-              borderRadius: "15px",
-            }}
-          >
-            <Container
-              variant="borderless"
-              size="xs"
-              header={<Header variant="h2">223</Header>}
-            >
-              <b>Expired</b>
-            </Container>
-          </div>
-        </div>
-      </div>
       <div style={{ marginTop: "15px" }}>
         <Table
           variant="borderless"
@@ -360,7 +273,7 @@ const Inventory = () => {
         {
           label: "Movement History",
           id: "third",
-          content: <Movement/>
+          content: <Movement />
         },
         {
           label: "Item-Vendor",
@@ -377,4 +290,4 @@ const Inventory = () => {
   );
 };
 
-export default Inventory;
+export default InventoryAdjustments;

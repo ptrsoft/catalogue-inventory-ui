@@ -7,12 +7,10 @@ import  store  from "Redux-Store/store";
 import { Provider } from "react-redux";
 import reportWebVitals from "./reportWebVitals";
 // import '@cloudscape-design/global-styles/index.css';
-
-
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
-    <App />
+    <App />         
   </Provider>
 );
 

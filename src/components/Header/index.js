@@ -1,76 +1,87 @@
-import React, { Component } from "react";
-import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Avatar from "@mui/material/Avatar";
-import IconButton from "@mui/material/IconButton";
-import SearchIcon from "@mui/icons-material/Search";
-import Logo from "../../assets/img/logo.png";
-import Sun from "../../assets/img/sun.png";
-import Clock from "../../assets/img/clock.png";
-import Bell from "../../assets/img/bell.png";
-import ProfileImg from "../../assets/img/profile-img.jpg";
+import React from "react";
+import TopNavigation from "@cloudscape-design/components/top-navigation";
 
-class Header extends Component {
-  render() {
-    return (
-      <div className="header">
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <Box className="logo">
-              <img src={Logo} alt="" />
-            </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Box className="search-box">
-              <TextField fullWidth id="fullWidth" />
-              <IconButton type="button" aria-label="search">
-                <SearchIcon />
-              </IconButton>
-            </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Box className="header-right-box">
-              <List
-                component="nav"
-                aria-labelledby="nested-list-subheader"
-                className="header-icons-box"
-              >
-                <ListItemButton className="icons-box">
-                  <ListItemIcon className="icon">
-                    <img src={Sun} alt="" />
-                  </ListItemIcon>
-                </ListItemButton>
-                <ListItemButton className="icons-box">
-                  <ListItemIcon className="icon">
-                    <img src={Clock} alt="" />
-                  </ListItemIcon>
-                </ListItemButton>
-                <ListItemButton className="icons-box">
-                  <ListItemIcon className="icon bell-badge">
-                    <img src={Bell} alt="" />
-                  </ListItemIcon>
-                </ListItemButton>
-              </List>
-              <Box className="header-profile-box">
-                <Avatar
-                  alt="Surendra"
-                  src={ProfileImg}
-                  className="profile-image"
-                />
-                <Box className="profile-text">
-                  <h6>Surendra</h6>
-                  <span>Admin</span>
-                </Box>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
-      </div>
-    );
-  }
-}
+const Header = () => {
+  return (
+    <TopNavigation
+      identity={{
+        href: "#",
+        title: "Warehouse Management",
+        logo: {
+          src: "/logo-small-top-navigation.svg",
+          alt: "Service"
+        }
+      }}
+      utilities={[
+        {
+          type: "button",
+          text: "Link",
+          href: "https://example.com/",
+          external: true,
+          externalIconAriaLabel: " (opens in a new tab)"
+        },
+        {
+          type: "button",
+          iconName: "notification",
+          title: "Notifications",
+          ariaLabel: "Notifications (unread)",
+          badge: true,
+          disableUtilityCollapse: false
+        },
+        {
+          type: "menu-dropdown",
+          iconName: "settings",
+          ariaLabel: "Settings",
+          title: "Settings",
+          items: [
+            {
+              id: "settings-org",
+              text: "Organizational settings"
+            },
+            {
+              id: "settings-project",
+              text: "Project settings"
+            }
+          ]
+        },
+        {
+          type: "menu-dropdown",
+          text: "Customer Name",
+          description: "email@example.com",
+          iconName: "user-profile",
+          items: [
+            { id: "profile", text: "Profile" },
+            { id: "preferences", text: "Preferences" },
+            { id: "security", text: "Security" },
+            {
+              id: "support-group",
+              text: "Support",
+              items: [
+                {
+                  id: "documentation",
+                  text: "Documentation",
+                  href: "#",
+                  external: true,
+                  externalIconAriaLabel:
+                    " (opens in new tab)"
+                },
+                { id: "support", text: "Support" },
+                {
+                  id: "feedback",
+                  text: "Feedback",
+                  href: "#",
+                  external: true,
+                  externalIconAriaLabel:
+                    " (opens in new tab)"
+                }
+              ]
+            },
+            { id: "signout", text: "Sign out" }
+          ]
+        }
+      ]}
+    />
+  );
+};
+
 export default Header;

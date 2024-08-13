@@ -1,461 +1,136 @@
-{
-  "success": true,
-  "message": "",
-  "data": {
-    "products": [
-      {
-        "product": "Nuerowhite plus",
-        "customer_name": "NutriFarm",
-        "id": 1,
-        "product_code": "DHRCBC60B",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "Nuerowhite plus",
-        "customer_name": "NutriFarm",
-        "id": 2,
-        "product_code": "DHRCBC60B",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "OmegaPro",
-        "customer_name": "HealthCo",
-        "id": 3,
-        "product_code": "OMGP60B",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "Vitamin C Boost",
-        "customer_name": "Wellness Inc.",
-        "id": 4,
-        "product_code": "VCB30T",
-        "product_type": "Tablet",
-        "package_type": "Box",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "Herbal Detox",
-        "customer_name": "NaturalLife",
-        "id": 5,
-        "product_code": "HD90C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "JointFlex",
-        "customer_name": "HealthCo",
-        "id": 6,
-        "product_code": "JF60B",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "Probiotic Max",
-        "customer_name": "GutHealth",
-        "id": 7,
-        "product_code": "PM30T",
-        "product_type": "Tablet",
-        "package_type": "Box",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "SleepEase",
-        "customer_name": "DreamWell",
-        "id": 8,
-        "product_code": "SE30C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "EnergyPlus",
-        "customer_name": "NutriFarm",
-        "id": 9,
-        "product_code": "EP60T",
-        "product_type": "Tablet",
-        "package_type": "Box",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "HeartGuard",
-        "customer_name": "HealthCo",
-        "id": 10,
-        "product_code": "HG90C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "MindSharp",
-        "customer_name": "BrainBoost",
-        "id": 11,
-        "product_code": "MS60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "ImmuneSupport",
-        "customer_name": "Wellness Inc.",
-        "id": 12,
-        "product_code": "IS60T",
-        "product_type": "Tablet",
-        "package_type": "Box",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "DetoxGreen",
-        "customer_name": "NaturalLife",
-        "id": 13,
-        "product_code": "DG90C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "BoneHealth",
-        "customer_name": "NutriFarm",
-        "id": 14,
-        "product_code": "BH60B",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "SkinGlow",
-        "customer_name": "BeautyPlus",
-        "id": 15,
-        "product_code": "SG30T",
-        "product_type": "Tablet",
-        "package_type": "Box",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "WeightOff",
-        "customer_name": "SlimDown",
-        "id": 16,
-        "product_code": "WO60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "MuscleMax",
-        "customer_name": "FitLife",
-        "id": 17,
-        "product_code": "MM90C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "LiverCare",
-        "customer_name": "HealthCo",
-        "id": 18,
-        "product_code": "LC60T",
-        "product_type": "Tablet",
-        "package_type": "Box",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "VisionGuard",
-        "customer_name": "EyeHealth",
-        "id": 19,
-        "product_code": "VG30C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "KidneySupport",
-        "customer_name": "NaturalLife",
-        "id": 20,
-        "product_code": "KS60B",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "HairRevive",
-        "customer_name": "BeautyPlus",
-        "id": 21,
-        "product_code": "HR90T",
-        "product_type": "Tablet",
-        "package_type": "Box",
-        "product_catogory": "Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 22,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 23,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 24,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 25,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 26,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 27,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 28,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 29,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 30,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 31,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 32,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 33,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 34,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 35,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 36,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 37,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 38,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 39,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 40,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 41,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 42,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 43,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 44,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 45,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 46,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 47,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 48,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 49,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      },
-      {
-        "product": "CardioCare",
-        "customer_name": "HeartWell",
-        "id": 50,
-        "product_code": "CC60C",
-        "product_type": "Capsule",
-        "package_type": "Bottle",
-        "product_catogory": "Non-Vegan"
-      }
-    ],
-    "totalPages": 5,
-    "currentPage": 1,
-    "pageSize": 10
+[
+  {
+    "itemCode": "P001",
+    "name": "Milk",
+    "category": "Dairy",
+    "quantityOnHand": 50,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 600",
+    "status": "Active",
+    "imageUrl":"https://media.istockphoto.com/id/535489242/photo/pouring-milk-in-the-glass-on-the-background-of-nature.jpg?s=612x612&w=0&k=20&c=bqBubtMFs_kv9z0OZVLunl3NFTb_XAVKiw8v1hO1T80="
+  },
+  {
+    "itemCode": "P002",
+    "imageUrl":"https://www.shutterstock.com/image-photo/red-apple-isolated-on-white-600nw-1727544364.jpg",
+    "name": "Apples",
+    "category": "Fruit",
+    "quantityOnHand": 20,
+    "stockAlert": "Low Stock",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 700",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P003",
+    "imageUrl":"https://blog-images-1.pharmeasy.in/blog/production/wp-content/uploads/2021/04/23175719/shutterstock_440493100-1.jpg",
+    "name": "Carrots",
+    "category": "Vegetable",
+    "quantityOnHand": 100,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 300",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P004",
+    "imageUrl":"https://images-prod.healthline.com/hlcmsresource/images/AN_images/healthiest-cheese-1296x728-swiss.jpg",
+    "name": "Cheese",
+    "category": "Dairy",
+    "quantityOnHand": 10,
+    "stockAlert": "Low Stock",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 900",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P005",
+    "imageUrl":"https://www.shutterstock.com/image-photo/bunch-bananas-isolated-on-white-600nw-1722111529.jpg",
+    "name": "Bananas",
+    "category": "Fruit",
+    "quantityOnHand": 30,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 500",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P006",
+    "imageUrl":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBWeLtrc_d_I0fRUVPT8pNEiiR2cswKU-pdQ&s",
+    "name": "Spinach",
+    "category": "Vegetable",
+    "quantityOnHand": 15,
+    "stockAlert": "Low Stock",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 250",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P007",
+    "imageUrl":"https://media.istockphoto.com/id/1338222224/photo/butter-blocks-and-pieces-on-wooden-table-copy-space.jpg?s=612x612&w=0&k=20&c=65ZYwALchrY4iXYkfrchnnWKCpuP20TZvXnSSmWnBPM=",
+    "name": "Butter",
+    "category": "Dairy",
+    "quantityOnHand": 25,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 750",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P008",
+    "imageUrl":"https://t3.ftcdn.net/jpg/02/01/79/54/360_F_201795443_a16jojvPRiobPC96uO7ePHSNzGVoBLbc.jpg",
+    "name": "Oranges",
+    "category": "Fruit",
+    "quantityOnHand": 40,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 600",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P009",
+    "imageUrl":"https://img.freepik.com/free-photo/basket-white-potatoes_1268-25051.jpg",
+    "name": "Potatoes",
+    "category": "Vegetable",
+    "quantityOnHand": 60,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 350",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P010",
+    "imageUrl":"https://media.istockphoto.com/id/1435026978/photo/green-bowl-of-greek-yogurt-and-fresh-berries-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=q-jG8QyL_Qy6PtYPpgVMZncBlUYwxdYJP2wxlm-4x6g=",
+    "name": "Yogurt",
+    "category": "Dairy",
+    "quantityOnHand": 8,
+    "stockAlert": "Low Stock",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 650",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P011",
+    "imageUrl":"https://media.istockphoto.com/id/466175630/photo/tomato-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=ELzCVzaiRMgiO7A5zQLkuws0N_lvPxrgJWPn7C7BXz0=",
+    "name": "Tomatoes",
+    "category": "Vegetable",
+    "quantityOnHand": 45,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 400",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P012",
+    "imageUrl":"https://m.media-amazon.com/images/I/71MQD-Dj1gL.jpg",
+    "name": "Grapes",
+    "category": "Fruit",
+    "quantityOnHand": 25,
+    "stockAlert": "Low Stock",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 750",
+    "status": "Active"
   }
-}
+]
+
+

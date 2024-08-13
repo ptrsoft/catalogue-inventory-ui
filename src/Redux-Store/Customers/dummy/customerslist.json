@@ -1,458 +1,136 @@
-{
-  "success": true,
-  "message": "",
-  "data": {
-    "customers":[
-      {
-        "id": 1,
-        "customer_name": "Active Lifestyle",
-        "email": "info@activelifestyle.com",
-        "shipping_address": "Active Street, Fitness Village",
-        "added_by": "Admin",
-        "added_on": "Yesterday",
-        "last_order": "Capsules"
-      },
-      {
-        "id": 2,
-        "customer_name": "Fitness Haven",
-        "email": "info@fitnesshaven.com",
-        "shipping_address": "Gym Road, Health City",
-        "added_by": "Admin",
-        "added_on": "Today",
-        "last_order": "Protein Bars"
-      },
-      {
-        "id": 3,
-        "customer_name": "Wellness Junction",
-        "email": "info@wellnessjunction.com",
-        "shipping_address": "Health Lane, Fitness Park",
-        "added_by": "Admin",
-        "added_on": "2 days ago",
-        "last_order": "Multivitamins"
-      },
-      {
-        "id": 4,
-        "customer_name": "Active Fit",
-        "email": "info@activefit.com",
-        "shipping_address": "Fit Street, Gym Plaza",
-        "added_by": "Admin",
-        "added_on": "3 days ago",
-        "last_order": "Protein Powder"
-      },
-      {
-        "id": 5,
-        "customer_name": "Health Plus",
-        "email": "info@healthplus.com",
-        "shipping_address": "Wellness Avenue, Gym Town",
-        "added_by": "Admin",
-        "added_on": "4 days ago",
-        "last_order": "Fish Oil"
-      },
-      {
-        "id": 6,
-        "customer_name": "Fitness Zone",
-        "email": "info@fitnesszone.com",
-        "shipping_address": "Active Road, Fitness Center",
-        "added_by": "Admin",
-        "added_on": "5 days ago",
-        "last_order": "Energy Bars"
-      },
-      {
-        "id": 7,
-        "customer_name": "Fit Life",
-        "email": "info@fitlife.com",
-        "shipping_address": "Health Street, Gym Plaza",
-        "added_by": "Admin",
-        "added_on": "6 days ago",
-        "last_order": "Vitamin C"
-      },
-      {
-        "id": 8,
-        "customer_name": "Healthy Habits",
-        "email": "info@healthyhabits.com",
-        "shipping_address": "Wellness Road, Health Village",
-        "added_by": "Admin",
-        "added_on": "1 week ago",
-        "last_order": "Probiotics"
-      },
-      {
-        "id": 9,
-        "customer_name": "Wellness Works",
-        "email": "info@wellnessworks.com",
-        "shipping_address": "Fitness Street, Wellness Plaza",
-        "added_by": "Admin",
-        "added_on": "2 weeks ago",
-        "last_order": "Calcium Supplements"
-      },
-      {
-        "id": 10,
-        "customer_name": "Active Living",
-        "email": "info@activeliving.com",
-        "shipping_address": "Health Avenue, Fitness Center",
-        "added_by": "Admin",
-        "added_on": "3 weeks ago",
-        "last_order": "Joint Support"
-      },
-      {
-        "id": 11,
-        "customer_name": "Fit Essentials",
-        "email": "info@fitessentials.com",
-        "shipping_address": "Fit Lane, Health Park",
-        "added_by": "Admin",
-        "added_on": "4 weeks ago",
-        "last_order": "Weight Loss Supplements"
-      },
-      {
-        "id": 12,
-        "customer_name": "Health Boost",
-        "email": "info@healthboost.com",
-        "shipping_address": "Wellness Road, Fitness Town",
-        "added_by": "Admin",
-        "added_on": "5 weeks ago",
-        "last_order": "Omega-3"
-      },
-      {
-        "id": 13,
-        "customer_name": "Fitness Fuel",
-        "email": "info@fitnessfuel.com",
-        "shipping_address": "Gym Lane, Wellness City",
-        "added_by": "Admin",
-        "added_on": "6 weeks ago",
-        "last_order": "Creatine"
-      },
-      {
-        "id": 14,
-        "customer_name": "Active Nutrition",
-        "email": "info@activenutrition.com",
-        "shipping_address": "Nutrition Street, Fitness Plaza",
-        "added_by": "Admin",
-        "added_on": "7 weeks ago",
-        "last_order": "Amino Acids"
-      },
-      {
-        "id": 15,
-        "customer_name": "Health Haven",
-        "email": "info@healthhaven.com",
-        "shipping_address": "Wellness Lane, Gym Park",
-        "added_by": "Admin",
-        "added_on": "8 weeks ago",
-        "last_order": "Antioxidants"
-      },
-      {
-        "id": 16,
-        "customer_name": "Fitness Fusion",
-        "email": "info@fitnessfusion.com",
-        "shipping_address": "Fit Avenue, Health Town",
-        "added_by": "Admin",
-        "added_on": "2 months ago",
-        "last_order": "BCAAs"
-      },
-      {
-        "id": 17,
-        "customer_name": "Wellness Central",
-        "email": "info@wellnesscentral.com",
-        "shipping_address": "Health Road, Wellness City",
-        "added_by": "Admin",
-        "added_on": "2 months ago",
-        "last_order": "Glutamine"
-      },
-      {
-        "id": 18,
-        "customer_name": "Active Wellness",
-        "email": "info@activewellness.com",
-        "shipping_address": "Wellness Lane, Fitness Park",
-        "added_by": "Admin",
-        "added_on": "2 months ago",
-        "last_order": "Whey Protein"
-      },
-      {
-        "id": 19,
-        "customer_name": "Fit & Healthy",
-        "email": "info@fitandhealthy.com",
-        "shipping_address": "Fit Road, Health Village",
-        "added_by": "Admin",
-        "added_on": "2 months ago",
-        "last_order": "ZMA"
-      },
-      {
-        "id": 20,
-        "customer_name": "Health Plus",
-        "email": "info@healthplus.com",
-        "shipping_address": "Wellness Avenue, Gym Town",
-        "added_by": "Admin",
-        "added_on": "3 months ago",
-        "last_order": "Fish Oil"
-      },
-      {
-        "id": 21,
-        "customer_name": "Fitness First",
-        "email": "info@fitnessfirst.com",
-        "shipping_address": "Gym Lane, Fitness Plaza",
-        "added_by": "Admin",
-        "added_on": "3 months ago",
-        "last_order": "Pre-Workout"
-      },
-      {
-        "id": 22,
-        "customer_name": "Fit for Life",
-        "email": "info@fitforlife.com",
-        "shipping_address": "Health Road, Fitness Town",
-        "added_by": "Admin",
-        "added_on": "3 months ago",
-        "last_order": "Beta-Alanine"
-      },
-      {
-        "id": 23,
-        "customer_name": "Wellness Pro",
-        "email": "info@wellnesspro.com",
-        "shipping_address": "Fitness Lane, Wellness Park",
-        "added_by": "Admin",
-        "added_on": "3 months ago",
-        "last_order": "Casein Protein"
-      },
-      {
-        "id": 24,
-        "customer_name": "Active Fuel",
-        "email": "info@activefuel.com",
-        "shipping_address": "Fit Avenue, Gym City",
-        "added_by": "Admin",
-        "added_on": "4 months ago",
-        "last_order": "L-Carnitine"
-      },
-      {
-        "id": 25,
-        "customer_name": "Fit Lifestyle",
-        "email": "info@fitlifestyle.com",
-        "shipping_address": "Health Street, Fitness Village",
-        "added_by": "Admin",
-        "added_on": "4 months ago",
-        "last_order": "Dietary Fiber"
-      },
-      {
-        "id": 26,
-        "customer_name": "Healthwise",
-        "email": "info@healthwise.com",
-        "shipping_address": "Wellness Lane, Health Park",
-        "added_by": "Admin",
-        "added_on": "4 months ago",
-        "last_order": "Vitamin D"
-      },
-      {
-        "id": 27,
-        "customer_name": "Fitness Focus",
-        "email": "info@fitnessfocus.com",
-        "shipping_address": "Gym Road, Fitness Center",
-        "added_by": "Admin",
-        "added_on": "4 months ago",
-        "last_order": "L-Glutamine"
-      },
-      {
-        "id": 28,
-        "customer_name": "Active Elements",
-        "email": "info@activeelements.com",
-        "shipping_address": "Fitness Avenue, Wellness Plaza",
-        "added_by": "Admin",
-        "added_on": "5 months ago",
-        "last_order": "Magnesium"
-      },
-      {
-        "id": 29,
-        "customer_name": "Fit Nation",
-        "email": "info@fitnation.com",
-        "shipping_address": "Health Lane, Fitness Town",
-        "added_by": "Admin",
-        "added_on": "5 months ago",
-        "last_order": "Electrolytes"
-      },
-      {
-        "id": 30,
-        "customer_name": "Wellness Warriors",
-        "email": "info@wellnesswarriors.com",
-        "shipping_address": "Fitness Road, Gym Park",
-        "added_by": "Admin",
-        "added_on": "5 months ago",
-        "last_order": "Greens Powder"
-      },
-      {
-        "id": 31,
-        "customer_name": "Active Fit Club",
-        "email": "info@activefitclub.com",
-        "shipping_address": "Wellness Avenue, Health City",
-        "added_by": "Admin",
-        "added_on": "5 months ago",
-        "last_order": "Gainers"
-      },
-      {
-        "id": 32,
-        "customer_name": "Health Quest",
-        "email": "info@healthquest.com",
-        "shipping_address": "Health Street, Fitness Plaza",
-        "added_by": "Admin",
-        "added_on": "5 months ago",
-        "last_order": "CLA"
-      },
-      {
-        "id": 33,
-        "customer_name": "Fitness Pros",
-        "email": "info@fitnesspros.com",
-        "shipping_address": "Gym Road, Wellness Park",
-        "added_by": "Admin",
-        "added_on": "5 months ago",
-        "last_order": "BCAAs"
-      },
-      {
-        "id": 34,
-        "customer_name": "Active Nutrition",
-        "email": "info@activenutrition.com",
-        "shipping_address": "Fitness Avenue, Health Town",
-        "added_by": "Admin",
-        "added_on": "5 months ago",
-        "last_order": "Vitamin B Complex"
-      },
-      {
-        "id": 35,
-        "customer_name": "Fit Fuel",
-        "email": "info@fitfuel.com",
-        "shipping_address": "Wellness Lane, Fitness Village",
-        "added_by": "Admin",
-        "added_on": "6 months ago",
-        "last_order": "Fiber"
-      },
-      {
-        "id": 36,
-        "customer_name": "Health Essentials",
-        "email": "info@healthessentials.com",
-        "shipping_address": "Gym Road, Fitness Town",
-        "added_by": "Admin",
-        "added_on": "6 months ago",
-        "last_order": "Zinc"
-      },
-      {
-        "id": 37,
-        "customer_name": "Fitness Essentials",
-        "email": "info@fitnessessentials.com",
-        "shipping_address": "Health Lane, Wellness City",
-        "added_by": "Admin",
-        "added_on": "6 months ago",
-        "last_order": "Fish Oil"
-      },
-      {
-        "id": 38,
-        "customer_name": "Active Wellness",
-        "email": "info@activewellness.com",
-        "shipping_address": "Wellness Avenue, Health Park",
-        "added_by": "Admin",
-        "added_on": "6 months ago",
-        "last_order": "Whey Protein"
-      },
-      {
-        "id": 39,
-        "customer_name": "Fit Focus",
-        "email": "info@fitfocus.com",
-        "shipping_address": "Fitness Road, Gym Village",
-        "added_by": "Admin",
-        "added_on": "6 months ago",
-        "last_order": "Magnesium"
-      },
-      {
-        "id": 40,
-        "customer_name": "Health First",
-        "email": "info@healthfirst.com",
-        "shipping_address": "Health Lane, Fitness Plaza",
-        "added_by": "Admin",
-        "added_on": "7 months ago",
-        "last_order": "Probiotics"
-      },
-      {
-        "id": 41,
-        "customer_name": "Fitness Hub",
-        "email": "info@fitnesshub.com",
-        "shipping_address": "Gym Road, Wellness Village",
-        "added_by": "Admin",
-        "added_on": "7 months ago",
-        "last_order": "Pre-Workout"
-      },
-      {
-        "id": 42,
-        "customer_name": "Active Elements",
-        "email": "info@activeelements.com",
-        "shipping_address": "Health Lane, Fitness Park",
-        "added_by": "Admin",
-        "added_on": "7 months ago",
-        "last_order": "L-Carnitine"
-      },
-      {
-        "id": 43,
-        "customer_name": "Wellness Way",
-        "email": "info@wellnessway.com",
-        "shipping_address": "Fit Avenue, Wellness Plaza",
-        "added_by": "Admin",
-        "added_on": "7 months ago",
-        "last_order": "BCAAs"
-      },
-      {
-        "id": 44,
-        "customer_name": "Health Zone",
-        "email": "info@healthzone.com",
-        "shipping_address": "Wellness Lane, Gym Town",
-        "added_by": "Admin",
-        "added_on": "8 months ago",
-        "last_order": "Zinc"
-      },
-      {
-        "id": 45,
-        "customer_name": "Fitness Essentials",
-        "email": "info@fitnessessentials.com",
-        "shipping_address": "Health Avenue, Fitness Park",
-        "added_by": "Admin",
-        "added_on": "8 months ago",
-        "last_order": "Fiber"
-      },
-      {
-        "id": 46,
-        "customer_name": "Active Life",
-        "email": "info@activelife.com",
-        "shipping_address": "Fitness Road, Health City",
-        "added_by": "Admin",
-        "added_on": "8 months ago",
-        "last_order": "Gainers"
-      },
-      {
-        "id": 47,
-        "customer_name": "Health Fusion",
-        "email": "info@healthfusion.com",
-        "shipping_address": "Wellness Lane, Gym Village",
-        "added_by": "Admin",
-        "added_on": "8 months ago",
-        "last_order": "Greens Powder"
-      },
-      {
-        "id": 48,
-        "customer_name": "Fit & Active",
-        "email": "info@fitandactive.com",
-        "shipping_address": "Health Avenue, Fitness Center",
-        "added_by": "Admin",
-        "added_on": "8 months ago",
-        "last_order": "Electrolytes"
-      },
-      {
-        "id": 49,
-        "customer_name": "Wellness Pros",
-        "email": "info@wellnesspros.com",
-        "shipping_address": "Fitness Lane, Wellness Park",
-        "added_by": "Admin",
-        "added_on": "9 months ago",
-        "last_order": "Magnesium"
-      },
-      {
-        "id": 50,
-        "customer_name": "Active Elements",
-        "email": "info@activeelements.com",
-        "shipping_address": "Health Road, Fitness Town",
-        "added_by": "Admin",
-        "added_on": "9 months ago",
-        "last_order": "ZMA"
-      }
-    ]
+[
+  {
+    "itemCode": "P001",
+    "image":"https://media.istockphoto.com/id/535489242/photo/pouring-milk-in-the-glass-on-the-background-of-nature.jpg?s=612x612&w=0&k=20&c=bqBubtMFs_kv9z0OZVLunl3NFTb_XAVKiw8v1hO1T80=",
+    "name": "Milk",
+    "category": "Dairy",
+    "quantityOnHand": 50,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 600",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P002",
+    "image":"https://www.shutterstock.com/image-photo/red-apple-isolated-on-white-600nw-1727544364.jpg",
+    "name": "Apples",
+    "category": "Fruit",
+    "quantityOnHand": 20,
+    "stockAlert": "Low Stock",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 700",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P003",
+    "image":"https://blog-images-1.pharmeasy.in/blog/production/wp-content/uploads/2021/04/23175719/shutterstock_440493100-1.jpg",
+    "name": "Carrots",
+    "category": "Vegetable",
+    "quantityOnHand": 100,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 300",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P004",
+    "image":"https://images-prod.healthline.com/hlcmsresource/images/AN_images/healthiest-cheese-1296x728-swiss.jpg",
+    "name": "Cheese",
+    "category": "Dairy",
+    "quantityOnHand": 10,
+    "stockAlert": "Low Stock",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 900",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P005",
+    "image":"https://www.shutterstock.com/image-photo/bunch-bananas-isolated-on-white-600nw-1722111529.jpg",
+    "name": "Bananas",
+    "category": "Fruit",
+    "quantityOnHand": 30,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 500",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P006",
+    "image":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBWeLtrc_d_I0fRUVPT8pNEiiR2cswKU-pdQ&s",
+    "name": "Spinach",
+    "category": "Vegetable",
+    "quantityOnHand": 15,
+    "stockAlert": "Low Stock",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 250",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P007",
+    "image":"https://media.istockphoto.com/id/1338222224/photo/butter-blocks-and-pieces-on-wooden-table-copy-space.jpg?s=612x612&w=0&k=20&c=65ZYwALchrY4iXYkfrchnnWKCpuP20TZvXnSSmWnBPM=",
+    "name": "Butter",
+    "category": "Dairy",
+    "quantityOnHand": 25,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 750",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P008",
+    "image":"https://t3.ftcdn.net/jpg/02/01/79/54/360_F_201795443_a16jojvPRiobPC96uO7ePHSNzGVoBLbc.jpg",
+    "name": "Oranges",
+    "category": "Fruit",
+    "quantityOnHand": 40,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 600",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P009",
+    "image":"https://img.freepik.com/free-photo/basket-white-potatoes_1268-25051.jpg",
+    "name": "Potatoes",
+    "category": "Vegetable",
+    "quantityOnHand": 60,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 350",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P010",
+    "image":"https://media.istockphoto.com/id/1435026978/photo/green-bowl-of-greek-yogurt-and-fresh-berries-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=q-jG8QyL_Qy6PtYPpgVMZncBlUYwxdYJP2wxlm-4x6g=",
+    "name": "Yogurt",
+    "category": "Dairy",
+    "quantityOnHand": 8,
+    "stockAlert": "Low Stock",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 650",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P011",
+    "image":"https://media.istockphoto.com/id/466175630/photo/tomato-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=ELzCVzaiRMgiO7A5zQLkuws0N_lvPxrgJWPn7C7BXz0=",
+    "name": "Tomatoes",
+    "category": "Vegetable",
+    "quantityOnHand": 45,
+    "stockAlert": "Available",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 400",
+    "status": "Active"
+  },
+  {
+    "itemCode": "P012",
+    "image":"https://m.media-amazon.com/images/I/71MQD-Dj1gL.jpg",
+    "name": "Grapes",
+    "category": "Fruit",
+    "quantityOnHand": 25,
+    "stockAlert": "Low Stock",
+    "purchasingPrice": "Rs. 552",
+    "msp": "Rs. 750",
+    "status": "Active"
   }
-}
+]
+
+

@@ -1,7 +1,7 @@
 import { Box, CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
 export const ValidationEngine = {
-  EMAIL_REGEX: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+  EMAIL_REGEX: /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/,
   PASSWORD_REGEX: /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
   MOBILE_NUMBER_REGEX: /^\d{10}$/,
   NUMBER_ONLY_REGEX: /^[0-9]+$/,

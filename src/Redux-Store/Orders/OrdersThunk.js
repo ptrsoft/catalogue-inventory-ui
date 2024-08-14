@@ -11,6 +11,7 @@ export const fetchOrders = createAsyncThunk(
     try {
       let url = config.FETCH_ORDERS;
       const response = await postLoginService.get(url, params);
+      console.log(response)
       //   return response.data
       return orderslist;
     } catch (error) {
@@ -22,11 +23,12 @@ export const fetchOrders = createAsyncThunk(
 
 
 export const ordersDetails = createAsyncThunk(
-    "orders/details",
-    async (params) => {
-      try {
-        let url = config.ORDERS_DETAILS;
-        const response = await postLoginService.get(url, params);
+  "orders/details",
+  async (params) => {
+    try {
+      let url = config.ORDERS_DETAILS;
+      const response = await postLoginService.get(url, params);
+      console.log(response)
         //   return response.data
         return ordersdetails;
       } catch (error) {
@@ -45,6 +47,7 @@ export const ordersDetails = createAsyncThunk(
         let url = config.ORDERS_VIEWATTACHMENTS;
         const response = await postLoginService.get(url, params);
         //   return response.data
+        console.log(response)
         return viewattachment;
       } catch (error) {
         // return error

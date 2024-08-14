@@ -40,7 +40,7 @@ const InventoryAdjustments = () => {
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(filteringText.toLowerCase())
   );
-
+console.log(setFilteringText)
   // Determine the color based on the stock alert value
   const getStockAlertColor = (stockAlert) => {
     return stockAlert.toLowerCase().includes("low") ? "red" : "#0492C2";

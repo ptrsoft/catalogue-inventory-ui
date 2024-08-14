@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useDispatch } from "react-redux";
 import {
-  ContentLayout,
+
   Textarea,
   Icon,
   Container,
@@ -37,19 +37,26 @@ const AddItem = () => {
   const [addExpiry, setAddExpiry] = React.useState(false);
   const [keepInformed, setKeepInformed] = React.useState(false);
   const [expiryDate, setExpiryDate] = React.useState("");
-  const [imageUrl, setImageUrl] = React.useState("");
-  
-  // Handle image upload
-  const handleImageUpload = async (event) => {
+  const [imageUrl1, setImageUrl1] = React.useState("");
+  const [imageUrl2, setImageUrl2] = React.useState("");
+
+  // Handle first image upload
+  const handleImageUpload1 = async (event) => {
     const file = event.target.files[0];
     if (file) {
       // Mocking image upload - in a real scenario, you would upload the image to a server or cloud storage
       const uploadedImageUrl = URL.createObjectURL(file); // This is a placeholder. Replace with actual upload logic
-      setImageUrl(uploadedImageUrl);
+      setImageUrl1(uploadedImageUrl);
+    }
+  };
 
-      // If you have a real API for image upload, you can do something like:
-      // const uploadedImageUrl = await uploadImageToServer(file);
-      // setImageUrl(uploadedImageUrl);
+  // Handle second image upload
+  const handleImageUpload2 = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Mocking image upload - in a real scenario, you would upload the image to a server or cloud storage
+      const uploadedImageUrl = URL.createObjectURL(file); // This is a placeholder. Replace with actual upload logic
+      setImageUrl2(uploadedImageUrl);
     }
   };
 
@@ -68,7 +75,7 @@ const AddItem = () => {
       msp: Number(msp),
       stockQuantity: Number(stockQuantity),
       expiry: formattedExpiryDate,
-      images: [imageUrl] // send the uploaded image URL
+      images: [imageUrl1, imageUrl2].filter(Boolean), // send both uploaded image URLs
     };
 
     console.log("Form Data:", JSON.stringify(formData, null, 2));
@@ -213,9 +220,9 @@ const AddItem = () => {
                       <div style={{ width: "200px" }}>
                         <FormField label="Quantity In Stock">
                           <Select
-                            selectedOption={selectedCategory} // Example, replace with relevant state
+                            // selectedOption={selectedCategory} // Example, replace with relevant state
                             onChange={({ detail }) =>
-                              setSelectedCategory(detail.selectedOption)
+                              setQuantityOnHand(detail.selectedOption)
                             }
                             options={[
                               { label: "GIRDHARI", value: "girdhari" },
@@ -264,14 +271,17 @@ const AddItem = () => {
                     <Input
                       type="date"
                       onChange={({ detail }) => setExpiryDate(detail.value)}
+                      value={expiryDate}
                     />
                   </FormField>
                 )}
                 <Checkbox
-                  onChange={({ detail }) => setKeepInformed(detail.checked)}
                   checked={keepInformed}
+                  onChange={({ detail }) =>
+                    setKeepInformed(detail.checked)
+                  }
                 >
-                  Keep me informed
+                  Keep me informed about stock updates for this item.
                 </Checkbox>
               </SpaceBetween>
             </ColumnLayout>
@@ -288,9 +298,9 @@ const AddItem = () => {
           <Container variant="borderless">
             <div style={{ textAlign: "center", marginBottom: "20px" }}>
               <div>
-                <label htmlFor="upload-button">
+                <label htmlFor="upload-button-1">
                   <img
-                    src={imageUrl || UploadImage}
+                    src={imageUrl1 || UploadImage}
                     alt="Upload"
                     style={{
                       width: "300px",
@@ -303,24 +313,41 @@ const AddItem = () => {
                 </label>
                 <input
                   type="file"
-                  id="upload-button"
+                  id="upload-button-1"
                   style={{ display: "none" }}
-                  onChange={handleImageUpload}
-                />
-                <img
-                  src={upload2}
-                  alt="Upload"
-                  style={{
-                    marginTop: "20px",
-                    width: "100px",
-                    height: "100px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() =>
-                    document.getElementById("upload-button").click()
-                  }
+                  onChange={handleImageUpload1}
                 />
               </div>
+              <div style={{display:"flex",gap:"30px",paddingLeft:"20px"}}>
+                <label htmlFor="upload-button-2">
+                  <img
+                    src={imageUrl2 || upload2}
+                    alt="Upload"
+                    style={{
+                      marginTop: "20px",
+                      width: "100px",
+                      height: "100px",
+                      cursor: "pointer",
+                    }}
+                  />
+                </label>
+                <input
+                  type="file"
+                  id="upload-button-2"
+              style={{ display: "none" }}
+                  onChange={handleImageUpload2}
+                />
+                <div
+                style={{
+                  border: "1px dashed gray",
+                  width: "120px",
+                  height: "100px",
+                  borderRadius: "8px",
+                  marginTop:"20px"
+                }}
+              ></div>
+              </div>
+              
             </div>
           </Container>
         </div>

@@ -13,7 +13,6 @@ import PieChart from '@cloudscape-design/components/pie-chart';
 import BarChart from '@cloudscape-design/components/bar-chart';
 import Button from '@cloudscape-design/components/button';
 import Icon from '@cloudscape-design/components/icon';
-import Table from "@cloudscape-design/components/table";
 
 const CustomDropdown = ({ options, selectedOption, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -89,9 +88,7 @@ const DashboardCards = () => {
   const [selectedFilter1, setSelectedFilter1] = useState({ label: 'Today', value: 'today' });
   const [selectedFilter2, setSelectedFilter2] = useState({ label: 'Today', value: 'today' });
   const [selectedFilter3, setSelectedFilter3] = useState({ label: 'Today', value: 'today' });
-  const [selectedFilter4, setSelectedFilter4] = useState({ label: 'Today', value: 'today' });
-  const [selectedFilter5, setSelectedFilter5] = useState({ label: 'Today', value: 'today' });
-  const [selectedFilter, setSelectedFilter] = useState({ label: 'Today', value: 'today' });
+
 
   const handleButtonClick = () => {
     setIsCalendarVisible(!isCalendarVisible);
@@ -116,9 +113,9 @@ const DashboardCards = () => {
     { label: 'Yearly', value: 'yearly' },
   ];
 
-  const handleFilterChange = (option) => {
-    setSelectedFilter(option);
-  };
+  // const handleFilterChange = (option) => {
+  //   setSelectedFilter(option);
+  // };
 
   return (
     <ContentLayout

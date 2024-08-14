@@ -7,7 +7,7 @@ import { Loader } from "Utils/helperFunctions";
 import GridTableWithPagination from "../Components/GridTableWithPagination";
 import { Link } from "react-router-dom";
 import TablesHeaderFilters from "Views/Postlogin/Components/TablesHeaderFilters";
-import { QUOTATIONS_FILTER_STATUS, TABLE_STATUS } from "CommonData";
+import { QUOTATIONS_FILTER_STATUS } from "CommonData";
 const columns = [
   {
     field: "customer_name",
@@ -59,14 +59,12 @@ const columns = [
     field: "actions",
     headerName: "Actions",
     width: 240,
+  
     renderCell: (data) => {
-      return data.value;
-    },
-    renderCell: () => {
       return (
         <div className="table-btns">
           <Button className="primary-outline" variant="primary">
-            View More
+            View More {data.value}
           </Button>
           <Button className="primary" variant="primary">
             Create Quotes
@@ -77,7 +75,7 @@ const columns = [
   },
 ];
 
-let { APPROVED, UNDER_REVIEW, REJECTED, FAVOURITE_CUSTOMER, NEW_CUSTOMER } =
+let { FAVOURITE_CUSTOMER, NEW_CUSTOMER } =
   QUOTATIONS_FILTER_STATUS;
 
 const filterItems = [

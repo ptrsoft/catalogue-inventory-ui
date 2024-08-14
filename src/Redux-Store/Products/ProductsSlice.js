@@ -1,41 +1,35 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { fetchProducts, addProduct } from "Redux-Store/Products/ProductThunk";
-import productlist from "Redux-Store/Products/dummy/productlist.json";
-
-const initialState = {
-  products: {
-    status: "SUCCESS",
-    data: productlist,
-  },
-};
+import { createSlice } from '@reduxjs/toolkit';
+import { fetchProducts } from './ProductThunk';
 
 const productsSlice = createSlice({
-  name: "products",
-  initialState,
+  name: 'products',
+  initialState: {
+    products: {
+      data: [],
+      status: 'idle',
+      error: null
+    }
+  },
   reducers: {
     toggleStatus: (state, action) => {
-      const product = state.products.data.find(p => p.itemCode === action.payload.itemCode);
-      if (product) {
-        product.status = product.status === "Active" ? "Inactive" : "Active";
-      }
+      // Your toggle status logic here
     },
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchProducts.pending, (state) => {
+        state.products.status = 'LOADING';
+      })
       .addCase(fetchProducts.fulfilled, (state, action) => {
-        state.products.status = "SUCCESS";
         state.products.data = action.payload;
+        state.products.status = 'SUCCEEDED';
       })
-      .addCase(addProduct.fulfilled, (state, action) => {
-        state.products.data.push(action.payload);
-      })
-      .addCase(addProduct.rejected, (state, action) => {
-        state.products.status = "ERROR";
-        state.products.error = action.payload;
+      .addCase(fetchProducts.rejected, (state, action) => {
+        state.products.status = 'ERROR';
+        state.products.error = action.error.message;
       });
   },
 });
 
 export const { toggleStatus } = productsSlice.actions;
-
 export default productsSlice.reducer;

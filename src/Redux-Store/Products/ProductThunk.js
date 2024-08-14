@@ -3,8 +3,9 @@ import config from "Views/Config";
 import { postLoginService } from "Services";
 export const fetchProducts = createAsyncThunk("products/fetch", async (params, { rejectWithValue }) => {
   try {
-    let url = config.ADD_ITEM;
+    let url = config.FETCH_INVENTORY;
     const response = await postLoginService.get(url, params);
+    console.log(response.data)
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response.data);

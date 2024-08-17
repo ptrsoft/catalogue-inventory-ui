@@ -62,10 +62,11 @@ console.log("data",data)
 
 
   // Filter products based on the filteringText
-  const filteredProducts = data.items.filter((product) =>
-    product.name.toLowerCase().includes(filteringText.toLowerCase())
-  );
-
+  const filteredProducts = Array.isArray(data?.items)
+  ? data.items.filter((product) =>
+      product.name.toLowerCase().includes(filteringText.toLowerCase())
+    )
+  : [];
   // Determine the color based on the stock alert value
   const getStockAlertColor = (stockAlert) => {
     return stockAlert.toLowerCase().includes("low") ? "red" : "#0492C2";

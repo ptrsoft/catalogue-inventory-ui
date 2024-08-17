@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchProducts,addProduct, uploadImage  } from './ProductThunk';
+import { fetchProducts, uploadImage  } from './ProductThunk';
 
 const productsSlice = createSlice({
   name: 'products',

@@ -194,7 +194,7 @@ const [imageUrl,setImageUrl] = React.useState(null)
                     <div style={{ width: "160px" }}>
                       <FormField label="Units">
                         <Select
-                        placeholder="Select units"
+                        placeholder="Select Unit"
                           selectedOption={selectedUnits}
                           onChange={({ detail }) =>
                             setSelectedUnits(detail.selectedOption)

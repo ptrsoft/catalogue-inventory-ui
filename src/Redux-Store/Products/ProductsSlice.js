@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchProducts } from './ProductThunk';
+import { fetchProducts,addProduct, uploadImage  } from './ProductThunk';
 
 const productsSlice = createSlice({
   name: 'products',
@@ -12,7 +12,10 @@ const productsSlice = createSlice({
   },
   reducers: {
     toggleStatus: (state, action) => {
-      // Your toggle status logic here
+      const product = state.products.data.find(p => p.itemCode === action.payload.itemCode);
+      if (product) {
+        product.status = product.status === "Active" ? "Inactive" : "Active";
+      }
     },
   },
   extraReducers: (builder) => {
@@ -27,6 +30,17 @@ const productsSlice = createSlice({
       .addCase(fetchProducts.rejected, (state, action) => {
         state.products.status = 'ERROR';
         state.products.error = action.error.message;
+      })
+      .addCase(uploadImage.pending, (state) => {
+        state.status = 'uploading';
+      })
+      .addCase(uploadImage.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        // You can save the image URL if needed
+      })
+      .addCase(uploadImage.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
       });
   },
 });

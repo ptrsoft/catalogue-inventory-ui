@@ -1,8 +1,9 @@
-const BASE_URL = "https://wj7wzozdcc.execute-api.us-east-1.amazonaws.com";
+const BASE_URL = "https://lou294nkli.execute-api.us-east-1.amazonaws.com";
 
 const Config = {
   BASE_URL,
   ADD_ITEM:`${BASE_URL}/inventory`,
+  GET_PRESIGNED_URL:`${BASE_URL}/uploadUrl`,
   FETCH_QUOTATIONS: `${BASE_URL}/users`,
   FINISH_PRODUCT_SPECIFICATIONS: `${BASE_URL}/users`,
   FINISH_PRODUCT_VIEW_ATACHMENTS: `${BASE_URL}/users`,

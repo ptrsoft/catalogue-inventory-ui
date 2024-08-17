@@ -102,7 +102,7 @@ const Overview = ({ selectedProduct }) => {
                   color: "#354150",
                 }}
               >
-                {selectedProduct.quantityOnHand}KG
+                {selectedProduct.stockQuantity}KG
               </h1>
               <div
                 style={{
@@ -115,7 +115,7 @@ const Overview = ({ selectedProduct }) => {
                 <p>
                   <b>Main Warehouse</b>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;
-                  {selectedProduct.quantityOnHand}kg
+                  {selectedProduct.stockQuantity}kg
                 </p>
                 <p>
                   Girdhari
@@ -132,7 +132,7 @@ const Overview = ({ selectedProduct }) => {
             <div> 
               <img
                 style={{border: "1px solid #D9D9D9" }}
-                src={selectedProduct.imageUrl}
+                src={selectedProduct.images[0]}
                 alt="product"
                 height="full"
                 width="full"

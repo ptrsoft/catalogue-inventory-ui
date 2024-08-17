@@ -15,25 +15,32 @@ import Overview from "./drawerTabs/overview";
 import OrderHistory from "./drawerTabs/orderHistory";
 import Movement from "./drawerTabs/movement";
 import ItemVendor from "./drawerTabs/itemVendor";
-import { Drawer } from "@cloudscape-design/components";
-
+import { SpaceBetween,StatusIndicator,ButtonDropdown,Pagination} from "@cloudscape-design/components";
 const Inventory = () => {
   const [filteringText, setFilteringText] = React.useState("");
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
-  // const [checked, setChecked] = React.useState(false);
-  const [activeTabId, setActiveTabId] = React.useState("first");
+  const [checked, setChecked] = React.useState(false);
+  const [activeTabId, setActiveTabId] = React.useState(
+    "first"
+  );
   
+  const [
+    currentPageIndex,
+    setCurrentPageIndex
+  ] = React.useState(1);
+  // Fetch products data from Redux store
   const products = useSelector((state) => state.products.products);
-   const dispatch = useDispatch();
+
+  const dispatch = useDispatch();
 console.log("pro",products)
 const { data = [], status } = products;
 console.log("data",data)
-  // Fetch products when component mounts
-  useEffect(() => {
-    dispatch(fetchProducts()
-  );
-  }, [dispatch]);
+ // Fetch products when component mounts
+ useEffect(() => {
+   dispatch(fetchProducts()
+ );
+ }, [dispatch]);
 
   // Check if products is an array and has elements
   if (status === "LOADING") {
@@ -52,17 +59,17 @@ console.log("data",data)
     );
   }
 
-  // const filteredProducts = products.data && products.data.length > 0
-  // ? products.data.filter((product) =>
-  //     product.name.toLowerCase().includes(filteringText.toLowerCase())
-  //   )
-  // : [];
-  // console.log("filtered",filteredProducts)
-  
-  // // Determine the color based on the stock alert value
-  // const getStockAlertColor = (stockAlert) => {
-  //   return stockAlert.toLowerCase().includes("low") ? "red" : "#0492C2";
-  // };
+
+
+  // Filter products based on the filteringText
+  const filteredProducts = data.items.filter((product) =>
+    product.name.toLowerCase().includes(filteringText.toLowerCase())
+  );
+
+  // Determine the color based on the stock alert value
+  const getStockAlertColor = (stockAlert) => {
+    return stockAlert.toLowerCase().includes("low") ? "red" : "#0492C2";
+  };
 
   // Open drawer with product details
   const handleProductClick = (product) => {
@@ -81,8 +88,9 @@ console.log("data",data)
       <div className="flex flex-col gap-3">
         <BreadcrumbGroup
           items={[
-            { text: "Dashboard", href: "#" },
-            { text: "Inventory", href: "#components" },
+            { text: "Dashboard", href: "/app/dashboard" },
+            { text: "Inventory", href: "/app/inventory" },
+            { text: "Items", href: "/app/inventory" },
           ]}
           ariaLabel="Breadcrumbs"
         />
@@ -107,8 +115,8 @@ console.log("data",data)
             filteringAriaLabel="Filter instances"
             onChange={({ detail }) => setFilteringText(detail.filteringText)}
           />
-          <Button href="/app/Inventory/addItem">Add Item</Button>
-          <Button iconName="add-plus" variant="primary">
+<Button href="/app/Inventory/addItem">Add Item</Button>
+<Button iconName="add-plus" variant="primary">
             Reorder
           </Button>
         </div>
@@ -119,6 +127,7 @@ console.log("data",data)
             gridTemplateColumns: "repeat(5, 1fr)",
             gap: "10px",
             marginTop: "20px",
+            alignItems:"end"
           }}
         >
           <div
@@ -177,6 +186,14 @@ console.log("data",data)
               <b>Expired</b>
             </Container>
           </div>
+          <div style={{}}>
+          <Pagination
+      currentPageIndex={currentPageIndex}
+      onChange={({ detail }) =>
+        setCurrentPageIndex(detail.currentPageIndex)
+      }
+      pagesCount={5}
+    /></div>
         </div>
       </div>
       <div style={{ marginTop: "15px" }}>
@@ -226,16 +243,17 @@ console.log("data",data)
               header: "Quantity on Hand",
               cell: (e) => e.stockQuantity,
             },
-            // {
-            //   sortingField: "stockAlert",
-            //   id: "stockAlert",
-            //   header: "Stock Alert",
-            //   cell: (e) => (
-            //     <span style={{ color: getStockAlertColor(e.stockAlert) }}>
-            //       {e.stockAlert}
-            //     </span>
-            //   ),
-            // },
+            {
+              sortingField: "stockAlert",
+              id: "stockAlert",
+              header: "Stock Alert",
+              cell: (e) => (
+                <span style={{ color: getStockAlertColor("Available") }}>
+              "Available"
+                 
+                </span>
+              ),
+            },
             {
               sortingField: "purchasingPrice",
               id: "purchasingPrice",
@@ -255,22 +273,16 @@ console.log("data",data)
               cell: (e) => (
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <Toggle
-                    onChange={({ detail }) =>
-                      dispatch(toggleStatus({ itemCode: e.itemCode }))
-                    }
-                    checked={e.status === "Active"}
+                    onChange={() => dispatch(toggleStatus({ itemCode: e.itemCode }))}
+                    checked={"Active"}
                   />
-                  <span
-                    style={{
-                      marginLeft: "10px",
-                      color: e.status === "Inactive" ? "gray" : "black",
-                    }}
-                  >
-                    {e.status === "Inactive" ? "Inactive" : "Active"}
+                  <span style={{ marginLeft: "10px", color: e.status === "Inactive" ? "gray" : "black" }}>
+                    {"Active"}
                   </span>
                 </div>
               ),
-            },
+            }
+            
           ]}
           columnDisplay={[
             { id: "itemCode", visible: true },
@@ -282,76 +294,126 @@ console.log("data",data)
             { id: "msp", visible: true },
             { id: "status", visible: true },
           ]}
-          items={data.items} // Display filtered products
+          enableKeyboardNavigation
+          items={filteredProducts}
           loadingText="Loading resources"
-          sortingDisabled
           trackBy="itemCode"
-          visibleColumns={[
-            "itemCode",
-            "name",
-            "category",
-            "quantityOnHand",
-            "stockAlert",
-            "purchasingPrice",
-            "msp",
-            "status",
-          ]}
           empty={
             <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
-              <b>No Products</b>
-              <Box padding={{ bottom: "s" }} variant="p" color="inherit">
-                No products found.
-              </Box>
+              <SpaceBetween size="m">
+                <b>No resources</b>
+                <Button>Create resource</Button>
+              </SpaceBetween>
             </Box>
-          }
-          header={
-            <Header
-              variant="h2"
-              description="All the products in the inventory"
-            >
-              Product Inventory
-            </Header>
           }
         />
       </div>
-
-      {/* Drawer for product details */}
       {isDrawerOpen && selectedProduct && (
-        <Drawer
-          size="medium"
-          closeable={true}
-          onDismiss={handleCloseDrawer}
-          header={
-            <Header variant="h2">{selectedProduct.name}</Header>
-          }
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            right: 0,
+            height: "100%",
+            width: "65%",
+            backgroundColor: "white",
+            boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.5)",
+            zIndex: 1000,
+            overflowY: "auto",
+            color: "red",
+          }}
         >
-          <Tabs
-            activeTabId={activeTabId}
-            onChange={({ detail }) => setActiveTabId(detail.activeTabId)}
-            tabs={[
-              {
-                label: "Overview",
-                id: "first",
-                content: <Overview product={selectedProduct} />,
-              },
-              {
-                label: "Order History",
-                id: "second",
-                content: <OrderHistory product={selectedProduct} />,
-              },
-              {
-                label: "Movement",
-                id: "third",
-                content: <Movement product={selectedProduct} />,
-              },
-              {
-                label: "Item Vendor",
-                id: "fourth",
-                content: <ItemVendor product={selectedProduct} />,
-              },
-            ]}
-          />
-        </Drawer>
+          <Box
+            padding={{ left: "m", right: "m", top: "s", bottom: "s" }}
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            backgroundColor="lightgrey"
+          >
+            <div style={{display:"flex",justifyContent:"end"}}>
+           <Button
+          iconName="close"
+          variant="icon"
+          onClick={handleCloseDrawer}
+        /></div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <h1 style={{ color: "#0972D3" }}>{selectedProduct.name}<br /><p style={{color:"black", fontSize:"large",paddingTop:"15px"}}>Stock : {selectedProduct.quantityOnHand}Kg 
+                &nbsp;&nbsp;<h7 style={{fontSize:"10px"}}>{selectedProduct.stockAlert === "Low Stock" ? <StatusIndicator type="warning" size="small">{selectedProduct.stockAlert}</StatusIndicator> : <span style={{fontSize:"medium",color:"#0972D3"}}>{selectedProduct.stockAlert}</span>}</h7> </p></h1>
+              
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
+                <Toggle
+                  onChange={({ detail }) => setChecked(detail.checked)}
+                  checked={checked}
+                  style={{ marginRight: "10px" }}
+                >
+                  Active
+                </Toggle>
+                <ButtonDropdown
+      items={[
+        {
+          text: "Reorder",
+          id: "reorder"
+        },
+        {
+          text: "Transfer Item",
+          id: "transferItem"
+        },
+        {
+          text: "Clone Item",
+          id: "cloneItem"
+        },
+        {
+          text: "Delete Item",
+          id: "deleteItem"
+        }
+      ]}
+      variant="primary"
+    >
+      Action
+    </ButtonDropdown>
+              </div>
+            </div>
+            
+              <Tabs
+          
+      onChange={({ detail }) =>
+        setActiveTabId(detail.activeTabId)
+      }
+      activeTabId={activeTabId}
+      tabs={[
+        {
+          label: "Overview",
+          id: "first",
+          content: <Overview selectedProduct={selectedProduct}/>
+        },
+        {
+          label: "Order History",
+          id: "second",
+          content: <OrderHistory/>
+        },
+        {
+          label: "Movement History",
+          id: "third",
+          content: <Movement/>
+        },
+        {
+          label: "Item-Vendor",
+          id: "fourth",
+          content: <ItemVendor/>
+        }
+      ]}
+    />
+          </Box>
+          
+        </div>
       )}
     </div>
   );

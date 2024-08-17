@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useDispatch } from "react-redux";
 import {
-
   Textarea,
   Icon,
   Container,
@@ -17,7 +16,7 @@ import {
   BreadcrumbGroup,
   FormField,
 } from "@cloudscape-design/components";
-import { addProduct } from "Redux-Store/Products/ProductThunk";
+import { addProduct,uploadImage} from "Redux-Store/Products/ProductThunk";
 import UploadImage from "../../../../assets/img/UploadImage.png";
 import upload2 from "../../../../assets/img/upload2.png";
 
@@ -39,14 +38,39 @@ const AddItem = () => {
   const [expiryDate, setExpiryDate] = React.useState("");
   const [imageUrl1, setImageUrl1] = React.useState("");
   const [imageUrl2, setImageUrl2] = React.useState("");
-
+  const [store, setStore] = React.useState("");
+  const [imageFile1, setImageFile1] = React.useState(null); // State to store the first file
+const [imageUrl,setImageUrl] = React.useState(null)
   // Handle first image upload
   const handleImageUpload1 = async (event) => {
     const file = event.target.files[0];
+
     if (file) {
-      // Mocking image upload - in a real scenario, you would upload the image to a server or cloud storage
-      const uploadedImageUrl = URL.createObjectURL(file); // This is a placeholder. Replace with actual upload logic
-      setImageUrl1(uploadedImageUrl);
+      const fileName = encodeURIComponent(file.name);
+      try {
+        const response = await fetch(
+          `https://lou294nkli.execute-api.us-east-1.amazonaws.com/uploadUrl?fileName=${fileName}`
+        );
+        const { uploadUrl } = await response.json();
+        // console.log("response", response.json());
+        console.log("url", uploadUrl.split("?")[0]);
+        const finalUrl = uploadUrl.split("?")[0]; 
+        setImageUrl(finalUrl)
+        const uploadResponse = await fetch(uploadUrl, {
+          method: "PUT",
+          body: file,
+        });
+
+        if (uploadResponse.ok) {
+          console.log("File uploaded successfully.");
+          setImageUrl1(finalUrl)
+          
+        } else {
+          console.error("Failed to upload the file.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     }
   };
 
@@ -65,7 +89,14 @@ const AddItem = () => {
     const formattedExpiryDate = expiryDate
       ? new Date(expiryDate).toISOString()
       : null;
-
+      if (imageFile1) {
+        const fileName = imageFile1.name;
+        dispatch(uploadImage({
+          fileName: fileName,  // Use the extracted fileName here
+          fileType: imageFile1.type,
+          file: imageFile1,
+        }));
+      }
     const formData = {
       name,
       description,
@@ -75,7 +106,7 @@ const AddItem = () => {
       msp: Number(msp),
       stockQuantity: Number(stockQuantity),
       expiry: formattedExpiryDate,
-      images: [imageUrl1, imageUrl2].filter(Boolean), // send both uploaded image URLs
+      images: [imageUrl].filter(Boolean), // send both uploaded image URLs
     };
 
     console.log("Form Data:", JSON.stringify(formData, null, 2));
@@ -163,18 +194,29 @@ const AddItem = () => {
                     <div style={{ width: "160px" }}>
                       <FormField label="Units">
                         <Select
+                        placeholder="Select units"
                           selectedOption={selectedUnits}
                           onChange={({ detail }) =>
                             setSelectedUnits(detail.selectedOption)
                           }
                           options={[
-                            { label: "KG", value: "500kg" },
-                            { label: "PIECE", value: "piece" },
+                            { label: "PIECE", value: "pieces" },
+                            { label: "GRAMS", value: "grams" },
                           ]}
                         />
                       </FormField>
                     </div>
                   </div>
+                  <FormField label="Quantity In Stock">
+                    <Input
+                      size="xs"
+                      placeholder="Quantity available in stock"
+                      value={stockQuantity}
+                      onChange={({ detail }) =>
+                        setStockQuantity(detail.value)
+                      }
+                    />
+                  </FormField>
                   <div style={{ display: "flex", gap: "15px" }}>
                     <FormField label="Purchasing Price">
                       <Input
@@ -197,16 +239,7 @@ const AddItem = () => {
                       />
                     </FormField>
                   </div>
-                  <FormField label="Quantity In Stock">
-                    <Input
-                      size="xs"
-                      placeholder="Quantity available in stock"
-                      value={stockQuantity}
-                      onChange={({ detail }) =>
-                        setStockQuantity(detail.value)
-                      }
-                    />
-                  </FormField>
+               
                   <div style={{ marginBottom: 0 }}>
                     <Toggle
                       onChange={({ detail }) => setQuantityOnHand(detail.checked)}
@@ -220,9 +253,10 @@ const AddItem = () => {
                       <div style={{ width: "200px" }}>
                         <FormField label="Quantity In Stock">
                           <Select
-                            // selectedOption={selectedCategory} // Example, replace with relevant state
+                          value={store}
+                            selectedOption={store} // Example, replace with relevant state
                             onChange={({ detail }) =>
-                              setQuantityOnHand(detail.selectedOption)
+                              setStore(detail.selectedOption)
                             }
                             options={[
                               { label: "GIRDHARI", value: "girdhari" },

@@ -6,6 +6,7 @@ import {
   Header,
 } from "@cloudscape-design/components";
 import BarChart from "@cloudscape-design/components/bar-chart";
+import uploadImage from "../../../../assets/img/UploadImage.png";
 
 const Overview = ({ selectedProduct }) => {
   if (!selectedProduct) {
@@ -128,31 +129,31 @@ const Overview = ({ selectedProduct }) => {
         </ColumnLayout>
         </div>
         <div style={{borderRadius:"10px",backgroundColor:"#E9EBED",height:"45vh",padding:"15px"}}>
-        <div style={{ width: "228px", height: "250px" }}>
-            <div> 
+        
+          <div>
               <img
-                style={{border: "1px solid #D9D9D9" }}
+                style={{border: "1px solid #D9D9D9" ,width:"228px",height:"250px"}}
                 src={selectedProduct.images[0]}
                 alt="product"
                 height="full"
                 width="full"
-              ></img>
-            </div>
+              ></img></div>
             <div style={{ display: "flex", gap: "15px", paddingTop: "7px" }}>
-              <div style={{ border: "1px solid #D9D9D9", borderRadius: "10px",height: "42px", width: "48px" }}>
+              <div style={{ border: "1px solid #D9D9D9", borderRadius: "10px",height: "37px", width: "50px"   }}>
                 <img
-                  style={{ borderRadius: "10px",  }}
-                  src={selectedProduct.imageUrl}
+                  style={{ borderRadius: "10px",height: "37px", width: "50px"  }}
+                  src={selectedProduct.images[1]}
+                  // src={uploadImage}
                   alt="product"
                   height="full"
                   width="full"
                 ></img>
               </div>
-              <div style={{marginTop:"8px"}}>
+               <div style={{marginTop:"5px"}}>
               <Button iconName="add-plus" variant="primary">
       
     </Button>
-              </div>
+              
             </div>
         </div>
         </div>

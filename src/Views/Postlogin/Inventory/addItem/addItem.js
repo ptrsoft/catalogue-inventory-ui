@@ -16,10 +16,10 @@ import {
   BreadcrumbGroup,
   FormField,
 } from "@cloudscape-design/components";
-import { addProduct,uploadImage} from "Redux-Store/Products/ProductThunk";
+import { addProduct, uploadImage } from "Redux-Store/Products/ProductThunk";
 import UploadImage from "../../../../assets/img/UploadImage.png";
 import upload2 from "../../../../assets/img/upload2.png";
-
+import upload3 from "../../../../assets/img/upload3.png"
 const AddItem = () => {
   // Form state
   const dispatch = useDispatch();
@@ -38,9 +38,9 @@ const AddItem = () => {
   const [expiryDate, setExpiryDate] = React.useState("");
   const [imageUrl1, setImageUrl1] = React.useState("");
   const [imageUrl2, setImageUrl2] = React.useState("");
+  const [imageUrl3, setImageUrl3] = React.useState("");
   const [store, setStore] = React.useState("");
-  const [imageFile1, setImageFile1] = React.useState(null); // State to store the first file
-const [imageUrl,setImageUrl] = React.useState(null)
+
   // Handle first image upload
   const handleImageUpload1 = async (event) => {
     const file = event.target.files[0];
@@ -54,8 +54,7 @@ const [imageUrl,setImageUrl] = React.useState(null)
         const { uploadUrl } = await response.json();
         // console.log("response", response.json());
         console.log("url", uploadUrl.split("?")[0]);
-        const finalUrl = uploadUrl.split("?")[0]; 
-        setImageUrl(finalUrl)
+        const finalUrl = uploadUrl.split("?")[0];
         const uploadResponse = await fetch(uploadUrl, {
           method: "PUT",
           body: file,
@@ -63,7 +62,7 @@ const [imageUrl,setImageUrl] = React.useState(null)
 
         if (uploadResponse.ok) {
           console.log("File uploaded successfully.");
-          setImageUrl1(finalUrl)
+          setImageUrl1(finalUrl);
           
         } else {
           console.error("Failed to upload the file.");
@@ -77,26 +76,68 @@ const [imageUrl,setImageUrl] = React.useState(null)
   // Handle second image upload
   const handleImageUpload2 = async (event) => {
     const file = event.target.files[0];
+
     if (file) {
-      // Mocking image upload - in a real scenario, you would upload the image to a server or cloud storage
-      const uploadedImageUrl = URL.createObjectURL(file); // This is a placeholder. Replace with actual upload logic
-      setImageUrl2(uploadedImageUrl);
+      const fileName = encodeURIComponent(file.name);
+      try {
+        const response = await fetch(
+          `https://lou294nkli.execute-api.us-east-1.amazonaws.com/uploadUrl?fileName=${fileName}`
+        );
+        const { uploadUrl } = await response.json();
+        // console.log("response", response.json());
+        console.log("url", uploadUrl.split("?")[0]);
+        const finalUrl = uploadUrl.split("?")[0];
+        const uploadResponse = await fetch(uploadUrl, {
+          method: "PUT",
+          body: file,
+        });
+
+        if (uploadResponse.ok) {
+          console.log("File uploaded successfully upload 2.");
+          setImageUrl2(finalUrl);
+        } else {
+          console.error("Failed to upload the file.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     }
   };
+  const handleImageUpload3 = async (event) => {
+    const file = event.target.files[0];
 
+    if (file) {
+      const fileName = encodeURIComponent(file.name);
+      try {
+        const response = await fetch(
+          `https://lou294nkli.execute-api.us-east-1.amazonaws.com/uploadUrl?fileName=${fileName}`
+        );
+        const { uploadUrl } = await response.json();
+        // console.log("response", response.json());
+        console.log("url", uploadUrl.split("?")[0]);
+        const finalUrl = uploadUrl.split("?")[0];
+        const uploadResponse = await fetch(uploadUrl, {
+          method: "PUT",
+          body: file,
+        });
+
+        if (uploadResponse.ok) {
+          console.log("File uploaded successfully upload3.");
+          setImageUrl3(finalUrl);
+        } else {
+          console.error("Failed to upload the file.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  };
   // Handle Save button click
   const handleSave = () => {
     const formattedExpiryDate = expiryDate
       ? new Date(expiryDate).toISOString()
       : null;
-      if (imageFile1) {
-        const fileName = imageFile1.name;
-        dispatch(uploadImage({
-          fileName: fileName,  // Use the extracted fileName here
-          fileType: imageFile1.type,
-          file: imageFile1,
-        }));
-      }
+
     const formData = {
       name,
       description,
@@ -106,7 +147,7 @@ const [imageUrl,setImageUrl] = React.useState(null)
       msp: Number(msp),
       stockQuantity: Number(stockQuantity),
       expiry: formattedExpiryDate,
-      images: [imageUrl].filter(Boolean), // send both uploaded image URLs
+      images: [imageUrl1, imageUrl2, imageUrl3], // send both uploaded image URLs
     };
 
     console.log("Form Data:", JSON.stringify(formData, null, 2));
@@ -194,7 +235,7 @@ const [imageUrl,setImageUrl] = React.useState(null)
                     <div style={{ width: "160px" }}>
                       <FormField label="Units">
                         <Select
-                        placeholder="Select Unit"
+                          placeholder="Select Unit"
                           selectedOption={selectedUnits}
                           onChange={({ detail }) =>
                             setSelectedUnits(detail.selectedOption)
@@ -212,9 +253,7 @@ const [imageUrl,setImageUrl] = React.useState(null)
                       size="xs"
                       placeholder="Quantity available in stock"
                       value={stockQuantity}
-                      onChange={({ detail }) =>
-                        setStockQuantity(detail.value)
-                      }
+                      onChange={({ detail }) => setStockQuantity(detail.value)}
                     />
                   </FormField>
                   <div style={{ display: "flex", gap: "15px" }}>
@@ -233,16 +272,16 @@ const [imageUrl,setImageUrl] = React.useState(null)
                         size="3xs"
                         placeholder="Min Selling Price"
                         value={msp}
-                        onChange={({ detail }) =>
-                          setMsp(detail.value)
-                        }
+                        onChange={({ detail }) => setMsp(detail.value)}
                       />
                     </FormField>
                   </div>
-               
+
                   <div style={{ marginBottom: 0 }}>
                     <Toggle
-                      onChange={({ detail }) => setQuantityOnHand(detail.checked)}
+                      onChange={({ detail }) =>
+                        setQuantityOnHand(detail.checked)
+                      }
                       checked={quantityOnHand}
                     >
                       Quantity on hand
@@ -253,7 +292,7 @@ const [imageUrl,setImageUrl] = React.useState(null)
                       <div style={{ width: "200px" }}>
                         <FormField label="Quantity In Stock">
                           <Select
-                          value={store}
+                            value={store}
                             selectedOption={store} // Example, replace with relevant state
                             onChange={({ detail }) =>
                               setStore(detail.selectedOption)
@@ -271,9 +310,7 @@ const [imageUrl,setImageUrl] = React.useState(null)
                             size="3xs"
                             placeholder="Enter Quantity"
                             value={quantity}
-                            onChange={({ detail }) =>
-                              setQuantity(detail.value)
-                            }
+                            onChange={({ detail }) => setQuantity(detail.value)}
                           />
                         </FormField>
                         <div style={{ paddingTop: "30px" }}>
@@ -288,9 +325,7 @@ const [imageUrl,setImageUrl] = React.useState(null)
                 <FormField label="Product Description">
                   <Textarea
                     rows={5}
-                    onChange={({ detail }) =>
-                      setDescription(detail.value)
-                    }
+                    onChange={({ detail }) => setDescription(detail.value)}
                     value={description}
                   />
                 </FormField>
@@ -311,9 +346,7 @@ const [imageUrl,setImageUrl] = React.useState(null)
                 )}
                 <Checkbox
                   checked={keepInformed}
-                  onChange={({ detail }) =>
-                    setKeepInformed(detail.checked)
-                  }
+                  onChange={({ detail }) => setKeepInformed(detail.checked)}
                 >
                   Keep me informed about stock updates for this item.
                 </Checkbox>
@@ -352,36 +385,59 @@ const [imageUrl,setImageUrl] = React.useState(null)
                   onChange={handleImageUpload1}
                 />
               </div>
-              <div style={{display:"flex",gap:"30px",paddingLeft:"20px"}}>
-                <label htmlFor="upload-button-2">
-                  <img
-                    src={imageUrl2 || upload2}
-                    alt="Upload"
-                    style={{
-                      marginTop: "20px",
-                      width: "100px",
-                      height: "100px",
-                      cursor: "pointer",
-                    }}
+              <div
+                style={{ display: "flex", gap: "30px", paddingLeft: "20px" }}
+              >
+                <div>
+                  <label htmlFor="upload-button-2">
+                    <img
+                      src={imageUrl2 || upload2}
+                      alt="Upload"
+                      style={{
+                        marginTop: "20px",
+                        width: "100px",
+                        height: "100px",
+                        cursor: "pointer",
+                      }}
+                    />
+                  </label>
+                  <input
+                    type="file"
+                    id="upload-button-2"
+                    style={{ display: "none" }}
+                    onChange={handleImageUpload2}
                   />
-                </label>
-                <input
-                  type="file"
-                  id="upload-button-2"
-              style={{ display: "none" }}
-                  onChange={handleImageUpload2}
-                />
+                </div>
                 <div
-                style={{
-                  border: "1px dashed gray",
-                  width: "120px",
-                  height: "100px",
-                  borderRadius: "8px",
-                  marginTop:"20px"
-                }}
-              ></div>
+                    style={{
+                      cursor: "pointer",
+                      border: "1px dashed gray",
+                      width: "120px",
+                      height: "100px",
+                      borderRadius: "8px",
+                      marginTop: "20px",
+                    }}
+                    >
+                  <label htmlFor="upload-button-3">
+                    <img
+                    style={{
+                      height: "98px",
+                      borderRadius: "8px",
+                    }}
+                      src={imageUrl3 || upload3}
+                      alt=""
+                       height="full"
+                       width="full"
+                    />
+                  </label>
+                  <input
+                    type="file"
+                    id="upload-button-3"
+                    style={{ display: "none" }}
+                    onChange={handleImageUpload3}
+                  />
+                </div>
               </div>
-              
             </div>
           </Container>
         </div>

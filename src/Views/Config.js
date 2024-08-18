@@ -3,6 +3,7 @@ const BASE_URL = "https://lou294nkli.execute-api.us-east-1.amazonaws.com";
 const Config = {
   BASE_URL,
   ADD_ITEM:`${BASE_URL}/inventory`,
+  PUT_ACTIVE_INACTIVE:`${BASE_URL}/inventory/status`,
   GET_PRESIGNED_URL:`${BASE_URL}/uploadUrl`,
   FETCH_QUOTATIONS: `${BASE_URL}/users`,
   FINISH_PRODUCT_SPECIFICATIONS: `${BASE_URL}/users`,

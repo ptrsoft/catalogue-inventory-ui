@@ -8,39 +8,40 @@ import TextFilter from "@cloudscape-design/components/text-filter";
 import Header from "@cloudscape-design/components/header";
 import Container from "@cloudscape-design/components/container";
 import Toggle from "@cloudscape-design/components/toggle";
-import { toggleStatus } from "Redux-Store/Products/ProductsSlice";
-import { fetchProducts } from "Redux-Store/Products/ProductThunk"; // Import the fetchProducts thunk
+import { fetchProducts, PutToggle } from "Redux-Store/Products/ProductThunk"; // Import the fetchProducts thunk
 import Tabs from "@cloudscape-design/components/tabs";
 import Overview from "./drawerTabs/overview";
 import OrderHistory from "./drawerTabs/orderHistory";
 import Movement from "./drawerTabs/movement";
 import ItemVendor from "./drawerTabs/itemVendor";
-import { SpaceBetween,StatusIndicator,ButtonDropdown,Pagination} from "@cloudscape-design/components";
+
+import {
+  SpaceBetween,
+  StatusIndicator,
+  ButtonDropdown,
+  Pagination,
+} from "@cloudscape-design/components";
 const Inventory = () => {
   const [filteringText, setFilteringText] = React.useState("");
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
   const [checked, setChecked] = React.useState(false);
-  const [activeTabId, setActiveTabId] = React.useState(
-    "first"
-  );
-  
-  const [
-    currentPageIndex,
-    setCurrentPageIndex
-  ] = React.useState(1);
+  const [activeTabId, setActiveTabId] = React.useState("first");
+
+  const [currentPageIndex, setCurrentPageIndex] = React.useState(1);
   // Fetch products data from Redux store
   const products = useSelector((state) => state.products.products);
 
   const dispatch = useDispatch();
-console.log("pro",products)
-const { data = [], status } = products;
-console.log("data",data)
- // Fetch products when component mounts
- useEffect(() => {
-   dispatch(fetchProducts()
- );
- }, [dispatch]);
+  console.log("pro", products);
+  const { data = [], status } = products;
+  console.log("data", data);
+  const key = data.nextKey;
+  console.log("key", key);
+  // Fetch products when component mounts
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   // Check if products is an array and has elements
   if (status === "LOADING") {
@@ -50,6 +51,22 @@ console.log("data",data)
       </Box>
     );
   }
+  const handleToggleChange = (item) => {
+    const newStatus = !item.active;
+    dispatch(PutToggle({ id: item.id, active: newStatus })).then((response) => {
+      if (
+        response.meta.requestStatus === "fulfilled" &&
+        response.payload.status === 200
+      ) {
+        // Update the local state and Redux store only if the request was successful
+        dispatch(fetchProducts());
+        
+      } else {
+        // Revert back to the original state if the request fails
+        dispatch(fetchProducts());
+      }
+    });
+  };
 
   if (status === "ERROR") {
     return (
@@ -59,14 +76,12 @@ console.log("data",data)
     );
   }
 
-
-
   // Filter products based on the filteringText
   const filteredProducts = Array.isArray(data?.items)
-  ? data.items.filter((product) =>
-      product.name.toLowerCase().includes(filteringText.toLowerCase())
-    )
-  : [];
+    ? data.items.filter((product) =>
+        product.name.toLowerCase().includes(filteringText.toLowerCase())
+      )
+    : [];
   // Determine the color based on the stock alert value
   const getStockAlertColor = (stockAlert) => {
     return stockAlert.toLowerCase().includes("low") ? "red" : "#0492C2";
@@ -116,8 +131,8 @@ console.log("data",data)
             filteringAriaLabel="Filter instances"
             onChange={({ detail }) => setFilteringText(detail.filteringText)}
           />
-<Button href="/app/Inventory/addItem">Add Item</Button>
-<Button iconName="add-plus" variant="primary">
+          <Button href="/app/Inventory/addItem">Add Item</Button>
+          <Button iconName="add-plus" variant="primary">
             Reorder
           </Button>
         </div>
@@ -128,7 +143,7 @@ console.log("data",data)
             gridTemplateColumns: "repeat(5, 1fr)",
             gap: "10px",
             marginTop: "20px",
-            alignItems:"end"
+            alignItems: "end",
           }}
         >
           <div
@@ -188,13 +203,14 @@ console.log("data",data)
             </Container>
           </div>
           <div style={{}}>
-          <Pagination
-      currentPageIndex={currentPageIndex}
-      onChange={({ detail }) =>
-        setCurrentPageIndex(detail.currentPageIndex)
-      }
-      pagesCount={5}
-    /></div>
+            <Pagination
+              currentPageIndex={currentPageIndex}
+              onChange={({ detail }) =>
+                setCurrentPageIndex(detail.currentPageIndex)
+              }
+              pagesCount={5}
+            />
+          </div>
         </div>
       </div>
       <div style={{ marginTop: "15px" }}>
@@ -220,7 +236,7 @@ console.log("data",data)
                   onClick={() => handleProductClick(e)}
                 >
                   <img
-                    src={e.images}
+                    src={e.images[0]}
                     alt={e.name}
                     style={{
                       width: "30px",
@@ -250,8 +266,7 @@ console.log("data",data)
               header: "Stock Alert",
               cell: (e) => (
                 <span style={{ color: getStockAlertColor("Available") }}>
-              "Available"
-                 
+                  "Available"
                 </span>
               ),
             },
@@ -272,18 +287,22 @@ console.log("data",data)
               id: "status",
               header: "Status",
               cell: (e) => (
-                <div style={{ display: "flex", alignItems: "center" }}>
+                <div style={{ display: "flex" }}>
                   <Toggle
-                    onChange={() => dispatch(toggleStatus({ itemCode: e.itemCode }))}
-                    checked={"Active"}
-                  />
-                  <span style={{ marginLeft: "10px", color: e.status === "Inactive" ? "gray" : "black" }}>
-                    {"Active"}
-                  </span>
+                    onChange={() => handleToggleChange(e)}
+                    checked={e.active}
+                  >
+                    {e.active ? "Active" : "Inactive"}
+                  </Toggle>
+                  <span
+                    style={{
+                      marginLeft: "10px",
+                      color: e.status === "Inactive" ? "gray" : "black",
+                    }}
+                  ></span>
                 </div>
               ),
-            }
-            
+            },
           ]}
           columnDisplay={[
             { id: "itemCode", visible: true },
@@ -331,12 +350,13 @@ console.log("data",data)
             justifyContent="space-between"
             backgroundColor="lightgrey"
           >
-            <div style={{display:"flex",justifyContent:"end"}}>
-           <Button
-          iconName="close"
-          variant="icon"
-          onClick={handleCloseDrawer}
-        /></div>
+            <div style={{ display: "flex", justifyContent: "end" }}>
+              <Button
+                iconName="close"
+                variant="icon"
+                onClick={handleCloseDrawer}
+              />
+            </div>
             <div
               style={{
                 display: "flex",
@@ -344,76 +364,95 @@ console.log("data",data)
                 alignItems: "center",
               }}
             >
-              <h1 style={{ color: "#0972D3" }}>{selectedProduct.name}<br /><p style={{color:"black", fontSize:"large",paddingTop:"15px"}}>Stock : {selectedProduct.quantityOnHand}Kg 
-                &nbsp;&nbsp;<h7 style={{fontSize:"10px"}}>{selectedProduct.stockAlert === "Low Stock" ? <StatusIndicator type="warning" size="small">{selectedProduct.stockAlert}</StatusIndicator> : <span style={{fontSize:"medium",color:"#0972D3"}}>{selectedProduct.stockAlert}</span>}</h7> </p></h1>
-              
+              <h1 style={{ color: "#0972D3" }}>
+                {selectedProduct.name}
+                <br />
+                <p
+                  style={{
+                    color: "black",
+                    fontSize: "large",
+                    paddingTop: "15px",
+                  }}
+                >
+                  Stock : {selectedProduct.stockQuantity}Kg &nbsp;&nbsp;
+                  <h7 style={{ fontSize: "10px" }}>
+                    {selectedProduct.stockAlert === "Low Stock" ? (
+                      <StatusIndicator type="warning" size="small">
+                        {selectedProduct.stockAlert}
+                      </StatusIndicator>
+                    ) : (
+                      <span style={{ fontSize: "medium", color: "#0972D3" }}>
+                        {selectedProduct.stockAlert}
+                      </span>
+                    )}
+                  </h7>{" "}
+                </p>
+              </h1>
+
               <div
                 style={{ display: "flex", alignItems: "center", gap: "12px" }}
               >
                 <Toggle
-                  onChange={({ detail }) => setChecked(detail.checked)}
-                  checked={checked}
+                  onChange={() => handleToggleChange(selectedProduct)}
+                  checked={selectedProduct.active}
+                
                   style={{ marginRight: "10px" }}
                 >
-                  Active
+                  {selectedProduct.active ? "Active" : "Inactive"}
                 </Toggle>
                 <ButtonDropdown
-      items={[
-        {
-          text: "Reorder",
-          id: "reorder"
-        },
-        {
-          text: "Transfer Item",
-          id: "transferItem"
-        },
-        {
-          text: "Clone Item",
-          id: "cloneItem"
-        },
-        {
-          text: "Delete Item",
-          id: "deleteItem"
-        }
-      ]}
-      variant="primary"
-    >
-      Action
-    </ButtonDropdown>
+                  items={[
+                    {
+                      text: "Reorder",
+                      id: "reorder",
+                    },
+                    {
+                      text: "Transfer Item",
+                      id: "transferItem",
+                    },
+                    {
+                      text: "Clone Item",
+                      id: "cloneItem",
+                    },
+                    {
+                      text: "Delete Item",
+                      id: "deleteItem",
+                    },
+                  ]}
+                  variant="primary"
+                >
+                  Action
+                </ButtonDropdown>
               </div>
             </div>
-            
-              <Tabs
-          
-      onChange={({ detail }) =>
-        setActiveTabId(detail.activeTabId)
-      }
-      activeTabId={activeTabId}
-      tabs={[
-        {
-          label: "Overview",
-          id: "first",
-          content: <Overview selectedProduct={selectedProduct}/>
-        },
-        {
-          label: "Order History",
-          id: "second",
-          content: <OrderHistory/>
-        },
-        {
-          label: "Movement History",
-          id: "third",
-          content: <Movement/>
-        },
-        {
-          label: "Item-Vendor",
-          id: "fourth",
-          content: <ItemVendor/>
-        }
-      ]}
-    />
+
+            <Tabs
+              onChange={({ detail }) => setActiveTabId(detail.activeTabId)}
+              activeTabId={activeTabId}
+              tabs={[
+                {
+                  label: "Overview",
+                  id: "first",
+                  content: <Overview selectedProduct={selectedProduct} />,
+                },
+                {
+                  label: "Order History",
+                  id: "second",
+                  content: <OrderHistory />,
+                },
+                {
+                  label: "Movement History",
+                  id: "third",
+                  content: <Movement />,
+                },
+                {
+                  label: "Item-Vendor",
+                  id: "fourth",
+                  content: <ItemVendor />,
+                },
+              ]}
+            />
           </Box>
-          
         </div>
       )}
     </div>

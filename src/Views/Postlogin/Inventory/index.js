@@ -25,9 +25,8 @@ const Inventory = () => {
   const [filteringText, setFilteringText] = React.useState("");
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
-  const [checked, setChecked] = React.useState(false);
+  const [checked, setChecked] = React.useState(false); 
   const [activeTabId, setActiveTabId] = React.useState("first");
-
   const [currentPageIndex, setCurrentPageIndex] = React.useState(1);
   // Fetch products data from Redux store
   const products = useSelector((state) => state.products.products);
@@ -89,7 +88,13 @@ const Inventory = () => {
   const getStockAlertColor = (stockAlert) => {
     return stockAlert.toLowerCase().includes("low") ? "red" : "#0492C2";
   };
-
+  const ITEMS_PER_PAGE = 10;
+   // Calculate the items for the current page
+   const startIndex = (currentPageIndex - 1) * ITEMS_PER_PAGE;
+   const endIndex = startIndex + ITEMS_PER_PAGE;
+   const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+ 
+   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   // Open drawer with product details
   const handleProductClick = (product) => {
     setSelectedProduct(product);
@@ -318,7 +323,7 @@ const Inventory = () => {
             { id: "status", visible: true },
           ]}
           enableKeyboardNavigation
-          items={filteredProducts}
+          items={paginatedProducts}
           loadingText="Loading resources"
           trackBy="itemCode"
           empty={

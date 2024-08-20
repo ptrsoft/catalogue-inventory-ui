@@ -17,7 +17,7 @@ import {
   FormField,
   Flashbar
 } from "@cloudscape-design/components";
-import { addProduct, uploadImage } from "Redux-Store/Products/ProductThunk";
+import { addProduct} from "Redux-Store/Products/ProductThunk";
 import UploadImage from "../../../../assets/img/UploadImage.png";
 import upload2 from "../../../../assets/img/upload2.png";
 import upload3 from "../../../../assets/img/upload3.png"
@@ -41,16 +41,8 @@ const AddItem = () => {
   const [imageUrl2, setImageUrl2] = React.useState("");
   const [imageUrl3, setImageUrl3] = React.useState("");
   const [store, setStore] = React.useState("");
-  const [items, setItems] = React.useState([
-    {
-      type: "success",
-      content: "Item added successfully",
-      dismissible: true,
-      dismissLabel: "Dismiss message",
-      onDismiss: () => setItems([]),
-      id: "message_1"
-    }
-  ]);
+  const [items, setItems] = React.useState([]);
+
   // Handle first image upload
   const handleImageUpload1 = async (event) => {
     const file = event.target.files[0];
@@ -165,7 +157,16 @@ const AddItem = () => {
       .unwrap() // optional: unwraps the resolved or rejected action to handle it as a promise
       .then(() => {
         console.log("Item added successfully");
-        <Flashbar items={items} />;
+        setItems([
+          {
+            type: "success",
+            content: "Item added successfully",
+            dismissible: true,
+            dismissLabel: "Dismiss message",
+            onDismiss: () => setItems([]),
+            id: "message_1"
+          }
+        ]);
         setName("");
         setSelectedCategory(null);
         setSelectedUnits(null);
@@ -191,6 +192,7 @@ const AddItem = () => {
 
   return (
     <div>
+            <Flashbar items={items} />
       <div style={{ paddingLeft: "20px" }}>
         <BreadcrumbGroup
           items={[

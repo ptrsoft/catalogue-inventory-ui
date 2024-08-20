@@ -15,6 +15,7 @@ import {
   Checkbox,
   BreadcrumbGroup,
   FormField,
+  Flashbar
 } from "@cloudscape-design/components";
 import { addProduct, uploadImage } from "Redux-Store/Products/ProductThunk";
 import UploadImage from "../../../../assets/img/UploadImage.png";
@@ -40,7 +41,16 @@ const AddItem = () => {
   const [imageUrl2, setImageUrl2] = React.useState("");
   const [imageUrl3, setImageUrl3] = React.useState("");
   const [store, setStore] = React.useState("");
-
+  const [items, setItems] = React.useState([
+    {
+      type: "success",
+      content: "Item added successfully",
+      dismissible: true,
+      dismissLabel: "Dismiss message",
+      onDismiss: () => setItems([]),
+      id: "message_1"
+    }
+  ]);
   // Handle first image upload
   const handleImageUpload1 = async (event) => {
     const file = event.target.files[0];
@@ -155,7 +165,25 @@ const AddItem = () => {
       .unwrap() // optional: unwraps the resolved or rejected action to handle it as a promise
       .then(() => {
         console.log("Item added successfully");
+        <Flashbar items={items} />;
+        setName("");
+        setSelectedCategory(null);
+        setSelectedUnits(null);
+        setPurchasingPrice("");
+        setMsp("");
+        setStockQuantity("");
+        setQuantityOnHand(false);
+        setQuantity("");
+        setDescription("");
+        setAddExpiry(false);
+        setKeepInformed(false);
+        setExpiryDate("");
+        setImageUrl1("");
+        setImageUrl2("");
+        setImageUrl3("");
+        setStore("");
       })
+      
       .catch((error) => {
         console.error("Failed to add item:", error);
       });

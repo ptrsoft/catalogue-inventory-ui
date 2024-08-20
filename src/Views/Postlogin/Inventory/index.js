@@ -60,13 +60,16 @@ const Inventory = () => {
       ) {
         // Update the local state and Redux store only if the request was successful
         dispatch(fetchProducts());
+
         
       } else {
         // Revert back to the original state if the request fails
         dispatch(fetchProducts());
       }
     });
-  };
+  
+  }
+  
 
   if (status === "ERROR") {
     return (
@@ -396,7 +399,10 @@ const Inventory = () => {
                   onChange={() => handleToggleChange(selectedProduct)}
                   checked={selectedProduct.active}
                 
-                  style={{ marginRight: "10px" }}
+                  style={{ marginRight: "10px",
+                    marginLeft: "10px",
+                    color: selectedProduct.status === "Inactive" ? "gray" : "black",
+                  }} 
                 >
                   {selectedProduct.active ? "Active" : "Inactive"}
                 </Toggle>

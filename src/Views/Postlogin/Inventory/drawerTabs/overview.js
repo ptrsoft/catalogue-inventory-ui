@@ -149,10 +149,16 @@ const Overview = ({ selectedProduct }) => {
                   width="full"
                 ></img>
               </div>
-               <div style={{marginTop:"5px"}}>
-              <Button iconName="add-plus" variant="primary">
-      
-    </Button>
+               <div>
+               <div style={{ border: "1px solid #D9D9D9", borderRadius: "10px",height: "37px", width: "50px"   }}>
+                <img
+                  style={{ borderRadius: "10px",height: "37px", width: "50px"  }}
+                  src={selectedProduct.images[2]}
+                  alt="product"
+                  height="full"
+                  width="full"
+                ></img>
+              </div>
               
             </div>
         </div>

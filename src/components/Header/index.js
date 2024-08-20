@@ -1,6 +1,6 @@
 import React from "react";
 import TopNavigation from "@cloudscape-design/components/top-navigation";
-
+import logo from '../../assets/img/logo.png';
 const Header = () => {
   return (
     <TopNavigation
@@ -8,7 +8,7 @@ const Header = () => {
         href: "#",
         title: "Warehouse Management",
         logo: {
-          src: "/logo-small-top-navigation.svg",
+          src: logo,
           alt: "Service"
         }
       }}

@@ -4,6 +4,8 @@ import { PREFIX_APP_PATH, PREFIX_AUTH_PATH } from "./../Config/Config";
 import Inventory from "./Postlogin/Inventory";
 import AddItem from "./Postlogin/Inventory/addItem/addItem";
 import InventoryAdjustments from "./Postlogin/Inventory/InventoryAdjustments";
+import CreateAdjustment from "./Postlogin/Inventory/InventoryAdjustments/CreateAdjustment";
+import NewAdjustment from "./Postlogin/Inventory/InventoryAdjustments/NewAdjustment";
 const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
 
 const Customers = lazy(() => import("./Postlogin/Customers"));
@@ -83,8 +85,18 @@ const Views = () => {
           <Route exact path="/app/inventory" element={<Inventory />} />
           <Route
             exact
-            path="/app/inventory/inventoryAdjustments"
+            path="/app/inventory/adjustments"
             element={<InventoryAdjustments />}
+          />
+           <Route
+            exact
+            path="/app/inventory/create-adjustment"
+            element={<CreateAdjustment />}
+          />  
+          <Route
+            exact
+            path="/app/inventory/new-adjustment"
+            element={<NewAdjustment/>}
           />
           <Route exact path="/app/inventory/addItem" element={<AddItem />} />
           <Route exact path="/" element={<Navigate to="/app/dashboard" />} />

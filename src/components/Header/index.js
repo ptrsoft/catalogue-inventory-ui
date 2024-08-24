@@ -1,25 +1,26 @@
 import React from "react";
 import TopNavigation from "@cloudscape-design/components/top-navigation";
-import logo from '../../assets/img/logo.png';
+import Logo from "../../../src/assets/images/ptrLogo.png"
+import { Input } from "@cloudscape-design/components";
 const Header = () => {
   return (
     <TopNavigation
+    search={
+      <Input
+        type="search"
+        placeholder="Search"
+        ariaLabel="Search"
+      />
+    }
       identity={{
-        href: "#",
-        title: "Warehouse Management",
+        href: "/app/dashboard",
+        title: "Inventory Management",
         logo: {
-          src: logo,
+          src: Logo,
           alt: "Service"
         }
       }}
       utilities={[
-        {
-          type: "button",
-          text: "Link",
-          href: "https://example.com/",
-          external: true,
-          externalIconAriaLabel: " (opens in a new tab)"
-        },
         {
           type: "button",
           iconName: "notification",
@@ -46,8 +47,8 @@ const Header = () => {
         },
         {
           type: "menu-dropdown",
-          text: "Customer Name",
-          description: "email@example.com",
+          text: "Salman Batuwah",
+          description: "salmanbinmoosaptr@gmail.com",
           iconName: "user-profile",
           items: [
             { id: "profile", text: "Profile" },
@@ -83,5 +84,4 @@ const Header = () => {
     />
   );
 };
-
 export default Header;

@@ -9,7 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const pages = [
   {
     path: "/app/dashboard",
-    label: "DashBoard",
+    label: "Dashboard",
     icon: Home,
     iconActive: HomeActive,
   },

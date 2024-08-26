@@ -1,44 +1,66 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, FormField, Input, Container, Header } from "@cloudscape-design/components";
-import { signup } from "Redux-Store/signup/signupThunk";// Adjust the path as necessary
+import {
+  Button,
+  FormField,
+  Input,
+  Container,
+  Header,Flashbar
+} from "@cloudscape-design/components";
+import { resetPassword } from "Redux-Store/newpwd/newPwdThunk";
 
-const SignUp = () => {
-  const [name, setName] = useState("");
-  const [role, setRole] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const NewPassword = () => {
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [localError, setLocalError] = useState("");
   const [items, setItems] = React.useState([]);
-
+ const [confirmationCode,setconfirmationCode]= React.useState([]);
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.signup);
-
+  const { loading, error } = useSelector((state) => state.resetPwd);
+  const email = useSelector((state) => state.forgotPwd.email);
+  // const confirmationCode = useSelector((state) => state.otp.otp);
   const handleSubmit = () => {
-    const params = { name, role, email, password };
-    
-    dispatch(signup(params))
-    .unwrap()
-    .then(() => {
-        console.log("");
-        setEmail("")
+    if (newPassword === confirmPassword) {
+      dispatch(resetPassword({ email, confirmationCode, newPassword },
+        setNewPassword("")),
+        setConfirmPassword(""),
+        setconfirmationCode(""),
         setItems([
           {
             type: "success",
-            content: " Successfully!",
+            content: "Password has been changed Successfully!",
             dismissible: true,
             dismissLabel: "Dismiss message",
             onDismiss: () => setItems([]),
             id: "message_1"
           }
-        ])})
-  
-    console.log(params);
+        ])
+      )
+      console.log(email)
+      console.log(confirmationCode)
+      console.log(newPassword)
+      setLocalError(""); 
+      // Clear local error if passwords match
+    } else {
+      setLocalError("Passwords do not match!"); // Set local error if passwords do not match
+    }
   };
-  
+
+  // Extract the error message if the error is an object
+  const errorMessage = typeof error === "string" ? error : error?.message;
 
   return (
-    <div style={{ position: "relative", minHeight: "100vh" }}>
-      <div style={{ paddingTop: "10vh", display: "flex", justifyContent: "center" }}>
+    <div style={{ paddingTop:"10vh" }}>
+    <Flashbar items={items} />
+
+      <div
+        style={{
+          paddingTop: "10vh",
+          display: "flex",
+          justifyContent: "center",
+          height:"63vh"
+        }}
+      >
         <div
           style={{
             padding: "0 15px",
@@ -59,7 +81,7 @@ const SignUp = () => {
                     justifyContent: "center",
                   }}
                 >
-                  Sign Up!
+                  Create New Password
                 </div>
                 <span
                   style={{
@@ -70,7 +92,7 @@ const SignUp = () => {
                     justifyContent: "center",
                   }}
                 >
-                  Sign up with your email and password.
+                  Create a strong password for your account
                 </span>
               </Header>
             </div>
@@ -81,35 +103,41 @@ const SignUp = () => {
                 handleSubmit();
               }}
             >
-              <FormField label="Name">
+              
+              <FormField label="Enter OTP">
                 <Input
-                  placeholder="Enter your name"
-                  value={name}
-                  onChange={(e) => setName(e.detail.value)}
+                  placeholder="Enter your 6-digit OTP"
+                  value={confirmationCode}
+                  onChange={(e) => setconfirmationCode(e.detail.value)}
+                  maxLength={6}
                 />
               </FormField>
-              <FormField label="Role">
+              <FormField label="Enter New Password">
                 <Input
-                  placeholder="Enter your role"
-                  value={role}
-                  onChange={(e) => setRole(e.detail.value)}
-                />
-              </FormField>
-              <FormField label="Email Address">
-                <Input
-                  placeholder="Enter a valid Email Address"
-                  value={email}
-                  onChange={(e) => setEmail(e.detail.value)}
-                />
-              </FormField>
-              <FormField label="Password">
-                <Input
-                  placeholder="Enter password"
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.detail.value)}
+                  placeholder="New Password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.detail.value)}
                 />
               </FormField>
+              <FormField label="Confirm">
+                <Input
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.detail.value)}
+                />
+              </FormField>
+              {localError && (
+                <div style={{ color: "red", textAlign: "center" }}>
+                  {localError}
+                </div>
+              )}
+              {errorMessage && (
+                <div style={{ color: "red", textAlign: "center" }}>
+                  {errorMessage}
+                </div>
+              )}
               <div
                 style={{
                   display: "flex",
@@ -121,12 +149,13 @@ const SignUp = () => {
                   fullWidth
                   ariaExpanded
                   variant="primary"
-                  onClick={handleSubmit}
-                  disabled={loading} // Disable button while loading
+                  type="submit"
+                  loading={loading}
                 >
-                  {loading ? "Verifying..." : "Verify"}
+                  Create Password
                 </Button>
               </div>
+           
             </form>
           </Container>
         </div>
@@ -175,4 +204,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default NewPassword;

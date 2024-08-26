@@ -1,184 +1,157 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { authSignIn } from "Redux-Store/authenticate/signin/signinThunk";
 import {
-  Container,
-  TextField,
   Button,
-  Typography,
-  Box,
-  Checkbox,
-  Link,
-} from "@mui/material";
-import { withStyles } from "@mui/styles";
-import GoogleIcon from "@mui/icons-material/Google";
-import { ValidationEngine} from "Utils/helperFunctions"; // Import your validation engine and error messages
+  FormField,
+  Input,
+  Container,
+  Header,
+  Flashbar
+} from "@cloudscape-design/components";
 
-const styles = (theme) => ({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100vh",
-    backgroundImage: "url(/path-to-your-background-image.png)", // Ensure your image is in the public folder or use the correct path
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  },
-  box: {
-    backgroundColor: "#fff",
-    padding: "40px",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    textAlign: "center",
-  },
-  input: {
-    margin: "10px 0",
-  },
-  button: {
-    margin: "20px 0",
-  },
-  googleButton: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: "10px 0",
-    textTransform: "none",
-  },
-});
-const validationSchema = {
-  email: [
-    {
-      message: "Please enter Email",
-      type: ValidationEngine.type.MANDATORY,
-    },
-    {
-      message: "Please valid Email",
-      type: ValidationEngine.type.REGEX,
-      regex: ValidationEngine.EMAIL_REGEX,
-    },
-  ],
-  password: [
-    {
-      message: "Please enter Password",
-      type: ValidationEngine.type.MANDATORY,
-    },
-  ],
+const Signin = () => {
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
+  const [items, setItems] = React.useState([]);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = () => {
+    dispatch(authSignIn({ email, password },
+      setItems([
+        {
+          type: "success",
+          content: "Signin Successful!",
+          dismissible: true,
+          dismissLabel: "Dismiss message",
+          onDismiss: () => setItems([]),
+          id: "message_1"
+        }
+      ])
+    ))
+    
+
+  };
+
+  return (
+    <div style={{ paddingTop:"10vh"}}>
+      <Flashbar items={items} />
+      <div
+        style={{
+          paddingTop: "8vh",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            width:"23vw",
+            borderRadius: "10px",
+            backgroundColor: "white",
+            boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
+          }}
+        >
+          <Container variant="borderless">
+            <div
+              style={{
+                marginBottom: "10px",
+                padding: "0 0 0 6%",
+              }}
+            >
+              <Header
+                variant="h3"
+              >
+               <h1 style={{textShadow :"0px 1px, 1px 0px, 1px 1px"}}>Welcome Back!</h1> 
+               <span style={{fontSize:"small",color:"#8B8D97",fontWeight:"lighter",display:"flex",justifyContent:"center"}}>Login to our account</span>
+              </Header>
+            </div>
+            <form
+              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleLogin();
+              }}
+            >
+              <FormField label="Email">
+                <Input
+                  placeholder="Enter Your Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.detail.value)}
+                />
+              </FormField>
+              <FormField label="Password">
+                <Input
+                  type="password"
+                  placeholder="Enter your Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.detail.value)}
+                />
+              </FormField>
+              {error && <p style={{ color: "red" }}>{error.message}</p>}
+              <div style={{ display: "flex", justifyContent: "end" }}>
+                <Button href="/auth/forgot-password" variant="inline-link">
+                  Forgot Password
+                </Button>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  padding: "2vh 2vw 0 2vw",
+                }}
+              >
+                <Button fullWidth ariaExpanded variant="primary" disabled={loading}>
+                  {loading ? "Logging in..." : "Login"}
+                </Button>
+              </div>
+            </form>
+          </Container>
+        </div>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          overflow: "hidden",
+          lineHeight: 0,
+        }}
+      >
+        <svg
+          viewBox="0 0 1130 320"
+          xmlns="http://www.w3.org/2000/svg"
+                    // style={{ display: "block", width: "100%", height: "100%" }}
+        >
+          <defs>
+            <linearGradient
+              id="gradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+            >
+              <stop
+                offset="0%"
+                style={{ stopColor: "#9f4bad", stopOpacity: 1 }}
+              />
+              <stop
+                offset="50%"
+                style={{ stopColor: "#f8a4b8", stopOpacity: 1 }}
+              />
+              <stop
+                offset="100%"
+                style={{ stopColor: "#e2e290", stopOpacity: 1 }}
+              />
+            </linearGradient>
+          </defs>
+          <path fill="url(#gradient)" fill-opacity="0.98" d="M0,160L60,176C120,192,240,224,360,213.3C480,203,600,149,720,117.3C840,85,960,75,1080,85.3C1200,96,1320,128,1380,144L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+
+        </svg>
+      </div>
+
+    </div>
+  );
 };
 
-class Signin extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: "",
-      password: "",
-      rememberMe: false,
-      isSumitted: false,
-      errors: {}, // State to hold validation errors
-    };
-  }
-
-  handleChange = (event) => {
-    const { name, value, type, checked } = event.target;
-    const val = type === "checkbox" ? checked : value;
-    this.setState({ [name]: val });
-  };
-
-  validateForm = () => {
-    const { email, password } = this.state;
-    const error = ValidationEngine.validate(validationSchema, {
-      email,
-      password,
-    });
-    return error;
-  };
-
-  handleSignIn = () => {
-    const errorData = this.validateForm();
-    this.setState({
-      isSumitted: true,
-    });
-    if (errorData.isValid) {
-    }
-  };
-
-  render() {
-    const errorData = this.validateForm();
-    const { classes } = this.props;
-    const { email, password, rememberMe, isSumitted } = this.state;
-    return (
-      <Container className={classes.container}>
-        <Box className={classes.box}>
-          <Typography variant="h5" gutterBottom>
-            Sign in to Rasi Lab
-          </Typography>
-          <TextField
-            className={classes.input}
-            label="Email"
-            variant="outlined"
-            fullWidth
-            name="email"
-            value={email}
-            onChange={this.handleChange}
-            error={!errorData.email.isValid && isSumitted}
-            helperText={isSumitted ? errorData.email.message : ""}
-          />
-          <TextField
-            className={classes.input}
-            label="Password"
-            variant="outlined"
-            type="password"
-            fullWidth
-            name="password"
-            value={password}
-            onChange={this.handleChange}
-            error={!errorData.password.isValid && isSumitted}
-            helperText={isSumitted ? errorData.password.message : ""}
-          />
-
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Box display="flex" alignItems="center">
-              <Checkbox
-                checked={rememberMe}
-                onChange={(event) =>
-                  this.setState({ rememberMe: event.target.checked })
-                }
-              />
-              <Typography variant="body2">Remember me</Typography>
-            </Box>
-            <Link href="#" variant="body2">
-              Forgot password?
-            </Link>
-          </Box>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={this.handleSignIn}
-          >
-            Sign In
-          </Button>
-          <Typography variant="body2" gutterBottom>
-            Or
-          </Typography>
-          <Button
-            className={`${classes.button} ${classes.googleButton}`}
-            variant="outlined"
-            fullWidth
-            startIcon={<GoogleIcon />}
-          >
-            Sign up with Google
-          </Button>
-          <Typography variant="body2">
-            Don't have an account? <Link href="#">Sign up Now</Link>
-          </Typography>
-        </Box>
-      </Container>
-    );
-  }
-}
-
-export default withStyles(styles)(Signin);
+export default Signin;

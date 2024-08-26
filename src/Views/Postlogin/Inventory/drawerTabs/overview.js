@@ -121,7 +121,7 @@ const Overview = ({ selectedProduct }) => {
                 <p>
                   Girdhari
                   Store&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;
-                  {selectedProduct.quantityOnHand}kg
+                  {selectedProduct.quantityOnHand}{selectedProduct.units}
                 </p>
               </div>
             </div>

@@ -1,414 +1,165 @@
-// import React, { Component } from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, Flashbar,FormField, Input, Container, Header } from "@cloudscape-design/components";
+import { forgotPwd } from "Redux-Store/ForgotPwd/forgotPwdThunk";
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 
-// import { Visibility, VisibilityOff } from "@mui/icons-material";
-// import {
-//   Box,
-//   Button,
-//   Checkbox,
-//   Container,
-//   FormControlLabel,
-//   Grid,
-//   Link,
-//   TextField,
-//   Typography,
-//   IconButton,
-//   InputAdornment,
-// } from "@mui/material";
-// import { ValidationEngine, ErrorMessages } from "Utils/helperFunctions";
-// const validationSchema = {
-//   code: [
-//     {
-//       message: "Please enter code",
-//       type: ValidationEngine.type.MANDATORY,
-//     },
-//     {
-//         message: "Please valid code",
-//         type: ValidationEngine.type.REGEX,
-//         regex: ValidationEngine.NUMBER_ONLY_REGEX,
-//       },
-//   ],
-//   email: [
-//     {
-//       message: "Please enter Email",
-//       type: ValidationEngine.type.MANDATORY,
-//     },
-//     {
-//       message: "Please valid Email",
-//       type: ValidationEngine.type.REGEX,
-//       regex: ValidationEngine.EMAIL_REGEX,
-//     },
-//   ],
-//   newpassword: [
-//     {
-//       message: "Please enter Password",
-//       type: ValidationEngine.type.MANDATORY,
-//     },
-//   ],
-//   confirmNewpassword: [
-//     {
-//       message: "Please enter Password",
-//       type: ValidationEngine.type.MANDATORY,
-//     },
-//   ],
-// };
-// const SCREEN_MODE = {
-//   ENTER_EMAIL: 0,
-//   VERIFY_EMAIL: 1,
-//   CREATE_NEW_PASSWORD_SCREEN: 2,
-//   PASSWORD_CHANGED_SCREEN: 3,
-// };
-// class ForgotPassword extends Component {
-//   constructor(props) {
-//     super(props);
+const ForgotPassword = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); // Initialize useNavigate
+  const [email, setEmail] = useState("");
+  const { loading, error } = useSelector((state) => state.forgotPwd);
+  const [items, setItems] = React.useState([]);
 
-//     this.state = {
-//       screenMode: SCREEN_MODE.ENTER_EMAIL,
-//       email: "",
-//       code: "",
-//       newpassword: "",
-//       confirmNewpassword: "",
-//       newpasswordEye: false,
-//       confirmNewPasswordEye: false,
-//       isSubmitted: false,
-//     };
-//   }
-//   handleChange = (event) => {
-//     const { name, value, type, checked } = event.target;
-//     const val = type === "checkbox" ? checked : value;
-//     this.setState({ [name]: val });
-//   };
+  const handleSendOtp = () => {
+    dispatch(forgotPwd(email))
+    .unwrap()
+    .then(() => {
+        console.log("");
+        setEmail("")
+        setItems([
+          {
+            type: "success",
+            content: "Password reset mail has sent to the entered mail id Successfully!",
+            dismissible: true,
+            dismissLabel: "Dismiss message",
+            onDismiss: () => setItems([]),
+            id: "message_1"
+          }
+       
+        ])
+        navigate("/auth/newpassword"); // Navigate to OTP verification page
+      })
+      .catch((error) => {
+        console.error("Login failed:", error);
+      });
+  };
+  
 
-//   validateForm = () => {
-//     const { email, code, newpassword, confirmNewpassword, screenMode } =
-//       this.state;
-//     if (screenMode == 0) {
-//       const error = ValidationEngine.validate(validationSchema, {
-//         email,
-//       });
-//       return error;
-//     } else if (screenMode == 1) {
-//       const error = ValidationEngine.validate(validationSchema, {
-//         code: code,
-//       });
-//       return error;
-//     } else if (screenMode == 2) {
-//       const error = ValidationEngine.validate(validationSchema, {
-//         newpassword: newpassword,
-//         confirmNewpassword: confirmNewpassword,
-//       });
-//       if (
-//         error.newpassword.isValid &&
-//         error.confirmNewpassword.isValid &&
-//         newpassword !== confirmNewpassword
-//       ) {
-//         error.isValid = false;
-//         error.confirmNewpassword.isValid = false;
-//         error.confirmNewpassword.message = "Confirm password does not match";
-//       }
-//       return error;
-//     }
-//   };
+  return (
+    <div style={{ paddingTop:"10vh"}}>
+        <Flashbar items={items}></Flashbar>
+      <div
+        style={{
+            paddingTop: "5vh",
+            display: "flex",
+            justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+              padding: "0 15px",
+              borderRadius: "10px",
+              backgroundColor: "white",
+            boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
+            zIndex: 2,
+            width: "28vw",
+        }}
+        >
+          <Container variant="borderless">
+            <div
+              style={{
+                marginBottom: "20px",
+                padding: "0 0 0 0",
+              }}
+            >
+              <Header
+                variant="h1"
+                description="Enter your email to proceed with the password reset."
+              >
+                <h3
+                  style={{
+                    fontWeight: "bolder",
+                    textShadow: "0px 1px, 1px 0px, 1px 1px",
+                    fontSize: "30px",
+                  }}
+                >
+                  &nbsp;&nbsp;&nbsp;&nbsp;<b>Forget your password?</b>
+                </h3>
+              </Header>
+            </div>
+            <form
+              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSendOtp();
+              }}
+            >
+              <FormField label="Email">
+                <Input
+                  placeholder="Enter Your Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.detail.value)}
+                />
+              </FormField>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  padding: "2vh 2vw 0 2vw",
+                }}
+              >
+                <Button fullWidth ariaExpanded variant="primary" disabled={loading}>
+                  {loading ? "Sending OTP..." : "Send OTP"}
+                </Button>
+              </div>
+              {error && (
+                <div style={{ color: "red", textAlign: "center" }}>
+                  {error.message || "An error occurred"}
+                </div>
+              )}
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Button href="#" variant="inline-link">
+                  Or Login
+                </Button>
+              </div>
+            </form>
+          </Container>
+        </div>
+      </div>
 
-//   enterEmailScreen = (errorData) => {
-//     const {
-//       email,
-//       code,
-//       newpassword,
-//       confirmNewpassword,
-//       screenMode,
-//       isSubmitted,
-//     } = this.state;
-//     return (
-//       <Container
-//         maxWidth="sm"
-//         sx={{
-//           display: "flex",
-//           flexDirection: "column",
-//           alignItems: "center",
-//           justifyContent: "center",
-//           minHeight: "100vh",
-//         }}
-//       >
-//         <Box sx={{ width: "100%", textAlign: "center", marginBottom: 3 }}>
-//           <Typography variant="h4" component="h1" gutterBottom>
-//             Forgot Password
-//           </Typography>
-//           <Typography variant="body1" color="textSecondary">
-//             Enter Your Email Address
-//           </Typography>
-//         </Box>
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          overflow: "hidden",
+          lineHeight: 0,
+        }}
+      >
+        <svg
+          viewBox="0 0 1130 320"
+          xmlns="http://www.w3.org/2000/svg"
+                    // style={{ display: "block", width: "100%", height: "100%" }}
+        >
+          <defs>
+            <linearGradient
+              id="gradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+            >
+              <stop
+                offset="0%"
+                style={{ stopColor: "#9f4bad", stopOpacity: 1 }}
+              />
+              <stop
+                offset="50%"
+                style={{ stopColor: "#f8a4b8", stopOpacity: 1 }}
+              />
+              <stop
+                offset="100%"
+                style={{ stopColor: "#e2e290", stopOpacity: 1 }}
+              />
+            </linearGradient>
+          </defs>
+          <path fill="url(#gradient)" fill-opacity="0.98" d="M0,160L60,176C120,192,240,224,360,213.3C480,203,600,149,720,117.3C840,85,960,75,1080,85.3C1200,96,1320,128,1380,144L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
 
-//         <TextField
-//           sx={{ marginBottom: 2 }}
-//           label="Email Address"
-//           variant="outlined"
-//           fullWidth
-//           name="email"
-//           value={email}
-//           onChange={this.handleChange}
-//           error={!errorData.email.isValid && isSubmitted}
-//           helperText={isSubmitted ? errorData.email.message : ""}
-//         />
-//         <Button
-//           variant="contained"
-//           color="primary"
-//           fullWidth
-//           onClick={() => {
-//             const errorData = this.validateForm();
-//             this.setState({
-//               isSubmitted: true,
-//             });
-//             if (errorData?.isValid) {
-//               this.setState({
-//                 isSubmitted: false,
-//                 screenMode: SCREEN_MODE.VERIFY_EMAIL,
-//               });
-//             }
-//           }}
-//         >
-//           Confirm Email
-//         </Button>
-//       </Container>
-//     );
-//   };
+        </svg>
+      </div>
+    </div>
+  );
+};
 
-//   otpScreen = (errorData) => {
-//     const {
-//       email,
-//       code,
-//       newpassword,
-//       confirmNewpassword,
-//       screenMode,
-//       isSubmitted,
-//     } = this.state;
-//     return (
-//       <Container
-//         maxWidth="sm"
-//         sx={{
-//           display: "flex",
-//           flexDirection: "column",
-//           alignItems: "center",
-//           justifyContent: "center",
-//           minHeight: "100vh",
-//         }}
-//       >
-//         <Box sx={{ width: "100%", textAlign: "center", marginBottom: 3 }}>
-//           <Typography variant="h6" component="h1" gutterBottom>
-//             Verify Your Email
-//           </Typography>
-//           <Typography variant="body1" color="textSecondary">
-//             Enter Code
-//           </Typography>
-//         </Box>
-//         <TextField
-//           label="Enter Code"
-//           variant="outlined"
-//           value={this.state.code}
-//           name="code"
-//           id="code"
-//           onChange={this.handleChange}
-//           error={!errorData.code.isValid && isSubmitted}
-//           helperText={isSubmitted ? errorData.code.message : ""}
-//           fullWidth
-//           sx={{ marginBottom: 2 }}
-//         />
-//         <Button
-//           variant="contained"
-//           color="primary"
-//           fullWidth
-//           onClick={() => {
-//             const errorData = this.validateForm();
-//             this.setState({
-//               isSubmitted: true,
-//             });
-//             if (errorData.isValid) {
-//               this.setState({
-//                 isSubmitted: false,
-//                 screenMode: SCREEN_MODE.CREATE_NEW_PASSWORD_SCREEN,
-//               });
-//             }
-//           }}
-//         >
-//           Verify
-//         </Button>
-//       </Container>
-//     );
-//   };
-
-//   finalScreen = () => {
-//     return (
-//       <Container
-//         maxWidth="sm"
-//         sx={{
-//           display: "flex",
-//           flexDirection: "column",
-//           alignItems: "center",
-//           justifyContent: "center",
-//           minHeight: "100vh",
-//         }}
-//       >
-//         <Box sx={{ width: "100%", textAlign: "center", marginBottom: 3 }}>
-//           <Typography variant="h6" component="h1" gutterBottom>
-//             Password Changed
-//           </Typography>
-//           <Typography variant="body1" color="textSecondary">
-//             Your Password Successfully Changed
-//           </Typography>
-//           <Typography variant="body1" color="textSecondary">
-//             Click to below to login
-//           </Typography>
-//         </Box>
-
-//         <Button variant="contained" color="primary" fullWidth>
-//           Back To Login
-//         </Button>
-//       </Container>
-//     );
-//   };
-
-//   handleMouseDownPassword = (event) => {
-//     event.preventDefault();
-//   };
-
-//   createNewPasswordScreen = (errorData) => {
-//     const {
-//       newpassword,
-//       confirmNewpassword,
-
-//       newpasswordEye,
-//       confirmNewPasswordEye,
-//       isSubmitted,
-//     } = this.state;
-//     return (
-//       <Container
-//         maxWidth="sm"
-//         sx={{
-//           display: "flex",
-//           flexDirection: "column",
-//           alignItems: "center",
-//           justifyContent: "center",
-//           minHeight: "100vh",
-//         }}
-//       >
-//         <Box sx={{ width: "100%", textAlign: "center", marginBottom: 3 }}>
-//           <Typography variant="h6" component="h1" gutterBottom>
-//             Create New Password
-//           </Typography>
-//           <Typography variant="h6" component="h1" gutterBottom>
-//             Enter Your New Password
-//           </Typography>
-//           <Typography variant="body1" color="textSecondary">
-//             Enter New Password
-//           </Typography>
-//         </Box>
-//         <TextField
-//           label="Enter New Password"
-//           variant="outlined"
-//           value={newpassword}
-//           name="newpassword"
-//           id="newpassword"
-//           type={newpasswordEye ? "text" : "password"}
-//           InputProps={{
-//             endAdornment: (
-//               <InputAdornment position="end">
-//                 <IconButton
-//                   aria-label="toggle password visibility"
-//                   onClick={() =>
-//                     this.setState((prevState) => ({
-//                       newpasswordEye: !prevState.newpasswordEye,
-//                     }))
-//                   }
-//                   onMouseDown={this.handleMouseDownPassword}
-//                 >
-//                   {newpasswordEye ? <Visibility /> : <VisibilityOff />}
-//                 </IconButton>
-//               </InputAdornment>
-//             ),
-//           }}
-//           onChange={this.handleChange}
-//           error={!errorData.newpassword.isValid && isSubmitted}
-//           helperText={isSubmitted ? errorData.newpassword.message : ""}
-//           fullWidth
-//           sx={{ marginBottom: 2 }}
-//         />
-
-//         <Typography variant="body1" color="textSecondary">
-//           Confirm Password
-//         </Typography>
-
-//         <TextField
-//           label="Enter Confirm New Password"
-//           variant="outlined"
-//           value={confirmNewpassword}
-//           name="confirmNewpassword"
-//           id="confirmNewpassword"
-//           type={confirmNewPasswordEye ? "text" : "password"}
-//           onChange={this.handleChange}
-//           error={!errorData.confirmNewpassword.isValid && isSubmitted}
-//           helperText={isSubmitted ? errorData.confirmNewpassword.message : ""}
-//           fullWidth
-//           InputProps={{
-//             endAdornment: (
-//               <InputAdornment position="end">
-//                 <IconButton
-//                   aria-label="toggle password visibility"
-//                   onClick={() =>
-//                     this.setState((prevState) => ({
-//                       confirmNewPasswordEye: !prevState.confirmNewPasswordEye,
-//                     }))
-//                   }
-//                   onMouseDown={this.handleMouseDownPassword}
-//                 >
-//                   {confirmNewPasswordEye ? <Visibility /> : <VisibilityOff />}
-//                 </IconButton>
-//               </InputAdornment>
-//             ),
-//           }}
-//           sx={{ marginBottom: 2 }}
-//         />
-//         <Button
-//           variant="contained"
-//           color="primary"
-//           fullWidth
-//           onClick={() => {
-//             const errorData = this.validateForm();
-//             this.setState({
-//               isSubmitted: true,
-//             });
-//             if (errorData.isValid) {
-//               this.setState({
-//                 isSubmitted: false,
-//                 screenMode: SCREEN_MODE.PASSWORD_CHANGED_SCREEN,
-//               });
-//             }
-//           }}
-//         >
-//           Continue
-//         </Button>
-//       </Container>
-//     );
-//   };
-
-//   render() {
-//     const { screenMode } = this.state;
-//     const errorData = this.validateForm();
-//     return (
-//       <>
-//         {
-//           screenMode == 0 ? (
-//             this.enterEmailScreen(errorData)
-//           ) : screenMode == 1 ? (
-//             <>{this.otpScreen(errorData)}</>
-//           ) : screenMode == 2 ? (
-//             <>{this.createNewPasswordScreen(errorData)}</>
-//           ) : (
-//             <> {this.finalScreen()}</>
-//           )
-//           //   password changed screen
-//         }
-//       </>
-//     );
-//   }
-// }
-
-// export default ForgotPassword;
+export default ForgotPassword;

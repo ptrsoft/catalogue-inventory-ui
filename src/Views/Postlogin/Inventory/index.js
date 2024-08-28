@@ -193,7 +193,7 @@ const Inventory = () => {
             <Container
               variant="borderless"
               size="xs"
-              header={<Header variant="h2">1921</Header>}
+              header={<Header variant="h2">{data.count}</Header>}
             >
               <b>All Products</b>
             </Container>

@@ -12,6 +12,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 import { fetchAdjustments } from 'Redux-Store/InventoryAdjustments/InventoryAdjustmentsThunk';
+import { format } from 'date-fns'; // Import date-fns format function
+import { useLocation } from 'react-router-dom';
+
 
 const InventoryAdjustments = () => {
   const dispatch = useDispatch();
@@ -46,26 +49,22 @@ const InventoryAdjustments = () => {
   // Ensure data.items exists and is an array
   const items = Array.isArray(data.items) ? data.items : [];
 
-  const handleNavigate = () => {
-    navigate("/app/inventory/create-adjustment");
-  };
-
-  const itemsPerPage = 13;
-
   // Apply filtering
   const filteredItems = items.filter(item =>
-    item.adjustmentNumber?.toLowerCase().includes(filteringText.toLowerCase()) ||
-    item.reason?.toLowerCase().includes(filteringText.toLowerCase()) ||
-    item.description?.toLowerCase().includes(filteringText.toLowerCase()) ||
-    item.date?.toLowerCase().includes(filteringText.toLowerCase()) ||
-    item.adjustBy?.toLowerCase().includes(filteringText.toLowerCase())
+    [item.adjustmentNumber, item.reason, item.description, item.date, item.adjustBy]
+      .some(field => field?.toLowerCase().includes(filteringText.toLowerCase()))
   );
 
+  const itemsPerPage = 13;
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
   const paginatedItems = filteredItems.slice(
     (currentPageIndex - 1) * itemsPerPage,
     currentPageIndex * itemsPerPage
   );
+
+  const handleNavigate = () => {
+    navigate("/app/inventory/create-adjustment");
+  };
 
   return (
     <>
@@ -78,18 +77,22 @@ const InventoryAdjustments = () => {
       />
       <div style={{ marginTop: 10 }}>
         <Table
+
+        
           variant='borderless'
           renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
             `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
           }
+
+
+          
           columnDefinitions={[
             {
               id: "adjustmentNumber",
               header: "Adjustment No.",
               cell: e => <span style={{ color: "#192534", fontWeight: "700" }}>
-            SA-{e.id}
-                
-                </span>,
+                SA-{e.id}
+              </span>,
               isRowHeader: true,
             },
             {
@@ -107,15 +110,13 @@ const InventoryAdjustments = () => {
               id: "date",
               sortingField: "date",
               header: "Date",
-              cell: e => e.date
+              cell: e => format(new Date(e.date), 'yyyy-MM-dd') // Format the date without time
             },
             {
               id: "adjustBy",
               sortingField: "adjustBy",
               header: "Adjust By",
-              cell: e =>
-                //  e.adjustBy
-              "Yahiya Aly Khan"
+              cell: e => e.adjustBy || "Yahiya Aly Khan"
             }
           ]}
           items={paginatedItems}
@@ -161,3 +162,4 @@ const InventoryAdjustments = () => {
 };
 
 export default InventoryAdjustments;
+

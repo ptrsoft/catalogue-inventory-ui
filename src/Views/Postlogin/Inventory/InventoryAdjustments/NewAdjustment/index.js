@@ -1,61 +1,88 @@
-import { Box, BreadcrumbGroup, Button, Container, Form, FormField, Grid, Header, Icon, Input, Modal, Popover, SpaceBetween, Table, Textarea } from '@cloudscape-design/components'
-import React from 'react'
+import { Box, BreadcrumbGroup, Button, Container, Form, FormField, Grid, Header, Icon, Input, Modal, Popover, SpaceBetween, Table, Textarea } from '@cloudscape-design/components';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const NewAdjustment = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { dataToSave } = location.state || {};
 
-    const [visible, setVisible] = React.useState(false);    
+    React.useEffect(() => {
+        if (dataToSave) {
+            console.log('Received data: from create page', dataToSave);
+            // You can use the data here as needed
+        }
+    }, [dataToSave]);
+
+    const [visible, setVisible] = React.useState(false);
+
     const items = [
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-    ]
+        // Your item data
+    ];
 
     const handlePrint = () => {
         window.print();
     };
 
-    const cancelNavigate = ()=>{
-        navigate("/app/inventory/adjustments")
-    }
+    const cancelNavigate = () => {
+        navigate("/app/inventory/adjustments");
+    };
 
-  return (
-  <>
-    <BreadcrumbGroup
+    const columnDefinitions = [
+        // Your column definitions
+    ];
+
+    // Function to handle API request
+    const sendAdjustmentData = async () => {
+        if (!dataToSave) return;
+
+        // Construct the request body
+        const requestBody = {
+            reason: dataToSave.formData.reason.label,
+            description: dataToSave.formData.description,
+            location: dataToSave.formData.location.label,
+            items: items.map(item => ({
+                id: item.id,
+                itemCode: item.code,
+                name: item.name,
+                stock: parseInt(item.stockOnHold.replace(' kg', '')), // Assuming stock is in kg and needs to be a number
+                currentCompareAtPrice: parseInt(item.purchasingPrice.replace('Rs. ', '')), // Parsing price
+                currentOnlineStorePrice: parseInt(item.purchasingPrice.replace('Rs. ', '')), // Assuming current online store price is same as purchasing price
+                adjustQuantity: 0, // Set this value based on your need
+                newPurchasingPrice: parseInt(item.purchasingPrice.replace('Rs. ', '')), // Example new price
+                newOnlineStorePrice: parseInt(item.purchasingPrice.replace('Rs. ', '')) // Example new price
+            }))
+        };
+        console.log('Request Body:', requestBody);
+
+        try {
+            const response = await fetch('https://lou294nkli.execute-api.us-east-1.amazonaws.com/inventory/adjust', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('API response:', result);
+                // Handle success
+                navigate("/app/inventory/adjustments");
+            } else {
+                const error = await response.text();
+                console.error('API error:', error);
+                // Handle error
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            // Handle fetch error
+        }
+    };
+    return (
+        <>
+            <BreadcrumbGroup
                 items={[
                     { text: "Dashboard", href: "/app/dashboard" },
                     { text: "Inventory Adjustments", href: "#components" },
@@ -63,181 +90,68 @@ const NewAdjustment = () => {
                 ]}
                 ariaLabel="Breadcrumbs"
             />
-<div style={{marginTop:10}}>
-<Form
+            <div style={{ marginTop: 10 }}>
+                <Form
                     header={<Header actions={
                         <SpaceBetween direction="horizontal" size="xs">
-                            <Button  onClick={() => setVisible(true)}  >Cancel Adjustment</Button>
-                            {/* <Button onClick={handlePrint} variant="primary">Print</Button> */}
-                            <Button onClick={()=>{
-                              navigate("/app/inventory/adjustments")
-                            }} variant='primary'>Back To Adjustments</Button>
+                            <Button onClick={() => setVisible(true)}>Cancel Adjustment</Button>
+                            <Button onClick={() => sendAdjustmentData()} variant='primary'>Submit Adjustment</Button>
+                            <Button onClick={() => navigate("/app/inventory/adjustments")} variant='primary'>Back To Adjustments</Button>
                         </SpaceBetween>
                     } variant="h1">New Adjustment</Header>}
                 >
                     <Container>
                         <Grid gridDefinition={[{ colspan: 4 }, { colspan: 4 }, { colspan: 4 }, { colspan: 12 }]}>
-
                             <FormField label="Adjustment No.">
-                                <Input  value='SA-001' disabled />
+                                <Input value='SA-001' disabled />
                             </FormField>
 
                             <FormField label="Location">
-                                <Input value='Cold Storage' disabled />
+                                <Input value={dataToSave?.formData.location.label} disabled />
                             </FormField>
 
                             <FormField label="Reason">
-                                <Input value='Procure' disabled />
+                                <Input value={dataToSave?.formData.reason.label} disabled />
                             </FormField>
 
                             <FormField label="Description">
-                                <Textarea value='Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste laborum in quasi accusamus voluptatem.' disabled />
-                            </FormField>                        
+                                <Textarea value={dataToSave?.formData.description} disabled />
+                            </FormField>
                         </Grid>
                     </Container>
 
-<div style={{marginTop:22}}>
-        <Container header={
-            <Header variant='h2'>Item Details</Header>
-        }>
-                        
-<Table 
-variant='borderless'
-        columnDefinitions={[
-            { header: 'Item Code',  cell: item => item.code },
-            {
-                header: 'Item name', cell: item =>  <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    cursor: "pointer",
-                  }}
-                >
-                  <img
-                    src={item.images}
-                    alt={item.name}
-                    style={{
-                      width: "30px",
-                      height: "30px",
-                      marginRight: "10px",
-                    }}
-                  />
-                  {item.name}
-                </div>
-            },
-            { header: 'Stock on Hand', cell: item => item.stockOnHold },
-            { header: <span style={{display:"flex" , gap:6 , alignItems:"center", justifyContent:"start"}}>
-                CP Price 
-                <Popover
-      dismissButton={false}
-      position="top"
-      size="large"
-      triggerType="custom"
-      content={
-      <SpaceBetween>
-<strong>Current Purchase Price</strong>
-<span>The current purchase price is the latest cost used across all platforms for consistency.</span>
-      </SpaceBetween>
-      }
-    >
-     <Icon name='status-info'/>
-    </Popover>
-
-          </span>, cell: item => item.purchasingPrice },
-            { header: <span style={{display:"flex" , gap:6 , alignItems:"center", justifyContent:"start"}}>CS Price
-            
-            <Popover
-      dismissButton={false}
-      position="top"
-      size="large"
-      triggerType="custom"
-      content={
-      <SpaceBetween>
-<strong>Current Selling Price</strong>
-<span>Current Selling Price: the latest price at which an item is sold.</span>
-      </SpaceBetween>
-      }
-    >
-     <Icon name='status-info'/>
-    </Popover>
-            </span>, cell: item =>  <p>Rs 12</p> },
-            { header: 'Adjust Quantity', cell: item =>  <p>Rs 12</p>},
-            { header: <span style={{display:"flex" , gap:6 , alignItems:"center", justifyContent:"start"}}>AP Price 
-            
-            <Popover
-        dismissButton={false}
-        position="top"
-        size="large"
-        triggerType="custom"
-        content={
-        <SpaceBetween>
-  <strong>Adjust Purchase Price</strong>
-  <span>Adjust Purchase Price: Adjust the cost for purchasing items.</span>
-        </SpaceBetween>
-        }
-      >
-       <Icon name='status-info'/>
-      </Popover>
-            </span>, cell: item =>  <p>Rs 12</p> },
-            { header: <span style={{display:"flex" , gap:6 , alignItems:"center", justifyContent:"start"}}>AS Price
-             <Popover
-        dismissButton={false}
-        position="top"
-        size="large"
-        triggerType="custom"
-        content={
-        <SpaceBetween>
-  <strong>Adjust Selling Price</strong>
-  <span>Adjust Selling Price: Adjust the price for selling items.</span>
-        </SpaceBetween>
-        }
-      >
-       <Icon name='status-info'/>
-      </Popover>
-            </span>,
-            cell: item => <p>Rs 12</p> },
-            
-        ]}
-        items={items}
-      />
-      </Container>
-      </div>    
+                    <div style={{ marginTop: 22 }}>
+                        <Container header={
+                            <Header variant='h2'>Item Details</Header>
+                        }>
+                            <Table
+                                variant='borderless'
+                                columnDefinitions={columnDefinitions}
+                                items={items}
+                            />
+                        </Container>
+                    </div>
                 </Form>
+            </div>
 
-                </div>
+            {/* Modal for canceling the adjustment */}
+            <Modal
+                onDismiss={() => setVisible(false)}
+                visible={visible}
+                footer={
+                    <Box float="right">
+                        <SpaceBetween direction="horizontal" size="xs">
+                            <Button onClick={() => setVisible(false)}>Not Now</Button>
+                            <Button variant="primary" onClick={cancelNavigate}>Cancel Adjustment</Button>
+                        </SpaceBetween>
+                    </Box>
+                }
+                header={<Header>Cancel The Adjustment</Header>}
+            >
+                <div>Are you sure you want to cancel the Adjustment?</div>
+            </Modal>
+        </>
+    );
+};
 
-
-
-
-
-                {/*modal for canceling the adjustmend */}
-                <Modal
-      onDismiss={() => setVisible(false)}
-      visible={visible}
-      
-      footer={
-        <Box float="right">
-          <SpaceBetween direction="horizontal" size="xs">
-            <Button  onClick={() => setVisible(false)}
-            >Not Now</Button>
-            <Button variant="primary" onClick={cancelNavigate}>Cancel Adjustment</Button>
-          </SpaceBetween>
-        </Box>
-      }
-      header={
-        <Header>
-            Cancel The Adjustment
-        </Header>
-      }
-    >
-        <div>
-
-    Are you sure do you want to cancel the Adjustment
-         
-        </div>
-    </Modal>
-  </>
-  )
-}
-
-export default NewAdjustment
+export default NewAdjustment;

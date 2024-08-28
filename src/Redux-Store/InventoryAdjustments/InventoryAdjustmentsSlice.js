@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-
-import status from "Redux-Store/Constants";
+import status from 'Redux-Store/Constants';
 import { CreateAdjustment, fetchAdjustments } from './InventoryAdjustmentsThunk';
 
 const inventoryAdjustmentsSlice = createSlice({
@@ -12,12 +11,12 @@ const inventoryAdjustmentsSlice = createSlice({
       error: null
     },
     createAdjustment: {
-        status: 'idle',
-        error: null,
-      },
+      status: 'idle',
+      error: null,
+    },
   },
   extraReducers: (builder) => {
-    // for get api
+    // For GET API
     builder
       .addCase(fetchAdjustments.pending, (state) => {
         state.adjustments.status = status.IN_PROGRESS;
@@ -29,10 +28,9 @@ const inventoryAdjustmentsSlice = createSlice({
       .addCase(fetchAdjustments.rejected, (state, action) => {
         state.adjustments.status = status.FAILURE;
         state.adjustments.error = action.error.message;
-      })
-    //   for post api
+      });
 
-    // Create adjustment
+    // For POST API
     builder
       .addCase(CreateAdjustment.pending, (state) => {
         state.createAdjustment.status = status.IN_PROGRESS;

@@ -1,13 +1,30 @@
-import { Box, BreadcrumbGroup, Grid, Icon, Link, TextFilter, Pagination, CollectionPreferences, Popover, Select, Modal, Table, Textarea } from '@cloudscape-design/components';
-import React, { useState } from 'react';
-import Container from "@cloudscape-design/components/container";
-import Header from "@cloudscape-design/components/header";
-import FormField from "@cloudscape-design/components/form-field";
-import Input from "@cloudscape-design/components/input";
-import SpaceBetween from "@cloudscape-design/components/space-between";
-import Button from "@cloudscape-design/components/button";
+import React, { useEffect, useState } from 'react';
+import {
+    Box,
+    BreadcrumbGroup,
+    Grid,
+    Icon,
+    Link,
+    TextFilter,
+    Pagination,
+    Popover,
+    Select,
+    Modal,
+    Table,
+    Textarea,
+    Button,
+    Container,
+    Header,
+    FormField,
+    Input,
+    SpaceBetween
+} from '@cloudscape-design/components';
 import { useNavigate } from 'react-router-dom';
 import { ErrorMessages, ValidationEngine } from 'Utils/helperFunctions';
+
+import { fetchProducts } from "Redux-Store/Products/ProductThunk";
+import { useDispatch, useSelector } from 'react-redux';
+
 
 const useFormState = (initialState) => {
     const [state, setState] = useState(initialState);
@@ -24,18 +41,41 @@ const useFormState = (initialState) => {
 };
 
 const CreateNewAdjustments = () => {
+
+    // modal table data from redux
+    const dispatch = useDispatch();
+
+    const products = useSelector((state) => state.products.products);
+    console.log(products,"prod");
+    console.log("pro",products)
+  const { data = [], status } = products;
+  console.log("modal data" , data.items)
+  
+    useEffect(() => {
+      dispatch(fetchProducts()
+    );
+    }, [dispatch]);
+
+
+
+
+
     const [visible, setVisible] = useState(false);
-    const [items, setItems] = useState([]);  // State for items in the main table
-    const [modalItems] = useState([  // Items in the modal table
-        { id: 1, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%02bj%D6%BF%17%EF%BF%BD%EF%BF%BD0%EF%BF%BDj%EF%BF%BD%EF%BF%BD%27%C2%9CScreenshot%202024-08-17%20213042.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 2, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/t%40%EF%BF%BD%7Fx%EF%BF%BDl%EF%BF%BD%05%5B%EF%BF%BD%3E%13%EF%BF%BD%EF%BF%BD%20Screenshot%202024-08-17%20174200.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
-        { id: 3, code: "#98532", images: "https://prod-promodeargo-admin-api-mediabucket46c59097-tynsj9joexji.s3.us-east-1.amazonaws.com/%EF%BF%BD%0BA%EF%BF%BD5%1B%EF%BF%BDx%EF%BF%BD%EF%BF%BD%7F%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BDScreenshot%202024-04-04%20072907.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
+    const [items, setItems] = useState([]);
+
+    const [selectedOption, setSelectedOption] = useState({ label: "All", value: "all" });
+
+
+    const [modalItems] = useState([
+        { id: 1, category: "fruits", code: "#98532", images: "https://example.com/image1.png", name: 'Spinitch', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
+        { id: 2, category: "fruits", code: "#98533", images: "https://example.com/image2.png", name: 'Apple', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
+        { id: 3, category: "vegetables", code: "#98534", images: "https://example.com/image3.png", name: 'Guava', stockOnHold: "25 kg", purchasingPrice: "Rs. 18", minimumSellingPrice: "Rs. 30" },
     ]);
-    const [selectedItems, setSelectedItems] = useState([]);  // State for selected items in the modal
+    const [selectedItems, setSelectedItems] = useState([]);
 
     const navigate = useNavigate();
     const handleBackNavigate = () => {
-        navigate("/app/inventory/inventory-adjustments");
+        navigate("/app/inventory/adjustments");
     };
 
     const [formState, handleFormChange] = useFormState({
@@ -60,54 +100,109 @@ const CreateNewAdjustments = () => {
 
     const validateForm = () => {
         const validationResult = ValidationEngine.validate(validationRules, formState);
+    
+        // Additional validation for items
+        const itemErrors = items.reduce((errors, item, index) => {
+            if (!item.adjustQuantity || !item.adjustPurchasePrice || !item.adjustSellingPrice) {
+                errors[index] = "Please fill out all fields for this item.";
+            }
+            return errors;
+        }, {});
+    
+        if (items.length === 0) {
+            setFormErrors({
+                ...validationResult,
+                items: "Please add at least one item."
+            });
+            ErrorMessages.error("Please fix the errors before submitting.");
+            return false;
+        } else if (Object.keys(itemErrors).length > 0) {
+            setFormErrors({
+                ...validationResult,
+                itemErrors
+            });
+            ErrorMessages.error("Please fix the errors in the item details before submitting.");
+            return false;
+        }
+    
         setFormErrors(validationResult);
         return validationResult.isValid;
     };
+    
 
     const handleSave = () => {
         if (validateForm()) {
-            console.log('Form data:', formState);
-            navigate("/app/inventory/new-adjustment");
+            // Collecting form and table data
+            const dataToSave = {
+                formData: formState,
+                itemsData: items.map(item => ({
+                    id: item.id,
+                    code: item.code,
+                    name: item.name,
+                    stockOnHold: item.stockOnHold,
+                    purchasingPrice: item.purchasingPrice,
+                    adjustQuantity: item.adjustQuantity,
+                    adjustPurchasePrice: item.adjustPurchasePrice,
+                    adjustSellingPrice: item.adjustSellingPrice,
+                }))
+            };
+    
+            // Log data to check before navigation
+            console.log('Data to save:', dataToSave);
+    
+            // Navigate with the data
+            navigate("/app/inventory/new-adjustment", { state: { dataToSave } });
         } else {
             ErrorMessages.error("Please fix the errors before submitting.");
         }
     };
+    
 
     const handleApplyItems = () => {
-        // Append selected items to the main table
-        setItems((prevItems) => [...prevItems, ...selectedItems]);
-        setVisible(false);  // Close the modal
+        const newItems = selectedItems.filter(selectedItem =>
+            !items.some(item => item.id === selectedItem.id)
+        ).map(item => ({
+            ...item,
+            adjustQuantity: "", // Initialize with empty or default value
+            adjustPurchasePrice: "Rs.", // Initialize if needed
+            adjustSellingPrice: "Rs."  // Initialize if needed
+        }));
+
+        setItems((prevItems) => [...prevItems, ...newItems]);
+        setVisible(false);
     };
 
-    // handle input changes from the table inputs 
     const handleInputChange = (id, field, value) => {
-        setItems(items.map(item => 
-            item.id === id ? { ...item, [field]:  value } : item
+        console.log(`Updating item ${id}: ${field} = ${value}`); // Debug log
+        setItems(items.map(item =>
+            item.id === id ? { ...item, [field]: value } : item
         ));
     };
+    
+    
 
-    // dleeting the row from the table
     const handleDeleteItem = (id) => {
         setItems(items.filter(item => item.id !== id));
     };
 
+    const [filteringText, setFilteringText] = React.useState("");
+    const [currentPageIndex, setCurrentPageIndex] = React.useState(1);
 
-    const [
-        selectedOption,
-        setSelectedOption
-    ] = React.useState({});
+    // Filter modalItems based on the filteringText
+    // Updated filtering logic to include category filter
+    const filteredModalItems = modalItems.filter(item => {
+        const matchesText = item.name.toLowerCase().includes(filteringText.toLowerCase()) ||
+            item.code.toLowerCase().includes(filteringText.toLowerCase());
 
-    // temprory states
-    const [
-        filteringText,
-        setFilteringText
-    ] = React.useState("");
+        const matchesCategory = selectedOption.value === 'all' ||
+            selectedOption.value === undefined ||
+            item.category === selectedOption.value;
+
+        return matchesText && matchesCategory;
+    });
 
 
-    const [
-        currentPageIndex,
-        setCurrentPageIndex
-    ] = React.useState(1);
+
 
     return (
         <>
@@ -129,12 +224,10 @@ const CreateNewAdjustments = () => {
                             </SpaceBetween>
                         } variant="h1">New Adjustment</Header>}
                     >
-                        <Grid gridDefinition={[{ colspan: 4 }, { colspan: 4 }, { colspan: 4 } , {colspan:12}]}>
-                            
+                        <Grid gridDefinition={[{ colspan: 4 }, { colspan: 4 }, { colspan: 4 }, { colspan: 12 }]}>
                             <FormField label="Adjustment No.">
                                 <Input placeholder='SA-001' value='' disabled />
                             </FormField>
-
                             <FormField
                                 label="Location"
                                 errorText={formErrors.location?.message}
@@ -151,7 +244,6 @@ const CreateNewAdjustments = () => {
                                     ]}
                                 />
                             </FormField>
-
                             <FormField
                                 label="Reason"
                                 errorText={formErrors.reason?.message}
@@ -167,8 +259,6 @@ const CreateNewAdjustments = () => {
                                     ]}
                                 />
                             </FormField>
-
-
                             <FormField
                                 label="Description"
                                 errorText={formErrors.description?.message}
@@ -181,8 +271,6 @@ const CreateNewAdjustments = () => {
                             </FormField>
                         </Grid>
                     </Container>
-
-                    {/* Second Section for Items */}
                     <div style={{ marginTop: 22 }}>
                         <Container header={
                             <Header
@@ -194,7 +282,7 @@ const CreateNewAdjustments = () => {
                             <Table
                                 variant='borderless'
                                 columnDefinitions={[
-                                    { header: 'Item Code', cell: item => item.code },
+                                    { header: 'Item Code', cell: item => "#" +item.itemCode },
                                     {
                                         header: 'Item name', cell: item => <div
                                             style={{
@@ -204,7 +292,7 @@ const CreateNewAdjustments = () => {
                                             }}
                                         >
                                             <img
-                                                src={item.images}
+                                                src={item.images[0]}
                                                 alt={item.name}
                                                 style={{
                                                     width: "30px",
@@ -215,144 +303,138 @@ const CreateNewAdjustments = () => {
                                             {item.name}
                                         </div>
                                     },
-                                    { header: 'Stock on Hand', cell: item => item.stockOnHold },
-                                    { header: 
+                                    { header: 'Stock on Hand', cell: item => item.stockQuantity + " Kg" },
+                                    {
+                                        header:
+                                            <span style={{ display: "flex", gap: 6, alignItems: "center", justifyContent: "start" }}>
+                                                CP Price
+                                                <Popover
+                                                    dismissButton={false}
+                                                    position="top"
+                                                    size="large"
+                                                    triggerType="custom"
+                                                    content={
+                                                        <SpaceBetween>
+                                                            <strong>Current Purchase Price</strong>
+                                                            <span>The current purchase price is the latest cost used across all platforms for consistency.</span>
+                                                        </SpaceBetween>
+                                                    }
+                                                >
+                                                    <Icon name='status-info' />
+                                                </Popover>
+                                            </span>
+                                        , cell: item => "Rs. " + item.purchasingPrice
+                                    },
+                                    {
+                                       
+                                        header:
+                                            <span style={{ display: "flex", gap: 6, alignItems: "center", justifyContent: "start" }}>
+                                                CS Price
+                                                <Popover
+                                                    dismissButton={false}
+                                                    position="top"
+                                                    size="large"
+                                                    triggerType="custom"
+                                                    content={
+                                                        <SpaceBetween>
+                                                            <strong>Current Selling Price</strong>
+                                                            <span>Current Selling Price: the latest price at which an item is sold.</span>
+                                                            </SpaceBetween>
+                                                    }
+                                                >
+                                                    <Icon name='status-info' />
+                                                </Popover>
+                                            </span>
                                         
-                                        <span style={{display:"flex" , gap:6 , alignItems:"center", justifyContent:"start"}}>
-                CP Price 
-                <Popover
-      dismissButton={false}
-      position="top"
-      size="large"
-      triggerType="custom"
-      content={
-      <SpaceBetween>
-<strong>Current Purchase Price</strong>
-<span>The current purchase price is the latest cost used across all platforms for consistency.</span>
-      </SpaceBetween>
-      }
-    >
-     <Icon name='status-info'/>
-    </Popover>
-
-          </span>
-                                        
-                                        , cell: item => item.purchasingPrice },
-                                    { header: 
-                                        
-                                        <span style={{display:"flex" , gap:6 , alignItems:"center", justifyContent:"start"}}>
-                AP Price 
-                <Popover
-      dismissButton={false}
-      position="top"
-      size="large"
-      triggerType="custom"
-      content={
-      <SpaceBetween>
-<strong>Current Purchase Price</strong>
-<span>The current purchase price is the latest cost used across all platforms for consistency.</span>
-      </SpaceBetween>
-      }
-    >
-     <Icon name='status-info'/>
-    </Popover>
-
-          </span>
-                                        ,cell: item => <p>Rs 12</p> },
-                                    { header: 'Adjust Quantity', cell: item =>
-                                    <Input  
-                
-                                    value={item.quantity}
-                                    onChange={({ detail }) => handleInputChange(item.id, 'quantity', detail.value)} 
-                                    />
-                                
-                                
-                                },
-                                    { header: 
-                                        
-                                        <span style={{display:"flex" , gap:6 , alignItems:"center", justifyContent:"start"}}>
-                AP Price 
-                <Popover
-      dismissButton={false}
-      position="top"
-      size="large"
-      triggerType="custom"
-      content={
-      <SpaceBetween>
-<strong>Current Purchase Price</strong>
-<span>The current purchase price is the latest cost used across all platforms for consistency.</span>
-      </SpaceBetween>
-      }
-    >
-     <Icon name='status-info'/>
-    </Popover>
-
-          </span>
-                                        
-                                        
+                                        , cell: item => <p>Rs 12</p>
+                                    },
+                                    {
+                                        header:
+                                            <span style={{ display: "flex", gap: 6, alignItems: "center", justifyContent: "start" }}>
+                                                Adjustment Quantity
+                                                <Popover
+                                                    dismissButton={false}
+                                                    position="top"
+                                                    size="large"
+                                                    triggerType="custom"
+                                                    content={
+                                                        <SpaceBetween>
+                                                            <strong>Adjustment Quantity</strong>
+                                                            <span>The quantity that will be adjusted for this item.</span>
+                                                        </SpaceBetween>
+                                                    }
+                                                >
+                                                    <Icon name='status-info' />
+                                                </Popover>
+                                            </span>
                                         , cell: item =>
-                                    <Input
-                                        // item.adjustPurchasePrice
-                                    value="Rs."
-
-                                    onChange={({ detail }) => handleInputChange(item.id, 'adjustPurchasePrice', detail.value)} 
-                                    /> 
-                                
-                                },
-                                    { header: 
-                                        
-                                        <span style={{display:"flex" , gap:6 , alignItems:"center", justifyContent:"start"}}>
-                AS Price 
-                <Popover
-      dismissButton={false}
-      position="top"
-      size="large"
-      triggerType="custom"
-      content={
-      <SpaceBetween>
-<strong>Current Purchase Price</strong>
-<span>The current purchase price is the latest cost used across all platforms for consistency.</span>
-      </SpaceBetween>
-      }
-    >
-     <Icon name='status-info'/>
-    </Popover>
-
-          </span>
-                                        , cell: item => 
-                                         <Input
-                                        // item.adjustSellingPrice
-                                         value="Rs."
-                                         onChange={({ detail }) => handleInputChange(item.id, 'adjustSellingPrice', detail.value)} 
-                                         /> 
-                                        },
-                                    { header: 'Action', cell: item =>
-                                    <Button variant='icon' iconName='remove'
-                                
-                                    onClick={() => handleDeleteItem(item.id)}
-                                    style={{ cursor: 'pointer' }}
-                                    name='remove'/>
-                                 },
-                                ]} 
-                                items={items}  // Display items in the main table
+                                            <Input
+                                                value={item.adjustQuantity || ""}
+                                                onChange={({ detail }) => handleInputChange(item.id, 'adjustQuantity', detail.value)}
+                                            />
+                                    },
+                                    {
+                                        header:
+                                            <span style={{ display: "flex", gap: 6, alignItems: "center", justifyContent: "start" }}>
+                                                AP Price
+                                                <Popover
+                                                    dismissButton={false}
+                                                    position="top"
+                                                    size="large"
+                                                    triggerType="custom"
+                                                    content={
+                                                        <SpaceBetween>
+                                                            <strong>Current Purchase Price</strong>
+                                                            <span>The current purchase price is the latest cost used across all platforms for consistency.</span>
+                                                        </SpaceBetween>
+                                                    }
+                                                >
+                                                    <Icon name='status-info' />
+                                                </Popover>
+                                            </span>
+                                        , cell: item => <Input ariaRequired value={item.adjustPurchasePrice || "Rs."} onChange={({ detail }) => handleInputChange(item.id, 'adjustPurchasePrice', detail.value)} />
+                                    },
+                                    {
+                                        header:
+                                            <span style={{ display: "flex", gap: 6, alignItems: "center", justifyContent: "start" }}>
+                                                AS Price
+                                                <Popover
+                                                    dismissButton={false}
+                                                    position="top"
+                                                    size="large"
+                                                    triggerType="custom"
+                                                    content={
+                                                        <SpaceBetween>
+                                                            <strong>Current Purchase Price</strong>
+                                                            <span>The current purchase price is the latest cost used across all platforms for consistency.</span>
+                                                        </SpaceBetween>
+                                                    }
+                                                >
+                                                    <Icon name='status-info' />
+                                                </Popover>
+                                            </span>
+                                        , cell: item => <Input value={item.adjustSellingPrice || "Rs."} onChange={({ detail }) => handleInputChange(item.id, 'adjustSellingPrice', detail.value)} />
+                                    },
+                                   
+                                    {
+                                        header: 'Action', cell: item =>
+                                            <Button variant='icon' iconName='remove' onClick={() => handleDeleteItem(item.id)} style={{ cursor: 'pointer' }} name='remove' />
+                                    },
+                                ]}
+                                items={items}
                                 loadingText='Loading Items'
-                                trackBy='name'
+                                trackBy='id'
                                 empty={
                                     <Box textAlign="center" color="inherit">
                                         <b>No Item</b>
-                                        <Box
-                                            padding={{ bottom: "s" }}
-                                            variant="p"
-                                            color="inherit"
-                                        >
-                                          No Item to display
+                                        <Box padding={{ bottom: "s" }} variant="p" color="inherit">
+                                            No Item to display
                                         </Box>
                                         <Button onClick={() => setVisible(true)} iconName="add-plus">
                                             Add Items
                                         </Button>
                                     </Box>
                                 }
-
                             />
                         </Container>
                     </div>
@@ -365,8 +447,14 @@ const CreateNewAdjustments = () => {
                 visible={visible}
                 closeAriaLabel="Close modal"
                 size="large"
-
                 header={
+                    <Header
+
+                    >
+                        Select Items
+                    </Header>
+                }
+                footer={
                     <Header
                         actions={
                             <SpaceBetween direction="horizontal" size="xs">
@@ -375,7 +463,7 @@ const CreateNewAdjustments = () => {
                             </SpaceBetween>
                         }
                     >
-                        Select Items
+
                     </Header>
                 }
             >
@@ -385,30 +473,24 @@ const CreateNewAdjustments = () => {
                             actions={
                                 <Pagination
                                     currentPageIndex={currentPageIndex}
-                                    onChange={({ detail }) =>
-                                        setCurrentPageIndex(detail.currentPageIndex)
-                                    }
+                                    onChange={({ detail }) => setCurrentPageIndex(detail.currentPageIndex)}
                                     pagesCount={5}
                                 />
                             }
                         >
                             <SpaceBetween direction='horizontal' size='xs'>
-                                <div style={{width:"400px"}}>
-                                <TextFilter
-                                    filteringText={filteringText}
-                                    filteringPlaceholder="Placeholder"
-                                    filteringAriaLabel="Placeholder"
-                                    onChange={({ detail }) =>
-                                        setFilteringText(detail.filteringText)
-                                    }
-                                />
-</div>
+                                <div style={{ width: "400px" }}>
+                                    <TextFilter
+                                        filteringPlaceholder="Find items"
+                                        filteringText={filteringText}
+                                        onChange={e => setFilteringText(e.detail.filteringText)}
+                                        countText={`Results: ${filteredModalItems.length}`}
+                                    />
+                                </div>
                                 <Select
                                     placeholder='Select Category'
                                     selectedOption={selectedOption}
-                                    onChange={({ detail }) =>
-                                        setSelectedOption(detail.selectedOption)
-                                    }
+                                    onChange={({ detail }) => setSelectedOption(detail.selectedOption)}
                                     options={[
                                         { label: "All", value: "all" },
                                         { label: "Fruits", value: "fruits" },
@@ -422,9 +504,9 @@ const CreateNewAdjustments = () => {
                     }
                     variant='borderless'
                     columnDefinitions={[
-                        { header: 'Item Code', cell: item => item.code },
+                        { header: "Item Code", sortingField:"Item Code", cell: (item) => "#"+ item.itemCode },
                         {
-                            header: 'Item name', cell: item => <div
+                            header: 'Item Name',sortingField:"Item Name", cell: item => <div
                                 style={{
                                     display: "flex",
                                     alignItems: "center",
@@ -432,9 +514,9 @@ const CreateNewAdjustments = () => {
                                 }}
                             >
                                 <img
-                                    src={item.images}
+                                    src={item.images[0]}
                                     alt={item.name}
-                                    style={{
+                                    style={{    
                                         width: "30px",
                                         height: "30px",
                                         marginRight: "10px",
@@ -443,11 +525,11 @@ const CreateNewAdjustments = () => {
                                 {item.name}
                             </div>
                         },
-                        { header: 'Stock on Hand', cell: item => item.stockOnHold },
-                        { header: 'CP Price', cell: item => item.purchasingPrice },
-                        { header: 'Minimum Selling Price', cell: item => item.minimumSellingPrice },
+                        { header: 'Stock on Hand', sortingField:"stock on hand", cell: item => item.stockQuantity + " Kg" },
+                        { header: 'Purchasing Price', cell: item => "Rs. " + item.purchasingPrice },
+                        { header: 'MSP', cell: item =>"Rs. " +item.msp },
                     ]}
-                    items={modalItems}
+                    items={data.items}
                     selectionType="multi"
                     selectedItems={selectedItems}
                     onSelectionChange={({ detail }) => setSelectedItems(detail.selectedItems)}
@@ -459,3 +541,5 @@ const CreateNewAdjustments = () => {
 };
 
 export default CreateNewAdjustments;
+
+

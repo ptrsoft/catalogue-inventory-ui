@@ -7,8 +7,8 @@ import {
   Container,
   Header,Flashbar
 } from "@cloudscape-design/components";
-import { resetPassword } from "Redux-Store/newpwd/newPwdThunk";
-
+import { resetPassword } from "Redux-Store/authenticate/newpwd/newPwdThunk";
+import { Navigate, useNavigate } from "react-router-dom";
 const NewPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -16,36 +16,57 @@ const NewPassword = () => {
   const [items, setItems] = React.useState([]);
  const [confirmationCode,setconfirmationCode]= React.useState([]);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.resetPwd);
   const email = useSelector((state) => state.forgotPwd.email);
   // const confirmationCode = useSelector((state) => state.otp.otp);
   const handleSubmit = () => {
     if (newPassword === confirmPassword) {
-      dispatch(resetPassword({ email, confirmationCode, newPassword },
-        setNewPassword("")),
-        setConfirmPassword(""),
-        setconfirmationCode(""),
-        setItems([
-          {
-            type: "success",
-            content: "Password has been changed Successfully!",
-            dismissible: true,
-            dismissLabel: "Dismiss message",
-            onDismiss: () => setItems([]),
-            id: "message_1"
-          }
-        ])
-      )
-      console.log(email)
-      console.log(confirmationCode)
-      console.log(newPassword)
+      dispatch(resetPassword({ email, confirmationCode, newPassword }))
+        .unwrap()
+        .then(() => {
+          // If the API call is successful
+          setItems([
+            {
+              type: "success",
+              content: "Password has been changed successfully!",
+              dismissible: true,
+              dismissLabel: "Dismiss message",
+              onDismiss: () => setItems([]),
+              id: "message_1",
+            },
+          ]);
+          // Reset fields
+          setNewPassword("");
+          setConfirmPassword("");
+          setconfirmationCode("");
+          
+          // Navigate to the dashboard
+          navigate("/app/dashboard");
+          
+          console.log(email)
+          console.log(confirmationCode)
+          console.log(newPassword)
+        })
+        .catch((error) => {
+          // If the API call fails, show error flashbar
+          setItems([
+            {
+              type: "error",
+              content: `Password reset failed: ${error.message}`,
+              dismissible: true,
+              dismissLabel: "Dismiss message",
+              onDismiss: () => setItems([]),
+              id: "message_2",
+            },
+          ]);
+        });
       setLocalError(""); 
-      // Clear local error if passwords match
     } else {
-      setLocalError("Passwords do not match!"); // Set local error if passwords do not match
+      setLocalError("Passwords do not match!");
     }
   };
-
+  
   // Extract the error message if the error is an object
   const errorMessage = typeof error === "string" ? error : error?.message;
 

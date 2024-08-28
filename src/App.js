@@ -5,7 +5,8 @@ import Views from "./Views/index";
 import Sidebar from "components/Sidebar";
 import { AppLayout } from "@cloudscape-design/components";
 import PTRLogo from "../src/assets/img/PTRLogo.png";
-
+import Signin from "Views/PreLogin/Signin";
+import { Navigate } from "react-router-dom";
 function App() {
   return (
     <Router>
@@ -85,6 +86,7 @@ function MainLayout() {
         navigation={!isAuthRoute && <Sidebar />}
         toolsHide={true}
         navigationHide={isAuthRoute}
+        navigationWidth={250}
         content={<MainContent />}
       />
     </>
@@ -94,6 +96,7 @@ function MainLayout() {
 function MainContent() {
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/auth/signin" />} />
       <Route path="*" element={<Views />} />
     </Routes>
   );

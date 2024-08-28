@@ -46,27 +46,3 @@ export const addProduct = createAsyncThunk("products/add", async (newProduct, { 
   }
 });
 
-// Upload an image using a presigned URL
-export const uploadImage = createAsyncThunk("products/uploadImage", async ({ fileName, fileType, file }, { rejectWithValue }) => {
-  try {
-    // Step 1: Get the presigned URL from the backend
-    const presignedUrlResponse = await postLoginService.get(config.GET_PRESIGNED_URL, {
-      fileName,
-      fileType,
-    });
-
-    const presignedUrl = presignedUrlResponse.data.presignedUrl;
-
-    // Step 2: Upload the image to S3 using the presigned URL
-    await axios.put(presignedUrl, file, {
-      headers: {
-        "Content-Type": fileType,
-      },
-    });
-
-    // Return the file name or the S3 URL if needed
-    return { fileName, s3Url: presignedUrl.split('?')[0] }; // The S3 URL without the query parameters
-  } catch (error) {
-    return rejectWithValue(error.response.data);
-  }
-});

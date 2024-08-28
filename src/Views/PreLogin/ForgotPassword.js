@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Flashbar,FormField, Input, Container, Header } from "@cloudscape-design/components";
-import { forgotPwd } from "Redux-Store/ForgotPwd/forgotPwdThunk";
+import { forgotPwd } from "Redux-Store/authenticate/ForgotPwd/forgotPwdThunk";
 import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 
 const ForgotPassword = () => {

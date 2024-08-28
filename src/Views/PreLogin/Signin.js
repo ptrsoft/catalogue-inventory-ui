@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { authSignIn } from "Redux-Store/authenticate/signin/signinThunk";
+
+import { Navigate, useNavigate } from "react-router-dom"; 
 import {
   Button,
   FormField,
@@ -11,6 +13,7 @@ import {
 } from "@cloudscape-design/components";
 
 const Signin = () => {
+  const navigate = useNavigate()
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
   const [items, setItems] = React.useState([]);
@@ -18,24 +21,40 @@ const Signin = () => {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    dispatch(authSignIn({ email, password },
-      setItems([
-        {
-          type: "success",
-          content: "Signin Successful!",
-          dismissible: true,
-          dismissLabel: "Dismiss message",
-          onDismiss: () => setItems([]),
-          id: "message_1"
-        }
-      ])
-    ))
-    
-
+    dispatch(authSignIn({ email, password }))
+      .unwrap()
+      .then(() => {
+        // If the API call is successful, show the success message and navigate to the dashboard
+        setItems([
+          {
+            type: "success",
+            content: "Signin Successful!",
+            dismissible: true,
+            dismissLabel: "Dismiss message",
+            onDismiss: () => setItems([]),
+            id: "message_1",
+          },
+        ]);
+        navigate("/app/dashboard"); // Navigate to the dashboard
+      })
+      .catch((error) => {
+        // Handle any errors, if needed
+        setItems([
+          {
+            type: "error",
+            content: `Signin Failed: ${error.message}`,
+            dismissible: true,
+            dismissLabel: "Dismiss message",
+            onDismiss: () => setItems([]),
+            id: "message_2",
+          },
+        ]);
+      });
   };
+  
 
   return (
-    <div style={{ paddingTop:"10vh"}}>
+    <div style={{ paddingTop:"5vh"}}>
       <Flashbar items={items} />
       <div
         style={{
@@ -47,9 +66,11 @@ const Signin = () => {
         <div
           style={{
             width:"23vw",
+            height:"53vh",
             borderRadius: "10px",
             backgroundColor: "white",
             boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
+            zIndex:"12929"
           }}
         >
           <Container variant="borderless">
@@ -62,9 +83,10 @@ const Signin = () => {
               <Header
                 variant="h3"
               >
-               <h1 style={{textShadow :"0px 1px, 1px 0px, 1px 1px"}}>Welcome Back!</h1> 
-               <span style={{fontSize:"small",color:"#8B8D97",fontWeight:"lighter",display:"flex",justifyContent:"center"}}>Login to our account</span>
-              </Header>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"center",width:"18vw"}}>
+               <h1 style={{textShadow :"0px 1px, 1px 0px, 1px 1px"}}>Welcome!</h1> 
+               <span style={{fontSize:"small",color:"#8B8D97",fontWeight:"lighter",}}>Login to our account</span>
+               </div></Header>
             </div>
             <form
               style={{ display: "flex", flexDirection: "column", gap: "10px" }}

@@ -7,7 +7,7 @@ import {
   Header,
 } from "@cloudscape-design/components";
 import { useDispatch } from "react-redux";
-import { setOtp } from "Redux-Store/otpVerify/otpVerifySlice";
+import { setOtp } from "Redux-Store/authenticate/otpVerify/otpVerifySlice";
 import { useNavigate } from "react-router-dom"; // or `useNavigate` if using react-router v6
 
 const OtpVerification = () => {

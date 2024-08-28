@@ -22,7 +22,7 @@ const pages = [
         label: "Items",
       },
       {
-        path: "/app/inventory",
+        path: "*",
         label: "Item Groups",
       },
       {
@@ -30,7 +30,7 @@ const pages = [
         label: "inventory Adjustments",
       },
       {
-        path: "/app/inventory",
+        path: "*",
         label: "Transfer",
       },
     ],

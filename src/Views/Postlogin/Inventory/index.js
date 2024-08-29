@@ -14,21 +14,27 @@ import Overview from "./drawerTabs/overview";
 import OrderHistory from "./drawerTabs/orderHistory";
 import Movement from "./drawerTabs/movement";
 import ItemVendor from "./drawerTabs/itemVendor";
-
+import Modal from "@cloudscape-design/components/modal";
 import {
   SpaceBetween,
   StatusIndicator,
   ButtonDropdown,
-  Pagination,
+  Pagination,Flashbar,
 } from "@cloudscape-design/components";
 const Inventory = () => {
   const [filteringText, setFilteringText] = React.useState("");
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
-  const [checked, setChecked] = React.useState(false); 
+  const [checked, setChecked] = React.useState(false);
   const [activeTabId, setActiveTabId] = React.useState("first");
   const [currentPageIndex, setCurrentPageIndex] = React.useState(1);
+  const [isModalVisible, setIsModalVisible] = React.useState(false);
+  const [productToToggle, setProductToToggle] = React.useState(null);
+  const [items, setItems] = React.useState([]);
+
   // Fetch products data from Redux store
+
+
   const products = useSelector((state) => state.products.products);
 
   const dispatch = useDispatch();
@@ -50,26 +56,49 @@ const Inventory = () => {
       </Box>
     );
   }
-  const handleToggleChange = (item) => {
-    const newStatus = !item.active;
-    dispatch(PutToggle({ id: item.id, active: newStatus })).then((response) => {
-      if (
-        response.meta.requestStatus === "fulfilled" &&
-        response.payload.status === 200
-      ) {
-        // Update the local state and Redux store only if the request was successful
+  const handleToggleClick = (product) => {
+    setProductToToggle(product);
+    setIsModalVisible(true);
+  };
+  const handleConfirmToggle = () => {
+    const newStatus = !productToToggle.active;
+    dispatch(PutToggle({ id: productToToggle.id, active: newStatus }))
+    .unwrap()
+      .then(() => {
+        // If the API call is successful, show the success message and navigate to the dashboard
+        setItems([
+          {
+            type: "success",
+            content: "Status changed successfully!",
+            dismissible: true,
+            dismissLabel: "Dismiss message",
+            onDismiss: () => setItems([]),
+            id: "message_1",
+          },
+        ]);
+        setIsModalVisible(false);
         dispatch(fetchProducts());
+      })
+      .catch((error) => {
+        // Handle any errors, if needed
+            dispatch(fetchProducts());
+        setItems([
+          {
+            type: "error",
+            content: `Failed to change status`,
+            dismissible: true,
+            dismissLabel: "Dismiss message",
+            onDismiss: () => setItems([]),
+            id: "message_2",
+          },
+        ]);
+      });
+    }
 
-        
-      } else {
-        // Revert back to the original state if the request fails
-        dispatch(fetchProducts());
-      }
-    });
-  
-  }
-  
-
+  const handleCancelToggle = () => {
+    setIsModalVisible(false);
+    setProductToToggle(null);
+  };
   if (status === "ERROR") {
     return (
       <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
@@ -89,12 +118,12 @@ const Inventory = () => {
     return stockAlert.toLowerCase().includes("low") ? "red" : "#0492C2";
   };
   const ITEMS_PER_PAGE = 10;
-   // Calculate the items for the current page
-   const startIndex = (currentPageIndex - 1) * ITEMS_PER_PAGE;
-   const endIndex = startIndex + ITEMS_PER_PAGE;
-   const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
- 
-   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  // Calculate the items for the current page
+  const startIndex = (currentPageIndex - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   // Open drawer with product details
   const handleProductClick = (product) => {
     setSelectedProduct(product);
@@ -109,6 +138,7 @@ const Inventory = () => {
 
   return (
     <div className="flex-col gap-3">
+      <Flashbar items={items}/>
       <div className="flex flex-col gap-3">
         <BreadcrumbGroup
           items={[
@@ -163,7 +193,7 @@ const Inventory = () => {
             <Container
               variant="borderless"
               size="xs"
-              header={<Header variant="h2">1921</Header>}
+              header={<Header variant="h2">{data.count}</Header>}
             >
               <b>All Products</b>
             </Container>
@@ -210,6 +240,24 @@ const Inventory = () => {
               <b>Expired</b>
             </Container>
           </div>
+          {isModalVisible && (
+          <Modal
+            onDismiss={handleCancelToggle}
+            visible={isModalVisible}
+            closeAriaLabel="Close modal"
+            header="Change Status"
+            footer={
+              <SpaceBetween direction="horizontal" size="s">
+                <Button onClick={handleCancelToggle}>Cancel</Button>
+                <Button variant="primary" onClick={handleConfirmToggle}>
+                  Ok
+                </Button>
+              </SpaceBetween>
+            }
+          >
+            Are you sure you want to change the status of this product?
+          </Modal>
+        )}
           <div style={{}}>
             <Pagination
               currentPageIndex={currentPageIndex}
@@ -297,7 +345,7 @@ const Inventory = () => {
               cell: (e) => (
                 <div style={{ display: "flex" }}>
                   <Toggle
-                    onChange={() => handleToggleChange(e)}
+                    onChange={() => handleToggleClick(e)}
                     checked={e.active}
                   >
                     {e.active ? "Active" : "Inactive"}
@@ -401,13 +449,14 @@ const Inventory = () => {
                 style={{ display: "flex", alignItems: "center", gap: "12px" }}
               >
                 <Toggle
-                  onChange={() => handleToggleChange(selectedProduct)}
+                  onChange={() => handleToggleClick(selectedProduct)}
                   checked={selectedProduct.active}
-                
-                  style={{ marginRight: "10px",
+                  style={{
+                    marginRight: "10px",
                     marginLeft: "10px",
-                    color: selectedProduct.status === "Inactive" ? "gray" : "black",
-                  }} 
+                    color:
+                      selectedProduct.status === "Inactive" ? "gray" : "black",
+                  }}
                 >
                   {selectedProduct.active ? "Active" : "Inactive"}
                 </Toggle>

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Textarea,
   Icon,
@@ -15,14 +15,17 @@ import {
   Checkbox,
   BreadcrumbGroup,
   FormField,
-  Flashbar
+  Flashbar,
+  Spinner,
 } from "@cloudscape-design/components";
-import { addProduct} from "Redux-Store/Products/ProductThunk";
+import { uploadImage } from "Redux-Store/uploadImage/uploadThunk";
+import { addProduct } from "Redux-Store/Products/ProductThunk";
 import UploadImage from "../../../../assets/img/UploadImage.png";
 import upload2 from "../../../../assets/img/upload2.png";
-import upload3 from "../../../../assets/img/upload3.png"
+import upload3 from "../../../../assets/img/upload3.png";
 const AddItem = () => {
-  // Form state
+  const { imageUrl, loading, error } = useSelector((state) => state.upload);
+
   const dispatch = useDispatch();
 
   const [name, setName] = React.useState("");
@@ -42,100 +45,118 @@ const AddItem = () => {
   const [imageUrl3, setImageUrl3] = React.useState("");
   const [store, setStore] = React.useState("");
   const [items, setItems] = React.useState([]);
+  const [imageLoading1, setImageLoading1] = React.useState(false);
+  const [imageLoading2, setImageLoading2] = React.useState(false);
+  const [imageLoading3, setImageLoading3] = React.useState(false);
+  const [isFormSubmitted, setIsFormSubmitted] = React.useState(false);
+  const [imageError, setImageError] = React.useState(false);
 
-  // Handle first image upload
   const handleImageUpload1 = async (event) => {
     const file = event.target.files[0];
-
     if (file) {
-      const fileName = encodeURIComponent(file.name);
       try {
-        const response = await fetch(
-          `https://lou294nkli.execute-api.us-east-1.amazonaws.com/uploadUrl?fileName=${fileName}`
-        );
-        const { uploadUrl } = await response.json();
-        // console.log("response", response.json());
-        console.log("url", uploadUrl.split("?")[0]);
-        const finalUrl = uploadUrl.split("?")[0];
-        const uploadResponse = await fetch(uploadUrl, {
-          method: "PUT",
-          body: file,
-        });
-
-        if (uploadResponse.ok) {
-          console.log("File uploaded successfully.");
-          setImageUrl1(finalUrl);
-          
-        } else {
-          console.error("Failed to upload the file.");
-        }
+        setImageLoading1(true);
+        const result = await dispatch(uploadImage(file)).unwrap();
+        setImageUrl1(result); // Update the state with the returned URL
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Failed to upload image 1:", error);
+      } finally {
+        setImageLoading1(false);
+        setImageError(false); // Clear error when an image is uploaded
+      }
+    }
+  };
+
+  const handleImageUpload2 = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      try {
+        setImageLoading2(true);
+        const result = await dispatch(uploadImage(file)).unwrap();
+        setImageUrl2(result); // Update the state with the returned URL
+      } catch (error) {
+        console.error("Failed to upload image 2:", error);
+      } finally {
+        setImageLoading2(false);
+      }
+    }
+  };
+
+  const handleImageUpload3 = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      try {
+        setImageLoading3(true);
+        const result = await dispatch(uploadImage(file)).unwrap();
+        setImageUrl3(result); // Update the state with the returned URL
+      } catch (error) {
+        console.error("Failed to upload image 3:", error);
+      } finally {
+        setImageLoading3(false);
       }
     }
   };
 
   // Handle second image upload
-  const handleImageUpload2 = async (event) => {
-    const file = event.target.files[0];
+  // const handleImageUpload2 = async (event) => {
+  //   const file = event.target.files[0];
 
-    if (file) {
-      const fileName = encodeURIComponent(file.name);
-      try {
-        const response = await fetch(
-          `https://lou294nkli.execute-api.us-east-1.amazonaws.com/uploadUrl?fileName=${fileName}`
-        );
-        const { uploadUrl } = await response.json();
-        // console.log("response", response.json());
-        console.log("url", uploadUrl.split("?")[0]);
-        const finalUrl = uploadUrl.split("?")[0];
-        const uploadResponse = await fetch(uploadUrl, {
-          method: "PUT",
-          body: file,
-        });
+  //   if (file) {
+  //     const fileName = encodeURIComponent(file.name);
+  //     try {
+  //       const response = await fetch(
+  //         `https://lou294nkli.execute-api.us-east-1.amazonaws.com/uploadUrl?fileName=${fileName}`
+  //       );
+  //       const { uploadUrl } = await response.json();
+  //       // console.log("response", response.json());
+  //       console.log("url", uploadUrl.split("?")[0]);
+  //       const finalUrl = uploadUrl.split("?")[0];
+  //       const uploadResponse = await fetch(uploadUrl, {
+  //         method: "PUT",
+  //         body: file,
+  //       });
 
-        if (uploadResponse.ok) {
-          console.log("File uploaded successfully upload 2.");
-          setImageUrl2(finalUrl);
-        } else {
-          console.error("Failed to upload the file.");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
+  //       if (uploadResponse.ok) {
+  //         console.log("File uploaded successfully upload 2.");
+  //         setImageUrl2(finalUrl);
+  //       } else {
+  //         console.error("Failed to upload the file.");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error:", error);
+  //     }
+  //   }
+  // };
+  const isFormValid = () => {
+    if (
+      !name ||
+      !selectedCategory ||
+      !selectedUnits ||
+      !purchasingPrice ||
+      !msp ||
+      !stockQuantity ||
+      (quantityOnHand && (!store || !quantity)) ||
+      !description ||
+      (addExpiry && !expiryDate) ||
+      !imageUrl1 ||
+      !imageUrl2 ||
+      !imageUrl3
+    ) {
+      return false;
     }
-  };
-  const handleImageUpload3 = async (event) => {
-    const file = event.target.files[0];
-
-    if (file) {
-      const fileName = encodeURIComponent(file.name);
-      try {
-        const response = await fetch(
-          `https://lou294nkli.execute-api.us-east-1.amazonaws.com/uploadUrl?fileName=${fileName}`
-        );
-        const { uploadUrl } = await response.json();
-        // console.log("response", response.json());
-        console.log("url", uploadUrl.split("?")[0]);
-        const finalUrl = uploadUrl.split("?")[0];
-        const uploadResponse = await fetch(uploadUrl, {
-          method: "PUT",
-          body: file,
-        });
-
-        if (uploadResponse.ok) {
-          console.log("File uploaded successfully upload3.");
-          setImageUrl3(finalUrl);
-        } else {
-          console.error("Failed to upload the file.");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    }
+    return true;
   };
   // Handle Save button click
   const handleSave = () => {
+    setIsFormSubmitted(true);
+    if (!imageUrl1) {
+      setImageError(true); // Set error if no image is uploaded
+      return;
+    }
+    if (!isFormValid()) {
+      return; // Exit if the form is invalid
+    }
+
     const formattedExpiryDate = expiryDate
       ? new Date(expiryDate).toISOString()
       : null;
@@ -164,8 +185,8 @@ const AddItem = () => {
             dismissible: true,
             dismissLabel: "Dismiss message",
             onDismiss: () => setItems([]),
-            id: "message_1"
-          }
+            id: "message_1",
+          },
         ]);
         setName("");
         setSelectedCategory(null);
@@ -183,8 +204,9 @@ const AddItem = () => {
         setImageUrl2("");
         setImageUrl3("");
         setStore("");
+        setIsFormSubmitted(false);
       })
-      
+
       .catch((error) => {
         console.error("Failed to add item:", error);
       });
@@ -192,7 +214,7 @@ const AddItem = () => {
 
   return (
     <div>
-            <Flashbar items={items} />
+      <Flashbar items={items} />
       <div style={{ paddingLeft: "20px" }}>
         <BreadcrumbGroup
           items={[
@@ -237,7 +259,10 @@ const AddItem = () => {
             <ColumnLayout minColumnWidth={45} columns={2} gutter={20}>
               <Form>
                 <SpaceBetween direction="vertical" size="l">
-                  <FormField label="Item Name">
+                  <FormField
+                    label="Item Name"
+                    errorText={isFormSubmitted && !name && "Required"}
+                  >
                     <Input
                       size="xs"
                       placeholder="Input Item Name"
@@ -247,8 +272,14 @@ const AddItem = () => {
                   </FormField>
                   <div style={{ display: "flex", gap: "15px" }}>
                     <div style={{ width: "150px" }}>
-                      <FormField label="Category">
+                      <FormField
+                        label="Category"
+                        errorText={
+                          isFormSubmitted && !selectedCategory && "Required"
+                        }
+                      >
                         <Select
+                          required
                           selectedOption={selectedCategory}
                           onChange={({ detail }) =>
                             setSelectedCategory(detail.selectedOption)
@@ -263,7 +294,12 @@ const AddItem = () => {
                       </FormField>
                     </div>
                     <div style={{ width: "160px" }}>
-                      <FormField label="Units">
+                      <FormField
+                        label="Units"
+                        errorText={
+                          isFormSubmitted && !selectedUnits && "Required"
+                        }
+                      >
                         <Select
                           placeholder="Select Unit"
                           selectedOption={selectedUnits}
@@ -278,8 +314,12 @@ const AddItem = () => {
                       </FormField>
                     </div>
                   </div>
-                  <FormField label="Quantity In Stock">
+                  <FormField
+                    label="Quantity In Stock"
+                    errorText={isFormSubmitted && !stockQuantity && "Required"}
+                  >
                     <Input
+                      required
                       size="xs"
                       placeholder="Quantity available in stock"
                       value={stockQuantity}
@@ -287,8 +327,14 @@ const AddItem = () => {
                     />
                   </FormField>
                   <div style={{ display: "flex", gap: "15px" }}>
-                    <FormField label="Purchasing Price">
+                    <FormField
+                      label="Purchasing Price"
+                      errorText={
+                        isFormSubmitted && !purchasingPrice && "Required"
+                      }
+                    >
                       <Input
+                        required
                         size="3xs"
                         placeholder="Input Purchasing Price"
                         value={purchasingPrice}
@@ -297,8 +343,12 @@ const AddItem = () => {
                         }
                       />
                     </FormField>
-                    <FormField label="Min Selling Price">
+                    <FormField
+                      label="Min Selling Price"
+                      errorText={isFormSubmitted && !msp && "Required"}
+                    >
                       <Input
+                        required
                         size="3xs"
                         placeholder="Min Selling Price"
                         value={msp}
@@ -320,8 +370,12 @@ const AddItem = () => {
                   {quantityOnHand && (
                     <div style={{ display: "flex", gap: "15px" }}>
                       <div style={{ width: "200px" }}>
-                        <FormField label="Quantity In Stock">
+                        <FormField
+                          label="Quantity In Stock"
+                          errorText={isFormSubmitted && !store && "Required"}
+                        >
                           <Select
+                            required
                             value={store}
                             selectedOption={store} // Example, replace with relevant state
                             onChange={({ detail }) =>
@@ -335,12 +389,16 @@ const AddItem = () => {
                         </FormField>
                       </div>
                       <div style={{ display: "flex", gap: "8px" }}>
-                        <FormField label="Quantity">
+                        <FormField
+                          label="Quantity"
+                          errorText={isFormSubmitted && !quantity && "Required"}
+                        >
                           <Input
                             size="3xs"
                             placeholder="Enter Quantity"
                             value={quantity}
                             onChange={({ detail }) => setQuantity(detail.value)}
+                            required
                           />
                         </FormField>
                         <div style={{ paddingTop: "30px" }}>
@@ -352,25 +410,36 @@ const AddItem = () => {
                 </SpaceBetween>
               </Form>
               <SpaceBetween direction="vertical" size="l">
-                <FormField label="Product Description">
+                <FormField
+                  label="Product Description"
+                  errorText={isFormSubmitted && !description && "Required"}
+                >
                   <Textarea
                     rows={5}
                     onChange={({ detail }) => setDescription(detail.value)}
                     value={description}
+                    required
                   />
                 </FormField>
+              <FormField
+                errorText={isFormSubmitted && !expiryDate && "Required"}
+              >
                 <Toggle
                   onChange={({ detail }) => setAddExpiry(detail.checked)}
                   checked={addExpiry}
                 >
                   Add Expiry
-                </Toggle>
+                </Toggle></FormField>
                 {addExpiry && (
-                  <FormField label="Expiry Date">
+                  <FormField
+                    label="Expiry Date"
+                    errorText={isFormSubmitted && !expiryDate && "Required"}
+                  >
                     <Input
                       type="date"
                       onChange={({ detail }) => setExpiryDate(detail.value)}
                       value={expiryDate}
+                      required
                     />
                   </FormField>
                 )}
@@ -413,8 +482,30 @@ const AddItem = () => {
                   id="upload-button-1"
                   style={{ display: "none" }}
                   onChange={handleImageUpload1}
+                  required
                 />
+                {imageLoading1 && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "35%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      background: "rgba(255, 255, 255, 0.7)",
+                      borderRadius: "50%",
+                      padding: "10px",
+                    }}
+                  >
+                    <Spinner size="large" />
+                  </div>
+                )}
+                {isFormSubmitted && imageError && (
+                  <div style={{ color: "red", marginTop: "10px" }}>
+                    Image is required
+                  </div>
+                )}
               </div>
+
               <div
                 style={{ display: "flex", gap: "30px", paddingLeft: "20px" }}
               >
@@ -436,28 +527,59 @@ const AddItem = () => {
                     id="upload-button-2"
                     style={{ display: "none" }}
                     onChange={handleImageUpload2}
+                    required
                   />
+                  {imageLoading2 && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "80%",
+                        left: "27%",
+                        transform: "translate(-80%, -50%)",
+                        background: "rgba(255, 255, 255, 0.7)",
+                        borderRadius: "50%",
+                        padding: "10px",
+                      }}
+                    >
+                      <Spinner size="normal" />
+                    </div>
+                  )}
                 </div>
                 <div
-                    style={{
-                      cursor: "pointer",
-                      border: "1px dashed gray",
-                      width: "120px",
-                      height: "100px",
-                      borderRadius: "8px",
-                      marginTop: "20px",
-                    }}
+                  style={{
+                    cursor: "pointer",
+                    // border: "1px dashed gray",
+                    width: "100px",
+                    height: "100px",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
+                >
+                  {imageLoading3 && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "80%",
+                        left: "60%",
+                        transform: "translate(-50%, -50%)",
+                        background: "rgba(255, 255, 255, 0.7)",
+                        borderRadius: "50%",
+                        padding: "10px",
+                      }}
                     >
+                      <Spinner size="normal" />
+                    </div>
+                  )}
                   <label htmlFor="upload-button-3">
                     <img
-                    style={{
-                      height: "98px",
-                      borderRadius: "8px",
-                    }}
-                      src={imageUrl3 || upload3}
+                      style={{
+                        height: "98px",
+                        borderRadius: "8px",
+                      }}
+                      src={imageUrl3 || upload2}
                       alt=""
-                       height="full"
-                       width="full"
+                      height="full"
+                      width="full"
                     />
                   </label>
                   <input
@@ -465,6 +587,7 @@ const AddItem = () => {
                     id="upload-button-3"
                     style={{ display: "none" }}
                     onChange={handleImageUpload3}
+                    required
                   />
                 </div>
               </div>

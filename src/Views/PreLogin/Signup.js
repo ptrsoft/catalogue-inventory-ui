@@ -1,249 +1,178 @@
-import React, { Component } from "react";
-import {
-  Box,
-  Button,
-  Checkbox,
-  Container,
-  FormControlLabel,
-  Grid,
-  Link,
-  TextField,
-  Typography,
-  IconButton,
-  InputAdornment,
-} from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { ValidationEngine} from "Utils/helperFunctions";
-const validationSchema = {
-  f_name: [
-    {
-      message: "Please enter Name",
-      type: ValidationEngine.type.MANDATORY,
-    },
-  ],
-  l_name: [
-    {
-      message: "Please enter Name",
-      type: ValidationEngine.type.MANDATORY,
-    },
-  ],
-  email: [
-    {
-      message: "Please enter Email",
-      type: ValidationEngine.type.MANDATORY,
-    },
-    {
-      message: "Please valid Email",
-      type: ValidationEngine.type.REGEX,
-      regex: ValidationEngine.EMAIL_REGEX,
-    },
-  ],
-  password: [
-    {
-      message: "Please enter Password",
-      type: ValidationEngine.type.MANDATORY,
-    },
-  ],
-};
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, FormField, Input, Container, Header } from "@cloudscape-design/components";
+import { signup } from "Redux-Store/signup/signupThunk";// Adjust the path as necessary
 
-class Signup extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showPassword: false,
-      f_name: "",
-      l_name: "",
-      email: "",
-      password: "",
+const SignUp = () => {
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [items, setItems] = React.useState([]);
 
-      isSubmitted: false,
-    };
-  }
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.signup);
 
-  handleClickShowPassword = () => {
-    this.setState((prevState) => ({
-      showPassword: !prevState.showPassword,
-    }));
+  const handleSubmit = () => {
+    const params = { name, role, email, password };
+    
+    dispatch(signup(params))
+    .unwrap()
+    .then(() => {
+        console.log("");
+        setEmail("")
+        setItems([
+          {
+            type: "success",
+            content: " Successfully!",
+            dismissible: true,
+            dismissLabel: "Dismiss message",
+            onDismiss: () => setItems([]),
+            id: "message_1"
+          }
+        ])})
+  
+    console.log(params);
   };
+  
 
-  handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
-  handleSignup = () => {
-    const errorData = this.validateForm();
-    this.setState({
-      isSubmitted: true,
-    });
-
-    if (errorData.isValid) {
-      // api call
-      // this.props.Signup({})
-    }
-  };
-
-  validateForm = () => {
-    const { f_name, l_name, email, password } = this.state;
-    const error = ValidationEngine.validate(validationSchema, {
-      f_name: f_name,
-      l_name: l_name,
-      email: email,
-      password: password,
-    });
-
-    return error;
-  };
-  handleChange = (event) => {
-    const { name, value, type, checked } = event.target;
-    const val = type === "checkbox" ? checked : value;
-    this.setState({ [name]: val });
-  };
-
-  render() {
-    const errorData = this.validateForm();
-
-    const { showPassword, f_name, l_name, email, password, isSubmitted } =
-      this.state;
-
-    return (
-      <Container component="main" maxWidth="xs">
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+  return (
+    <div style={{ position: "relative", minHeight: "100vh" }}>
+      <div style={{ paddingTop: "10vh", display: "flex", justifyContent: "center" }}>
+        <div
+          style={{
+            padding: "0 15px",
+            borderRadius: "10px",
+            backgroundColor: "white",
+            boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
+            zIndex: 2,
+            width: "26vw",
           }}
         >
-          <Typography component="h1" variant="h5">
-            Sign up to <span style={{ color: "#9C27B0" }}>Rasi Lab</span>
-          </Typography>
-          <Box component="form" noValidate sx={{ mt: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="fname"
-                  name="f_name"
-                  required
-                  fullWidth
-                  id="f_name"
-                  label="First Name"
-                  value={f_name}
-                  error={!errorData.f_name.isValid && isSubmitted}
-                  helperText={isSubmitted ? errorData.f_name.message : ""}
-                  onChange={this.handleChange}
-                  autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="l_name"
-                  label="Last Name"
-                  value={l_name}
-                  error={!errorData.l_name.isValid && isSubmitted}
-                  helperText={isSubmitted ? errorData.l_name.message : ""}
-                  onChange={this.handleChange}
-                  name="l_name"
-                  autoComplete="lname"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                {/* <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  value={email}
-                  label="Email Address"
-                  name="email"
-                  error={!errorData.email.isValid && isSumitted}
-                  helperText={isSumitted ? errorData.email.message : ""}
-                  onChange={this.handleChange}
-                  autoComplete="email"
-                /> */}
-                <TextField
-               
-                  label="Email"
-                  variant="outlined"
-                  fullWidth
-                  name="email"
-                  value={email}
-                  onChange={this.handleChange}
-                  error={!errorData.email.isValid && isSubmitted}
-                  helperText={isSubmitted ? errorData.email.message : ""}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  error={!errorData.password.isValid && isSubmitted}
-                  helperText={isSubmitted ? errorData.password.message : ""}
-                  value={password}
-                  onChange={this.handleChange}
-                  name="password"
-                  label="Password"
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  autoComplete="new-password"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={this.handleClickShowPassword}
-                          onMouseDown={this.handleMouseDownPassword}
-                        >
-                          {showPassword ? <Visibility /> : <VisibilityOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
+          <Container variant="borderless">
+            <div style={{ marginBottom: "20px", padding: "0 0 0 0" }}>
+              <Header variant="h1">
+                <div
+                  style={{
+                    textShadow: "0px 1px, 1px 0px, 1px 1px",
+                    display: "flex",
+                    justifyContent: "center",
                   }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
-                  }
-                  label="I have read and agree to the Terms of Service"
-                />
-              </Grid>
-            </Grid>
-            <Button
-              onClick={this.handleSignup}
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2, backgroundColor: "#9C27B0" }}
+                >
+                  Sign Up!
+                </div>
+                <span
+                  style={{
+                    fontSize: "small",
+                    color: "#8B8D97",
+                    fontWeight: "lighter",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  Sign up with your email and password.
+                </span>
+              </Header>
+            </div>
+            <form
+              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit();
+              }}
             >
-              Sign Up
-            </Button>
-            <Button
-              fullWidth
-              variant="contained"
-              startIcon={
-                <img
-                  src="https://img.icons8.com/color/16/000000/google-logo.png"
-                  alt="Google"
+              <FormField label="Name">
+                <Input
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(e) => setName(e.detail.value)}
                 />
-              }
-              sx={{ mb: 2, backgroundColor: "#4285F4", color: "#fff" }}
+              </FormField>
+              <FormField label="Role">
+                <Input
+                  placeholder="Enter your role"
+                  value={role}
+                  onChange={(e) => setRole(e.detail.value)}
+                />
+              </FormField>
+              <FormField label="Email Address">
+                <Input
+                  placeholder="Enter a valid Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.detail.value)}
+                />
+              </FormField>
+              <FormField label="Password">
+                <Input
+                  placeholder="Enter password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.detail.value)}
+                />
+              </FormField>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  padding: "2vh 2vw 0 2vw",
+                }}
+              >
+                <Button
+                  fullWidth
+                  ariaExpanded
+                  variant="primary"
+                  onClick={handleSubmit}
+                  disabled={loading} // Disable button while loading
+                >
+                  {loading ? "Verifying..." : "Verify"}
+                </Button>
+              </div>
+            </form>
+          </Container>
+        </div>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          overflow: "hidden",
+          lineHeight: 0,
+        }}
+      >
+        <svg
+          viewBox="0 0 1130 320"
+          xmlns="http://www.w3.org/2000/svg"
+                    // style={{ display: "block", width: "100%", height: "100%" }}
+        >
+          <defs>
+            <linearGradient
+              id="gradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
             >
-              Sign up with Google
-            </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="#" variant="body2">
-                  Already have an account? Sign In Now
-                </Link>
-              </Grid>
-            </Grid>
-          </Box>
-        </Box>
-      </Container>
-    );
-  }
-}
+              <stop
+                offset="0%"
+                style={{ stopColor: "#9f4bad", stopOpacity: 1 }}
+              />
+              <stop
+                offset="50%"
+                style={{ stopColor: "#f8a4b8", stopOpacity: 1 }}
+              />
+              <stop
+                offset="100%"
+                style={{ stopColor: "#e2e290", stopOpacity: 1 }}
+              />
+            </linearGradient>
+          </defs>
+          <path fill="url(#gradient)" fill-opacity="0.98" d="M0,160L60,176C120,192,240,224,360,213.3C480,203,600,149,720,117.3C840,85,960,75,1080,85.3C1200,96,1320,128,1380,144L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
 
-export default Signup;
+        </svg>
+      </div>
+    </div>
+  );
+};
+
+export default SignUp;

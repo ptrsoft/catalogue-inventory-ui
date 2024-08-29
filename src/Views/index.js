@@ -22,6 +22,9 @@ const PathNotFOund = lazy(() => import("./PathNotFound"));
 const Signin = lazy(() => import("./PreLogin/Signin"));
 const Signup = lazy(() => import("./PreLogin/Signup"));
 const ForgotPassword = lazy(() => import("./PreLogin/ForgotPassword"));
+const OtpVerification = lazy(() => import("./PreLogin/otpVerification"));
+const NewPassword = lazy(() => import("./PreLogin/newPassword"));
+
 const Views = () => {
   return (
     <>
@@ -81,6 +84,16 @@ const Views = () => {
             exact
             path={`${PREFIX_AUTH_PATH}/forgot-password`}
             element={<ForgotPassword />}
+          />
+          <Route
+            exact
+            path={`${PREFIX_AUTH_PATH}/otpverification`}
+            element={<OtpVerification />}
+          />
+          <Route
+            exact
+            path={`${PREFIX_AUTH_PATH}/newpassword`}
+            element={<NewPassword />}
           />
           <Route exact path="/app/inventory" element={<Inventory />} />
           <Route

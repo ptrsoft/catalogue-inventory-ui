@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchProducts, uploadImage,PutToggle  } from './ProductThunk';
+import { fetchProducts, PutToggle  } from './ProductThunk';
 import status from "Redux-Store/Constants";
 
 const productsSlice = createSlice({
@@ -31,17 +31,6 @@ const productsSlice = createSlice({
       .addCase(fetchProducts.rejected, (state, action) => {
         state.products.status = status.FAILURE;
         state.products.error = action.error.message;
-      })
-      .addCase(uploadImage.pending, (state) => {
-        state.status =status.IN_PROGRESS;
-      })
-      .addCase(uploadImage.fulfilled, (state, action) => {
-        state.status = status.SUCCESS;
-        // You can save the image URL if needed
-      })
-      .addCase(uploadImage.rejected, (state, action) => {
-        state.status =  status.FAILURE;
-        state.error = action.payload;
       })
          // Toggle Product Active/Inactive Status
          .addCase(PutToggle.pending, (state) => {

@@ -2,6 +2,7 @@ import React from "react";
 import TopNavigation from "@cloudscape-design/components/top-navigation";
 import Logo from "../../../src/assets/images/ptrLogo.png"
 import { Input } from "@cloudscape-design/components";
+import logo from '../../assets/img/logo_PTR 1.png';
 const Header = () => {
   return (
     <TopNavigation

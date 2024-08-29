@@ -17,6 +17,7 @@ const NewAdjustment = () => {
         }
     }, [dataToSave]);
 
+
     const [visible, setVisible] = React.useState(false);
 
     const items = [
@@ -31,10 +32,6 @@ const NewAdjustment = () => {
         navigate("/app/inventory/adjustments");
     };
 
-    const columnDefinitions = [
-        // Your column definitions
-    ];
-
     // Function to handle API request
     const sendAdjustmentData = async () => {
         if (!dataToSave) return;
@@ -44,16 +41,16 @@ const NewAdjustment = () => {
             reason: dataToSave.formData.reason.label,
             description: dataToSave.formData.description,
             location: dataToSave.formData.location.label,
-            items: items.map(item => ({
+            items: dataToSave.itemsData.map(item => ({
                 id: item.id,
                 itemCode: item.code,
                 name: item.name,
-                stock: parseInt(item.stockOnHold.replace(' kg', '')), // Assuming stock is in kg and needs to be a number
-                currentCompareAtPrice: parseInt(item.purchasingPrice.replace('Rs. ', '')), // Parsing price
-                currentOnlineStorePrice: parseInt(item.purchasingPrice.replace('Rs. ', '')), // Assuming current online store price is same as purchasing price
-                adjustQuantity: 0, // Set this value based on your need
-                newPurchasingPrice: parseInt(item.purchasingPrice.replace('Rs. ', '')), // Example new price
-                newOnlineStorePrice: parseInt(item.purchasingPrice.replace('Rs. ', '')) // Example new price
+                stock: parseInt(item.stockOnHold), // Assuming stock is in kg and needs to be a number
+                currentSellingprice: parseInt(item.sellingprice), // Parsing price
+                currentpurchaseprice: parseInt(item.purchasingPrice), // Assuming current online store price is same as purchasing price
+                adjustQuantity:parseInt(item.adjustQuantity) , // Set this value based on your need
+                newPurchasingPrice: parseInt(item.adjustPurchasePrice), // Example new price
+                newsellingprice: parseInt(item.adjustSellingPrice) // Example new price
             }))
         };
         console.log('Request Body:', requestBody);
@@ -127,8 +124,218 @@ const NewAdjustment = () => {
                         }>
                             <Table
                                 variant='borderless'
-                                columnDefinitions={columnDefinitions}
-                                items={items}
+                                columnDefinitions={[
+                                    { header: "Item Code", cell: (item) => "#" + item.code },
+                                    {
+                                      header: "Item name",
+                                      cell: (item) => (
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            cursor: "pointer",
+                                          }}
+                                        >
+                                          <img
+                                            src={item.images}
+                                            alt={item.name}
+                                            style={{
+                                              width: "30px",
+                                              height: "30px",
+                                              marginRight: "10px",
+                                            }}
+                                          />
+                                          {item.name}
+                                        </div>
+                                      ),
+                                    },
+                                    {
+                                      header: "Stock on Hand",
+                                      cell: (item) => item.stockOnHold + " Kg",
+                                    },
+                                    {
+                                      header: (
+                                        <span
+                                          style={{
+                                            display: "flex",
+                                            gap: 6,
+                                            alignItems: "center",
+                                            justifyContent: "start",
+                                          }}
+                                        >
+                                          CP Price
+                                          <Popover
+                                            dismissButton={false}
+                                            position="top"
+                                            size="large"
+                                            triggerType="custom"
+                                            content={
+                                              <SpaceBetween>
+                                                <strong>Current Purchase Price</strong>
+                                                <span>
+                                                  The current purchase price is the latest cost
+                                                  used across all platforms for consistency.
+                                                </span>
+                                              </SpaceBetween>
+                                            }
+                                          >
+                                            <Icon name="status-info" />
+                                          </Popover>
+                                        </span>
+                                      ),
+                                      cell: (item) => "Rs. " + item.purchasingPrice,
+                                    },
+                                    {
+                                      header: (
+                                        <span
+                                          style={{
+                                            display: "flex",
+                                            gap: 6,
+                                            alignItems: "center",
+                                            justifyContent: "start",
+                                          }}
+                                        >
+                                          CS Price
+                                          <Popover
+                                            dismissButton={false}
+                                            position="top"
+                                            size="large"
+                                            triggerType="custom"
+                                            content={
+                                              <SpaceBetween>
+                                                <strong>Current Selling Price</strong>
+                                                <span>
+                                                  Current Selling Price: the latest price at which
+                                                  an item is sold.
+                                                </span>
+                                              </SpaceBetween>
+                                            }
+                                          >
+                                            <Icon name="status-info" />
+                                          </Popover>
+                                        </span>
+                                      ),
+                            
+                                      cell: (item) => (
+                                        
+                                        item.sellingprice
+                                  
+                                    ),
+                                    },
+                                    {
+                                      header: (
+                                        <span
+                                          style={{
+                                            display: "flex",
+                                            gap: 6,
+                                            alignItems: "center",
+                                            justifyContent: "start",
+                                          }}
+                                        >
+                                          Adjustment Quantity
+                                          <Popover
+                                            dismissButton={false}
+                                            position="top"
+                                            size="large"
+                                            triggerType="custom"
+                                            content={
+                                              <SpaceBetween>
+                                                <strong>Adjustment Quantity</strong>
+                                                <span>
+                                                  The quantity that will be adjusted for this
+                                                  item.
+                                                </span>
+                                              </SpaceBetween>
+                                            }
+                                          >
+                                            <Icon name="status-info" />
+                                          </Popover>
+                                        </span>
+                                      ),
+                                      cell: (item) => (
+                                        
+                                          item.adjustQuantity 
+                                    
+                                      ),
+                                    },
+                                    {
+                                      header: (
+                                        <span
+                                          style={{
+                                            display: "flex",
+                                            gap: 6,
+                                            alignItems: "center",
+                                            justifyContent: "start",
+                                          }}
+                                        >
+                                          AP Price
+                                          <Popover
+                                            dismissButton={false}
+                                            position="top"
+                                            size="large"
+                                            triggerType="custom"
+                                            content={
+                                              <SpaceBetween>
+                                                <strong>Adjust Purchase Price</strong>
+                                                <span>
+                                                Adjust Purchase Price: Adjust the cost for purchasing items.
+                                                </span>
+                                              </SpaceBetween>
+                                            }
+                                          >
+                                            <Icon name="status-info" />
+                                          </Popover>
+                                        </span>
+                                      ),
+                                      cell: (item) => (
+                                     
+                                          item.adjustPurchasePrice || "Rs."
+                                      
+                                        
+                                      ),
+                                    },
+                                    {
+                                      header: (
+                                        <span
+                                          style={{
+                                            display: "flex",
+                                            gap: 6,
+                                            alignItems: "center",
+                                            justifyContent: "start",
+                                          }}
+                                        >
+                                          AS Price
+                                          <Popover
+                                            dismissButton={false}
+                                            position="top"
+                                            size="large"
+                                            triggerType="custom"
+                                            content={
+                                              <SpaceBetween>
+                                                <strong>Adjust Selling Price</strong>
+                                                <span>
+                                                Adjust Selling Price: Adjust the price for selling items.
+                                                </span>
+                                              </SpaceBetween>
+                                            }
+                                          >
+                                            <Icon name="status-info" />
+                                          </Popover>
+                                        </span>
+                                      ),
+                                      cell: (item) => (
+                                      
+                                        item.adjustSellingPrice || "Rs."
+                                    
+                                        
+                                      ),
+                                    },
+                            
+                                  
+                                    
+                                ]
+                            }
+                                items={dataToSave?.itemsData}
                             />
                         </Container>
                     </div>

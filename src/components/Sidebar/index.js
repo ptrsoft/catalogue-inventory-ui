@@ -2,63 +2,6 @@
 import { SideNavigation } from "@cloudscape-design/components";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const pages = [
-  {
-    path: "/app/dashboard",
-    label: "Dashboard",
- 
-  },
-  {
-    path: "/app/inventory",
-    label: "Inventory",
-    children: [
-      {
-        path: "/app/inventory",
-        label: "Items",
-      },
-      {
-        path: "*",
-        label: "Item Groups",
-      },
-      {
-        path: "/app/inventory/inventoryAdjustments",
-        label: "inventory Adjustments",
-      },
-      {
-        path: "*",
-        label: "Transfer",
-      },
-    ],
-  },
-  {
-    path: "/app/purchaseorders",
-    label: "Purchase",
-  },
-  {
-    path: "/app/customers",
-    label: "Orders",
-  },
-  {
-    path: "/app/customers",
-    label: "Fulfillment",
-
-  },
-];
-
-const bottomPages = [
-  {
-    type: "link",
-    text: "Setttings",
-    href: "#/notifications",
-  },
-  {
-    type: "link",
-    text: "Documentation",
-    href: "https://example.com",
-    external: true,
-  },
-];
-
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();

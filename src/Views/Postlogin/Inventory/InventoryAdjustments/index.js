@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 import { fetchAdjustments } from 'Redux-Store/InventoryAdjustments/InventoryAdjustmentsThunk';
 import { format } from 'date-fns'; // Import date-fns format function
-import { useLocation } from 'react-router-dom';
+
 
 
 const InventoryAdjustments = () => {

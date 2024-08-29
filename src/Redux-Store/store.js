@@ -17,7 +17,7 @@ const store = configureStore({
     customers: CustomersReducer,
     products: ProductsSlice,
     ordersInInventory :orderReducer,
-    InvertorAdjustments: InventoryAdjustmentsSlice
+    InvertorAdjustments: InventoryAdjustmentsSlice,
     auth:authReducer,
     forgotPwd : forgotPwdReducer,
     resetPwd:resetPwdSlice,

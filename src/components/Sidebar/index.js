@@ -6,8 +6,7 @@ const pages = [
   {
     path: "/app/dashboard",
     label: "Dashboard",
-    icon: Home,
-    iconActive: HomeActive,
+ 
   },
   {
     path: "/app/inventory",

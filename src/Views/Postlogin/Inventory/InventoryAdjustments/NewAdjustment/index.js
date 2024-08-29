@@ -1,8 +1,10 @@
+
 import { Box, BreadcrumbGroup, Button, Container, Form, FormField, Grid, Header, Icon, Input, Modal, Popover, SpaceBetween, Table, Textarea } from '@cloudscape-design/components';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
+// importing create adjustmnent data using routes
 const NewAdjustment = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -64,7 +66,6 @@ const NewAdjustment = () => {
                 },
                 body: JSON.stringify(requestBody),
             });
-
             if (response.ok) {
                 const result = await response.json();
                 console.log('API response:', result);

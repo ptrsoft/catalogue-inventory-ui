@@ -421,12 +421,15 @@ const AddItem = () => {
                     required
                   />
                 </FormField>
+              <FormField
+                errorText={isFormSubmitted && !expiryDate && "Required"}
+              >
                 <Toggle
                   onChange={({ detail }) => setAddExpiry(detail.checked)}
                   checked={addExpiry}
                 >
                   Add Expiry
-                </Toggle>
+                </Toggle></FormField>
                 {addExpiry && (
                   <FormField
                     label="Expiry Date"
@@ -545,8 +548,8 @@ const AddItem = () => {
                 <div
                   style={{
                     cursor: "pointer",
-                    border: "1px dashed gray",
-                    width: "120px",
+                    // border: "1px dashed gray",
+                    width: "100px",
                     height: "100px",
                     borderRadius: "8px",
                     marginTop: "20px",
@@ -573,7 +576,7 @@ const AddItem = () => {
                         height: "98px",
                         borderRadius: "8px",
                       }}
-                      src={imageUrl3 || upload3}
+                      src={imageUrl3 || upload2}
                       alt=""
                       height="full"
                       width="full"

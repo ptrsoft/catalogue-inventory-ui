@@ -13,6 +13,9 @@ export const fetchProducts = createAsyncThunk("products/fetch", async (params, {
     return rejectWithValue(error.response.data);
   }
 });
+
+
+
 export const PutToggle = createAsyncThunk(
   "products/putActiveInactive",
   async ({ id, active }, { rejectWithValue }) => {

@@ -138,9 +138,7 @@ const AddItem = () => {
       (quantityOnHand && (!store || !quantity)) ||
       !description ||
       (addExpiry && !expiryDate) ||
-      !imageUrl1 ||
-      !imageUrl2 ||
-      !imageUrl3
+      !imageUrl1
     ) {
       return false;
     }
@@ -170,7 +168,7 @@ const AddItem = () => {
       msp: Number(msp),
       stockQuantity: Number(stockQuantity),
       expiry: formattedExpiryDate,
-      images: [imageUrl1, imageUrl2, imageUrl3], // send both uploaded image URLs
+      images: [imageUrl1 || imageUrl2 || imageUrl3], 
     };
 
     console.log("Form Data:", JSON.stringify(formData, null, 2));
@@ -477,6 +475,11 @@ const AddItem = () => {
                     }}
                   />
                 </label>
+                {isFormSubmitted && imageError && (
+                  <div style={{ color: "red", marginTop: "10px" }}>
+                    Image is required
+                  </div>
+                )}
                 <input
                   type="file"
                   id="upload-button-1"
@@ -497,11 +500,6 @@ const AddItem = () => {
                     }}
                   >
                     <Spinner size="large" />
-                  </div>
-                )}
-                {isFormSubmitted && imageError && (
-                  <div style={{ color: "red", marginTop: "10px" }}>
-                    Image is required
                   </div>
                 )}
               </div>

@@ -1,118 +1,82 @@
-import React from "react";
-import SideNavigation from "@cloudscape-design/components/side-navigation";
-import Home from "../../assets/img/icons/home.png";
-import HomeActive from "../../assets/img/icons/home-active.png";
 
-
+import { SideNavigation } from "@cloudscape-design/components";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const pages = [
-  {
-    path: "/app/dashboard",
-    label: "Dashboard",
-    icon: Home,
-    iconActive: HomeActive,
-  },
-  {
-    path: "/app/inventory",
-    label: "Inventory",
-    children: [
-      {
-        path: "/app/inventory",
-        label: "Items",
-      },
-      {
-        path: "*",
-        label: "Item Groups",
-      },
-      {
-        path: "/app/inventory/inventoryAdjustments",
-        label: "inventory Adjustments",
-      },
-      {
-        path: "*",
-        label: "Transfer",
-      },
-    ],
-  },
-  {
-    path: "/app/purchaseorders",
-    label: "Purchase",
-  },
-  {
-    path: "/app/customers",
-    label: "Orders",
-  },
-  {
-    path: "/app/customers",
-    label: "Fulfillment",
-
-  },
-];
-
-const bottomPages = [
-  {
-    type: "link",
-    text: "Setttings",
-    href: "#/notifications",
-  },
-  {
-    type: "link",
-    text: "Documentation",
-    href: "https://example.com",
-    external: true,
-  },
-];
-
 const Sidebar = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [activeHref, setActiveHref] = React.useState(location.pathname);
+  const location = useLocation();
 
-  const handleFollow = (event) => {
-    const { href, external } = event.detail;
-    if (!external) {
-      event.preventDefault();
-      setActiveHref(href);
-      navigate(href);
+  const items = [
+    { type: "link", text: "Dashboard", href: "/app/dashboard" },
+    { type: "link", text: "Orders", href: "/app/search" },
+    {
+      type: "section",
+      text: "Inventory",
+      items: [
+        {
+          type: "link",
+          text: "Items",
+          href: "/app/inventory"
+        },
+        {
+          type: "link",
+          text: "Item Collection",
+          href: "#/page5"
+        },
+        {
+          type: "link",
+          text: "Transfer",
+          href: "#/page6"
+        },
+        {
+          type: "link",
+          text: "Inventory Adjustments",
+          href: "/app/inventory/adjustments"
+        }
+      ]
+    },
+    { type: "link", text: "Purchase Order", href: "/app/inventory/purchase-order" },
+    { type: "link", text: "Reports", href: "#" },
+    { type: "divider" },
+    { type: "link", text: "Settings", href: "#" },
+    {
+      type: "link",
+      text: "Support",
+      href: "https://example.com",
+      external: true
     }
-    // Handle external link behavior here, if necessary
+
+  ];
+
+  const handleNavigation = (event) => {
+    if (!event.detail.external) {
+      event.preventDefault();
+      navigate(event.detail.href);
+    }
   };
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
-      <SideNavigation
-        activeHref={activeHref}
-        header={{ href: "/app/dashboard", text: "PTR Technologies" }}
-        onFollow={handleFollow}
-        items={[
-          ...pages.map((page) => ({
-            type: page.children ? "expandable-link-group" : "link",
-            text: page.label === "Add more" ? (
-              <span style={{ color: "black", fontWeight: "bold" }}>{page.label}</span>
-            ) : (
-              page.label
-            ),
-            href: page.path,
-            items: page.children
-              ? page.children.map((child) => ({
-                  type: "link",
-                  text: child.label,
-                  href: child.path,
-                }))
-              : [],
-          })),
-          { type: "divider" },
-          ...bottomPages.map((page) => ({
-            type: "link",
-            text: page.text,
-            href: page.href,
-            info: page.info,
-            external: page.external, // Pass external flag to distinguish external links
-          })),
-        ]}
-      />
-    </div>
+    <SideNavigation
+      activeHref={location.pathname}
+      header={{ href: "#/", text: "PTR Technologies" }}
+      onFollow={handleNavigation}
+      items={items.map(item => {
+        if (item.type === 'link') {
+          return {
+            ...item,
+            text: (
+              <span style={{
+                color: location.pathname === item.href ? 'blue' : 'black',
+                fontWeight: location.pathname === item.href ? 'bold' : 'normal'
+              }}>
+                {item.text}
+              </span>
+            )
+          };
+        }
+        return item;
+      })}
+    />
   );
 };
 

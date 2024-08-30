@@ -4,6 +4,8 @@ import authReducer from "Redux-Store/authenticate/signin/signinSlice"
 import OrdersSlice from "Redux-Store/Orders/OrdersSlice";
 import ProductsSlice from "./Products/ProductsSlice";
 import orderReducer from "./Products/orderSlice";
+import InventoryAdjustmentsSlice from "./InventoryAdjustments/InventoryAdjustmentsSlice";
+
 import forgotPwdReducer from "Redux-Store/authenticate/ForgotPwd/forgotPwdSlice"
 import resetPwdSlice from "Redux-Store/authenticate/newpwd/newPwdSlice"
 import otpSlice from "Redux-Store/authenticate/otpVerify/otpVerifySlice"
@@ -15,6 +17,7 @@ const store = configureStore({
     customers: CustomersReducer,
     products: ProductsSlice,
     ordersInInventory :orderReducer,
+    InvertorAdjustments: InventoryAdjustmentsSlice,
     auth:authReducer,
     forgotPwd : forgotPwdReducer,
     resetPwd:resetPwdSlice,

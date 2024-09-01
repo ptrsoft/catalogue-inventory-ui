@@ -43,7 +43,7 @@ const Inventory = () => {
   const dispatch = useDispatch();
   const { data = [], status } = products;
   console.log("data", data);
-  const key = data.nextKey;
+  // const key = data.nextKey;
   // console.log("key", key);
   // Fetch products when component mounts
 

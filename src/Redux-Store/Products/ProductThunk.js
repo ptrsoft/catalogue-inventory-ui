@@ -1,7 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import config from "Views/Config";
 import { postLoginService } from "Services";
-import axios from "axios";
 
 // Fetch products
 export const fetchProducts = createAsyncThunk("products/fetch", async (params, { rejectWithValue }) => {

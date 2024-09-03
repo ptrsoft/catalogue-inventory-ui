@@ -35,6 +35,7 @@ const Inventory = () => {
   const [productToToggle, setProductToToggle] = React.useState(null);
   const [items, setItems] = React.useState([]);
   const [selectedCategory, setSelectedCategory] = React.useState(null);
+  const [selectedStatus, setSelectedStatus] = React.useState(null);
 
   // Fetch products data from Redux store
 
@@ -48,8 +49,8 @@ const Inventory = () => {
   // Fetch products when component mounts
 
   useEffect(() => {
-    dispatch(fetchProducts({ category: selectedCategory?.value || '', search: filteringText }));
-  }, [dispatch, selectedCategory, filteringText]);
+    dispatch(fetchProducts({ category: selectedCategory?.value || '', search: filteringText  || '', active : selectedStatus?.value || "",}));
+  }, [dispatch, selectedCategory, filteringText, selectedStatus]);
   
   const handleCategoryChange = ({ detail }) => {
     setSelectedCategory(detail.selectedOption);
@@ -57,7 +58,10 @@ const Inventory = () => {
   const handleSearchChange = ({ detail }) => {
     setFilteringText(detail.filteringText);
   };
-
+  const handleSelectChange = ({ detail }) => {
+    setSelectedStatus(detail.selectedOption);
+  };
+  
 
   // Check if products is an array and has elements
 
@@ -194,7 +198,7 @@ const Inventory = () => {
         <div
   style={{
     display: "grid",
-    gridTemplateColumns: "auto auto 1fr auto auto",
+    gridTemplateColumns: "auto auto auto 1fr auto auto",
     gap: "10px",
     alignItems: "center",
     marginTop: "12px",
@@ -220,6 +224,20 @@ const Inventory = () => {
       { label: "DAIRY", value: "Dairy" },
     ]}
     placeholder="Select Category"
+  />
+  <Select
+    required
+    selectedOption={selectedStatus}
+    // onChange={({ detail }) =>
+    //   setSelectedCategory(detail.selectedOption)
+    // }
+    onChange={handleSelectChange}
+    options={[
+      { label: "All", value: "All" },
+      { label: "Active", value: "true" },
+      { label: "Inactive", value: "false" },
+    ]}
+    placeholder="Select Status"
   />
   <div style={{ flexGrow: 1 }}></div>
   <Button href="/app/Inventory/addItem">Add Item</Button>

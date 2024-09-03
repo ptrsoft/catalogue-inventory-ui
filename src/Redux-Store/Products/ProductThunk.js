@@ -19,6 +19,9 @@ export const fetchProducts = createAsyncThunk("products/fetch", async (params, {
     if (params?.category) {
       queryParams.push(`category=${encodeURIComponent(params.category)}`);
     }
+    if (params?.active) {
+      queryParams.push(`active=${encodeURIComponent(params.active)}`);
+    }
 
     // Join the query parameters and append to the URL if there are any
     if (queryParams.length > 0) {

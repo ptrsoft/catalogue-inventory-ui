@@ -356,6 +356,8 @@ const AddItem = () => {
                   </div>
 
                   <div style={{ marginBottom: 0 }}>
+                    <FormField
+                      errorText={isFormSubmitted && !quantity && "Required"}>
                     <Toggle
                       onChange={({ detail }) =>
                         setQuantityOnHand(detail.checked)
@@ -364,6 +366,7 @@ const AddItem = () => {
                     >
                       Quantity on hand
                     </Toggle>
+                    </FormField>
                   </div>
                   {quantityOnHand && (
                     <div style={{ display: "flex", gap: "15px" }}>

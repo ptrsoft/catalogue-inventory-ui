@@ -49,9 +49,15 @@ const Inventory = () => {
   // Fetch products when component mounts
 
   useEffect(() => {
-    dispatch(fetchProducts({ category: selectedCategory?.value || '', search: filteringText  || '', active : selectedStatus?.value || "",}));
+    dispatch(
+      fetchProducts({
+        category: selectedCategory?.value || "",
+        search: filteringText || "",
+        active: selectedStatus?.value || "",
+      })
+    );
   }, [dispatch, selectedCategory, filteringText, selectedStatus]);
-  
+
   const handleCategoryChange = ({ detail }) => {
     setSelectedCategory(detail.selectedOption);
   };
@@ -61,7 +67,6 @@ const Inventory = () => {
   const handleSelectChange = ({ detail }) => {
     setSelectedStatus(detail.selectedOption);
   };
-  
 
   // Check if products is an array and has elements
 
@@ -196,57 +201,55 @@ const Inventory = () => {
           </Header>
         </div>
         <div
-  style={{
-    display: "grid",
-    gridTemplateColumns: "auto auto auto 1fr auto auto",
-    gap: "10px",
-    alignItems: "center",
-    marginTop: "12px",
-  }}
->                                                         
-  <TextFilter
-    filteringText={filteringText}
-    filteringPlaceholder="Search"
-    filteringAriaLabel="Filter instances"
-    onChange={handleSearchChange}
-  />
-  <Select
-    required
-    selectedOption={selectedCategory}
-    // onChange={({ detail }) =>
-    //   setSelectedCategory(detail.selectedOption)
-    // }
-    onChange={handleCategoryChange}
-    options={[
-      { label: "All Categories", value: "" }, 
-      { label: "FRUIT", value: "Fruit" },
-      { label: "VEGETABLE", value: "Vegetable" },
-      { label: "DAIRY", value: "Dairy" },
-    ]}
-    placeholder="Select Category"
-  />
-  <Select
-    required
-    selectedOption={selectedStatus}
-    // onChange={({ detail }) =>
-    //   setSelectedCategory(detail.selectedOption)
-    // }
-    onChange={handleSelectChange}
-    options={[
-      { label: "All", value: "All" },
-      { label: "Active", value: "true" },
-      { label: "Inactive", value: "false" },
-    ]}
-    placeholder="Select Status"
-  />
-  <div style={{ flexGrow: 1 }}></div>
-  <Button href="/app/Inventory/addItem">Add Item</Button>
-  <Button iconName="add-plus" variant="primary">
-    Reorder
-  </Button>
-</div>
-
-       
+          style={{
+            display: "grid",
+            gridTemplateColumns: "auto auto auto 1fr auto auto",
+            gap: "10px",
+            alignItems: "center",
+            marginTop: "12px",
+          }}
+        >
+          <TextFilter
+            filteringText={filteringText}
+            filteringPlaceholder="Search"
+            filteringAriaLabel="Filter instances"
+            onChange={handleSearchChange}
+          />
+          <Select
+            required
+            selectedOption={selectedCategory}
+            // onChange={({ detail }) =>
+            //   setSelectedCategory(detail.selectedOption)
+            // }
+            onChange={handleCategoryChange}
+            options={[
+              { label: "All Categories", value: "" },
+              { label: "FRUIT", value: "Fruit" },
+              { label: "VEGETABLE", value: "Vegetable" },
+              { label: "DAIRY", value: "Dairy" },
+            ]}
+            placeholder="Select Category"
+          />
+          <Select
+            required
+            selectedOption={selectedStatus}
+            // onChange={({ detail }) =>
+            //   setSelectedCategory(detail.selectedOption)
+            // }
+            onChange={handleSelectChange}
+            options={[
+              { label: "All", value: "All" },
+              { label: "Active", value: "true" },
+              { label: "Inactive", value: "false" },
+            ]}
+            placeholder="Select Status"
+          />
+          <div style={{ flexGrow: 1 }}></div>
+          <Button href="/app/Inventory/addItem">Add Item</Button>
+          <Button iconName="add-plus" variant="primary">
+            Reorder
+          </Button>
+        </div>
 
         <div
           style={{

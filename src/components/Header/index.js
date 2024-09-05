@@ -59,14 +59,7 @@ const Header = () => {
               id: "support-group",
               text: "Support",
               items: [
-                {
-                  id: "documentation",
-                  text: "Documentation",
-                  href: "#",
-                  external: true,
-                  externalIconAriaLabel:
-                    " (opens in new tab)"
-                },
+             
                 { id: "support", text: "Support" },
                 {
                   id: "feedback",

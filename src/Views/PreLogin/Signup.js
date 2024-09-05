@@ -35,7 +35,6 @@ const SignUp = () => {
     console.log(params);
   };
   
-
   return (
     <div style={{ position: "relative", minHeight: "100vh" }}>
       <div style={{ paddingTop: "10vh", display: "flex", justifyContent: "center" }}>

@@ -9,12 +9,17 @@ import {
 } from "@cloudscape-design/components";
 import { resetPassword } from "Redux-Store/authenticate/newpwd/newPwdThunk";
 import { Navigate, useNavigate } from "react-router-dom";
+import { LuEyeOff } from "react-icons/lu";
+import { FiEye } from "react-icons/fi";
 const NewPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState("");
   const [items, setItems] = React.useState([]);
  const [confirmationCode,setconfirmationCode]= React.useState([]);
+ const [passwordVisible, setPasswordVisible] = useState(false);
+ const [newPasswordVisible, setNewPasswordVisible] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.resetPwd);
@@ -134,20 +139,51 @@ const NewPassword = () => {
                 />
               </FormField>
               <FormField label="Enter New Password">
+              <div style={{ position: "relative", width: "100%" }}>
                 <Input
-                  type="password"
-                  placeholder="New Password"
+                    type={passwordVisible ? "text" : "password"}
+                    placeholder="New Password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.detail.value)}
+                  style={{ paddingRight: "40px" }} // Adjust padding for the icon
                 />
+                 <div
+                    onClick={() => setPasswordVisible(!passwordVisible)}
+                    style={{
+                      position: "absolute",
+                      right: "10px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                      color: "#8B8D97", // Adjust color as needed
+                    }}
+                  >
+                    {passwordVisible ? <FiEye /> : <LuEyeOff />}
+                  </div>
+                </div>
               </FormField>
               <FormField label="Confirm">
+              <div style={{ position: "relative", width: "100%" }}>
                 <Input
-                  type="password"
-                  placeholder="Confirm Password"
+                    type={newPasswordVisible ? "text" : "password"}
+                    placeholder="Confirm Password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.detail.value)}
                 />
+                <div
+                    onClick={() => setNewPasswordVisible(!newPasswordVisible)}
+                    style={{
+                      position: "absolute",
+                      right: "10px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                      color: "#8B8D97", // Adjust color as needed
+                    }}
+                  >
+                    {newPasswordVisible ? <FiEye /> : <LuEyeOff />}
+                  </div>
+                </div>
               </FormField>
               {localError && (
                 <div style={{ color: "red", textAlign: "center" }}>

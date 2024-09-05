@@ -87,6 +87,7 @@ const CreateNewAdjustments = () => {
         message: "Location is required.",
       },
     ],
+    
     reason: [
       { type: ValidationEngine.type.MANDATORY, message: "Reason is required." },
     ],
@@ -284,15 +285,26 @@ const CreateNewAdjustments = () => {
                 />
               </FormField>
               <FormField
-                label="Description"
-                errorText={formErrors.description?.message}
-              >
-                <Textarea
-                  placeholder="Enter description"
-                  value={formState.description}
-                  onChange={handleFormChange("description")}
-                />
-              </FormField>
+  label="Description"
+  errorText={
+    formState.description?.length > 200
+      ? "Description cannot exceed 200 characters."
+      : formErrors.description?.message
+  }
+>
+  <Textarea
+    placeholder="Enter description (max 200 characters)"
+    value={formState.description}
+    onChange={(event) => {
+      // Always update formState, but enforce a validation if over 200 characters
+      handleFormChange("description")(event);
+    }}
+    resizable={false}
+  />
+  <Box margin={{ top: "xxs" }}>
+    {formState.description?.length} / 200 characters
+  </Box>
+</FormField>
             </Grid>
           </Container>
           <div style={{ marginTop: 22 }}>
@@ -525,6 +537,7 @@ const CreateNewAdjustments = () => {
                       </span>
                     ),
                     cell: (item) => (
+                      
                       <Input
                         value={item.adjustSellingPrice ||""}
                         onChange={({ detail }) =>

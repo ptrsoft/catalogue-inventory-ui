@@ -419,7 +419,7 @@ const Inventory = () => {
               id: "status",
               header: "Status",
               cell: (e) => (
-                <div style={{ display: "flex" }}>
+                <div style={{ display: "flex", width:"100px" }}>
                   <Toggle
                     onChange={() => handleToggleClick(e)}
                     checked={e.active}

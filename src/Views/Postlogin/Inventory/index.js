@@ -19,7 +19,10 @@ import {
   SpaceBetween,
   StatusIndicator,
   ButtonDropdown,
-  Pagination,Flashbar,
+  Select,
+  Pagination,
+  Flashbar,
+  FormField,
 } from "@cloudscape-design/components";
 const Inventory = () => {
   const [filteringText, setFilteringText] = React.useState("");
@@ -31,24 +34,67 @@ const Inventory = () => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [productToToggle, setProductToToggle] = React.useState(null);
   const [items, setItems] = React.useState([]);
+  const [selectedCategory, setSelectedCategory] = React.useState(null);
+  const [selectedStatus, setSelectedStatus] = React.useState(null);
 
   // Fetch products data from Redux store
-
 
   const products = useSelector((state) => state.products.products);
 
   const dispatch = useDispatch();
-  console.log("pro", products);
   const { data = [], status } = products;
   console.log("data", data);
-  const key = data.nextKey;
-  console.log("key", key);
+  // const key = data.nextKey;
+  // console.log("key", key);
   // Fetch products when component mounts
+
   useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+    dispatch(
+      fetchProducts({
+        category: selectedCategory?.value || "",
+        search: filteringText || "",
+        active: selectedStatus?.value || "",
+      })
+    );
+  }, [dispatch, selectedCategory, filteringText, selectedStatus]);
+
+  const handleCategoryChange = ({ detail }) => {
+    setSelectedCategory(detail.selectedOption);
+  };
+  const handleSearchChange = ({ detail }) => {
+    setFilteringText(detail.filteringText);
+  };
+  const handleSelectChange = ({ detail }) => {
+    setSelectedStatus(detail.selectedOption);
+  };
 
   // Check if products is an array and has elements
+
+  // const handleCategory =({ detail })=>{
+  //   setSelectedCategory(detail.filteringText);
+  //   dispatch(fetchProducts({ category: detail.filteringText }))
+  //   .unwrap()
+  //   .then(() => {
+  //     console.log("fetch successful");
+  //   })
+  //   .catch(() => {
+  //     console.log("fetch failed");
+  //   });
+  // }
+  // const handleSearchChange = ({ detail }) => {
+  //   setFilteringText(detail.filteringText);
+
+  //   // Dispatch the fetchProducts thunk with the search parameter
+  //   dispatch(fetchProducts({ search: detail.filteringText }))
+  //     .unwrap()
+  //     .then(() => {
+  //       console.log("Search successful");
+  //     })
+  //     .catch(() => {
+  //       console.log("Search failed");
+  //     });
+  // };
+
   if (status === "LOADING") {
     return (
       <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
@@ -63,7 +109,7 @@ const Inventory = () => {
   const handleConfirmToggle = () => {
     const newStatus = !productToToggle.active;
     dispatch(PutToggle({ id: productToToggle.id, active: newStatus }))
-    .unwrap()
+      .unwrap()
       .then(() => {
         // If the API call is successful, show the success message and navigate to the dashboard
         setItems([
@@ -81,7 +127,7 @@ const Inventory = () => {
       })
       .catch((error) => {
         // Handle any errors, if needed
-            dispatch(fetchProducts());
+        dispatch(fetchProducts());
         setItems([
           {
             type: "error",
@@ -93,7 +139,7 @@ const Inventory = () => {
           },
         ]);
       });
-    }
+  };
 
   const handleCancelToggle = () => {
     setIsModalVisible(false);
@@ -138,7 +184,7 @@ const Inventory = () => {
 
   return (
     <div className="flex-col gap-3">
-      <Flashbar items={items}/>
+      <Flashbar items={items} />
       <div className="flex flex-col gap-3">
         <BreadcrumbGroup
           items={[
@@ -157,7 +203,7 @@ const Inventory = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr auto auto",
+            gridTemplateColumns: "auto auto auto 1fr auto auto",
             gap: "10px",
             alignItems: "center",
             marginTop: "12px",
@@ -167,8 +213,38 @@ const Inventory = () => {
             filteringText={filteringText}
             filteringPlaceholder="Search"
             filteringAriaLabel="Filter instances"
-            onChange={({ detail }) => setFilteringText(detail.filteringText)}
+            onChange={handleSearchChange}
           />
+          <Select
+            required
+            selectedOption={selectedCategory}
+            // onChange={({ detail }) =>
+            //   setSelectedCategory(detail.selectedOption)
+            // }
+            onChange={handleCategoryChange}
+            options={[
+              { label: "All Categories", value: "" },
+              { label: "FRUIT", value: "Fruit" },
+              { label: "VEGETABLE", value: "Vegetable" },
+              { label: "DAIRY", value: "Dairy" },
+            ]}
+            placeholder="Select Category"
+          />
+          <Select
+            required
+            selectedOption={selectedStatus}
+            // onChange={({ detail }) =>
+            //   setSelectedCategory(detail.selectedOption)
+            // }
+            onChange={handleSelectChange}
+            options={[
+              { label: "All", value: "All" },
+              { label: "Active", value: "true" },
+              { label: "Inactive", value: "false" },
+            ]}
+            placeholder="Select Status"
+          />
+          <div style={{ flexGrow: 1 }}></div>
           <Button href="/app/Inventory/addItem">Add Item</Button>
           <Button iconName="add-plus" variant="primary">
             Reorder
@@ -241,23 +317,23 @@ const Inventory = () => {
             </Container>
           </div>
           {isModalVisible && (
-          <Modal
-            onDismiss={handleCancelToggle}
-            visible={isModalVisible}
-            closeAriaLabel="Close modal"
-            header="Change Status"
-            footer={
-              <SpaceBetween direction="horizontal" size="s">
-                <Button onClick={handleCancelToggle}>Cancel</Button>
-                <Button variant="primary" onClick={handleConfirmToggle}>
-                  Ok
-                </Button>
-              </SpaceBetween>
-            }
-          >
-            Are you sure you want to change the status of this product?
-          </Modal>
-        )}
+            <Modal
+              onDismiss={handleCancelToggle}
+              visible={isModalVisible}
+              closeAriaLabel="Close modal"
+              header="Change Status"
+              footer={
+                <SpaceBetween direction="horizontal" size="s">
+                  <Button onClick={handleCancelToggle}>Cancel</Button>
+                  <Button variant="primary" onClick={handleConfirmToggle}>
+                    Ok
+                  </Button>
+                </SpaceBetween>
+              }
+            >
+              Are you sure you want to change the status of this product?
+            </Modal>
+          )}
           <div style={{}}>
             <Pagination
               currentPageIndex={currentPageIndex}

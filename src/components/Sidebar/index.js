@@ -26,7 +26,7 @@ const Sidebar = () => {
         {
           type: "link",
           text: "Transfer",
-          href: "#/page6"
+          href: "*"
         },
         {
           type: "link",

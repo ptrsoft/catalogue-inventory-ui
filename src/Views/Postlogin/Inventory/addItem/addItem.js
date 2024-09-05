@@ -138,9 +138,7 @@ const AddItem = () => {
       (quantityOnHand && (!store || !quantity)) ||
       !description ||
       (addExpiry && !expiryDate) ||
-      !imageUrl1 ||
-      !imageUrl2 ||
-      !imageUrl3
+      !imageUrl1
     ) {
       return false;
     }
@@ -170,7 +168,7 @@ const AddItem = () => {
       msp: Number(msp),
       stockQuantity: Number(stockQuantity),
       expiry: formattedExpiryDate,
-      images: [imageUrl1, imageUrl2, imageUrl3], // send both uploaded image URLs
+      images: [imageUrl1 || imageUrl2 || imageUrl3], 
     };
 
     console.log("Form Data:", JSON.stringify(formData, null, 2));
@@ -358,6 +356,8 @@ const AddItem = () => {
                   </div>
 
                   <div style={{ marginBottom: 0 }}>
+                    <FormField
+                      errorText={isFormSubmitted && !quantity && "Required"}>
                     <Toggle
                       onChange={({ detail }) =>
                         setQuantityOnHand(detail.checked)
@@ -366,6 +366,7 @@ const AddItem = () => {
                     >
                       Quantity on hand
                     </Toggle>
+                    </FormField>
                   </div>
                   {quantityOnHand && (
                     <div style={{ display: "flex", gap: "15px" }}>
@@ -477,6 +478,11 @@ const AddItem = () => {
                     }}
                   />
                 </label>
+                {isFormSubmitted && imageError && (
+                  <div style={{ color: "red", marginTop: "10px" }}>
+                    Image is required
+                  </div>
+                )}
                 <input
                   type="file"
                   id="upload-button-1"
@@ -497,11 +503,6 @@ const AddItem = () => {
                     }}
                   >
                     <Spinner size="large" />
-                  </div>
-                )}
-                {isFormSubmitted && imageError && (
-                  <div style={{ color: "red", marginTop: "10px" }}>
-                    Image is required
                   </div>
                 )}
               </div>

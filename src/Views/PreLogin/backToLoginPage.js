@@ -4,7 +4,7 @@ import { Button, Flashbar,FormField, Input, Container, Header } from "@cloudscap
 import { forgotPwd } from "Redux-Store/authenticate/ForgotPwd/forgotPwdThunk";
 import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 
-const ForgotPassword = () => {
+const BackToLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Initialize useNavigate
   const [email, setEmail] = useState("");
@@ -29,10 +29,7 @@ const ForgotPassword = () => {
           }
        
         ])
-         // Navigate to the sign-in page after a delay
-         setTimeout(() => {
-           navigate("/auth/newpassword"); // Navigate to OTP verification page
-        }, 5000); // 15 seconds delay
+        navigate("/auth/newpassword"); // Navigate to OTP verification page
       })
       .catch((error) => {
         console.error("Login failed:", error);
@@ -113,7 +110,7 @@ const ForgotPassword = () => {
                 </div>
               )}
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <Button href="/auth/signin" variant="inline-link">
+                <Button href="" variant="inline-link">
                   Or Login
                 </Button>
               </div>
@@ -166,4 +163,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default BackToLogin;

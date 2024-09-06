@@ -5,26 +5,31 @@ import {
   FormField,
   Input,
   Container,
-  Header,Flashbar
+  Header,
+  Flashbar
 } from "@cloudscape-design/components";
 import { resetPassword } from "Redux-Store/authenticate/newpwd/newPwdThunk";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { LuEyeOff } from "react-icons/lu";
 import { FiEye } from "react-icons/fi";
+
 const NewPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState("");
   const [items, setItems] = React.useState([]);
- const [confirmationCode,setconfirmationCode]= React.useState([]);
- const [passwordVisible, setPasswordVisible] = useState(false);
- const [newPasswordVisible, setNewPasswordVisible] = useState(false);
+  const [confirmationCode, setConfirmationCode] = React.useState([]);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [newPasswordVisible, setNewPasswordVisible] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false); // State for success message
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.resetPwd);
-  const email = useSelector((state) => state.forgotPwd.email);
-  // const confirmationCode = useSelector((state) => state.otp.otp);
+  const emailVal = localStorage.getItem("email");
+  const parsedEmail = JSON.parse(emailVal);
+  const email = parsedEmail;
+
   const handleSubmit = () => {
     if (newPassword === confirmPassword) {
       dispatch(resetPassword({ email, confirmationCode, newPassword }))
@@ -41,17 +46,21 @@ const NewPassword = () => {
               id: "message_1",
             },
           ]);
+          setIsSuccess(true); // Set success state to true
           // Reset fields
           setNewPassword("");
           setConfirmPassword("");
-          setconfirmationCode("");
-          
-          // Navigate to the dashboard
-          navigate("/app/dashboard");
-          
-          console.log(email)
-          console.log(confirmationCode)
-          console.log(newPassword)
+          setConfirmationCode("");
+          localStorage.removeItem("email");
+
+          // Navigate to the sign-in page after a delay
+          setTimeout(() => {
+            navigate("/auth/signin");
+          }, 13000); // 13 seconds delay
+
+          console.log(email);
+          console.log(confirmationCode);
+          console.log(newPassword);
         })
         .catch((error) => {
           // If the API call fails, show error flashbar
@@ -66,25 +75,25 @@ const NewPassword = () => {
             },
           ]);
         });
-      setLocalError(""); 
+      setLocalError("");
     } else {
       setLocalError("Passwords do not match!");
     }
   };
-  
+
   // Extract the error message if the error is an object
   const errorMessage = typeof error === "string" ? error : error?.message;
 
   return (
-    <div style={{ paddingTop:"10vh" }}>
-    <Flashbar items={items} />
+    <div style={{ paddingTop: "10vh" }}>
+      <Flashbar items={items} />
 
       <div
         style={{
           paddingTop: "10vh",
           display: "flex",
           justifyContent: "center",
-          height:"63vh"
+          height: isSuccess ? "33vh": "63vh",
         }}
       >
         <div
@@ -94,7 +103,8 @@ const NewPassword = () => {
             backgroundColor: "white",
             boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
             zIndex: 2,
-            width: "26vw",
+            width: isSuccess ? "29vw" : "26vw", // Conditionally adjust the width
+            // transition: "width 0.5s ease-in-out", // Smooth transition effect
           }}
         >
           <Container variant="borderless">
@@ -103,11 +113,11 @@ const NewPassword = () => {
                 <div
                   style={{
                     textShadow: "0px 1px, 1px 0px, 1px 1px",
-                    display: "flex",
-                    justifyContent: "center",
+                    // display: "flex",
+                    // justifyContent: "center",
                   }}
                 >
-                  Create New Password
+                  {isSuccess ? <center>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Password Changed</center>: <div style={{display:"flex",width:"21vw",justifyContent:"center"}}><text>Create New Password</text></div>}
                 </div>
                 <span
                   style={{
@@ -116,104 +126,123 @@ const NewPassword = () => {
                     fontWeight: "lighter",
                     display: "flex",
                     justifyContent: "center",
+                    paddingLeft : isSuccess ? "3vw" : "0"
                   }}
                 >
-                  Create a strong password for your account
+                  {isSuccess
+                    ? "Your password has been changed successfully."
+                    : "Create a strong password for your account"}
                 </span>
-              </Header>
+            </Header>
             </div>
-            <form
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit();
-              }}
-            >
-              
-              <FormField label="Enter OTP">
-                <Input
-                  placeholder="Enter your 6-digit OTP"
-                  value={confirmationCode}
-                  onChange={(e) => setconfirmationCode(e.detail.value)}
-                  maxLength={6}
-                />
-              </FormField>
-              <FormField label="Enter New Password">
-              <div style={{ position: "relative", width: "100%" }}>
-                <Input
-                    type={passwordVisible ? "text" : "password"}
-                    placeholder="New Password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.detail.value)}
-                  style={{ paddingRight: "40px" }} // Adjust padding for the icon
-                />
-                 <div
-                    onClick={() => setPasswordVisible(!passwordVisible)}
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      cursor: "pointer",
-                      color: "#8B8D97", // Adjust color as needed
-                    }}
-                  >
-                    {passwordVisible ? <FiEye /> : <LuEyeOff />}
+            {!isSuccess ? (
+              <form
+                style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmit();
+                }}
+              >
+                <FormField label="Enter OTP">
+                  <Input
+                    placeholder="Enter your 6-digit OTP"
+                    value={confirmationCode}
+                    onChange={(e) => setConfirmationCode(e.detail.value)}
+                    maxLength={6}
+                  />
+                </FormField>
+                <FormField label="Enter New Password">
+                  <div style={{ position: "relative", width: "100%" }}>
+                    <Input
+                      type={passwordVisible ? "text" : "password"}
+                      placeholder="New Password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.detail.value)}
+                      style={{ paddingRight: "40px" }} // Adjust padding for the icon
+                    />
+                    <div
+                      onClick={() => setPasswordVisible(!passwordVisible)}
+                      style={{
+                        position: "absolute",
+                        right: "10px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        cursor: "pointer",
+                        color: "#8B8D97", // Adjust color as needed
+                      }}
+                    >
+                      {passwordVisible ? <FiEye /> : <LuEyeOff />}
+                    </div>
                   </div>
-                </div>
-              </FormField>
-              <FormField label="Confirm">
-              <div style={{ position: "relative", width: "100%" }}>
-                <Input
-                    type={newPasswordVisible ? "text" : "password"}
-                    placeholder="Confirm Password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.detail.value)}
-                />
+                </FormField>
+                <FormField label="Confirm">
+                  <div style={{ position: "relative", width: "100%" }}>
+                    <Input
+                      type={newPasswordVisible ? "text" : "password"}
+                      placeholder="Confirm Password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.detail.value)}
+                    />
+                    <div
+                      onClick={() => setNewPasswordVisible(!newPasswordVisible)}
+                      style={{
+                        position: "absolute",
+                        right: "10px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        cursor: "pointer",
+                        color: "#8B8D97", // Adjust color as needed
+                      }}
+                    >
+                      {newPasswordVisible ? <FiEye /> : <LuEyeOff />}
+                    </div>
+                  </div>
+                </FormField>
+                {localError && (
+                  <div style={{ color: "red", textAlign: "center" }}>
+                    {localError}
+                  </div>
+                )}
+                {errorMessage && (
+                  <div style={{ color: "red", textAlign: "center" }}>
+                    {errorMessage}
+                  </div>
+                )}
                 <div
-                    onClick={() => setNewPasswordVisible(!newPasswordVisible)}
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      cursor: "pointer",
-                      color: "#8B8D97", // Adjust color as needed
-                    }}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    padding: "2vh 2vw 0 2vw",
+                  }}
+                >
+                  <Button
+                    fullWidth
+                    ariaExpanded
+                    variant="primary"
+                    type="submit"
+                    loading={loading}
                   >
-                    {newPasswordVisible ? <FiEye /> : <LuEyeOff />}
-                  </div>
+                    Create Password
+                  </Button>
                 </div>
-              </FormField>
-              {localError && (
-                <div style={{ color: "red", textAlign: "center" }}>
-                  {localError}
-                </div>
-              )}
-              {errorMessage && (
-                <div style={{ color: "red", textAlign: "center" }}>
-                  {errorMessage}
-                </div>
-              )}
+              </form>
+            ) : (
               <div
                 style={{
                   display: "flex",
+                  flexDirection: "column",
                   justifyContent: "center",
-                  padding: "2vh 2vw 0 2vw",
+                  alignItems: "center",
                 }}
               >
                 <Button
-                  fullWidth
-                  ariaExpanded
                   variant="primary"
-                  type="submit"
-                  loading={loading}
+                  onClick={() => navigate("/auth/signin")}
                 >
-                  Create Password
+                  Back to Login
                 </Button>
               </div>
-           
-            </form>
+            )}
           </Container>
         </div>
       </div>
@@ -230,7 +259,6 @@ const NewPassword = () => {
         <svg
           viewBox="0 0 1130 320"
           xmlns="http://www.w3.org/2000/svg"
-                    // style={{ display: "block", width: "100%", height: "100%" }}
         >
           <defs>
             <linearGradient
@@ -254,7 +282,6 @@ const NewPassword = () => {
             </linearGradient>
           </defs>
           <path fill="url(#gradient)" fill-opacity="0.98" d="M0,160L60,176C120,192,240,224,360,213.3C480,203,600,149,720,117.3C840,85,960,75,1080,85.3C1200,96,1320,128,1380,144L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
-
         </svg>
       </div>
     </div>

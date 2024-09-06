@@ -1,15 +1,34 @@
-// signoutThunk.js
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import config from "Views/Config";
-import { postLoginService } from "Services";
+// Redux-Store/authenticate/authSlice.js
+import { createSlice } from "@reduxjs/toolkit";
+import { authSignOut } from "./signoutThunk";
 
-const authSignOut = createAsyncThunk("auth/signOut", async (token, { rejectWithValue }) => {
-  try {
-    const url = config.SIGNOUT;
-    const response = await postLoginService.post(url, { token });
-    return response.data;
-  } catch (error) {
-    return rejectWithValue(error.response.data);
-  }
+const initialState = {
+  isSigningOut: false,
+  signOutError: null,
+};
+
+const authSlice = createSlice({
+  name: "signOut",
+  initialState,
+  reducers: {
+    // You can add synchronous actions here if needed
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(authSignOut.pending, (state) => {
+        state.isSigningOut = true;
+        state.signOutError = null;
+      })
+      .addCase(authSignOut.fulfilled, (state) => {
+        state.isSigningOut = false;
+        state.signOutError = null;
+      })
+      .addCase(authSignOut.rejected, (state, action) => {
+        state.isSigningOut = false;
+        state.signOutError = action.payload || action.error.message;
+      });
+  },
 });
-export default authSignOut;
+
+export const { actions, reducer } = authSlice;
+export default reducer;

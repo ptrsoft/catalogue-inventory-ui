@@ -90,12 +90,14 @@ const CreateNewAdjustments = () => {
     
     reason: [
       { type: ValidationEngine.type.MANDATORY, message: "Reason is required." },
+    
     ],
     description: [
       {
         type: ValidationEngine.type.MANDATORY,
         message: "Description is required.",
       },
+      { type: ValidationEngine.type.CHARACTERCOUNT, message: "Cannot exceed 200 character" },
     ],
   };
 
@@ -286,11 +288,7 @@ const CreateNewAdjustments = () => {
               </FormField>
               <FormField
   label="Description"
-  errorText={
-    formState.description?.length > 250
-      ? "Description cannot exceed 200 characters."
-      : formErrors.description?.message
-  }
+  errorText={formErrors.description?.message}
 >
   <Textarea
     placeholder="Enter description (max 200 characters)"

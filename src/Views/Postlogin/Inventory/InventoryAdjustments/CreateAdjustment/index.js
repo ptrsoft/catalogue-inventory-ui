@@ -287,7 +287,7 @@ const CreateNewAdjustments = () => {
               <FormField
   label="Description"
   errorText={
-    formState.description?.length > 200
+    formState.description?.length > 250
       ? "Description cannot exceed 200 characters."
       : formErrors.description?.message
   }

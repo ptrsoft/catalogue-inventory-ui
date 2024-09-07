@@ -1,22 +1,19 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, FormField, Input, Container, Header } from "@cloudscape-design/components";
-import { signup } from "Redux-Store/signup/signupThunk";// Adjust the path as necessary
+import { Button, Flashbar,FormField, Input, Container, Header } from "@cloudscape-design/components";
+import { forgotPwd } from "Redux-Store/authenticate/ForgotPwd/forgotPwdThunk";
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 
-const SignUp = () => {
-  const [name, setName] = useState("");
-  const [role, setRole] = useState("");
+const BackToLogin = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); // Initialize useNavigate
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { loading, error } = useSelector((state) => state.forgotPwd);
   const [items, setItems] = React.useState([]);
 
-  const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.signup);
-
-  const handleSubmit = () => {
-    const params = { name, role, email, password };
-    
-    dispatch(signup(params))
+  const handleSendOtp = () => {
+    localStorage.setItem("email", JSON.stringify(email));
+    dispatch(forgotPwd(email))
     .unwrap()
     .then(() => {
         console.log("");
@@ -24,89 +21,76 @@ const SignUp = () => {
         setItems([
           {
             type: "success",
-            content: " Successfully!",
+            content: "Password reset mail has sent to the entered mail id Successfully!",
             dismissible: true,
             dismissLabel: "Dismiss message",
             onDismiss: () => setItems([]),
             id: "message_1"
           }
-        ])})
-  
-    console.log(params);
+       
+        ])
+        navigate("/auth/newpassword"); // Navigate to OTP verification page
+      })
+      .catch((error) => {
+        console.error("Login failed:", error);
+      });
   };
   
+
   return (
-    <div style={{ position: "relative", minHeight: "100vh" }}>
-      <div style={{ paddingTop: "10vh", display: "flex", justifyContent: "center" }}>
+    <div style={{ paddingTop:"10vh"}}>
+        <Flashbar items={items}></Flashbar>
+      <div
+        style={{
+            paddingTop: "5vh",
+            display: "flex",
+            justifyContent: "center",
+        }}
+      >
         <div
           style={{
-            padding: "0 15px",
-            borderRadius: "10px",
-            backgroundColor: "white",
+              padding: "0 15px",
+              borderRadius: "10px",
+              backgroundColor: "white",
             boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
             zIndex: 2,
-            width: "26vw",
-          }}
+            width: "28vw",
+        }}
         >
           <Container variant="borderless">
-            <div style={{ marginBottom: "20px", padding: "0 0 0 0" }}>
-              <Header variant="h1">
-                <div
+            <div
+              style={{
+                marginBottom: "20px",
+                padding: "0 0 0 0",
+              }}
+            >
+              <Header
+                variant="h1"
+                description="Enter your email to proceed with the password reset."
+              >
+                <h3
                   style={{
+                    fontWeight: "bolder",
                     textShadow: "0px 1px, 1px 0px, 1px 1px",
-                    display: "flex",
-                    justifyContent: "center",
+                    fontSize: "30px",
                   }}
                 >
-                  Sign Up!
-                </div>
-                <span
-                  style={{
-                    fontSize: "small",
-                    color: "#8B8D97",
-                    fontWeight: "lighter",
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  Sign up with your email and password.
-                </span>
+                  &nbsp;&nbsp;&nbsp;&nbsp;<b>Forget your password?</b>
+                </h3>
               </Header>
             </div>
             <form
               style={{ display: "flex", flexDirection: "column", gap: "10px" }}
               onSubmit={(e) => {
                 e.preventDefault();
-                handleSubmit();
+                handleSendOtp();
               }}
             >
-              <FormField label="Name">
+              <FormField label="Email">
                 <Input
-                  placeholder="Enter your name"
-                  value={name}
-                  onChange={(e) => setName(e.detail.value)}
-                />
-              </FormField>
-              <FormField label="Role">
-                <Input
-                  placeholder="Enter your role"
-                  value={role}
-                  onChange={(e) => setRole(e.detail.value)}
-                />
-              </FormField>
-              <FormField label="Email Address">
-                <Input
-                  placeholder="Enter a valid Email Address"
+                  placeholder="Enter Your Email"
                   value={email}
                   onChange={(e) => setEmail(e.detail.value)}
-                />
-              </FormField>
-              <FormField label="Password">
-                <Input
-                  placeholder="Enter password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.detail.value)}
                 />
               </FormField>
               <div
@@ -116,20 +100,25 @@ const SignUp = () => {
                   padding: "2vh 2vw 0 2vw",
                 }}
               >
-                <Button
-                  fullWidth
-                  ariaExpanded
-                  variant="primary"
-                  onClick={handleSubmit}
-                  disabled={loading} // Disable button while loading
-                >
-                  {loading ? "Verifying..." : "Verify"}
+                <Button fullWidth ariaExpanded variant="primary" disabled={loading}>
+                  {loading ? "Sending OTP..." : "Send OTP"}
+                </Button>
+              </div>
+              {error && (
+                <div style={{ color: "red", textAlign: "center" }}>
+                  {error.message || "An error occurred"}
+                </div>
+              )}
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Button href="" variant="inline-link">
+                  Or Login
                 </Button>
               </div>
             </form>
           </Container>
         </div>
       </div>
+
       <div
         style={{
           position: "absolute",
@@ -174,4 +163,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default BackToLogin;

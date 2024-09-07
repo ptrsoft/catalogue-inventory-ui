@@ -144,6 +144,13 @@ const AddItem = () => {
     }
     return true;
   };
+
+  const handleChange = ({ detail }) => {
+    // Limit the description to 247 characters
+    if (detail.value.length <= 247) {
+      setDescription(detail.value);
+    }
+  };
   // Handle Save button click
   const handleSave = () => {
     setIsFormSubmitted(true);
@@ -161,7 +168,7 @@ const AddItem = () => {
 
     const formData = {
       name,
-      description,
+      description: description,
       category: selectedCategory ? selectedCategory.value : null,
       units: selectedUnits ? selectedUnits.value : null,
       purchasingPrice: Number(purchasingPrice),
@@ -417,9 +424,9 @@ const AddItem = () => {
                 >
                   <Textarea
                     rows={5}
-                    onChange={({ detail }) => setDescription(detail.value)}
+                    onChange={handleChange}
                     value={description}
-                    required
+                   maxLength = {247}
                   />
                 </FormField>
               <FormField

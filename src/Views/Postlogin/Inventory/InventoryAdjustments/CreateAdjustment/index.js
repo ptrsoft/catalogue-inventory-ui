@@ -107,18 +107,28 @@ const CreateNewAdjustments = () => {
       formState
     );
 
+  
     // Additional validation for items
     const itemErrors = items.reduce((errors, item, index) => {
-      if (
-        !item.adjustQuantity ||
-        !item.adjustPurchasePrice ||
-        !item.adjustSellingPrice
-      ) {
-        errors[index] = "Please fill out all fields for this item.";
+      const missingFields = [];
+      
+      if (!item.adjustQuantity) {
+        missingFields.push("Adjustment Quantity");
       }
+      if (!item.adjustPurchasePrice) {
+        missingFields.push("Adjust Purchase Price");
+      }
+      if (!item.adjustSellingPrice) {
+        missingFields.push("Adjust Selling Price");
+      }
+      
+      if (missingFields.length > 0) {
+        errors[index] = `Please fill out: ${missingFields.join(", ")}`;
+      }
+      
       return errors;
     }, {});
-
+  
     if (items.length === 0) {
       setFormErrors({
         ...validationResult,
@@ -129,17 +139,19 @@ const CreateNewAdjustments = () => {
     } else if (Object.keys(itemErrors).length > 0) {
       setFormErrors({
         ...validationResult,
-        itemErrors,
+        itemErrors,  // Ensure itemErrors are added to formErrors
       });
       ErrorMessages.error(
         "Please fix the errors in the item details before submitting."
       );
       return false;
     }
-
+   
     setFormErrors(validationResult);
     return validationResult.isValid;
   };
+
+  console.log(formErrors.itemErrors.missingFields,"error");
 
   const handleSave = () => {
     if (validateForm()) {
@@ -450,6 +462,7 @@ const CreateNewAdjustments = () => {
                       </span>
                     ),
                     cell: (item) => (
+                
                       <Input
                         value={item.adjustQuantity || ""}
                         onChange={({ detail }) =>
@@ -459,7 +472,10 @@ const CreateNewAdjustments = () => {
                             detail.value
                           )
                         }
+                
                       />
+           
+       
                     ),
                   },
                   {
@@ -535,17 +551,18 @@ const CreateNewAdjustments = () => {
                       </span>
                     ),
                     cell: (item) => (
-                      
                       <Input
-                        value={item.adjustSellingPrice ||""}
-                        onChange={({ detail }) =>
-                          handleInputChange(
-                            item.id,
-                            "adjustSellingPrice",
-                            detail.value
-                          )
-                        }
-                      />
+                      value={item.adjustSellingPrice || ""}
+                      onChange={({ detail }) =>
+                        handleInputChange(item.id, "adjustSellingPrice", detail.value)
+                      }
+                      errorText={
+                        item.adjustSellingPrice < 0
+                          ? "Selling price cannot be negative"
+                          : ""
+                      }
+                    />
+                    
                     ),
                   },
 

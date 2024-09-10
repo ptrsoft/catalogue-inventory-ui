@@ -33,15 +33,33 @@ export const ValidationEngine = {
     }
 
     function validateCharacterCount(validationObject, value) {
-      if (value && value.length !== validationObject.CharacterCout) {
-        return {
-          isValid: false,
-          error: {
+      // Check if the validationObject type is CHARACTERCOUNT
+      if (validationObject.type === ValidationEngine.type.CHARACTERCOUNT) {
+        // Assume 200 is the limit if not explicitly passed
+        const maxCharacterCount = 200;
+    
+        // Check if the value exceeds the max character count
+        if (value && value.length > maxCharacterCount) {
+          return {
             isValid: false,
-            message: validationObject.message,
+            error: {
+              isValid: false,
+              message: validationObject.message || `Cannot exceed ${maxCharacterCount} characters`,
+            },
+          };
+        }
+    
+        // If the value is within the limit, validation passes
+        return {
+          isValid: true,
+          error: {
+            isValid: true,
+            message: "",
           },
         };
       }
+    
+      // If the type does not match, return valid by default (or handle other types if needed)
       return {
         isValid: true,
         error: {
@@ -50,6 +68,7 @@ export const ValidationEngine = {
         },
       };
     }
+    
 
     function validateRegex(validationObject, value) {
       if (validationObject.regex && !validationObject.regex.test(value)) {

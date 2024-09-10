@@ -23,7 +23,6 @@ const Signin = lazy(() => import("./PreLogin/Signin"));
 const Signup = lazy(() => import("./PreLogin/Signup"));
 const ForgotPassword = lazy(() => import("./PreLogin/ForgotPassword"));
 const OtpVerification = lazy(() => import("./PreLogin/otpVerification"));
-const BackToLogin = lazy(() => import("./PreLogin/backToLoginPage"));
 const NewPassword = lazy(() => import("./PreLogin/newPassword"));
 
 const Views = () => {
@@ -74,11 +73,6 @@ const Views = () => {
             exact
             path={`${PREFIX_AUTH_PATH}/signin`}
             element={<Signin />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_AUTH_PATH}/backToLogin`}
-            element={<BackToLogin />}
           />
           <Route
             exact

@@ -239,7 +239,7 @@ const NewPassword = () => {
                   variant="primary"
                   onClick={() => navigate("/auth/signin")}
                 >
-                  Back to Login
+                  Login
                 </Button>
               </div>
             )}

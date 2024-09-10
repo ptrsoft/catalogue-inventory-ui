@@ -9,7 +9,6 @@ import { authSignOut } from "Redux-Store/authenticate/signout/signoutThunk";
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [visible, setVisible] = useState(false);
   // console.log("token",userData)
   const handleSignOut = () => {
 
@@ -25,7 +24,6 @@ const Header = () => {
           dispatch(authSignOut({ accessToken: token })) // Pass the token in the expected format
             .unwrap()
             .then((response) => {
-              setVisible(false)
               console.log("Sign-out Response:", response);
               localStorage.removeItem("user");
               localStorage.removeItem("email");
@@ -48,22 +46,7 @@ const Header = () => {
 
   return (
     <>
-      <Modal
-      onDismiss={() => setVisible(false)}
-      visible={visible}
-      footer={
-        <Box float="right">
-          <SpaceBetween direction="horizontal" size="xs">
-            <Button variant="link">Cancel</Button>
-            <Button variant="primary" onClick={handleSignOut}>Yes</Button>
-          </SpaceBetween>
-        </Box>
-      }
-      header="Are you sure, you want to sign out ?"
-    >
-      Press Cancel to stay Signed In
-    </Modal>
-    <Button onClick={() => setVisible(true)} >signout</Button>
+    <Button onClick={handleSignOut} >signout</Button>
     <div style={{ position: "sticky", top: 0, zIndex: 1000, background: "#fff" }}>
     <TopNavigation
         search={<Input type="search" placeholder="Search" ariaLabel="Search" />}
@@ -131,12 +114,16 @@ const Header = () => {
                   },
                 ],
               },
-
               {
                 variant:"primary-button",
+                type:"button",
                 id: "signout",
                 text: "Sign out",
-                onClick: () => setVisible(true)
+                // onItemClick :(() => setVisible(true)),
+                // onItemClick :(() => {setVisible(true)}),
+                // onClick: () => {setVisible(true)},
+                // onClick: (() => {setVisible(true)}),
+                onClick : () => setVisible(true),
               }, 
             ],
           },
@@ -146,5 +133,8 @@ const Header = () => {
     </>
   );
 };
+
+
+
 
 export default Header;

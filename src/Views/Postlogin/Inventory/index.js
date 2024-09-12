@@ -246,9 +246,9 @@ const Inventory = () => {
           />
           <div style={{ flexGrow: 1 }}></div>
           <Button href="/app/Inventory/addItem">Add Item</Button>
-          <Button iconName="add-plus" variant="primary">
+          {/* <Button iconName="add-plus" variant="primary">
             Reorder
-          </Button>
+          </Button> */}
         </div>
 
         <div

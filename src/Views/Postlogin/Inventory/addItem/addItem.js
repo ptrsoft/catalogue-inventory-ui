@@ -241,7 +241,7 @@ const AddItem = () => {
           variant="h1"
           actions={
             <div style={{ display: "flex", gap: "10px" }}>
-              <Button>Import Items</Button>
+              {/* <Button>Import Items</Button> */}
               <Button variant="primary" onClick={handleSave}>
                 Save
               </Button>

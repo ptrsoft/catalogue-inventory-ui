@@ -11,6 +11,8 @@ import { authSignOut } from "Redux-Store/authenticate/signout/signoutThunk";
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userEmail = localStorage.getItem("userEmail");
+
 
   // console.log("token",userData)
   const handleSignOut1 = (item) => {
@@ -37,6 +39,8 @@ const Header = () => {
               console.log("Sign-out Response:", response);
               localStorage.removeItem("user");
               localStorage.removeItem("email");
+              localStorage.removeItem("userEmail");
+
               navigate("/auth/signin")
             })
             .catch((error) => {
@@ -97,7 +101,7 @@ const Header = () => {
           {
             type: "menu-dropdown",
             text: "Salman Batuwah",
-            description: "salmanbinmoosaptr@gmail.com",
+            description:[userEmail],
             iconName: "user-profile",
             items: [
               { id: "profile", text: "Profile" },

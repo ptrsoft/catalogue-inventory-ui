@@ -175,7 +175,7 @@ const AddItem = () => {
       msp: Number(msp),
       stockQuantity: Number(stockQuantity),
       expiry: formattedExpiryDate,
-      images: [imageUrl1 || imageUrl2 || imageUrl3], 
+      images: [imageUrl1, imageUrl2, imageUrl3].filter(Boolean) // Remove empty URLs
     };
 
     console.log("Form Data:", JSON.stringify(formData, null, 2));

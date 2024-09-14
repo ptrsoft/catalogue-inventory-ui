@@ -30,6 +30,7 @@ const AddItem = () => {
 
   const [name, setName] = React.useState("");
   const [selectedCategory, setSelectedCategory] = React.useState(null);
+  const [selectedSubCategory, setSelectedSubCategory] = React.useState(null);
   const [selectedUnits, setSelectedUnits] = React.useState(null);
   const [purchasingPrice, setPurchasingPrice] = React.useState("");
   const [msp, setMsp] = React.useState("");
@@ -50,6 +51,30 @@ const AddItem = () => {
   const [imageLoading3, setImageLoading3] = React.useState(false);
   const [isFormSubmitted, setIsFormSubmitted] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
+
+  const subcategoryOptions = {
+    fruitAndVegetables: [
+      { label: "FRESH VEGETABLES", value: "freshVegetables" },
+      { label: "FRESH FRUITS", value: "freshFruits" },
+      { label: "LEAFY VEGETABLES", value: "freshFruits" },
+      { label: "EXOTIC VEGETABLES", value: "exoticVegetables" },
+    ],
+    meatFishEggs: [
+      { label: "EGGS", value: "eggs" },
+      { label: "FISH", value: "fish" },
+      { label: "CHICKEN", value: "chicken" },
+      { label: "MUTTON", value: "mutton" },
+    ],
+    dairiesAndGroceries: [
+      { label: "DAIRIES", value: "dairies" },
+      { label: "GROCERIES", value: "groceries" },
+    ],
+    bengaliSpecial: [
+      { label: "BENGALI VEGETABLES", value: "bengaliVegetables" },
+      { label: "BENGALI GROCERIES", value: "bengaliGroceries" },
+      { label: "BENGALI HOME NEEDS", value: "bengaliHomeNeeds" },
+    ],
+  };
 
   const handleImageUpload1 = async (event) => {
     const file = event.target.files[0];
@@ -175,7 +200,8 @@ const AddItem = () => {
       msp: Number(msp),
       stockQuantity: Number(stockQuantity),
       expiry: formattedExpiryDate,
-      images: [imageUrl1, imageUrl2, imageUrl3].filter(Boolean) // Remove empty URLs
+      images: [imageUrl1, imageUrl2, imageUrl3].filter(Boolean),
+      subCategory : selectedSubCategory ? selectedSubCategory.value : null // Remove empty URLs
     };
 
     console.log("Form Data:", JSON.stringify(formData, null, 2));
@@ -195,6 +221,7 @@ const AddItem = () => {
         ]);
         setName("");
         setSelectedCategory(null);
+        setSelectedSubCategory(null);
         setSelectedUnits(null);
         setPurchasingPrice("");
         setMsp("");
@@ -257,7 +284,7 @@ const AddItem = () => {
             width: "48vw",
             borderRadius: "15px",
             boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-            height: quantityOnHand ? "auto" : "370px",
+            height: quantityOnHand ? "auto" : "445px",
           }}
         >
           <Container variant="borderless">
@@ -290,9 +317,11 @@ const AddItem = () => {
                             setSelectedCategory(detail.selectedOption)
                           }
                           options={[
-                            { label: "FRUIT", value: "Fruit" },
-                            { label: "VEGETABLE", value: "Vegetable" },
-                            { label: "DAIRY", value: "Dairy" },
+                            { label: "Select a Category", value: "" },
+                            { label: "FRUITS AND VEGETABLES", value: "fruitAndVegetables" },
+                            { label: "DAIRIES AND GROCERIES", value: "dairiesAndGroceries" },
+                            { label: "BENGALI SPECIAL", value: "bengaliSpecial" },
+                            { label: "MEAT/FISH/EGGs", value: "meatFishEggs" },
                           ]}
                           placeholder="Select Category"
                         />
@@ -300,6 +329,27 @@ const AddItem = () => {
                     </div>
                     <div style={{ width: "160px" }}>
                       <FormField
+                        label="Sub Category"
+                        errorText={
+                          isFormSubmitted && !selectedSubCategory && "Required"
+                        }
+                      >
+                        <Select
+                          placeholder="Select Unit"
+                          selectedOption={selectedSubCategory}
+                          onChange={({ detail }) =>
+                            setSelectedSubCategory(detail.selectedOption)
+                          }
+                          options={
+                            selectedCategory
+                              ? subcategoryOptions[selectedCategory.value] || []
+                              : []
+                          }
+                        />
+                      </FormField>
+                    </div>
+                  </div>
+                  <FormField
                         label="Units"
                         errorText={
                           isFormSubmitted && !selectedUnits && "Required"
@@ -317,8 +367,6 @@ const AddItem = () => {
                           ]}
                         />
                       </FormField>
-                    </div>
-                  </div>
                   <FormField
                     label="Quantity In Stock"
                     errorText={isFormSubmitted && !stockQuantity && "Required"}
@@ -393,6 +441,7 @@ const AddItem = () => {
                               { label: "GIRDHARI", value: "girdhari" },
                               { label: "SAIDABAD", value: "saidabad" },
                             ]}
+                            placeholder="Select store"
                           />
                         </FormField>
                       </div>

@@ -321,7 +321,7 @@ const AddItem = () => {
                             { label: "FRUITS AND VEGETABLES", value: "fruitAndVegetables" },
                             { label: "DAIRIES AND GROCERIES", value: "dairiesAndGroceries" },
                             { label: "BENGALI SPECIAL", value: "bengaliSpecial" },
-                            { label: "MEAT/FISH/EGGs", value: "meatFishEggs" },
+                            { label: "MEAT/FISH/EGGS", value: "meatFishEggs" },
                           ]}
                           placeholder="Select Category"
                         />

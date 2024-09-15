@@ -223,10 +223,11 @@ const Inventory = () => {
             // }
             onChange={handleCategoryChange}
             options={[
-              { label: "All Categories", value: "" },
-              { label: "FRUIT", value: "Fruit" },
-              { label: "VEGETABLE", value: "Vegetable" },
-              { label: "DAIRY", value: "Dairy" },
+              { label: "Select a Category", value: "" },
+              { label: "FRUITS AND VEGETABLES", value: "fruitAndVegetables" },
+              { label: "DAIRIES AND GROCERIES", value: "dairiesAndGroceries" },
+              { label: "BENGALI SPECIAL", value: "bengaliSpecial" },
+              { label: "MEAT/FISH/EGGS", value: "meatFishEggs" },
             ]}
             placeholder="Select Category"
           />
@@ -246,9 +247,9 @@ const Inventory = () => {
           />
           <div style={{ flexGrow: 1 }}></div>
           <Button href="/app/Inventory/addItem">Add Item</Button>
-          <Button iconName="add-plus" variant="primary">
+          {/* <Button iconName="add-plus" variant="primary">
             Reorder
-          </Button>
+          </Button> */}
         </div>
 
         <div

@@ -110,21 +110,21 @@ const CreateNewAdjustments = () => {
   
     // Additional validation for items
     const itemErrors = items.reduce((errors, item, index) => {
-      const missingFields = [];
+      // const missingFields = [];
       
-      if (!item.adjustQuantity) {
-        missingFields.push("Adjustment Quantity");
-      }
-      if (!item.adjustPurchasePrice) {
-        missingFields.push("Adjust Purchase Price");
-      }
-      if (!item.adjustSellingPrice) {
-        missingFields.push("Adjust Selling Price");
-      }
+      // if (!item.adjustQuantity) {
+      //   missingFields.push("Adjustment Quantity");
+      // }
+      // if (!item.adjustPurchasePrice) {
+      //   missingFields.push("Adjust Purchase Price");
+      // }
+      // if (!item.adjustSellingPrice) {
+      //   missingFields.push("Adjust Selling Price");
+      // }
       
-      if (missingFields.length > 0) {
-        errors[index] = `Please fill out: ${missingFields.join(", ")}`;
-      }
+      // if (missingFields.length > 0) {
+      //   errors[index] = `Please fill out: ${missingFields.join(", ")}`;
+      // }
       
       return errors;
     }, {});
@@ -151,7 +151,7 @@ const CreateNewAdjustments = () => {
     return validationResult.isValid;
   };
 
-  console.log(formErrors.itemErrors.missingFields,"error");
+  // console.log(formErrors.itemErrors.missingFields,"error");
 
   const handleSave = () => {
     if (validateForm()) {

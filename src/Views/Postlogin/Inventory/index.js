@@ -225,11 +225,11 @@ const Inventory = () => {
             // }
             onChange={handleCategoryChange}
             options={[
-              { label: "Select a Category", value: "" },
-              { label: "FRUITS AND VEGETABLES", value: "fruitAndVegetables" },
-              { label: "DAIRIES AND GROCERIES", value: "dairiesAndGroceries" },
-              { label: "BENGALI SPECIAL", value: "bengaliSpecial" },
-              { label: "MEAT/FISH/EGGS", value: "meatFishEggs" },
+              { label: "All", value: "" },
+              { label: "FRUITS AND VEGETABLES", value: "Fruits And Vegetables" },
+              { label: "DAIRIES AND GROCERIES", value: "Dairies And Groceries" },
+              { label: "BENGALI SPECIAL", value: "Bengali Special" },
+              { label: "MEAT/FISH/EGGS", value: "Meat/Fish/Eggs" },
             ]}
             placeholder="Select Category"
           />

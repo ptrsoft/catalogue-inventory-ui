@@ -53,23 +53,23 @@ const AddItem = () => {
   const [imageError, setImageError] = React.useState(false);
 
   const subcategoryOptions = {
-    fruitAndVegetables: [
+    "Fruits And Vegetables": [
       { label: "FRESH VEGETABLES", value: "freshVegetables" },
       { label: "FRESH FRUITS", value: "freshFruits" },
       { label: "LEAFY VEGETABLES", value: "freshFruits" },
       { label: "EXOTIC VEGETABLES", value: "exoticVegetables" },
     ],
-    meatFishEggs: [
+    "Meat/Fish/Eggs": [
       { label: "EGGS", value: "eggs" },
       { label: "FISH", value: "fish" },
       { label: "CHICKEN", value: "chicken" },
       { label: "MUTTON", value: "mutton" },
     ],
-    dairiesAndGroceries: [
+    "Dairies And Groceries": [
       { label: "DAIRIES", value: "dairies" },
       { label: "GROCERIES", value: "groceries" },
     ],
-    bengaliSpecial: [
+    "Bengali Special": [
       { label: "BENGALI VEGETABLES", value: "bengaliVegetables" },
       { label: "BENGALI GROCERIES", value: "bengaliGroceries" },
       { label: "BENGALI HOME NEEDS", value: "bengaliHomeNeeds" },
@@ -322,10 +322,10 @@ const AddItem = () => {
                           }
                           options={[
                             { label: "Select a Category", value: "" },
-                            { label: "FRUITS AND VEGETABLES", value: "fruitAndVegetables" },
-                            { label: "DAIRIES AND GROCERIES", value: "dairiesAndGroceries" },
-                            { label: "BENGALI SPECIAL", value: "bengaliSpecial" },
-                            { label: "MEAT/FISH/EGGS", value: "meatFishEggs" },
+                            { label: "FRUITS AND VEGETABLES", value: "Fruits And Vegetables" },
+                            { label: "DAIRIES AND GROCERIES", value: "Dairies And Groceries" },
+                            { label: "BENGALI SPECIAL", value: "Bengali Special" },
+                            { label: "MEAT/FISH/EGGS", value: "Meat/Fish/Eggs" },
                           ]}
                           placeholder="Select Category"
                         />

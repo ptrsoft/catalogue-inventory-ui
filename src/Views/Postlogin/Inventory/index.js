@@ -23,6 +23,7 @@ import {
   Pagination,
   Flashbar,
   FormField,
+  Grid,
 } from "@cloudscape-design/components";
 const Inventory = () => {
   const [filteringText, setFilteringText] = React.useState("");
@@ -195,20 +196,21 @@ const Inventory = () => {
           ariaLabel="Breadcrumbs"
         />
 
-        <div style={{ marginTop: "12px", fontWeight: "900", fontSize: "36px" }}>
+        <div style={{ marginTop: "12px", marginBottom:"12px", fontWeight: "900", fontSize: "36px" }}>
           <Header variant="h1">
             <strong>Inventory</strong>
           </Header>
         </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "auto auto auto 1fr auto auto",
-            gap: "10px",
-            alignItems: "center",
-            marginTop: "12px",
-          }}
-        >
+      
+        <Grid
+  gridDefinition={[
+    { colspan: { default: 12, xs: 4 } }, // TextFilter occupies full width on extra small (xs) screens
+    { colspan: { default: 12, xs: 2 } }, // Category Select occupies full width on xs screens
+    { colspan: { default: 12, xs: 2 } },
+    { colspan: { default: 12, xs: 4 } }, // Status Select occupies full width on xs screens
+// Add Item Button, offset on larger screens
+  ]}
+>
           <TextFilter
             filteringText={filteringText}
             filteringPlaceholder="Search"
@@ -245,22 +247,35 @@ const Inventory = () => {
             ]}
             placeholder="Select Status"
           />
-          <div style={{ flexGrow: 1 }}></div>
+         <Box float="right">
           <Button href="/app/Inventory/addItem">Add Item</Button>
+          </Box>
           {/* <Button iconName="add-plus" variant="primary">
             Reorder
           </Button> */}
-        </div>
+        </Grid>
 
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
+            // display: "grid",
+            // gridTemplateColumns: "repeat(5, 1fr)",
             gap: "10px",
             marginTop: "20px",
             alignItems: "end",
+            textAlign:"center"
           }}
         >
+                  <Grid
+                  
+  gridDefinition={[
+    { colspan: { default: 12, xs: 3 } }, // TextFilter occupies full width on extra small (xs) screens
+    { colspan: { default: 12, xs: 3 } }, // Category Select occupies full width on xs screens
+    { colspan: { default: 12, xs: 3 } }, // Status Select occupies full width on xs screens
+    { colspan: { default: 12, xs: 3 } },
+    // { colspan: { default: 12, xs: 4 } },
+  // Add Item Button, offset on larger screens
+  ]}
+>
           <div
             style={{
               boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
@@ -317,7 +332,23 @@ const Inventory = () => {
               <b>Expired</b>
             </Container>
           </div>
-          {isModalVisible && (
+    
+       
+        
+          </Grid>
+          <Box float="right" textAlign="center" margin={"s"}>
+            <Pagination
+              currentPageIndex={currentPageIndex}
+              onChange={({ detail }) =>
+                setCurrentPageIndex(detail.currentPageIndex)
+              }
+              pagesCount={5}
+            />
+          </Box>
+        </div>
+      </div>
+      <div style={{ marginTop: "15px" }}>
+      {isModalVisible && (
             <Modal
               onDismiss={handleCancelToggle}
               visible={isModalVisible}
@@ -335,18 +366,6 @@ const Inventory = () => {
               Are you sure you want to change the status of this product?
             </Modal>
           )}
-          <div style={{}}>
-            <Pagination
-              currentPageIndex={currentPageIndex}
-              onChange={({ detail }) =>
-                setCurrentPageIndex(detail.currentPageIndex)
-              }
-              pagesCount={5}
-            />
-          </div>
-        </div>
-      </div>
-      <div style={{ marginTop: "15px" }}>
         <Table
           variant="borderless"
           columnDefinitions={[
@@ -369,7 +388,7 @@ const Inventory = () => {
                   onClick={() => handleProductClick(e)}
                 >
                   <img
-                    src={e.images[0]}
+                    src={e.image}
                     alt={e.name}
                     style={{
                       width: "30px",
@@ -491,11 +510,8 @@ const Inventory = () => {
               />
             </div>
             <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
+            class="drawer"
+          
             >
               <h1 style={{ color: "#0972D3" }}>
                 {selectedProduct.name}
@@ -523,7 +539,7 @@ const Inventory = () => {
               </h1>
 
               <div
-                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+                style={{ display: "flex", alignItems: "center", gap: "15px" }}
               >
                 <Toggle
                   onChange={() => handleToggleClick(selectedProduct)}

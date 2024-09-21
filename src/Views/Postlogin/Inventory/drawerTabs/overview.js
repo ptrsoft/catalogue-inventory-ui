@@ -15,7 +15,7 @@ const Overview = ({ selectedProduct }) => {
 
   return (
     <div>
-      <div style={{ display:"flex",gap:"65px" }}>
+      <div class="overview" >
        <div style={{width:"38vw"}}>
         <ColumnLayout columns={1}>
           <div
@@ -128,12 +128,13 @@ const Overview = ({ selectedProduct }) => {
           </div>
         </ColumnLayout>
         </div>
-        <div style={{borderRadius:"10px",backgroundColor:"#E9EBED",height:"45vh",padding:"15px"}}>
+        <div style={{borderRadius:"10px",backgroundColor:"#E9EBED",height:"45vh",padding:"15px", marginTop:"5px", marginBottom:"10px"}}>
         
           <div>
               <img
                 style={{border: "1px solid #D9D9D9" ,width:"228px",height:"250px"}}
-                src={selectedProduct.images[0]}
+                src={selectedProduct.image}
+
                 alt="product"
                 height="full"
                 width="full"

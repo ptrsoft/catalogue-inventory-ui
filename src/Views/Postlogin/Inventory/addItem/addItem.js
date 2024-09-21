@@ -278,10 +278,14 @@ const AddItem = () => {
           <strong style={{ fontWeight: "900" }}>Add Items</strong>
         </Header>
       </div>
-      <div style={{ display: "flex", gap: "30px", padding: "10px" }}>
+      <div 
+  
+    
+        style={{ display: "flex", gap: "30px", padding: "10px" }}>
         <div
+        className="w-auto"
           style={{
-            width: "48vw",
+            // width: "48vw",
             borderRadius: "15px",
             boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
             height: quantityOnHand ? "auto" : "445px",

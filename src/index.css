@@ -15,4 +15,33 @@ code {
 
 a.awsui_anchor_1kosq_101th_109{
   text-decoration: none !important;
+}.container {
+  display: flex;
+}
+
+@media (min-width: 400px) and (max-width: 500px) {
+  .container {
+    display: block;
+  }
+}
+
+.drawer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+@media (min-width: 400px) and (max-width: 500px) {
+  .drawer {
+    display: block;
+  }
+}
+
+.overview{
+  display: flex;
+ gap: 65px;
+}
+@media (min-width: 400px) and (max-width: 500px) {
+  .overview {
+    display: block;
+  }
 }

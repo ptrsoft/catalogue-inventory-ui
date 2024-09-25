@@ -379,10 +379,11 @@ const Inventory = () => {
               id: "name",
               header: "Name",
               cell: (e) => (
+                
                 <div
                   style={{
                     display: "flex",
-                    alignItems: "center",
+                    // alignItems: "center",
                     cursor: "pointer",
                   }}
                   onClick={() => handleProductClick(e)}
@@ -393,12 +394,15 @@ const Inventory = () => {
                     style={{
                       width: "30px",
                       height: "30px",
-                      marginRight: "10px",
+                      marginRight: "0.5rem",
                     }}
                   />
                   {e.name}
                 </div>
               ),
+              width: 250,
+              minWidth: 180
+    
             },
             {
               id: "category",

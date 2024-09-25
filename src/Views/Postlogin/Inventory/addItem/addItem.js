@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   Textarea,
   Icon,
@@ -22,9 +22,7 @@ import { uploadImage } from "Redux-Store/uploadImage/uploadThunk";
 import { addProduct } from "Redux-Store/Products/ProductThunk";
 import UploadImage from "../../../../assets/img/UploadImage.png";
 import upload2 from "../../../../assets/img/upload2.png";
-import upload3 from "../../../../assets/img/upload3.png";
 const AddItem = () => {
-  const { imageUrl, loading, error } = useSelector((state) => state.upload);
 
   const dispatch = useDispatch();
 
@@ -122,36 +120,6 @@ const AddItem = () => {
     }
   };
 
-  // Handle second image upload
-  // const handleImageUpload2 = async (event) => {
-  //   const file = event.target.files[0];
-
-  //   if (file) {
-  //     const fileName = encodeURIComponent(file.name);
-  //     try {
-  //       const response = await fetch(
-  //         `https://lou294nkli.execute-api.us-east-1.amazonaws.com/uploadUrl?fileName=${fileName}`
-  //       );
-  //       const { uploadUrl } = await response.json();
-  //       // console.log("response", response.json());
-  //       console.log("url", uploadUrl.split("?")[0]);
-  //       const finalUrl = uploadUrl.split("?")[0];
-  //       const uploadResponse = await fetch(uploadUrl, {
-  //         method: "PUT",
-  //         body: file,
-  //       });
-
-  //       if (uploadResponse.ok) {
-  //         console.log("File uploaded successfully upload 2.");
-  //         setImageUrl2(finalUrl);
-  //       } else {
-  //         console.error("Failed to upload the file.");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error:", error);
-  //     }
-  //   }
-  // };
   const isFormValid = () => {
     if (
       !name ||
@@ -160,9 +128,6 @@ const AddItem = () => {
       !purchasingPrice ||
       !msp ||
       !stockQuantity ||
-      (quantityOnHand && (!store || !quantity)) ||
-      !description ||
-      (addExpiry && !expiryDate) ||
       !imageUrl1
     ) {
       return false;
@@ -171,7 +136,6 @@ const AddItem = () => {
   };
 
   const handleChange = ({ detail }) => {
-    // Limit the description to 247 characters
     if (detail.value.length <= 247) {
       setDescription(detail.value);
     }
@@ -241,8 +205,26 @@ const AddItem = () => {
 
       .catch((error) => {
         console.error("Failed to add item:", error);
+      
+        // Check if the error message indicates that the item already exists
+        const errorMessage = error.message === "item with same name already exists" 
+          ? "The product is already added." 
+          : "Item with same name already exists.";
+      
+        // Set the Flashbar error message
+        setItems([
+          {
+            header: "Error",
+            type: "error",
+            content: errorMessage,
+            dismissible: true,
+            dismissLabel: "Dismiss message",
+            onDismiss: () => setItems([]),
+            id: "message_2",
+          },
+        ]);
       });
-  };
+        };
 
   return (
     <div>
@@ -267,15 +249,12 @@ const AddItem = () => {
         <Header
           variant="h1"
           actions={
-            <div style={{ display: "flex", gap: "10px" }}>
-              {/* <Button>Import Items</Button> */}
               <Button variant="primary" onClick={handleSave}>
                 Save
               </Button>
-            </div>
           }
         >
-          <strong style={{ fontWeight: "900" }}>Add Items</strong>
+          Add Items 
         </Header>
       </div>
       <div 
@@ -291,7 +270,7 @@ const AddItem = () => {
             height: quantityOnHand ? "auto" : "445px",
           }}
         >
-          <Container variant="borderless">
+          <Container variant="borderless" fitHeight>
             <ColumnLayout minColumnWidth={45} columns={2} gutter={20}>
               <Form>
                 <SpaceBetween direction="vertical" size="l">
@@ -354,6 +333,7 @@ const AddItem = () => {
                     </div>
                   </div>
                   <FormField
+                  
                         label="Units"
                         errorText={
                           isFormSubmitted && !selectedUnits && "Required"
@@ -416,7 +396,8 @@ const AddItem = () => {
 
                   <div style={{ marginBottom: 0 }}>
                     <FormField
-                      errorText={isFormSubmitted && !quantity && "Required"}>
+                      // errorText={isFormSubmitted && !quantity && "Required"}
+                      >
                     <Toggle
                       onChange={({ detail }) =>
                         setQuantityOnHand(detail.checked)
@@ -432,7 +413,7 @@ const AddItem = () => {
                       <div style={{ width: "200px" }}>
                         <FormField
                           label="Quantity In Stock"
-                          errorText={isFormSubmitted && !store && "Required"}
+                          // errorText={isFormSubmitted && !store && "Required"}
                         >
                           <Select
                             required
@@ -452,7 +433,7 @@ const AddItem = () => {
                       <div style={{ display: "flex", gap: "8px" }}>
                         <FormField
                           label="Quantity"
-                          errorText={isFormSubmitted && !quantity && "Required"}
+                          // errorText={isFormSubmitted && !quantity && "Required"}
                         >
                           <Input
                             size="3xs"
@@ -473,7 +454,7 @@ const AddItem = () => {
               <SpaceBetween direction="vertical" size="l">
                 <FormField
                   label="Product Description"
-                  errorText={isFormSubmitted && !description && "Required"}
+                  // errorText={isFormSubmitted && !description && "Required"}
                 >
                   <Textarea
                     rows={5}
@@ -483,7 +464,7 @@ const AddItem = () => {
                   />
                 </FormField>
               <FormField
-                errorText={isFormSubmitted && !expiryDate && "Required"}
+                // errorText={isFormSubmitted && !expiryDate && "Required"}
               >
                 <Toggle
                   onChange={({ detail }) => setAddExpiry(detail.checked)}
@@ -494,7 +475,7 @@ const AddItem = () => {
                 {addExpiry && (
                   <FormField
                     label="Expiry Date"
-                    errorText={isFormSubmitted && !expiryDate && "Required"}
+                    // errorText={isFormSubmitted && !expiryDate && "Required"}
                   >
                     <Input
                       type="date"
@@ -530,7 +511,7 @@ const AddItem = () => {
                     src={imageUrl1 || UploadImage}
                     alt="Upload"
                     style={{
-                      width: "300px",
+                      width: "320px",
                       height: "300px",
                       objectFit: "cover",
                       cursor: "pointer",
@@ -656,7 +637,7 @@ const AddItem = () => {
           </Container>
         </div>
       </div>
-    </div>
+     </div>
   );
 };
 

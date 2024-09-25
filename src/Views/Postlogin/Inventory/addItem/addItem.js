@@ -151,9 +151,7 @@ const AddItem = () => {
       return; // Exit if the form is invalid
     }
 
-    const formattedExpiryDate = expiryDate
-      ? new Date(expiryDate).toISOString()
-      : null;
+    const formattedExpiryDate = expiryDate ? new Date(expiryDate).toISOString() : undefined;
 
     const formData = {
       name,
@@ -206,25 +204,30 @@ const AddItem = () => {
       .catch((error) => {
         console.error("Failed to add item:", error);
       
-        // Check if the error message indicates that the item already exists
-        const errorMessage = error.message === "item with same name already exists" 
-          ? "The product is already added." 
-          : "Item with same name already exists.";
+        // Extract the message from the error object
+        const errorMessage = error.message;
       
-        // Set the Flashbar error message
-        setItems([
-          {
-            header: "Error",
-            type: "error",
-            content: errorMessage,
-            dismissible: true,
-            dismissLabel: "Dismiss message",
-            onDismiss: () => setItems([]),
-            id: "message_2",
-          },
-        ]);
+        // Check if the error is specifically about the product already existing
+        if (errorMessage === "item with same name already exists") {
+          // Show a relevant message in the Flashbar for duplicate items
+          setItems([
+            {
+              header: "Error",
+              type: "error",
+              content: "The product is already added.",
+              dismissible: true,
+              dismissLabel: "Dismiss message",
+              onDismiss: () => setItems([]),
+              id: "message_2",
+            },
+          ]);
+        } else {
+          // If the error is not about the item already existing, don't show a Flashbar
+          // You can handle other errors if needed (e.g., log them, send to error tracking, etc.)
+          console.log("No Flashbar message shown for this error:", errorMessage);
+        }
       });
-        };
+              };
 
   return (
     <div>

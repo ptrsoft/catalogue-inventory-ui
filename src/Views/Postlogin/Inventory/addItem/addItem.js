@@ -204,17 +204,20 @@ const AddItem = () => {
       .catch((error) => {
         console.error("Failed to add item:", error);
       
-        // Extract the message from the error object
-        const errorMessage = error.message;
+        // Check if error.response exists and contains the necessary information
+        const errorMessage = error.message || (error.response && error.response.data && error.response.data.message) || "Unknown error";
       
-        // Check if the error is specifically about the product already existing
-        if (errorMessage === "item with same name already exists") {
+        // Log the extracted error message for debugging
+        console.log("Extracted error message:", errorMessage);
+      
+        // Check for the specific case of a conflict (409) or the specific message
+        if (error.response?.status === 409 || errorMessage.includes("Item with same name already exists")) {
           // Show a relevant message in the Flashbar for duplicate items
           setItems([
             {
               header: "Error",
               type: "error",
-              content: "The product is already added.",
+              content: "Item with the same name already exists.",
               dismissible: true,
               dismissLabel: "Dismiss message",
               onDismiss: () => setItems([]),
@@ -222,12 +225,11 @@ const AddItem = () => {
             },
           ]);
         } else {
-          // If the error is not about the item already existing, don't show a Flashbar
-          // You can handle other errors if needed (e.g., log them, send to error tracking, etc.)
+          // Handle other errors if necessary
           console.log("No Flashbar message shown for this error:", errorMessage);
         }
       });
-              };
+                          };
 
   return (
     <div>

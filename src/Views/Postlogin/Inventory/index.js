@@ -383,7 +383,7 @@ const Inventory = () => {
                 <div
                   style={{
                     display: "flex",
-                    // alignItems: "center",
+                     alignItems: "center",
                     cursor: "pointer",
                   }}
                   onClick={() => handleProductClick(e)}

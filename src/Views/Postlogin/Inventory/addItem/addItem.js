@@ -1,8 +1,7 @@
-import * as React from "react";
+import React, { useState } from 'react'; 
 import { useDispatch } from "react-redux";
 import {
   Textarea,
-  Icon,
   Container,
   Toggle,
   Select,
@@ -16,16 +15,13 @@ import {
   BreadcrumbGroup,
   FormField,
   Flashbar,
-  Spinner,
 } from "@cloudscape-design/components";
 import { uploadImage } from "Redux-Store/uploadImage/uploadThunk";
 import { addProduct } from "Redux-Store/Products/ProductThunk";
-import UploadImage from "../../../../assets/img/UploadImage.png";
-import upload2 from "../../../../assets/img/upload2.png";
+import { FileUpload } from "@cloudscape-design/components";
+
 const AddItem = () => {
-
   const dispatch = useDispatch();
-
   const [name, setName] = React.useState("");
   const [selectedCategory, setSelectedCategory] = React.useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = React.useState(null);
@@ -44,82 +40,46 @@ const AddItem = () => {
   const [imageUrl3, setImageUrl3] = React.useState("");
   const [store, setStore] = React.useState("");
   const [items, setItems] = React.useState([]);
-  const [imageLoading1, setImageLoading1] = React.useState(false);
-  const [imageLoading2, setImageLoading2] = React.useState(false);
-  const [imageLoading3, setImageLoading3] = React.useState(false);
   const [isFormSubmitted, setIsFormSubmitted] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
+  const [fileUploadValue, setFileUploadValue] = useState([]);
+  
 
   const subcategoryOptions = {
     "Fruits And Vegetables": [
-      { label: "FRESH VEGETABLES", value: "freshVegetables" },
-      { label: "FRESH FRUITS", value: "freshFruits" },
-      { label: "LEAFY VEGETABLES", value: "freshFruits" },
-      { label: "EXOTIC VEGETABLES", value: "exoticVegetables" },
+      { label: "Fresh Vegetables", value: "freshVegetables" },
+      { label: "Fresh Fruits", value: "freshFruits" },
+      { label: "Leafy Vegetables", value: "freshFruits" },
+      { label: "Exotic Vegetables", value: "exoticVegetables" },
     ],
     "Meat/Fish/Eggs": [
-      { label: "EGGS", value: "eggs" },
-      { label: "FISH", value: "fish" },
-      { label: "CHICKEN", value: "chicken" },
-      { label: "MUTTON", value: "mutton" },
+      { label: "Eggs", value: "eggs" },
+      { label: "Fish", value: "fish" },
+      { label: "Chicken", value: "chicken" },
+      { label: "Mutton", value: "mutton" },
     ],
     "Dairies And Groceries": [
-      { label: "DAIRIES", value: "dairies" },
-      { label: "GROCERIES", value: "groceries" },
+      { label: "Dairies", value: "dairies" },
+      { label: "Groceries", value: "groceries" },
     ],
     "Bengali Special": [
-      { label: "BENGALI VEGETABLES", value: "bengaliVegetables" },
-      { label: "BENGALI GROCERIES", value: "bengaliGroceries" },
-      { label: "BENGALI HOME NEEDS", value: "bengaliHomeNeeds" },
+      { label: "Bengali Vegetables", value: "bengaliVegetables" },
+      { label: "Bengali Groceries", value: "bengaliGroceries" },
+      { label: "Bengali Home Needs", value: "bengaliHomeNeeds" },
     ],
   };
 
-  const handleImageUpload1 = async (event) => {
-    const file = event.target.files[0];
+  const handleImageUpload = async (file, setImageUrl) => {
     if (file) {
       try {
-        setImageLoading1(true);
         const result = await dispatch(uploadImage(file)).unwrap();
-        setImageUrl1(result); // Update the state with the returned URL
+        setImageUrl(result); // Update the state with the returned URL
       } catch (error) {
-        console.error("Failed to upload image 1:", error);
-      } finally {
-        setImageLoading1(false);
-        setImageError(false); // Clear error when an image is uploaded
+        console.error(`Failed to upload image:`, error);
       }
     }
   };
-
-  const handleImageUpload2 = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      try {
-        setImageLoading2(true);
-        const result = await dispatch(uploadImage(file)).unwrap();
-        setImageUrl2(result); // Update the state with the returned URL
-      } catch (error) {
-        console.error("Failed to upload image 2:", error);
-      } finally {
-        setImageLoading2(false);
-      }
-    }
-  };
-
-  const handleImageUpload3 = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      try {
-        setImageLoading3(true);
-        const result = await dispatch(uploadImage(file)).unwrap();
-        setImageUrl3(result); // Update the state with the returned URL
-      } catch (error) {
-        console.error("Failed to upload image 3:", error);
-      } finally {
-        setImageLoading3(false);
-      }
-    }
-  };
-
+  
   const isFormValid = () => {
     if (
       !name ||
@@ -140,7 +100,6 @@ const AddItem = () => {
       setDescription(detail.value);
     }
   };
-  // Handle Save button click
   const handleSave = () => {
     setIsFormSubmitted(true);
     if (!imageUrl1) {
@@ -151,7 +110,9 @@ const AddItem = () => {
       return; // Exit if the form is invalid
     }
 
-    const formattedExpiryDate = expiryDate ? new Date(expiryDate).toISOString() : undefined;
+    const formattedExpiryDate = expiryDate
+      ? new Date(expiryDate).toISOString()
+      : undefined;
 
     const formData = {
       name,
@@ -163,7 +124,7 @@ const AddItem = () => {
       stockQuantity: Number(stockQuantity),
       expiry: formattedExpiryDate,
       images: [imageUrl1, imageUrl2, imageUrl3].filter(Boolean),
-      subCategory : selectedSubCategory ? selectedSubCategory.value : null // Remove empty URLs
+      subCategory: selectedSubCategory ? selectedSubCategory.value : null, // Remove empty URLs
     };
 
     console.log("Form Data:", JSON.stringify(formData, null, 2));
@@ -203,16 +164,19 @@ const AddItem = () => {
 
       .catch((error) => {
         console.error("Failed to add item:", error);
-      
-        // Check if error.response exists and contains the necessary information
-        const errorMessage = error.message || (error.response && error.response.data && error.response.data.message) || "Unknown error";
-      
-        // Log the extracted error message for debugging
+
+        const errorMessage =
+          error.message ||
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          "Unknown error";
         console.log("Extracted error message:", errorMessage);
-      
-        // Check for the specific case of a conflict (409) or the specific message
-        if (error.response?.status === 409 || errorMessage.includes("Item with same name already exists")) {
-          // Show a relevant message in the Flashbar for duplicate items
+
+        if (
+          error.response?.status === 409 ||
+          errorMessage.includes("Item with same name already exists")
+        ) {
           setItems([
             {
               header: "Error",
@@ -225,263 +189,179 @@ const AddItem = () => {
             },
           ]);
         } else {
-          // Handle other errors if necessary
-          console.log("No Flashbar message shown for this error:", errorMessage);
+          console.log(
+            "No Flashbar message shown for this error:",
+            errorMessage
+          );
         }
       });
-                          };
+  };
+
+  const handleFileChange = (files) => {
+    files.forEach((file, index) => {
+      if (index === 0) handleImageUpload(file, setImageUrl1);
+      else if (index === 1) handleImageUpload(file, setImageUrl2);
+      else if (index === 2) handleImageUpload(file, setImageUrl3);
+    });
+  };
 
   return (
-    <div>
+  <SpaceBetween size="s">
       <Flashbar items={items} />
-      <div style={{ paddingLeft: "20px" }}>
-        <BreadcrumbGroup
-          items={[
-            { text: "Inventory", href: "/app/inventory" },
-            { text: "Add Items", href: "/app/inventory/addItem" },
-          ]}
-          ariaLabel="Breadcrumbs"
-        />
-      </div>
-      <div
-        style={{
-          marginTop: "12px",
-          fontWeight: "900",
-          fontSize: "36px",
-          padding: "0 80px 0 20px",
-        }}
+      <BreadcrumbGroup
+        items={[
+          { text: "Inventory", href: "/app/inventory" },
+          { text: "Add Items", href: "/app/inventory/addItem" },
+        ]}
+        ariaLabel="Breadcrumbs"
+      />
+      <Header
+        variant="h1"
+        actions={
+          <Button variant="primary" onClick={handleSave}>
+            Save
+          </Button>
+        }
       >
-        <Header
-          variant="h1"
-          actions={
-              <Button variant="primary" onClick={handleSave}>
-                Save
-              </Button>
-          }
-        >
-          Add Items 
-        </Header>
-      </div>
-      <div 
-  
-    
-        style={{ display: "flex", gap: "30px", padding: "10px" }}>
-        <div
-        className="w-auto"
-          style={{
-            // width: "48vw",
-            borderRadius: "15px",
-            boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-            height: quantityOnHand ? "auto" : "445px",
-          }}
-        >
-          <Container variant="borderless" fitHeight>
-            <ColumnLayout minColumnWidth={45} columns={2} gutter={20}>
-              <Form>
-                <SpaceBetween direction="vertical" size="l">
-                  <FormField
-                    label="Item Name"
-                    errorText={isFormSubmitted && !name && "Required"}
-                  >
-                    <Input
-                      size="xs"
-                      placeholder="Input Item Name"
-                      value={name}
-                      onChange={({ detail }) => setName(detail.value)}
-                    />
-                  </FormField>
-                  <div style={{ display: "flex", gap: "15px" }}>
-                    <div style={{ width: "150px" }}>
-                      <FormField
-                        label="Category"
-                        errorText={
-                          isFormSubmitted && !selectedCategory && "Required"
-                        }
-                      >
-                        <Select
-                          required
-                          selectedOption={selectedCategory}
-                          onChange={({ detail }) =>
-                            setSelectedCategory(detail.selectedOption)
-                          }
-                          options={[
-                            { label: "Select a Category", value: "" },
-                            { label: "FRUITS AND VEGETABLES", value: "Fruits And Vegetables" },
-                            { label: "DAIRIES AND GROCERIES", value: "Dairies And Groceries" },
-                            { label: "BENGALI SPECIAL", value: "Bengali Special" },
-                            { label: "MEAT/FISH/EGGS", value: "Meat/Fish/Eggs" },
-                          ]}
-                          placeholder="Select Category"
-                        />
-                      </FormField>
-                    </div>
-                    <div style={{ width: "160px" }}>
-                      <FormField
-                        label="Sub Category"
-                        errorText={
-                          isFormSubmitted && !selectedSubCategory && "Required"
-                        }
-                      >
-                        <Select
-                          placeholder="Select Unit"
-                          selectedOption={selectedSubCategory}
-                          onChange={({ detail }) =>
-                            setSelectedSubCategory(detail.selectedOption)
-                          }
-                          options={
-                            selectedCategory
-                              ? subcategoryOptions[selectedCategory.value] || []
-                              : []
-                          }
-                        />
-                      </FormField>
-                    </div>
-                  </div>
-                  <FormField
-                  
-                        label="Units"
-                        errorText={
-                          isFormSubmitted && !selectedUnits && "Required"
-                        }
-                      >
-                        <Select
-                          placeholder="Select Unit"
-                          selectedOption={selectedUnits}
-                          onChange={({ detail }) =>
-                            setSelectedUnits(detail.selectedOption)
-                          }
-                          options={[
-                            { label: "PIECE", value: "pieces" },
-                            { label: "GRAMS", value: "grams" },
-                          ]}
-                        />
-                      </FormField>
-                  <FormField
-                    label="Quantity In Stock"
-                    errorText={isFormSubmitted && !stockQuantity && "Required"}
-                  >
-                    <Input
-                      required
-                      size="xs"
-                      placeholder="Quantity available in stock"
-                      value={stockQuantity}
-                      onChange={({ detail }) => setStockQuantity(detail.value)}
-                    />
-                  </FormField>
-                  <div style={{ display: "flex", gap: "15px" }}>
-                    <FormField
-                      label="Purchasing Price"
-                      errorText={
-                        isFormSubmitted && !purchasingPrice && "Required"
-                      }
-                    >
-                      <Input
-                        required
-                        size="3xs"
-                        placeholder="Input Purchasing Price"
-                        value={purchasingPrice}
-                        onChange={({ detail }) =>
-                          setPurchasingPrice(detail.value)
-                        }
-                      />
-                    </FormField>
-                    <FormField
-                      label="Min Selling Price"
-                      errorText={isFormSubmitted && !msp && "Required"}
-                    >
-                      <Input
-                        required
-                        size="3xs"
-                        placeholder="Min Selling Price"
-                        value={msp}
-                        onChange={({ detail }) => setMsp(detail.value)}
-                      />
-                    </FormField>
-                  </div>
+        Add Items
+      </Header>
+      <Container>
+        <Form>
+          <SpaceBetween direction="vertical" size="l">
+            <FormField
+              label="Item Name"
+              errorText={isFormSubmitted && !name && "Required"}
+            >
+              <Input
+                size="xs"
+                placeholder="Input Item Name"
+                value={name}
+                onChange={({ detail }) => setName(detail.value)}
+              />
+            </FormField>
+            <FormField label="Product Description">
+              <Textarea
+                rows={5}
+                onChange={handleChange}
+                value={description}
+                maxLength={247}
+              />
+            </FormField>
 
-                  <div style={{ marginBottom: 0 }}>
-                    <FormField
-                      // errorText={isFormSubmitted && !quantity && "Required"}
-                      >
-                    <Toggle
-                      onChange={({ detail }) =>
-                        setQuantityOnHand(detail.checked)
-                      }
-                      checked={quantityOnHand}
-                    >
-                      Quantity on hand
-                    </Toggle>
-                    </FormField>
-                  </div>
-                  {quantityOnHand && (
-                    <div style={{ display: "flex", gap: "15px" }}>
-                      <div style={{ width: "200px" }}>
-                        <FormField
-                          label="Quantity In Stock"
-                          // errorText={isFormSubmitted && !store && "Required"}
-                        >
-                          <Select
-                            required
-                            value={store}
-                            selectedOption={store} // Example, replace with relevant state
-                            onChange={({ detail }) =>
-                              setStore(detail.selectedOption)
-                            }
-                            options={[
-                              { label: "GIRDHARI", value: "girdhari" },
-                              { label: "SAIDABAD", value: "saidabad" },
-                            ]}
-                            placeholder="Select store"
-                          />
-                        </FormField>
-                      </div>
-                      <div style={{ display: "flex", gap: "8px" }}>
-                        <FormField
-                          label="Quantity"
-                          // errorText={isFormSubmitted && !quantity && "Required"}
-                        >
-                          <Input
-                            size="3xs"
-                            placeholder="Enter Quantity"
-                            value={quantity}
-                            onChange={({ detail }) => setQuantity(detail.value)}
-                            required
-                          />
-                        </FormField>
-                        <div style={{ paddingTop: "30px" }}>
-                          <Icon name="remove" />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </SpaceBetween>
-              </Form>
-              <SpaceBetween direction="vertical" size="l">
-                <FormField
-                  label="Product Description"
-                  // errorText={isFormSubmitted && !description && "Required"}
-                >
-                  <Textarea
-                    rows={5}
-                    onChange={handleChange}
-                    value={description}
-                   maxLength = {247}
-                  />
-                </FormField>
+            <ColumnLayout columns={3} minColumnWidth={120}>
               <FormField
-                // errorText={isFormSubmitted && !expiryDate && "Required"}
+                label="Category"
+                errorText={isFormSubmitted && !selectedCategory && "Required"}
               >
-                <Toggle
-                  onChange={({ detail }) => setAddExpiry(detail.checked)}
-                  checked={addExpiry}
-                >
-                  Add Expiry
-                </Toggle></FormField>
-                {addExpiry && (
-                  <FormField
-                    label="Expiry Date"
-                    // errorText={isFormSubmitted && !expiryDate && "Required"}
+                <Select
+                  required
+                  selectedOption={selectedCategory}
+                  onChange={({ detail }) =>
+                    setSelectedCategory(detail.selectedOption)
+                  }
+                  options={[
+                    {
+                      label: "Fruits And Vegetables",
+                      value: "Fruits And Vegetables",
+                    },
+                    {
+                      label: "Dairies And Groceries",
+                      value: "Dairies And Groceries",
+                    },
+                    { label: "Bengali Special", value: "Bengali Special" },
+                    { label: "Meat/Fish/Eggs", value: "Meat/Fish/Eggs" },
+                  ]}
+                  placeholder="Select Category"
+                />
+              </FormField>
+              <FormField
+                label="Sub Category"
+                errorText={
+                  isFormSubmitted && !selectedSubCategory && "Required"
+                }
+              >
+                <Select
+                  placeholder="Select Unit"
+                  selectedOption={selectedSubCategory}
+                  onChange={({ detail }) =>
+                    setSelectedSubCategory(detail.selectedOption)
+                  }
+                  options={
+                    selectedCategory
+                      ? subcategoryOptions[selectedCategory.value] || []
+                      : []
+                  }
+                />
+              </FormField>
+              <FormField
+                label="Units"
+                errorText={isFormSubmitted && !selectedUnits && "Required"}
+              >
+                <Select
+                  placeholder="Select Unit"
+                  selectedOption={selectedUnits}
+                  onChange={({ detail }) =>
+                    setSelectedUnits(detail.selectedOption)
+                  }
+                  options={[
+                    { label: "Piece", value: "pieces" },
+                    { label: "Grams", value: "grams" },
+                    { label: "Kgs", value: "kgs" },
+                  ]}
+                />
+              </FormField>
+            </ColumnLayout>
+
+            <ColumnLayout columns={3} minColumnWidth={120}>
+              <FormField
+                label="Quantity In Stock"
+                errorText={isFormSubmitted && !stockQuantity && "Required"}
+              >
+                <Input
+                  required
+                  size="xs"
+                  placeholder="Quantity available in stock"
+                  value={stockQuantity}
+                  onChange={({ detail }) => setStockQuantity(detail.value)}
+                />
+              </FormField>
+              <FormField
+                label="Purchasing Price"
+                errorText={isFormSubmitted && !purchasingPrice && "Required"}
+              >
+                <Input
+                  required
+                  size="3xs"
+                  placeholder="Input Purchasing Price"
+                  value={purchasingPrice}
+                  onChange={({ detail }) => setPurchasingPrice(detail.value)}
+                />
+              </FormField>
+              <FormField
+                label="Min Selling Price"
+                errorText={isFormSubmitted && !msp && "Required"}
+              >
+                <Input
+                  required
+                  size="3xs"
+                  placeholder="Min Selling Price"
+                  value={msp}
+                  onChange={({ detail }) => setMsp(detail.value)}
+                />
+              </FormField>
+            </ColumnLayout>
+            <ColumnLayout columns={3} minColumnWidth={120}>
+              <div>
+                <FormField>
+                  <Toggle
+                    onChange={({ detail }) => setAddExpiry(detail.checked)}
+                    checked={addExpiry}
                   >
+                    Add Expiry
+                  </Toggle>
+                </FormField>
+                {addExpiry && (
+                  <FormField label="Expiry Date">
                     <Input
                       type="date"
                       onChange={({ detail }) => setExpiryDate(detail.value)}
@@ -490,160 +370,82 @@ const AddItem = () => {
                     />
                   </FormField>
                 )}
-                <Checkbox
-                  checked={keepInformed}
-                  onChange={({ detail }) => setKeepInformed(detail.checked)}
-                >
-                  Keep me informed about stock updates for this item.
-                </Checkbox>
-              </SpaceBetween>
-            </ColumnLayout>
-          </Container>
-        </div>
-        <div
-          style={{
-            width: "25vw",
-            borderRadius: "15px",
-            height: "auto",
-            boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-          }}
-        >
-          <Container variant="borderless">
-            <div style={{ textAlign: "center", marginBottom: "20px" }}>
+              </div>
               <div>
-                <label htmlFor="upload-button-1">
-                  <img
-                    src={imageUrl1 || UploadImage}
-                    alt="Upload"
-                    style={{
-                      width: "320px",
-                      height: "300px",
-                      objectFit: "cover",
-                      cursor: "pointer",
-                      borderRadius: "10px",
-                    }}
-                  />
-                </label>
-                {isFormSubmitted && imageError && (
-                  <div style={{ color: "red", marginTop: "10px" }}>
-                    Image is required
-                  </div>
-                )}
-                <input
-                  type="file"
-                  id="upload-button-1"
-                  style={{ display: "none" }}
-                  onChange={handleImageUpload1}
-                  required
-                />
-                {imageLoading1 && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "35%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      background: "rgba(255, 255, 255, 0.7)",
-                      borderRadius: "50%",
-                      padding: "10px",
-                    }}
+                <FormField>
+                  <Toggle
+                    onChange={({ detail }) => setQuantityOnHand(detail.checked)}
+                    checked={quantityOnHand}
                   >
-                    <Spinner size="large" />
-                  </div>
+                    Quantity on hand
+                  </Toggle>
+                </FormField>
+                {quantityOnHand && (
+                  <>
+                    <FormField label="Quantity In Stock">
+                      <Select
+                        required
+                        value={store}
+                        selectedOption={store} // Example, replace with relevant state
+                        onChange={({ detail }) =>
+                          setStore(detail.selectedOption)
+                        }
+                        options={[
+                          { label: "GIRDHARI", value: "girdhari" },
+                          { label: "SAIDABAD", value: "saidabad" },
+                        ]}
+                        placeholder="Select store"
+                      />
+                    </FormField>
+                    <FormField label="Quantity">
+                      <Input
+                        size="3xs"
+                        placeholder="Enter Quantity"
+                        value={quantity}
+                        onChange={({ detail }) => setQuantity(detail.value)}
+                        required
+                      />
+                    </FormField>
+                    <Checkbox
+                      checked={keepInformed}
+                      onChange={({ detail }) => setKeepInformed(detail.checked)}
+                    >
+                      Keep me informed about stock updates for this item.
+                    </Checkbox>
+                  </>
                 )}
               </div>
+              <div></div>
+            </ColumnLayout>
+          </SpaceBetween>
+        </Form>
 
-              <div
-                style={{ display: "flex", gap: "30px", paddingLeft: "20px" }}
-              >
-                <div>
-                  <label htmlFor="upload-button-2">
-                    <img
-                      src={imageUrl2 || upload2}
-                      alt="Upload"
-                      style={{
-                        marginTop: "20px",
-                        width: "100px",
-                        height: "100px",
-                        cursor: "pointer",
-                      }}
-                    />
-                  </label>
-                  <input
-                    type="file"
-                    id="upload-button-2"
-                    style={{ display: "none" }}
-                    onChange={handleImageUpload2}
-                    required
-                  />
-                  {imageLoading2 && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "80%",
-                        left: "27%",
-                        transform: "translate(-80%, -50%)",
-                        background: "rgba(255, 255, 255, 0.7)",
-                        borderRadius: "50%",
-                        padding: "10px",
-                      }}
-                    >
-                      <Spinner size="normal" />
-                    </div>
-                  )}
-                </div>
-                <div
-                  style={{
-                    cursor: "pointer",
-                    // border: "1px dashed gray",
-                    width: "100px",
-                    height: "100px",
-                    borderRadius: "8px",
-                    marginTop: "20px",
-                  }}
-                >
-                  {imageLoading3 && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "80%",
-                        left: "60%",
-                        transform: "translate(-50%, -50%)",
-                        background: "rgba(255, 255, 255, 0.7)",
-                        borderRadius: "50%",
-                        padding: "10px",
-                      }}
-                    >
-                      <Spinner size="normal" />
-                    </div>
-                  )}
-                  <label htmlFor="upload-button-3">
-                    <img
-                      style={{
-                        height: "98px",
-                        borderRadius: "8px",
-                      }}
-                      src={imageUrl3 || upload2}
-                      alt=""
-                      height="full"
-                      width="full"
-                    />
-                  </label>
-                  <input
-                    type="file"
-                    id="upload-button-3"
-                    style={{ display: "none" }}
-                    onChange={handleImageUpload3}
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-          </Container>
-        </div>
-      </div>
-     </div>
-  );
+        <Container variant="borderless">
+<FileUpload
+      onChange={({ detail }) => {
+        setFileUploadValue(detail.value);
+        handleFileChange(detail.value); // Call handleFileChange when files are selected
+      }}
+      value={fileUploadValue}
+      i18nStrings={{
+        uploadButtonText: e => (e ? "Choose files" : "Choose file"),
+        dropzoneText: e => (e ? "Drop files to upload" : "Drop file to upload"),
+        removeFileAriaLabel: e => `Remove file ${e + 1}`,
+        limitShowFewer: "Show fewer files",
+        limitShowMore: "Show more files",
+        errorIconAriaLabel: "Error"
+      }}
+      multiple
+      showFileSize
+      showFileThumbnail
+      tokenLimit={3}
+      errorText={fileUploadValue.length === 0 && isFormSubmitted ? (
+        "At least one image is required"
+      ) : ""} // Display error if no images are uploaded and form has been submitted
+            />
+        </Container>
+      </Container>
+      </SpaceBetween>  );
 };
 
 export default AddItem;

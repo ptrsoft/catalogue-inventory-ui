@@ -22,7 +22,6 @@ import {
   Select,
   Pagination,
   Flashbar,
-  FormField,
   Grid,
 } from "@cloudscape-design/components";
 const Inventory = () => {
@@ -37,17 +36,16 @@ const Inventory = () => {
   const [items, setItems] = React.useState([]);
   const [selectedCategory, setSelectedCategory] = React.useState(null);
   const [selectedStatus, setSelectedStatus] = React.useState(null);
-
-  // Fetch products data from Redux store
-
   const products = useSelector((state) => state.products.products);
+  const [
+    selectedItems,
+    setSelectedItems
+  ] = React.useState([{ name: "Item 2" }]);
+
 
   const dispatch = useDispatch();
   const { data = [], status } = products;
   console.log("data", data);
-  // const key = data.nextKey;
-  // console.log("key", key);
-  // Fetch products when component mounts
 
   useEffect(() => {
     dispatch(
@@ -69,33 +67,6 @@ const Inventory = () => {
     setSelectedStatus(detail.selectedOption);
   };
 
-  // Check if products is an array and has elements
-
-  // const handleCategory =({ detail })=>{
-  //   setSelectedCategory(detail.filteringText);
-  //   dispatch(fetchProducts({ category: detail.filteringText }))
-  //   .unwrap()
-  //   .then(() => {
-  //     console.log("fetch successful");
-  //   })
-  //   .catch(() => {
-  //     console.log("fetch failed");
-  //   });
-  // }
-  // const handleSearchChange = ({ detail }) => {
-  //   setFilteringText(detail.filteringText);
-
-  //   // Dispatch the fetchProducts thunk with the search parameter
-  //   dispatch(fetchProducts({ search: detail.filteringText }))
-  //     .unwrap()
-  //     .then(() => {
-  //       console.log("Search successful");
-  //     })
-  //     .catch(() => {
-  //       console.log("Search failed");
-  //     });
-  // };
-
   if (status === "LOADING") {
     return (
       <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
@@ -112,7 +83,6 @@ const Inventory = () => {
     dispatch(PutToggle({ id: productToToggle.id, active: newStatus }))
       .unwrap()
       .then(() => {
-        // If the API call is successful, show the success message and navigate to the dashboard
         setItems([
           {
             type: "success",
@@ -164,7 +134,7 @@ const Inventory = () => {
   const getStockAlertColor = (stockAlert) => {
     return stockAlert.toLowerCase().includes("low") ? "red" : "#0492C2";
   };
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 50;
   // Calculate the items for the current page
   const startIndex = (currentPageIndex - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -208,7 +178,6 @@ const Inventory = () => {
     { colspan: { default: 12, xs: 2 } }, // Category Select occupies full width on xs screens
     { colspan: { default: 12, xs: 2 } },
     { colspan: { default: 12, xs: 4 } }, // Status Select occupies full width on xs screens
-// Add Item Button, offset on larger screens
   ]}
 >
           <TextFilter
@@ -220,25 +189,19 @@ const Inventory = () => {
           <Select
             required
             selectedOption={selectedCategory}
-            // onChange={({ detail }) =>
-            //   setSelectedCategory(detail.selectedOption)
-            // }
             onChange={handleCategoryChange}
             options={[
               { label: "All", value: "" },
-              { label: "FRUITS AND VEGETABLES", value: "Fruits And Vegetables" },
-              { label: "DAIRIES AND GROCERIES", value: "Dairies And Groceries" },
-              { label: "BENGALI SPECIAL", value: "Bengali Special" },
-              { label: "MEAT/FISH/EGGS", value: "Meat/Fish/Eggs" },
+              { label: "Fruits And Vegetables", value: "Fruits And Vegetables" },
+              { label: "Dairies And Groceries", value: "Dairies And Groceries" },
+              { label: "Bengali Special", value: "Bengali Special" },
+              { label: "Meat/Fish/Eggs", value: "Meat/Fish/Eggs" },
             ]}
             placeholder="Select Category"
           />
           <Select
             required
             selectedOption={selectedStatus}
-            // onChange={({ detail }) =>
-            //   setSelectedCategory(detail.selectedOption)
-            // }
             onChange={handleSelectChange}
             options={[
               { label: "All", value: "All" },
@@ -250,15 +213,10 @@ const Inventory = () => {
          <Box float="right">
           <Button href="/app/Inventory/addItem">Add Item</Button>
           </Box>
-          {/* <Button iconName="add-plus" variant="primary">
-            Reorder
-          </Button> */}
         </Grid>
 
         <div
           style={{
-            // display: "grid",
-            // gridTemplateColumns: "repeat(5, 1fr)",
             gap: "10px",
             marginTop: "20px",
             alignItems: "end",
@@ -272,8 +230,6 @@ const Inventory = () => {
     { colspan: { default: 12, xs: 3 } }, // Category Select occupies full width on xs screens
     { colspan: { default: 12, xs: 3 } }, // Status Select occupies full width on xs screens
     { colspan: { default: 12, xs: 3 } },
-    // { colspan: { default: 12, xs: 4 } },
-  // Add Item Button, offset on larger screens
   ]}
 >
           <div
@@ -367,6 +323,24 @@ const Inventory = () => {
             </Modal>
           )}
         <Table
+              renderAriaLive={({
+                firstIndex,
+                lastIndex,
+                totalItemsCount
+              }) =>
+                `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
+              }
+              onSelectionChange={({ detail }) =>
+                setSelectedItems(detail.selectedItems)
+              }
+              selectedItems={selectedItems}
+              ariaLabels={{
+                selectionGroupLabel: "Items selection",
+                allItemsSelectionLabel: () => "select all",
+                itemSelectionLabel: ({ selectedItems }, item) =>
+                  item.name
+              }}
+        
           variant="borderless"
           columnDefinitions={[
             {
@@ -410,6 +384,13 @@ const Inventory = () => {
               header: "Category",
               cell: (e) => e.category,
             },
+            {
+              id: "subCategory",
+              sortingField: "subCategory",
+              header: "Sub Category",
+              cell: (e) => e.subCategory,
+            },
+
             {
               sortingField: "quantityOnHand",
               id: "quantityOnHand",
@@ -464,6 +445,7 @@ const Inventory = () => {
             { id: "itemCode", visible: true },
             { id: "name", visible: true },
             { id: "category", visible: true },
+            { id: "subCategory", visible: true },
             { id: "quantityOnHand", visible: true },
             { id: "stockAlert", visible: true },
             { id: "purchasingPrice", visible: true },
@@ -473,6 +455,8 @@ const Inventory = () => {
           enableKeyboardNavigation
           items={paginatedProducts}
           loadingText="Loading resources"
+          selectionType="multi"
+
           trackBy="itemCode"
           empty={
             <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">

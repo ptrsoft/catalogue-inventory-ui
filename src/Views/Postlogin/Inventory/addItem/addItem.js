@@ -46,41 +46,39 @@ const AddItem = () => {
   
   const subcategoryOptions = {
     "Fresh Vegetables": [
-      { label: "Daily Vegetables", value: "dailyVegetables" },
-      { label: "Leafy Vegetables", value: "leafyVegetables" },
-      { label: "Exotic Vegetables", value: "exoticVegetables" }
+      { label: "Daily Vegetables", value: "Daily Vegetables" },
+      { label: "Leafy Vegetables", value: "Leafy Vegetables" },
+      { label: "Exotic Vegetables", value: "Exotic Vegetables" }
     ],
     "Fresh Fruits": [
-      { label: "Daily Fruits", value: "dailyFruits" },
-      { label: "Exotic Fruits", value: "exoticFruits" },
-      { label: "Dry Fruits", value: "dryFruits" }
+      { label: "Daily Fruits", value: "Daily Fruits" },
+      { label: "Exotic Fruits", value: "Exotic Fruits" },
+      { label: "Dry Fruits", value: "Dry Fruits" }
     ],
     "Dairy": [
-      { label: "Milk", value: "milk" },
-      { label: "Butter & Ghee", value: "butterGhee" },
-      { label: "Paneer & Khowa", value: "paneerKhowa" }
+      { label: "Milk", value: "Milk" },
+      { label: "Butter & Ghee", value: "Butter & Ghee" },
+      { label: "Paneer & Khowa", value: "Paneer & Khowa" }
     ],
     "Groceries": [
-      { label: "Cooking Oil", value: "cookingOil" },
-      { label: "Rice", value: "rice" },
-      { label: "Dal", value: "dal" },
-      { label: "Spices", value: "spices" },
-      { label: "Snacks", value: "snacks" }
+      { label: "Cooking Oil", value: "Cooking Oil" },
+      { label: "Rice", value: "Rice" },
+      { label: "Dal", value: "Dal" },
+      { label: "Spices", value: "Spices" },
+      { label: "Snacks", value: "Snacks" }
     ],
     "Bengali Special": [
-      { label: "Bengali Vegetables", value: "bengaliVegetables" },
-      { label: "Bengali Groceries", value: "bengaliGroceries" },
-      { label: "Bengali Home Needs", value: "bengaliHomeNeeds" }
+      { label: "Bengali Vegetables", value: "Bengali Vegetables" },
+      { label: "Bengali Groceries", value: "Bengali Groceries" },
+      { label: "Bengali Home Needs", value: "Bengali Home Needs" }
     ],
     "Egg Meat & Fish": [
-      { label: "Eggs", value: "eggs" },
-      { label: "Fish", value: "fish" },
-      { label: "Chicken", value: "chicken" },
-      { label: "Mutton", value: "mutton" }
+      { label: "Eggs", value: "Eggs" },
+      { label: "Fish", value: "Fish" },
+      { label: "Chicken", value: "Chicken" },
+      { label: "Mutton", value: "Mutton" }
     ]
   };
-  
-  
 
 
   const handleImageUpload = async (file, setImageUrl) => {

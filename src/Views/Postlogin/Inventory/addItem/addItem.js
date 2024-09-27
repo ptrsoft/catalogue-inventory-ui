@@ -289,7 +289,7 @@ const AddItem = () => {
                 }
               >
                 <Select
-                  placeholder="Select Unit"
+                  placeholder="Sub Category"
                   selectedOption={selectedSubCategory}
                   onChange={({ detail }) =>
                     setSelectedSubCategory(detail.selectedOption)

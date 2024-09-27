@@ -275,7 +275,6 @@ const Inventory = () => {
               </Modal>
               <Button href="/app/Inventory/addItem">Add Item</Button>
               </SpaceBetween>
-
           </Box>
         </Grid>
 
@@ -289,9 +288,9 @@ const Inventory = () => {
         >
           <Grid
             gridDefinition={[
-              { colspan: { default: 12, xs: 3 } }, // TextFilter occupies full width on extra small (xs) screens
-              { colspan: { default: 12, xs: 3 } }, // Category Select occupies full width on xs screens
-              { colspan: { default: 12, xs: 3 } }, // Status Select occupies full width on xs screens
+              { colspan: { default: 12, xs: 3 } }, 
+              { colspan: { default: 12, xs: 3 } }, 
+              { colspan: { default: 12, xs: 3 } }, 
               { colspan: { default: 12, xs: 3 } },
             ]}
           >

@@ -44,30 +44,44 @@ const AddItem = () => {
   const [imageError, setImageError] = React.useState(false);
   const [fileUploadValue, setFileUploadValue] = useState([]);
   
-
   const subcategoryOptions = {
-    "Fruits And Vegetables": [
-      { label: "Fresh Vegetables", value: "freshVegetables" },
-      { label: "Fresh Fruits", value: "freshFruits" },
-      { label: "Leafy Vegetables", value: "freshFruits" },
-      { label: "Exotic Vegetables", value: "exoticVegetables" },
+    "Fresh Vegetables": [
+      { label: "Daily Vegetables", value: "dailyVegetables" },
+      { label: "Leafy Vegetables", value: "leafyVegetables" },
+      { label: "Exotic Vegetables", value: "exoticVegetables" }
     ],
-    "Meat/Fish/Eggs": [
-      { label: "Eggs", value: "eggs" },
-      { label: "Fish", value: "fish" },
-      { label: "Chicken", value: "chicken" },
-      { label: "Mutton", value: "mutton" },
+    "Fresh Fruits": [
+      { label: "Daily Fruits", value: "dailyFruits" },
+      { label: "Exotic Fruits", value: "exoticFruits" },
+      { label: "Dry Fruits", value: "dryFruits" }
     ],
-    "Dairies And Groceries": [
-      { label: "Dairies", value: "dairies" },
-      { label: "Groceries", value: "groceries" },
+    "Dairy": [
+      { label: "Milk", value: "milk" },
+      { label: "Butter & Ghee", value: "butterGhee" },
+      { label: "Paneer & Khowa", value: "paneerKhowa" }
+    ],
+    "Groceries": [
+      { label: "Cooking Oil", value: "cookingOil" },
+      { label: "Rice", value: "rice" },
+      { label: "Dal", value: "dal" },
+      { label: "Spices", value: "spices" },
+      { label: "Snacks", value: "snacks" }
     ],
     "Bengali Special": [
       { label: "Bengali Vegetables", value: "bengaliVegetables" },
       { label: "Bengali Groceries", value: "bengaliGroceries" },
-      { label: "Bengali Home Needs", value: "bengaliHomeNeeds" },
+      { label: "Bengali Home Needs", value: "bengaliHomeNeeds" }
     ],
+    "Egg Meat & Fish": [
+      { label: "Eggs", value: "eggs" },
+      { label: "Fish", value: "fish" },
+      { label: "Chicken", value: "chicken" },
+      { label: "Mutton", value: "mutton" }
+    ]
   };
+  
+  
+
 
   const handleImageUpload = async (file, setImageUrl) => {
     if (file) {
@@ -260,20 +274,16 @@ const AddItem = () => {
                     setSelectedCategory(detail.selectedOption)
                   }
                   options={[
-                    {
-                      label: "Fruits And Vegetables",
-                      value: "Fruits And Vegetables",
-                    },
-                    {
-                      label: "Dairies And Groceries",
-                      value: "Dairies And Groceries",
-                    },
+                    { label: "Fresh Vegetables", value: "Fresh Vegetables" },
+                    { label: "Fresh Fruits", value: "Fresh Fruits" },
+                    { label: "Dairy", value: "Dairy" },
+                    { label: "Groceries", value: "Groceries" },
                     { label: "Bengali Special", value: "Bengali Special" },
-                    { label: "Meat/Fish/Eggs", value: "Meat/Fish/Eggs" },
+                    { label: "Egg Meat & Fish", value: "Egg Meat & Fish" }
                   ]}
                   placeholder="Select Category"
                 />
-              </FormField>
+                            </FormField>
               <FormField
                 label="Sub Category"
                 errorText={
@@ -332,7 +342,7 @@ const AddItem = () => {
                 <Input
                   required
                   size="3xs"
-                  placeholder="Input Purchasing Price"
+                  placeholder="Rs."
                   value={purchasingPrice}
                   onChange={({ detail }) => setPurchasingPrice(detail.value)}
                 />
@@ -344,7 +354,7 @@ const AddItem = () => {
                 <Input
                   required
                   size="3xs"
-                  placeholder="Min Selling Price"
+                  placeholder="Rs."
                   value={msp}
                   onChange={({ detail }) => setMsp(detail.value)}
                 />
@@ -424,7 +434,7 @@ const AddItem = () => {
 <FileUpload
       onChange={({ detail }) => {
         setFileUploadValue(detail.value);
-        handleFileChange(detail.value); // Call handleFileChange when files are selected
+        handleFileChange(detail.value); 
       }}
       value={fileUploadValue}
       i18nStrings={{
@@ -441,7 +451,7 @@ const AddItem = () => {
       tokenLimit={3}
       errorText={fileUploadValue.length === 0 && isFormSubmitted ? (
         "At least one image is required"
-      ) : ""} // Display error if no images are uploaded and form has been submitted
+      ) : ""} 
             />
         </Container>
       </Container>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
 import Table from "@cloudscape-design/components/table";
@@ -8,7 +8,7 @@ import TextFilter from "@cloudscape-design/components/text-filter";
 import Header from "@cloudscape-design/components/header";
 import Container from "@cloudscape-design/components/container";
 import Toggle from "@cloudscape-design/components/toggle";
-import { fetchProducts, PutToggle } from "Redux-Store/Products/ProductThunk"; // Import the fetchProducts thunk
+import { fetchProducts, PutToggle, updateProductsStatus} from "Redux-Store/Products/ProductThunk"; // Import the fetchProducts thunk
 import Tabs from "@cloudscape-design/components/tabs";
 import Overview from "./drawerTabs/overview";
 import OrderHistory from "./drawerTabs/orderHistory";
@@ -37,11 +37,7 @@ const Inventory = () => {
   const [selectedCategory, setSelectedCategory] = React.useState(null);
   const [selectedStatus, setSelectedStatus] = React.useState(null);
   const products = useSelector((state) => state.products.products);
-  const [
-    selectedItems,
-    setSelectedItems
-  ] = React.useState([{ name: "Item 2" }]);
-
+  const [selectedItems, setSelectedItems] = useState([]);
 
   const dispatch = useDispatch();
   const { data = [], status } = products;
@@ -78,39 +74,43 @@ const Inventory = () => {
     setProductToToggle(product);
     setIsModalVisible(true);
   };
-  const handleConfirmToggle = () => {
-    const newStatus = !productToToggle.active;
-    dispatch(PutToggle({ id: productToToggle.id, active: newStatus }))
-      .unwrap()
-      .then(() => {
-        setItems([
-          {
-            type: "success",
-            content: "Status changed successfully!",
-            dismissible: true,
-            dismissLabel: "Dismiss message",
-            onDismiss: () => setItems([]),
-            id: "message_1",
-          },
-        ]);
-        setIsModalVisible(false);
-        dispatch(fetchProducts());
-      })
-      .catch((error) => {
-        // Handle any errors, if needed
-        dispatch(fetchProducts());
-        setItems([
-          {
-            type: "error",
-            content: `Failed to change status`,
-            dismissible: true,
-            dismissLabel: "Dismiss message",
-            onDismiss: () => setItems([]),
-            id: "message_2",
-          },
-        ]);
-      });
-  };
+
+ const handleConfirmToggle = () => {
+  const newStatus = selectedStatus?.value === "true"; // Determine the status based on selectedStatus
+  const ids = selectedItems.map(item => item.id); // Get the IDs of the selected items
+  
+  // Dispatch the updateProductsStatus thunk
+  dispatch(updateProductsStatus({ ids, active: newStatus }))
+    .unwrap()
+    .then(() => {
+      setItems([
+        {
+          type: "success",
+          content: "Status changed successfully!",
+          dismissible: true,
+          dismissLabel: "Dismiss message",
+          onDismiss: () => setItems([]),
+          id: "message_1",
+        },
+      ]);
+      setIsModalVisible(false);
+      dispatch(fetchProducts()); // Fetch updated products
+    })
+    .catch((error) => {
+      dispatch(fetchProducts());
+      setItems([
+        {
+          type: "error",
+          content: `Failed to change status`,
+          dismissible: true,
+          dismissLabel: "Dismiss message",
+          onDismiss: () => setItems([]),
+          id: "message_2",
+        },
+      ]);
+    });
+};
+
 
   const handleCancelToggle = () => {
     setIsModalVisible(false);
@@ -124,35 +124,57 @@ const Inventory = () => {
     );
   }
 
-  // Filter products based on the filteringText
   const filteredProducts = Array.isArray(data?.items)
     ? data.items.filter((product) =>
         product.name.toLowerCase().includes(filteringText.toLowerCase())
       )
     : [];
-  // Determine the color based on the stock alert value
   const getStockAlertColor = (stockAlert) => {
     return stockAlert.toLowerCase().includes("low") ? "red" : "#0492C2";
   };
   const ITEMS_PER_PAGE = 50;
-  // Calculate the items for the current page
   const startIndex = (currentPageIndex - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
 
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
-  // Open drawer with product details
+ const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   const handleProductClick = (product) => {
     setSelectedProduct(product);
     setIsDrawerOpen(true);
   };
 
-  // Close drawer
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
     setSelectedProduct(null);
   };
 
+  const renderModalButton = () => {
+    const isAnyProductSelected = selectedItems.length > 0; // Check if any product is selected
+  
+    if (selectedStatus?.value === "true") {
+      return (
+        <Button 
+          variant="primary" 
+          onClick={() => setIsModalVisible(true)} 
+          disabled={!isAnyProductSelected} // Disable button if no product is selected
+        >
+          Move to Inactive
+        </Button>
+      );
+    } else if (selectedStatus?.value === "false") {
+      return (
+        <Button 
+          variant="primary" 
+          onClick={() => setIsModalVisible(true)} 
+          disabled={!isAnyProductSelected} // Disable button if no product is selected
+        >
+          Move to Active
+        </Button>
+      );
+    }
+    return null; 
+  };
+  
   return (
     <div className="flex-col gap-3">
       <Flashbar items={items} />
@@ -166,20 +188,27 @@ const Inventory = () => {
           ariaLabel="Breadcrumbs"
         />
 
-        <div style={{ marginTop: "12px", marginBottom:"12px", fontWeight: "900", fontSize: "36px" }}>
+        <div
+          style={{
+            marginTop: "12px",
+            marginBottom: "12px",
+            fontWeight: "900",
+            fontSize: "36px",
+          }}
+        >
           <Header variant="h1">
             <strong>Inventory</strong>
           </Header>
         </div>
-      
+
         <Grid
-  gridDefinition={[
-    { colspan: { default: 12, xs: 4 } }, // TextFilter occupies full width on extra small (xs) screens
-    { colspan: { default: 12, xs: 2 } }, // Category Select occupies full width on xs screens
-    { colspan: { default: 12, xs: 2 } },
-    { colspan: { default: 12, xs: 4 } }, // Status Select occupies full width on xs screens
-  ]}
->
+          gridDefinition={[
+            { colspan: { default: 12, xs: 4 } }, // TextFilter occupies full width on extra small (xs) screens
+            { colspan: { default: 12, xs: 2 } }, // Category Select occupies full width on xs screens
+            { colspan: { default: 12, xs: 2 } },
+            { colspan: { default: 12, xs: 4 } }, // Status Select occupies full width on xs screens
+          ]}
+        >
           <TextFilter
             filteringText={filteringText}
             filteringPlaceholder="Search"
@@ -192,10 +221,26 @@ const Inventory = () => {
             onChange={handleCategoryChange}
             options={[
               { label: "All", value: "" },
-              { label: "Fruits And Vegetables", value: "Fruits And Vegetables" },
-              { label: "Dairies And Groceries", value: "Dairies And Groceries" },
+              {
+                label: "Fresh Vegetables",
+                value: "Fresh Vegetables",
+              },
+              {
+                label: "Fresh Fruits",
+                value: "Fresh Fruits",
+              },
+
+              {
+                label: "Dairy",
+                value: "Dairy",
+              },
+              {
+                label: "Groceries",
+                value: "Groceries",
+              },
+              
               { label: "Bengali Special", value: "Bengali Special" },
-              { label: "Meat/Fish/Eggs", value: "Meat/Fish/Eggs" },
+              { label: "Eggs Meat & Fish", value: "Egg Meat & Fish" },
             ]}
             placeholder="Select Category"
           />
@@ -210,8 +255,27 @@ const Inventory = () => {
             ]}
             placeholder="Select Status"
           />
-         <Box float="right">
-          <Button href="/app/Inventory/addItem">Add Item</Button>
+          <Box float="right">
+            <SpaceBetween size="xs" direction="horizontal">             
+               {renderModalButton()}
+              <Modal
+                onDismiss={() => setIsModalVisible(false)}
+                visible={isModalVisible}
+                footer={
+                  <Box float="right">
+                    <SpaceBetween direction="horizontal" size="xs">
+                      <Button variant="link" onClick={() => setIsModalVisible(false)}>Cancel</Button>
+                      <Button variant="primary" onClick={handleConfirmToggle}>Ok</Button>
+                      </SpaceBetween>
+                  </Box>
+                }
+                header="Modal title"
+              >
+                Are you sure you want to change the status of this products?
+              </Modal>
+              <Button href="/app/Inventory/addItem">Add Item</Button>
+              </SpaceBetween>
+
           </Box>
         </Grid>
 
@@ -220,77 +284,73 @@ const Inventory = () => {
             gap: "10px",
             marginTop: "20px",
             alignItems: "end",
-            textAlign:"center"
+            textAlign: "center",
           }}
         >
-                  <Grid
-                  
-  gridDefinition={[
-    { colspan: { default: 12, xs: 3 } }, // TextFilter occupies full width on extra small (xs) screens
-    { colspan: { default: 12, xs: 3 } }, // Category Select occupies full width on xs screens
-    { colspan: { default: 12, xs: 3 } }, // Status Select occupies full width on xs screens
-    { colspan: { default: 12, xs: 3 } },
-  ]}
->
-          <div
-            style={{
-              boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-              borderRadius: "15px",
-            }}
+          <Grid
+            gridDefinition={[
+              { colspan: { default: 12, xs: 3 } }, // TextFilter occupies full width on extra small (xs) screens
+              { colspan: { default: 12, xs: 3 } }, // Category Select occupies full width on xs screens
+              { colspan: { default: 12, xs: 3 } }, // Status Select occupies full width on xs screens
+              { colspan: { default: 12, xs: 3 } },
+            ]}
           >
-            <Container
-              variant="borderless"
-              size="xs"
-              header={<Header variant="h2">{data.count}</Header>}
+            <div
+              style={{
+                boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
+                borderRadius: "15px",
+              }}
             >
-              <b>All Products</b>
-            </Container>
-          </div>
-          <div
-            style={{
-              boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-              borderRadius: "15px",
-            }}
-          >
-            <Container
-              variant="borderless"
-              size="xs"
-              header={<Header variant="h2">421</Header>}
+              <Container
+                variant="borderless"
+                size="xs"
+                header={<Header variant="h2">{data.count}</Header>}
+              >
+                <b>All Products</b>
+              </Container>
+            </div>
+            <div
+              style={{
+                boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
+                borderRadius: "15px",
+              }}
             >
-              <b>Published Stock</b>
-            </Container>
-          </div>
-          <div
-            style={{
-              boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-              borderRadius: "15px",
-            }}
-          >
-            <Container
-              variant="borderless"
-              size="xs"
-              header={<Header variant="h2">212</Header>}
+              <Container
+                variant="borderless"
+                size="xs"
+                header={<Header variant="h2">421</Header>}
+              >
+                <b>Published Stock</b>
+              </Container>
+            </div>
+            <div
+              style={{
+                boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
+                borderRadius: "15px",
+              }}
             >
-              <b>Low Stock Alert</b>
-            </Container>
-          </div>
-          <div
-            style={{
-              boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-              borderRadius: "15px",
-            }}
-          >
-            <Container
-              variant="borderless"
-              size="xs"
-              header={<Header variant="h2">223</Header>}
+              <Container
+                variant="borderless"
+                size="xs"
+                header={<Header variant="h2">212</Header>}
+              >
+                <b>Low Stock Alert</b>
+              </Container>
+            </div>
+            <div
+              style={{
+                boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
+                borderRadius: "15px",
+              }}
             >
-              <b>Expired</b>
-            </Container>
-          </div>
-    
-       
-        
+              <Container
+                variant="borderless"
+                size="xs"
+                header={<Header variant="h2">223</Header>}
+              >
+                <b>Expired</b>
+              </Container>
+            </div>
           </Grid>
           <Box float="right" textAlign="center" margin={"s"}>
             <Pagination
@@ -300,47 +360,40 @@ const Inventory = () => {
               }
               pagesCount={5}
             />
+             
           </Box>
         </div>
       </div>
       <div style={{ marginTop: "15px" }}>
-      {isModalVisible && (
-            <Modal
-              onDismiss={handleCancelToggle}
-              visible={isModalVisible}
-              closeAriaLabel="Close modal"
-              header="Change Status"
-              footer={
-                <SpaceBetween direction="horizontal" size="s">
-                  <Button onClick={handleCancelToggle}>Cancel</Button>
-                  <Button variant="primary" onClick={handleConfirmToggle}>
-                    Ok
-                  </Button>
-                </SpaceBetween>
-              }
-            >
-              Are you sure you want to change the status of this product?
-            </Modal>
-          )}
+        {isModalVisible && (
+          <Modal
+            onDismiss={handleCancelToggle}
+            visible={isModalVisible}
+            closeAriaLabel="Close modal"
+            header="Change Status"
+            footer={
+              <SpaceBetween direction="horizontal" size="s">
+                <Button onClick={handleCancelToggle}>Cancel</Button>
+                <Button variant="primary" onClick={handleConfirmToggle}>
+                  Ok
+                </Button>
+              </SpaceBetween>
+            }
+          >
+            Are you sure you want to change the status of this product?
+          </Modal>
+        )}
         <Table
-              renderAriaLive={({
-                firstIndex,
-                lastIndex,
-                totalItemsCount
-              }) =>
-                `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
-              }
-              onSelectionChange={({ detail }) =>
-                setSelectedItems(detail.selectedItems)
-              }
-              selectedItems={selectedItems}
-              ariaLabels={{
-                selectionGroupLabel: "Items selection",
-                allItemsSelectionLabel: () => "select all",
-                itemSelectionLabel: ({ selectedItems }, item) =>
-                  item.name
-              }}
-        
+          renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
+            `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
+          }
+          onSelectionChange={({ detail }) => setSelectedItems(detail.selectedItems)}
+          selectedItems={selectedItems}
+          ariaLabels={{
+            selectionGroupLabel: "Items selection",
+            allItemsSelectionLabel: () => "select all",
+            itemSelectionLabel: ({ selectedItems }, item) => item.name,
+          }}
           variant="borderless"
           columnDefinitions={[
             {
@@ -353,11 +406,10 @@ const Inventory = () => {
               id: "name",
               header: "Name",
               cell: (e) => (
-                
                 <div
                   style={{
                     display: "flex",
-                     alignItems: "center",
+                    alignItems: "center",
                     cursor: "pointer",
                   }}
                   onClick={() => handleProductClick(e)}
@@ -375,30 +427,25 @@ const Inventory = () => {
                 </div>
               ),
               width: 250,
-              minWidth: 180
-    
+              minWidth: 180,
             },
             {
               id: "category",
-              sortingField: "category",
               header: "Category",
               cell: (e) => e.category,
             },
             {
               id: "subCategory",
-              sortingField: "subCategory",
               header: "Sub Category",
               cell: (e) => e.subCategory,
             },
 
             {
-              sortingField: "quantityOnHand",
               id: "quantityOnHand",
               header: "Quantity on Hand",
               cell: (e) => e.stockQuantity,
             },
             {
-              sortingField: "stockAlert",
               id: "stockAlert",
               header: "Stock Alert",
               cell: (e) => (
@@ -408,23 +455,21 @@ const Inventory = () => {
               ),
             },
             {
-              sortingField: "purchasingPrice",
               id: "purchasingPrice",
               header: "Purchasing Price",
-              cell: (e) => e.purchasingPrice,
+              cell: (e) => `Rs. ${e.purchasingPrice}`, // Prepend "Rs."
             },
             {
-              sortingField: "msp",
               id: "msp",
               header: "MSP",
-              cell: (e) => e.msp,
+              cell: (e) => `Rs. ${e.msp}`, // Prepend "Rs."
             },
+
             {
-              sortingField: "status",
               id: "status",
               header: "Status",
               cell: (e) => (
-                <div style={{ display: "flex", width:"100px" }}>
+                <div style={{ display: "flex", width: "100px" }}>
                   <Toggle
                     onChange={() => handleToggleClick(e)}
                     checked={e.active}
@@ -456,13 +501,11 @@ const Inventory = () => {
           items={paginatedProducts}
           loadingText="Loading resources"
           selectionType="multi"
-
           trackBy="itemCode"
           empty={
             <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
               <SpaceBetween size="m">
-                <b>No resources</b>
-                <Button>Create resource</Button>
+                <b>No Products</b>
               </SpaceBetween>
             </Box>
           }
@@ -497,10 +540,7 @@ const Inventory = () => {
                 onClick={handleCloseDrawer}
               />
             </div>
-            <div
-            class="drawer"
-          
-            >
+            <div class="drawer">
               <h1 style={{ color: "#0972D3" }}>
                 {selectedProduct.name}
                 <br />

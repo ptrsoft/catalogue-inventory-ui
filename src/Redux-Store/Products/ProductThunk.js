@@ -69,3 +69,31 @@ export const addProduct = createAsyncThunk("products/add", async (newProduct, { 
   }
 });
 
+export const updateProductsStatus = createAsyncThunk(
+  "products/updateStatus",
+  async ({ ids, active }, { rejectWithValue }) => {
+    try {
+      const url = `${config.PUT_ACTIVE_INACTIVE}`;
+      // Prepare the request body
+      const requestBody = {
+        id: ids.join(','),
+        active: active
+      };
+
+      // Log the payload to verify its structure
+      console.log("Sending request to:", url);
+      console.log("Payload:", requestBody);
+
+      const response = await postLoginService.put(url, requestBody);
+
+      console.log(response.data, "async update of product status successful");
+      return response.data;
+    } catch (error) {
+      console.error("API error:", error); // Log API error
+      return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
+);
+

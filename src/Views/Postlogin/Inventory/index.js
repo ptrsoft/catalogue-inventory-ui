@@ -80,8 +80,6 @@ const [productIdToDelete, setProductIdToDelete] = useState(null);
     setIsModalVisible(true);
   };
 
-
-
   const handleConfirmToggle = () => {
     const newStatus = selectedStatus?.value === "true"; // Determine the status based on selectedStatus
     const ids = selectedItems.map((item) => item.id); // Get the IDs of the selected items
@@ -100,7 +98,12 @@ const [productIdToDelete, setProductIdToDelete] = useState(null);
           },
         ]);
         setIsModalVisible(false);
+        // setTimeout(() => {
+        //   setItems([]);  // Clear the message after 3 seconds
+        // }, 5000);
         dispatch(fetchProducts()); // Fetch updated products
+        window.location.reload();  // This will force a full page reload
+
       })
       .catch((error) => {
         console.error("Error during status change:", error); // Log the full error for debugging

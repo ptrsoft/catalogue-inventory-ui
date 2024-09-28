@@ -4,9 +4,10 @@ import {
   Box,
   Button,
   Header,
+  Container,
+  SpaceBetween,
 } from "@cloudscape-design/components";
 import BarChart from "@cloudscape-design/components/bar-chart";
-import uploadImage from "../../../../assets/img/UploadImage.png";
 
 const Overview = ({ selectedProduct }) => {
   if (!selectedProduct) {
@@ -15,156 +16,154 @@ const Overview = ({ selectedProduct }) => {
 
   return (
     <div>
-      <div class="overview" >
-       <div style={{width:"38vw"}}>
-        <ColumnLayout columns={1}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "30px",
-              fontSize: "14px",
-            }}
-          >
+      <div className="overview">
+        <div style={{ width: "38vw" }}>
+          <ColumnLayout columns={1}>
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "15px",
+                gap: "30px",
                 fontSize: "14px",
-                border: "1px solid #D9D9D9",
-                padding: "15px",
-                borderRadius: "10px",
               }}
             >
-              <h2>
-                <b>Item Information</b>
-              </h2>
-              <p>
-                Category
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;
-                {selectedProduct.category}
-              </p>
-              <p>
-                Item
-                Code&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;
-                {selectedProduct.itemCode}
-              </p>
-              <p>
-                Units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;kg
-              </p>
-              <p>
-                Created Source&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;Admin
-              </p>
+              {/* Item Information */}
+              <Container>
+                <SpaceBetween size="s">
+                  <Header>Item Information</Header>
+                  <ColumnLayout columns={2} minColumnWidth={170}>
+                    <p>Category :</p>
+                    <p>{selectedProduct.category}</p>
+                    <p>Item Code :</p>
+                    <p>#{selectedProduct.itemCode}</p>
+                    <p>Units :</p>
+                    <p>{selectedProduct.units}</p>
+                    <p>Created Source :</p>
+                    <p>Admin</p>
+                  </ColumnLayout>
+                </SpaceBetween>
+              </Container>
+
+              {/* Purchase and Sales Information */}
+              <Container>
+                <SpaceBetween size="s">
+                  <Header>Purchase and Sales Information</Header>
+                  <ColumnLayout columns={2} minColumnWidth={170}>
+                    <p>Purchasing Price :</p>
+                    <p>Rs. {selectedProduct.purchasingPrice}</p>
+                    <p>Minimum Selling Price :</p>
+                    <p>Rs. {selectedProduct.msp}</p>
+                  </ColumnLayout>
+                </SpaceBetween>
+              </Container>
+
+              {/* Quantity on Hand */}
+              <Container>
+                <SpaceBetween size="s">
+                  <Header>Quantity on Hand</Header>
+                  <h1
+                      style={{
+                        backgroundColor: "#E9EBED",
+                        padding: "15px",
+                        fontSize: "20px",
+                        fontWeight: "700",
+                        borderRadius: "10px",
+                        display: "inline-block",
+                        color: "#354150",
+                      }}
+                    >
+                      {selectedProduct.stockQuantity}KG
+                    </h1>
+                  <ColumnLayout columns={2} minColumnWidth={170}>
+                   
+                    
+                      <p>
+                        <b>Main Warehouse :</b> 
+                      </p>
+                      <p>{selectedProduct.stockQuantity}kg</p>
+                      <p>
+                        Girdhari Store :
+                      </p>
+                      <p> {selectedProduct.stockQuantity}
+                      {selectedProduct.units}</p>
+                  </ColumnLayout>
+                </SpaceBetween>
+              </Container>
             </div>
-            <div
+          </ColumnLayout>
+        </div>
+
+        {/* Product Image */}
+        <div
+          style={{
+            borderRadius: "10px",
+            backgroundColor: "#E9EBED",
+            height: "47vh",
+            padding: "15px",
+            marginTop: "5px",
+            marginBottom: "10px",
+          }}
+        >
+          <div>
+            <img
               style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "15px",
                 border: "1px solid #D9D9D9",
-                fontSize: "14px",
-                padding: "15px",
-                borderRadius: "10px",
+                width: "228px",
+                height: "250px",
               }}
-            >
-              <h3>
-                <b>Purchase and Sales Information</b>
-              </h3>
-              <p>
-                Purchasing
-                Price&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{" "}
-                {selectedProduct.purchasingPrice}
-              </p>
-              <p>
-                Minimum Selling Price&nbsp;&nbsp;&nbsp;&nbsp;:{" "}
-                {selectedProduct.msp}
-              </p>
-            </div>
-            <div
-              style={{
-                padding: "15px",
-                borderRadius: "10px",
-                border: "1px solid #D9D9D9",
-              }}
-            >
-              <h3>
-                <b>Quantity On Hand</b>
-              </h3>
-              <h1
-                style={{
-                  backgroundColor: "#E9EBED",
-                  padding: "15px",
-                  fontSize: "20px",
-                  fontWeight: "700",
-                  borderRadius: "10px",
-                  display: "inline-block",
-                  color: "#354150",
-                }}
-              >
-                {selectedProduct.stockQuantity}KG
-              </h1>
+              src={selectedProduct.image}
+              alt="product"
+            />
+          </div>
+
+          {/* Optional Additional Images */}
+          <div style={{ display: "flex", gap: "15px", paddingTop: "7px" }}>
+            {/* {selectedProduct.images && selectedProduct.images[1] && (
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "15px",
-                  fontSize: "14px",
+                  border: "1px solid #D9D9D9",
+                  borderRadius: "10px",
+                  height: "37px",
+                  width: "50px",
                 }}
               >
-                <p>
-                  <b>Main Warehouse</b>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;
-                  {selectedProduct.stockQuantity}kg
-                </p>
-                <p>
-                  Girdhari
-                  Store&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;
-                  {selectedProduct.quantityOnHand}{selectedProduct.units}
-                </p>
-              </div>
-            </div>
-          </div>
-        </ColumnLayout>
-        </div>
-        <div style={{borderRadius:"10px",backgroundColor:"#E9EBED",height:"45vh",padding:"15px", marginTop:"5px", marginBottom:"10px"}}>
-        
-          <div>
-              <img
-                style={{border: "1px solid #D9D9D9" ,width:"228px",height:"250px"}}
-                src={selectedProduct.image}
-
-                alt="product"
-                height="full"
-                width="full"
-              ></img></div>
-            <div style={{ display: "flex", gap: "15px", paddingTop: "7px" }}>
-              <div style={{ border: "1px solid #D9D9D9", borderRadius: "10px",height: "37px", width: "50px"   }}>
                 <img
-                  style={{ borderRadius: "10px",height: "37px", width: "50px"  }}
+                  style={{
+                    borderRadius: "10px",
+                    height: "37px",
+                    width: "50px",
+                  }}
                   src={selectedProduct.images[1]}
-                  // src={uploadImage}
-                  alt="product"
-                  height="full"
-                  width="full"
-                ></img>
+                  alt="additional product"
+                />
               </div>
-               <div>
-               <div style={{ border: "1px solid #D9D9D9", borderRadius: "10px",height: "37px", width: "50px"   }}>
-                <img
-                  style={{ borderRadius: "10px",height: "37px", width: "50px"  }}
-                  src={selectedProduct.images[2]}
-                  alt="product"
-                  height="full"
-                  width="full"
-                ></img>
-              </div>
-              
-            </div>
-        </div>
+            )} */}
+
+            {/* {selectedProduct.images && selectedProduct.images[2] && (
+              // <div
+              //   style={{
+              //     border: "1px solid #D9D9D9",
+              //     borderRadius: "10px",
+              //     height: "37px",
+              //     width: "50px",
+              //   }}
+              // >
+              //   <img
+              //     style={{
+              //       borderRadius: "10px",
+              //       height: "37px",
+              //       width: "50px",
+              //     }}
+              //     src={selectedProduct.images[2]}
+              //     alt="additional product"
+              //   />
+              // </div>
+            )} */}
+          </div>
         </div>
       </div>
+
+      {/* Sales Order Summary with Bar Chart */}
       <div
         style={{
           border: "1px solid #D9D9D9",
@@ -234,7 +233,7 @@ const Overview = ({ selectedProduct }) => {
                 month: "short",
                 year: "numeric",
               }),
-            yTickFormatter: function o(e) {
+            yTickFormatter: (e) => {
               return Math.abs(e) >= 1e9
                 ? (e / 1e9).toFixed(1).replace(/\.0$/, "") + "G"
                 : Math.abs(e) >= 1e6

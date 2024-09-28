@@ -8,7 +8,11 @@ import TextFilter from "@cloudscape-design/components/text-filter";
 import Header from "@cloudscape-design/components/header";
 import Container from "@cloudscape-design/components/container";
 import Toggle from "@cloudscape-design/components/toggle";
-import { fetchProducts, PutToggle, deleteProduct} from "Redux-Store/Products/ProductThunk"; // Import the fetchProducts thunk
+import {
+  fetchProducts,
+  PutToggle,
+  deleteProduct,
+} from "Redux-Store/Products/ProductThunk"; 
 import Tabs from "@cloudscape-design/components/tabs";
 import Overview from "./drawerTabs/overview";
 import OrderHistory from "./drawerTabs/orderHistory";
@@ -25,6 +29,8 @@ import {
   Flashbar,
   Grid,
 } from "@cloudscape-design/components";
+import { Link } from "react-router-dom"; // Make sure this is imported
+
 const Inventory = () => {
   const [filteringText, setFilteringText] = React.useState("");
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
@@ -40,9 +46,7 @@ const Inventory = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [visible, setVisible] = React.useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
-const [productIdToDelete, setProductIdToDelete] = useState(null);
-
-
+  const [productIdToDelete, setProductIdToDelete] = useState(null);
 
   const dispatch = useDispatch();
   const { data = [], status } = products;
@@ -102,8 +106,7 @@ const [productIdToDelete, setProductIdToDelete] = useState(null);
         //   setItems([]);  // Clear the message after 3 seconds
         // }, 5000);
         dispatch(fetchProducts()); // Fetch updated products
-        window.location.reload();  // This will force a full page reload
-
+        window.location.reload(); // This will force a full page reload
       })
       .catch((error) => {
         console.error("Error during status change:", error); // Log the full error for debugging
@@ -203,230 +206,172 @@ const [productIdToDelete, setProductIdToDelete] = useState(null);
     setVisible(false);
     setProductIdToDelete(null);
   };
-  
 
   return (
-    <div className="flex-col gap-3">
+    <SpaceBetween size="s">
       <Flashbar items={items} />
-      <div className="flex flex-col gap-3">
-        <BreadcrumbGroup
-          items={[
-            { text: "Dashboard", href: "/app/dashboard" },
-            { text: "Inventory", href: "/app/inventory" },
-            { text: "Items", href: "/app/inventory" },
-          ]}
-          ariaLabel="Breadcrumbs"
+      <BreadcrumbGroup
+        items={[
+          { text: "Dashboard", href: "/app/dashboard" },
+          { text: "Inventory", href: "/app/inventory" },
+          { text: "Items", href: "/app/inventory" },
+        ]}
+        ariaLabel="Breadcrumbs"
+      />
+
+      <Header variant="h1">
+        <strong>Items</strong>
+      </Header>
+      <SpaceBetween size="m">
+
+      <Grid
+        gridDefinition={[
+          { colspan: { default: 12, xs: 4 } },
+          { colspan: { default: 12, xs: 2 } }, 
+          { colspan: { default: 12, xs: 2 } },
+          { colspan: { default: 12, xs: 4 } }, 
+        ]}
+      >
+        <TextFilter
+          filteringText={filteringText}
+          filteringPlaceholder="Search"
+          filteringAriaLabel="Filter instances"
+          onChange={handleSearchChange}
         />
-        <div
-          style={{
-            marginTop: "12px",
-            marginBottom: "12px",
-            fontWeight: "900",
-            fontSize: "36px",
-          }}
-        >
-          <Header variant="h1">
-            <strong>Inventory</strong>
-          </Header>
-        </div>
-
-        <Grid
-          gridDefinition={[
-            { colspan: { default: 12, xs: 4 } }, // TextFilter occupies full width on extra small (xs) screens
-            { colspan: { default: 12, xs: 2 } }, // Category Select occupies full width on xs screens
-            { colspan: { default: 12, xs: 2 } },
-            { colspan: { default: 12, xs: 4 } }, // Status Select occupies full width on xs screens
+        <Select
+          required
+          selectedOption={selectedCategory}
+          onChange={handleCategoryChange}
+          options={[
+            { label: "All", value: "" },
+            {
+              label: "Fresh Vegetables",
+              value: "Fresh Vegetables",
+            },
+            {
+              label: "Fresh Fruits",
+              value: "Fresh Fruits",
+            },
+            {
+              label: "Dairy",
+              value: "Dairy",
+            },
+            {
+              label: "Groceries",
+              value: "Groceries",
+            },
+            { label: "Bengali Special", value: "Bengali Special" },
+            { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" },
           ]}
+          placeholder="Select Category"
+        />
+        <Select
+          required
+          selectedOption={selectedStatus}
+          onChange={handleSelectChange}
+          options={[
+            { label: "All", value: "All" },
+            { label: "Active", value: "true" },
+            { label: "Inactive", value: "false" },
+          ]}
+          placeholder="Select Status"
+        />
+        
+        <Box float="right">
+          <SpaceBetween size="xs" direction="horizontal">
+            <Button href="/app/Inventory/addItem">Add Item</Button>
+          </SpaceBetween>
+        </Box>
+      </Grid>
+
+      <Grid
+        gridDefinition={[
+          { colspan: { default: 12, xs: 3 } },
+          { colspan: { default: 12, xs: 3 } },
+          { colspan: { default: 12, xs: 3 } },
+          { colspan: { default: 12, xs: 3 } },
+        ]}
+      >
+        <Container
+          size="xs"
+          header={<Header variant="h2">{data.count}</Header>}
         >
-          <TextFilter
-            filteringText={filteringText}
-            filteringPlaceholder="Search"
-            filteringAriaLabel="Filter instances"
-            onChange={handleSearchChange}
-          />
-          <Select
-            required
-            selectedOption={selectedCategory}
-            onChange={handleCategoryChange}
-            options={[
-              { label: "All", value: "" },
-              {
-                label: "Fresh Vegetables",
-                value: "Fresh Vegetables",
-              },
-              {
-                label: "Fresh Fruits",
-                value: "Fresh Fruits",
-              },
+          <b>All Products</b>
+        </Container>
 
-              {
-                label: "Dairy",
-                value: "Dairy",
-              },
-              {
-                label: "Groceries",
-                value: "Groceries",
-              },
+        <Container size="xs" header={<Header variant="h2">421</Header>}>
+          <b>Published Stock</b>
+        </Container>
 
-              { label: "Bengali Special", value: "Bengali Special" },
-              { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" },
-            ]}
-            placeholder="Select Category"
-          />
-          <Select
-            required
-            selectedOption={selectedStatus}
-            onChange={handleSelectChange}
-            options={[
-              { label: "All", value: "All" },
-              { label: "Active", value: "true" },
-              { label: "Inactive", value: "false" },
-            ]}
-            placeholder="Select Status"
-          />
-          <Box float="right">
-            <SpaceBetween size="xs" direction="horizontal">
-              {renderModalButton()}
-              <Modal
-                onDismiss={() => setIsModalVisible(false)}
-                visible={isModalVisible}
-                footer={
-                  <Box float="right">
-                    <SpaceBetween direction="horizontal" size="xs">
-                      <Button
-                        variant="link"
-                        onClick={() => setIsModalVisible(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button variant="primary" onClick={handleConfirmToggle}>
-                        Ok
-                      </Button>
-                    </SpaceBetween>
-                  </Box>
-                }
-                header="Modal title"
-              >
-                Are you sure you want to change the status of this products?
-              </Modal>
-              <Button href="/app/Inventory/addItem">Add Item</Button>
+        <Container size="xs" header={<Header variant="h2">212</Header>}>
+          <b>Low Stock Alert</b>
+        </Container>
 
-            </SpaceBetween>
-          </Box>
-        </Grid>
-
-        <div
-          style={{
-            gap: "10px",
-            marginTop: "20px",
-            alignItems: "end",
-            textAlign: "center",
-          }}
-        >
-          <Grid
-            gridDefinition={[
-              { colspan: { default: 12, xs: 3 } },
-              { colspan: { default: 12, xs: 3 } },
-              { colspan: { default: 12, xs: 3 } },
-              { colspan: { default: 12, xs: 3 } },
-            ]}
-          >
-            <div
-              style={{
-                boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-                borderRadius: "15px",
-              }}
-            >
-              <Container
-                variant="borderless"
-                size="xs"
-                header={<Header variant="h2">{data.count}</Header>}
-              >
-                <b>All Products</b>
-              </Container>
-            </div>
-            <div
-              style={{
-                boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-                borderRadius: "15px",
-              }}
-            >
-              <Container
-                variant="borderless"
-                size="xs"
-                header={<Header variant="h2">421</Header>}
-              >
-                <b>Published Stock</b>
-              </Container>
-            </div>
-            <div
-              style={{
-                boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-                borderRadius: "15px",
-              }}
-            >
-              <Container
-                variant="borderless"
-                size="xs"
-                header={<Header variant="h2">212</Header>}
-              >
-                <b>Low Stock Alert</b>
-              </Container>
-            </div>
-            <div
-              style={{
-                boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",
-                borderRadius: "15px",
-              }}
-            >
-              <Container
-                variant="borderless"
-                size="xs"
-                header={<Header variant="h2">223</Header>}
-              >
-                <b>Expired</b>
-              </Container>
-            </div>
-          </Grid>
-          <Box float="right" textAlign="center" margin={"s"}>
-            <Pagination
-              currentPageIndex={currentPageIndex}
-              onChange={({ detail }) =>
-                setCurrentPageIndex(detail.currentPageIndex)
-              }
-              pagesCount={5}
-            />
-          </Box>
-        </div>
-      </div>
-      <div style={{ marginTop: "15px" }}>
-        {isModalVisible && (
-          <Modal
-            onDismiss={handleCancelToggle}
-            visible={isModalVisible}
-            closeAriaLabel="Close modal"
-            header="Change Status"
-            footer={
-              <SpaceBetween direction="horizontal" size="s">
-                <Button onClick={handleCancelToggle}>Cancel</Button>
+        <Container size="m" header={<Header variant="h2">223</Header>}>
+          <b>Expired</b>
+        </Container>
+      </Grid>        
+      <Box float="right">
+        <div style={{display: "flex", gap: '0.5rem'}}>
+      {renderModalButton()}
+        <Modal
+          onDismiss={() => setIsModalVisible(false)}
+          visible={isModalVisible}
+          footer={
+            <Box float="right">
+              <SpaceBetween direction="horizontal" size="xs">
+                <Button variant="link" onClick={() => setIsModalVisible(false)}>
+                  Cancel
+                </Button>
                 <Button variant="primary" onClick={handleConfirmToggle}>
                   Ok
                 </Button>
               </SpaceBetween>
-            }
-          >
-            Are you sure you want to change the status of this product?
-          </Modal>
+            </Box>
+          }
+          header="Modal title"
+        >
+          Are you sure you want to change the status of this products?
+        </Modal>{" "}
+        <Pagination
+          currentPageIndex={currentPageIndex}
+          onChange={({ detail }) =>
+            setCurrentPageIndex(detail.currentPageIndex)
+          }
+          pagesCount={5}
+        /></div>
 
-        )}
-         <Modal
+      </Box>   
+      {isModalVisible && (
+        <Modal
+          onDismiss={handleCancelToggle}
+          visible={isModalVisible}
+          closeAriaLabel="Close modal"
+          header="Change Status"
+          footer={
+            <SpaceBetween direction="horizontal" size="s">
+              <Button onClick={handleCancelToggle}>Cancel</Button>
+              <Button variant="primary" onClick={handleConfirmToggle}>
+                Ok
+              </Button>
+            </SpaceBetween>
+          }
+        >
+          Are you sure you want to change the status of this product?
+        </Modal>
+      )}
+      <Modal
         onDismiss={() => setVisible(false)}
         visible={visible}
         footer={
           <Box float="right">
             <SpaceBetween direction="horizontal" size="xs">
-              <Button variant="link" onClick={handleCancelDelete}>Cancel</Button>
-              <Button variant="primary" onClick={handleConfirmDelete}>Confirm</Button>
+              <Button variant="link" onClick={handleCancelDelete}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={handleConfirmDelete}>
+                Confirm
+              </Button>
             </SpaceBetween>
           </Box>
         }
@@ -434,140 +379,142 @@ const [productIdToDelete, setProductIdToDelete] = useState(null);
       >
         Are you sure You want to delete this product?
       </Modal>
-        <Table
-          renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
-            `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
-          }
-          onSelectionChange={({ detail }) =>
-            setSelectedItems(detail.selectedItems)
-          }
-          selectedItems={selectedItems}
-          ariaLabels={{
-            selectionGroupLabel: "Items selection",
-            allItemsSelectionLabel: () => "select all",
-            itemSelectionLabel: ({ selectedItems }, item) => item.name,
-          }}
-          variant="borderless"
-          columnDefinitions={[
-            {
-              id: "itemCode",
-              header: "Item Code",
-              cell: (e) => e.itemCode,
-              isRowHeader: true,
-            },
-            {
-              id: "name",
-              header: "Name",
-              cell: (e) => (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => handleProductClick(e)}
-                >
-                  <img
-                    src={e.image}
-                    alt={e.name}
-                    style={{
-                      width: "30px",
-                      height: "30px",
-                      marginRight: "0.5rem",
-                    }}
-                  />
-                  {e.name}
-                </div>
-              ),
-              width: 250,
-              minWidth: 180,
-            },
-            {
-              id: "category",
-              header: "Category",
-              cell: (e) => e.category,
-            },
-            {
-              id: "subCategory",
-              header: "Sub Category",
-              cell: (e) => e.subCategory,
-            },
-
-            {
-              id: "quantityOnHand",
-              header: "Quantity on Hand",
-              cell: (e) => e.stockQuantity,
-            },
-            {
-              id: "stockAlert",
-              header: "Stock Alert",
-              cell: (e) => (
-                <span style={{ color: getStockAlertColor("Available") }}>
-                  "Available"
-                </span>
-              ),
-            },
-            {
-              id: "purchasingPrice",
-              header: "Purchasing Price",
-              cell: (e) => `Rs. ${e.purchasingPrice}`, // Prepend "Rs."
-            },
-            {
-              id: "msp",
-              header: "MSP",
-              cell: (e) => `Rs. ${e.msp}`, // Prepend "Rs."
-            },
-
-            {
-              id: "status",
-              header: "Status",
-              cell: (e) => (
-                <div style={{ display: "flex", width: "100px" }}>
-                  <Toggle
-                    onChange={() => handleToggleClick(e)}
-                    checked={e.active}
-                  >
-                    {e.active ? "Active" : "Inactive"}
-                  </Toggle>
-                  <span
-                    style={{
-                      marginLeft: "10px",
-                      color: e.status === "Inactive" ? "gray" : "black",
-                    }}
-                  ></span>
-                </div>
-              ),
-            },
-            {
-              id: "action",
-              header: "Action",
-              cell: (e) => (
-                // <Button iconName="remove" variant="icon" onClick={openModal}/>
-                <Button 
-                iconName="remove" 
-                variant="icon" 
-                onClick={() => openModal(e.id)} // Pass the product ID here
+      <Table
+        renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
+          `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
+        }
+        onSelectionChange={({ detail }) =>
+          setSelectedItems(detail.selectedItems)
+        }
+        selectedItems={selectedItems}
+        ariaLabels={{
+          selectionGroupLabel: "Items selection",
+          allItemsSelectionLabel: () => "select all",
+          itemSelectionLabel: ({ selectedItems }, item) => item.name,
+        }}
+        variant="borderless"
+        columnDefinitions={[
+          {
+            id: "itemCode",
+            header: "Item Code",
+            cell: (e) => `#${e.itemCode}`,  // Prepend "#" before the itemCode
+            isRowHeader: true,
+          },  
+          {
+            id: "name",
+            header: "Name",
+            cell: (e) => (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+                onClick={() => handleProductClick(e)}
               >
-                Delete
-              </Button>
-              ),
-            },
-          ]}
-          
-          enableKeyboardNavigation
-          items={paginatedProducts}
-          loadingText="Loading resources"
-          selectionType="multi"
-          trackBy="itemCode"
-          empty={
-            <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
-              <SpaceBetween size="m">
-                <b>No Products</b>
-              </SpaceBetween>
-            </Box>
-          }
-        />
-      </div>
+                <img
+                  src={e.image}
+                  alt={e.name}
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    marginRight: "0.5rem",
+                  }}
+                />
+                {e.name}
+              </div>
+            ),
+            width: 250,
+            minWidth: 180,
+          },
+          {
+            id: "category",
+            header: "Category",
+            cell: (e) => e.category,
+          },
+          {
+            id: "subCategory",
+            header: "Sub Category",
+            cell: (e) => e.subCategory,
+          },
+
+          {
+            id: "quantityOnHand",
+            header: "Quantity on Hand",
+            cell: (e) => `${e.stockQuantity} kgs`,
+          },
+          {
+            id: "stockAlert",
+            header: "Stock Alert",
+            cell: (e) => (
+              <span style={{ color: getStockAlertColor("Available") }}>
+                Available
+              </span>
+            ),
+          },
+          {
+            id: "purchasingPrice",
+            header: "Purchasing Price",
+            cell: (e) => `Rs. ${e.purchasingPrice}`, // Prepend "Rs."
+          },
+          {
+            id: "msp",
+            header: "MSP",
+            cell: (e) => `Rs. ${e.msp}`, // Prepend "Rs."
+          },
+
+          {
+            id: "status",
+            header: "Status",
+            cell: (e) => (
+              <div style={{ display: "flex", width: "100px" }}>
+                <Toggle
+                  onChange={() => handleToggleClick(e)}
+                  checked={e.active}
+                >
+                  {e.active ? "Active" : "Inactive"}
+                </Toggle>
+                <span
+                  style={{
+                    marginLeft: "10px",
+                    color: e.status === "Inactive" ? "gray" : "black",
+                  }}
+                ></span>
+              </div>
+            ),
+          },
+          {
+            id: "action",
+            header: "Action",
+            cell: (e) => (
+              <div>
+                  <Link to={`/app/inventory/edit?id=${e.id}`}>
+        <Button iconName="edit" variant="inline-link" />
+      </Link>
+                <Button
+                  iconName="remove"
+                  variant="icon"
+                  onClick={() => openModal(e.id)}
+                >
+                  Delete
+                </Button>
+              </div>
+            ),
+          },
+        ]}
+        enableKeyboardNavigation
+        items={paginatedProducts}
+        loadingText="Loading resources"
+        selectionType="multi"
+        trackBy="itemCode"
+        empty={
+          <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
+            <SpaceBetween size="m">
+              <b>No Products</b>
+            </SpaceBetween>
+          </Box>
+        }
+      /> </SpaceBetween>
       {isDrawerOpen && selectedProduct && (
         <div
           style={{
@@ -583,7 +530,6 @@ const [productIdToDelete, setProductIdToDelete] = useState(null);
             color: "red",
           }}
         >
-         
           <Box
             padding={{ left: "m", right: "m", top: "s", bottom: "s" }}
             display="flex"
@@ -694,7 +640,7 @@ const [productIdToDelete, setProductIdToDelete] = useState(null);
           </Box>
         </div>
       )}
-    </div>
+      </SpaceBetween>
   );
 };
 

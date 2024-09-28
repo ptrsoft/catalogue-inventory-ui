@@ -222,6 +222,8 @@ const AddItem = () => {
       <Flashbar items={items} />
       <BreadcrumbGroup
         items={[
+                    { text: "Dashboard", href: "/app/dashboard" },
+
           { text: "Inventory", href: "/app/inventory" },
           { text: "Add Items", href: "/app/inventory/addItem" },
         ]}
@@ -315,6 +317,8 @@ const AddItem = () => {
                     { label: "Piece", value: "pieces" },
                     { label: "Grams", value: "grams" },
                     { label: "Kgs", value: "kgs" },
+                    { label: "Litres", value: "litres" },
+
                   ]}
                 />
               </FormField>
@@ -328,7 +332,7 @@ const AddItem = () => {
                 <Input
                   required
                   size="xs"
-                  placeholder="Quantity available in stock"
+                  placeholder="Kgs"
                   value={stockQuantity}
                   onChange={({ detail }) => setStockQuantity(detail.value)}
                 />

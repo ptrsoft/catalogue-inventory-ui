@@ -121,3 +121,27 @@ export const deleteProduct = createAsyncThunk(
     }
   }
 );
+
+
+export const fetchProductById = createAsyncThunk("products/fetchById", async (id, { rejectWithValue }) => {
+  try {
+    const url = `${config.PRODUCT_DETAIL.replace("{id}", id)}`; // Use the config for the product detail URL
+    const response = await postLoginService.get(url);
+    return response.data; // Return the fetched product data
+  } catch (error) {
+    return rejectWithValue(error.response.data);
+  }
+});
+
+export const updateProductDetails = createAsyncThunk(
+  "products/updateProductDetails",
+  async ({ id, productData }, { rejectWithValue }) => {
+    try {
+      const url = `${config.PRODUCT_DETAIL.replace("{id}", id)}`; // Construct the URL
+      const response = await postLoginService.put(url, productData); // Send PUT request
+      return response.data; // Return the updated product data
+    } catch (error) {
+      return rejectWithValue(error.response.data); // Handle errors
+    }
+  }
+);

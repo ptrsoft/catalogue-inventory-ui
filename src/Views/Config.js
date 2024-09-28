@@ -5,6 +5,7 @@ const Config = {
   ADD_ITEM:`${BASE_URL}/inventory`,
   PUT_ACTIVE_INACTIVE:`${BASE_URL}/inventory/status`,
   DELETE:`${BASE_URL}/inventory/{id}`,
+  PRODUCT_DETAIL:`${BASE_URL}/inventory/{id}`,
   PUT_ACTIVE_INACTIVE:`${BASE_URL}/inventory/status`,
   UPLOAD_IMAGE:`${BASE_URL}/uploadUrl`,
   AUTH_USER:`${BASE_URL}/auth/signin`,

@@ -1,5 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { fetchProducts, PutToggle, updateProductsStatus } from './ProductThunk'; // Ensure to import updateProductsStatus
+import { createSlice } from '@reduxjs/toolkit'; 
+import { fetchProducts, PutToggle, updateProductsStatus, deleteProduct } from './ProductThunk'; // Ensure to import updateProductsStatus
 import status from "Redux-Store/Constants";
 
 const productsSlice = createSlice({
@@ -9,6 +9,7 @@ const productsSlice = createSlice({
       data: [],
       status: 'idle',
       error: null
+      
     }
   },
   reducers: {
@@ -36,13 +37,24 @@ const productsSlice = createSlice({
       .addCase(PutToggle.pending, (state) => {
         state.products.status = status.IN_PROGRESS;
       })
-      .addCase(PutToggle.fulfilled, (state, { payload }) => {
-        state.products.status = status.SUCCESS;
-        // Update the specific product in the `products.data` array
-        state.products.data = state.products.data.map((product) =>
-          product.id === payload.id ? { ...product, active: payload.active } : product
-        );
+      .addCase(PutToggle.fulfilled, (state, action) => {
+        console.log("Payload from PutToggle:", action.payload);
+        
+        if (action.payload && action.payload.updatedItems) {
+          action.payload.updatedItems.forEach(({ id, active }) => {
+            const existingItem = state.items.find(item => item.id === id);
+            if (existingItem) {
+              existingItem.active = active; // Update active status
+            }
+          }); 
+        } else {
+          console.warn(action.payload);
+          // console.warn("No valid payload received:", action.payload);
+
+        }
       })
+      
+      
       .addCase(PutToggle.rejected, (state) => {
         state.products.status = status.FAILURE;
       })
@@ -52,18 +64,29 @@ const productsSlice = createSlice({
       })
       .addCase(updateProductsStatus.fulfilled, (state, { payload }) => {
         state.products.status = status.SUCCESS;
-        // Assume payload contains updated product data; adjust accordingly
-        const updatedIds = payload.id.split(','); // Split the IDs
-        const activeStatus = payload.active; // Get active status
 
-        // Update the status of products in the `products.data` array
-        state.products.data = state.products.data.map((product) =>
-          updatedIds.includes(product.id) ? { ...product, active: activeStatus } : product
-        );
+        // Update the products based on the response structure
+        state.products.data = state.products.data.map(product => {
+          const updatedProduct = payload.find(item => item.id === product.id);
+          return updatedProduct ? { ...product, ...updatedProduct } : product;
+        });
       })
       .addCase(updateProductsStatus.rejected, (state, action) => {
         state.products.status = status.FAILURE;
         state.products.error = action.error.message;
+      })
+      .addCase(deleteProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        // Filter out the deleted product from the products data array
+        state.products.data.items = state.products.data.items.filter(items => items.id !== action.payload);
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

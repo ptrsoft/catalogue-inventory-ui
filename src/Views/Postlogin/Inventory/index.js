@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
 import Table from "@cloudscape-design/components/table";
@@ -8,7 +8,7 @@ import TextFilter from "@cloudscape-design/components/text-filter";
 import Header from "@cloudscape-design/components/header";
 import Container from "@cloudscape-design/components/container";
 import Toggle from "@cloudscape-design/components/toggle";
-import { fetchProducts, PutToggle, updateProductsStatus} from "Redux-Store/Products/ProductThunk"; // Import the fetchProducts thunk
+import { fetchProducts, PutToggle, deleteProduct} from "Redux-Store/Products/ProductThunk"; // Import the fetchProducts thunk
 import Tabs from "@cloudscape-design/components/tabs";
 import Overview from "./drawerTabs/overview";
 import OrderHistory from "./drawerTabs/orderHistory";
@@ -18,6 +18,7 @@ import Modal from "@cloudscape-design/components/modal";
 import {
   SpaceBetween,
   StatusIndicator,
+  Icon,
   ButtonDropdown,
   Select,
   Pagination,
@@ -28,7 +29,6 @@ const Inventory = () => {
   const [filteringText, setFilteringText] = React.useState("");
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
-  const [checked, setChecked] = React.useState(false);
   const [activeTabId, setActiveTabId] = React.useState("first");
   const [currentPageIndex, setCurrentPageIndex] = React.useState(1);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
@@ -38,6 +38,11 @@ const Inventory = () => {
   const [selectedStatus, setSelectedStatus] = React.useState(null);
   const products = useSelector((state) => state.products.products);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [visible, setVisible] = React.useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+const [productIdToDelete, setProductIdToDelete] = useState(null);
+
+
 
   const dispatch = useDispatch();
   const { data = [], status } = products;
@@ -75,42 +80,45 @@ const Inventory = () => {
     setIsModalVisible(true);
   };
 
- const handleConfirmToggle = () => {
-  const newStatus = selectedStatus?.value === "true"; // Determine the status based on selectedStatus
-  const ids = selectedItems.map(item => item.id); // Get the IDs of the selected items
-  
-  // Dispatch the updateProductsStatus thunk
-  dispatch(updateProductsStatus({ ids, active: newStatus }))
-    .unwrap()
-    .then(() => {
-      setItems([
-        {
-          type: "success",
-          content: "Status changed successfully!",
-          dismissible: true,
-          dismissLabel: "Dismiss message",
-          onDismiss: () => setItems([]),
-          id: "message_1",
-        },
-      ]);
-      setIsModalVisible(false);
-      dispatch(fetchProducts()); // Fetch updated products
-    })
-    .catch((error) => {
-      dispatch(fetchProducts());
-      setItems([
-        {
-          type: "error",
-          content: `Failed to change status`,
-          dismissible: true,
-          dismissLabel: "Dismiss message",
-          onDismiss: () => setItems([]),
-          id: "message_2",
-        },
-      ]);
-    });
-};
 
+
+  const handleConfirmToggle = () => {
+    const newStatus = selectedStatus?.value === "true"; // Determine the status based on selectedStatus
+    const ids = selectedItems.map((item) => item.id); // Get the IDs of the selected items
+    dispatch(PutToggle({ ids, active: newStatus }))
+      .unwrap()
+      .then((response) => {
+        console.log("Update Response:", response); // Log response for debugging
+        setItems([
+          {
+            type: "success",
+            content: "Status changed successfully!",
+            dismissible: true,
+            dismissLabel: "Dismiss message",
+            onDismiss: () => setItems([]),
+            id: "message_1",
+          },
+        ]);
+        setIsModalVisible(false);
+        dispatch(fetchProducts()); // Fetch updated products
+      })
+      .catch((error) => {
+        console.error("Error during status change:", error); // Log the full error for debugging
+        dispatch(fetchProducts());
+        setItems([
+          {
+            type: "error",
+            content: `Failed to change status: ${
+              error.message || "Unknown error"
+            }`,
+            dismissible: true,
+            dismissLabel: "Dismiss message",
+            onDismiss: () => setItems([]),
+            id: "message_2",
+          },
+        ]);
+      });
+  };
 
   const handleCancelToggle = () => {
     setIsModalVisible(false);
@@ -137,7 +145,7 @@ const Inventory = () => {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
 
- const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   const handleProductClick = (product) => {
     setSelectedProduct(product);
     setIsDrawerOpen(true);
@@ -150,12 +158,12 @@ const Inventory = () => {
 
   const renderModalButton = () => {
     const isAnyProductSelected = selectedItems.length > 0; // Check if any product is selected
-  
+
     if (selectedStatus?.value === "true") {
       return (
-        <Button 
-          variant="primary" 
-          onClick={() => setIsModalVisible(true)} 
+        <Button
+          variant="primary"
+          onClick={() => setIsModalVisible(true)}
           disabled={!isAnyProductSelected} // Disable button if no product is selected
         >
           Move to Inactive
@@ -163,18 +171,37 @@ const Inventory = () => {
       );
     } else if (selectedStatus?.value === "false") {
       return (
-        <Button 
-          variant="primary" 
-          onClick={() => setIsModalVisible(true)} 
+        <Button
+          variant="primary"
+          onClick={() => setIsModalVisible(true)}
           disabled={!isAnyProductSelected} // Disable button if no product is selected
         >
           Move to Active
         </Button>
       );
     }
-    return null; 
+    return null;
+  };
+
+  const openModal = (id) => {
+    setProductIdToDelete(id); // Set the ID of the product to delete
+    setVisible(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (productIdToDelete) {
+      dispatch(deleteProduct(productIdToDelete));
+      setVisible(false);
+      setProductIdToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setVisible(false);
+    setProductIdToDelete(null);
   };
   
+
   return (
     <div className="flex-col gap-3">
       <Flashbar items={items} />
@@ -187,7 +214,6 @@ const Inventory = () => {
           ]}
           ariaLabel="Breadcrumbs"
         />
-
         <div
           style={{
             marginTop: "12px",
@@ -238,7 +264,7 @@ const Inventory = () => {
                 label: "Groceries",
                 value: "Groceries",
               },
-              
+
               { label: "Bengali Special", value: "Bengali Special" },
               { label: "Eggs Meat & Fish", value: "Egg Meat & Fish" },
             ]}
@@ -256,17 +282,24 @@ const Inventory = () => {
             placeholder="Select Status"
           />
           <Box float="right">
-            <SpaceBetween size="xs" direction="horizontal">             
-               {renderModalButton()}
+            <SpaceBetween size="xs" direction="horizontal">
+              {renderModalButton()}
               <Modal
                 onDismiss={() => setIsModalVisible(false)}
                 visible={isModalVisible}
                 footer={
                   <Box float="right">
                     <SpaceBetween direction="horizontal" size="xs">
-                      <Button variant="link" onClick={() => setIsModalVisible(false)}>Cancel</Button>
-                      <Button variant="primary" onClick={handleConfirmToggle}>Ok</Button>
-                      </SpaceBetween>
+                      <Button
+                        variant="link"
+                        onClick={() => setIsModalVisible(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button variant="primary" onClick={handleConfirmToggle}>
+                        Ok
+                      </Button>
+                    </SpaceBetween>
                   </Box>
                 }
                 header="Modal title"
@@ -274,7 +307,8 @@ const Inventory = () => {
                 Are you sure you want to change the status of this products?
               </Modal>
               <Button href="/app/Inventory/addItem">Add Item</Button>
-              </SpaceBetween>
+
+            </SpaceBetween>
           </Box>
         </Grid>
 
@@ -288,9 +322,9 @@ const Inventory = () => {
         >
           <Grid
             gridDefinition={[
-              { colspan: { default: 12, xs: 3 } }, 
-              { colspan: { default: 12, xs: 3 } }, 
-              { colspan: { default: 12, xs: 3 } }, 
+              { colspan: { default: 12, xs: 3 } },
+              { colspan: { default: 12, xs: 3 } },
+              { colspan: { default: 12, xs: 3 } },
               { colspan: { default: 12, xs: 3 } },
             ]}
           >
@@ -359,7 +393,6 @@ const Inventory = () => {
               }
               pagesCount={5}
             />
-             
           </Box>
         </div>
       </div>
@@ -381,12 +414,30 @@ const Inventory = () => {
           >
             Are you sure you want to change the status of this product?
           </Modal>
+
         )}
+         <Modal
+        onDismiss={() => setVisible(false)}
+        visible={visible}
+        footer={
+          <Box float="right">
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button variant="link" onClick={handleCancelDelete}>Cancel</Button>
+              <Button variant="primary" onClick={handleConfirmDelete}>Confirm</Button>
+            </SpaceBetween>
+          </Box>
+        }
+        header="Delete Product"
+      >
+        Are you sure You want to delete this product?
+      </Modal>
         <Table
           renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
             `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
           }
-          onSelectionChange={({ detail }) => setSelectedItems(detail.selectedItems)}
+          onSelectionChange={({ detail }) =>
+            setSelectedItems(detail.selectedItems)
+          }
           selectedItems={selectedItems}
           ariaLabels={{
             selectionGroupLabel: "Items selection",
@@ -484,18 +535,22 @@ const Inventory = () => {
                 </div>
               ),
             },
+            {
+              id: "action",
+              header: "Action",
+              cell: (e) => (
+                // <Button iconName="remove" variant="icon" onClick={openModal}/>
+                <Button 
+                iconName="remove" 
+                variant="icon" 
+                onClick={() => openModal(e.id)} // Pass the product ID here
+              >
+                Delete
+              </Button>
+              ),
+            },
           ]}
-          columnDisplay={[
-            { id: "itemCode", visible: true },
-            { id: "name", visible: true },
-            { id: "category", visible: true },
-            { id: "subCategory", visible: true },
-            { id: "quantityOnHand", visible: true },
-            { id: "stockAlert", visible: true },
-            { id: "purchasingPrice", visible: true },
-            { id: "msp", visible: true },
-            { id: "status", visible: true },
-          ]}
+          
           enableKeyboardNavigation
           items={paginatedProducts}
           loadingText="Loading resources"
@@ -525,6 +580,7 @@ const Inventory = () => {
             color: "red",
           }}
         >
+         
           <Box
             padding={{ left: "m", right: "m", top: "s", bottom: "s" }}
             display="flex"

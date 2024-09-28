@@ -80,7 +80,6 @@ const AddItem = () => {
     ]
   };
 
-
   const handleImageUpload = async (file, setImageUrl) => {
     if (file) {
       try {
@@ -112,6 +111,7 @@ const AddItem = () => {
       setDescription(detail.value);
     }
   };
+  
   const handleSave = () => {
     setIsFormSubmitted(true);
     if (!imageUrl1) {

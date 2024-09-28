@@ -2,7 +2,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import config from "Views/Config";
 import { postLoginService } from "Services";
 
-// Fetch products
 export const fetchProducts = createAsyncThunk("products/fetch", async (params, { rejectWithValue }) => {
   try {
     let url = config.FETCH_INVENTORY;
@@ -35,30 +34,38 @@ export const fetchProducts = createAsyncThunk("products/fetch", async (params, {
   }
 });
 
-
 export const PutToggle = createAsyncThunk(
   "products/putActiveInactive",
-  async ({ id, active }, { rejectWithValue }) => {
+  async ({ ids, active }, { rejectWithValue }) => {
     try {
       const url = `${config.PUT_ACTIVE_INACTIVE}`;
-      // Log the payload to verify its structure
-      console.log("Sending request to:", url);
-      console.log("Payload:", { id, active });
 
-      // Ensure `isActive` is a boolean value
-      const response = await postLoginService.put(url, { id, active });
+      
+      let isActive;
+      if (typeof active === 'string') {
+        isActive = active === 'inactive'; 
+      } else {
+        isActive = !active;  
+      }
+
+      const items = ids.map(id => ({ id, active: isActive }));
+
+      console.log("Sending request to:", url);
+      console.log("Payload:", items);  // This should now be in the correct format
+
+      const response = await postLoginService.put(url, items);  // Send the array directly
 
       console.log(response.data, "async put of toggle successful");
       return response.data;
     } catch (error) {
-      console.error("API error:", error); // Log API error
+      console.error("API error:", error);  // Log API error
       return rejectWithValue(
-        error.response ? error.response.data : error.message
+        error?.response?.data || error.message
       );
     }
   }
 );
-// Add a new product
+
 export const addProduct = createAsyncThunk("products/add", async (newProduct, { rejectWithValue }) => {
   try {
     const url = config.ADD_ITEM;
@@ -74,22 +81,25 @@ export const updateProductsStatus = createAsyncThunk(
   async ({ ids, active }, { rejectWithValue }) => {
     try {
       const url = `${config.PUT_ACTIVE_INACTIVE}`;
-      // Prepare the request body
-      const requestBody = {
-        id: ids.join(','),
-        active: active
-      };
+      
+      // Prepare the request body as an array of objects
+      const requestBody = ids.map(id => ({
+        id,
+        active
+      }));
 
-      // Log the payload to verify its structure
       console.log("Sending request to:", url);
       console.log("Payload:", requestBody);
 
+      // Send a PUT request with the request body
       const response = await postLoginService.put(url, requestBody);
-
       console.log(response.data, "async update of product status successful");
-      return response.data;
+      
+      return response.data; // Return the response data to the Redux store
     } catch (error) {
-      console.error("API error:", error); // Log API error
+      console.error("API error:", error);
+      
+      // Use rejectWithValue to handle errors in the slice
       return rejectWithValue(
         error.response ? error.response.data : error.message
       );
@@ -97,3 +107,17 @@ export const updateProductsStatus = createAsyncThunk(
   }
 );
 
+export const deleteProduct = createAsyncThunk(
+  "products/delete",
+  async (id, { rejectWithValue }) => {
+    try {
+      const url = config.DELETE.replace("{id}", id);
+      const response = await postLoginService.delete(url);
+      return response.data; // Assuming this returns the ID of the deleted product
+    } catch (error) {
+      return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
+);

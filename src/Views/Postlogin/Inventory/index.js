@@ -269,7 +269,7 @@ const [productIdToDelete, setProductIdToDelete] = useState(null);
               },
 
               { label: "Bengali Special", value: "Bengali Special" },
-              { label: "Eggs Meat & Fish", value: "Egg Meat & Fish" },
+              { label: "Eggs Meat and Fish", value: "Egg Meat and Fish" },
             ]}
             placeholder="Select Category"
           />

@@ -72,7 +72,7 @@ const AddItem = () => {
       { label: "Bengali Groceries", value: "Bengali Groceries" },
       { label: "Bengali Home Needs", value: "Bengali Home Needs" }
     ],
-    "Egg Meat & Fish": [
+    "Eggs Meat & Fish": [
       { label: "Eggs", value: "Eggs" },
       { label: "Fish", value: "Fish" },
       { label: "Chicken", value: "Chicken" },
@@ -277,7 +277,7 @@ const AddItem = () => {
                     { label: "Dairy", value: "Dairy" },
                     { label: "Groceries", value: "Groceries" },
                     { label: "Bengali Special", value: "Bengali Special" },
-                    { label: "Egg Meat & Fish", value: "Egg Meat & Fish" }
+                    { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" }
                   ]}
                   placeholder="Select Category"
                 />

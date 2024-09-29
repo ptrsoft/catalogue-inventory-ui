@@ -63,7 +63,7 @@ const AddItem = () => {
     "Groceries": [
       { label: "Cooking Oil", value: "Cooking Oil" },
       { label: "Rice", value: "Rice" },
-      { label: "Dal", value: "Dal" },
+      { label: "Daal", value: "Daal" },
       { label: "Spices", value: "Spices" },
       { label: "Snacks", value: "Snacks" }
     ],

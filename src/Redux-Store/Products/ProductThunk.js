@@ -2,37 +2,46 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import config from "Views/Config";
 import { postLoginService } from "Services";
 
-export const fetchProducts = createAsyncThunk("products/fetch", async (params, { rejectWithValue }) => {
-  try {
-    let url = config.FETCH_INVENTORY;
-
-    // Initialize an array to hold query parameters
-    let queryParams = [];
-
-    // Add search term to query parameters if provided
-    if (params?.search) {
-      queryParams.push(`search=${encodeURIComponent(params.search)}`);
+export const fetchProducts = createAsyncThunk(
+  "products/fetch",
+  async (params, { rejectWithValue }) => {
+    try {
+      let url = config.FETCH_INVENTORY;
+      let queryParams = [];
+      // Add search term, category, and active status if provided
+      if (params?.search) {
+        queryParams.push(`search=${encodeURIComponent(params.search)}`);
+      }
+      if (params?.category) {
+        queryParams.push(`category=${encodeURIComponent(params.category)}`);
+      }
+      if (params?.active) {
+        queryParams.push(`active=${encodeURIComponent(params.active)}`);
+      }
+      // Add pageKey if it exists
+      if (params?.pageKey) {
+        queryParams.push(`pageKey=${encodeURIComponent(params.pageKey)}`);
+      }
+      // Form final URL
+      if (queryParams.length > 0) {
+        url += `?${queryParams.join("&")}`;
+      }
+      // Fetch data from API
+      const response = await postLoginService.get(url);
+      return {
+        data: response.data,
+      // assuming your API returns the next page key
+      };
+    } catch (error) {
+      return rejectWithValue(error.response.data);
     }
-
-    // Add category to query parameters if provided
-    if (params?.category) {
-      queryParams.push(`category=${encodeURIComponent(params.category)}`);
-    }
-    if (params?.active) {
-      queryParams.push(`active=${encodeURIComponent(params.active)}`);
-    }
-
-    // Join the query parameters and append to the URL if there are any
-    if (queryParams.length > 0) {
-      url += `?${queryParams.join('&')}`;
-    }
-
-    const response = await postLoginService.get(url);
-    return response.data;
-  } catch (error) {
-    return rejectWithValue(error.response.data);
   }
-});
+);
+
+
+
+
+
 
 export const PutToggle = createAsyncThunk(
   "products/putActiveInactive",

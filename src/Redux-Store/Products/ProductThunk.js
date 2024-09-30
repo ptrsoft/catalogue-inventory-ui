@@ -15,6 +15,9 @@ export const fetchProducts = createAsyncThunk(
       if (params?.category) {
         queryParams.push(`category=${encodeURIComponent(params.category)}`);
       }
+      if (params?.subCategory) {
+        queryParams.push(`subCategory=${encodeURIComponent(params.subCategory)}`);
+      }
       if (params?.active) {
         queryParams.push(`active=${encodeURIComponent(params.active)}`);
       }
@@ -37,11 +40,6 @@ export const fetchProducts = createAsyncThunk(
     }
   }
 );
-
-
-
-
-
 
 export const PutToggle = createAsyncThunk(
   "products/putActiveInactive",
@@ -151,6 +149,26 @@ export const updateProductDetails = createAsyncThunk(
       return response.data; // Return the updated product data
     } catch (error) {
       return rejectWithValue(error.response.data); // Handle errors
+    }
+  }
+);
+
+export const fetchInventoryStats = createAsyncThunk(
+  "inventory/fetchStats",
+  async (_, { rejectWithValue }) => {
+    try {
+      const url = `${config.BASE_URL}/inventory/stats`;
+      const response = await postLoginService.get(url);
+      
+      // Log the response data to the console
+      console.log("Fetched Inventory Stats Response:", response.data);
+      
+      return response.data;
+    } catch (error) {
+      // Log the error to the console if there's an issue
+      console.error("Error fetching inventory stats:", error.response ? error.response.data : error.message);
+      
+      return rejectWithValue(error.response ? error.response.data : error.message);
     }
   }
 );

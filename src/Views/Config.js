@@ -7,6 +7,7 @@ const Config = {
   DELETE:`${BASE_URL}/inventory/{id}`,
   PRODUCT_DETAIL:`${BASE_URL}/inventory/{id}`,
   PUT_ACTIVE_INACTIVE:`${BASE_URL}/inventory/status`,
+  CONTAINER_DIV:`${BASE_URL}/inventory/stats`,
   UPLOAD_IMAGE:`${BASE_URL}/uploadUrl`,
   AUTH_USER:`${BASE_URL}/auth/signin`,
   SIGNUP:`${BASE_URL}/auth/signup`,

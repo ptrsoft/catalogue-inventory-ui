@@ -12,6 +12,7 @@ import {
   fetchProducts,
   PutToggle,
   deleteProduct,
+  fetchInventoryStats
 } from "Redux-Store/Products/ProductThunk";
 import Tabs from "@cloudscape-design/components/tabs";
 import Overview from "./drawerTabs/overview";
@@ -41,25 +42,35 @@ const Inventory = () => {
   const [productToToggle, setProductToToggle] = React.useState(null);
   const [items, setItems] = React.useState([]);
   const [selectedCategory, setSelectedCategory] = React.useState(null);
+  const [selectedSubCategory, setSelectedSubCategory] = React.useState(null);
   const [selectedStatus, setSelectedStatus] = React.useState(null);
   const products = useSelector((state) => state.products.products);
   const [selectedItems, setSelectedItems] = useState([]);
   const [visible, setVisible] = React.useState(false);
   const [productIdToDelete, setProductIdToDelete] = useState(null);
+  const inventoryStats = useSelector((state) => state.products.inventoryStats);
+
 
   const dispatch = useDispatch();
   const { data = [], status } = products;
+
   console.log("data", data);
+
+  useEffect(() => {
+    dispatch(fetchInventoryStats());
+  }, [dispatch]);
+
 
   useEffect(() => {
     dispatch(
       fetchProducts({
         category: selectedCategory?.value || "",
+        subCategory: selectedSubCategory?.value || "",
         search: filteringText || "",
         active: selectedStatus?.value || "",
       })
     );
-  }, [dispatch, selectedCategory, filteringText, selectedStatus]);
+      }, [dispatch, selectedCategory, filteringText, selectedStatus,selectedSubCategory ]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageKey, setPageKey] = useState(null); // Holds the next page key from API
@@ -101,6 +112,10 @@ const Inventory = () => {
   const handleCategoryChange = ({ detail }) => {
     setSelectedCategory(detail.selectedOption);
   };
+  const handleSubCategoryChange = ({ detail }) => {
+    setSelectedSubCategory(detail.selectedOption);
+  };
+
   const handleSearchChange = ({ detail }) => {
     setFilteringText(detail.filteringText);
   };
@@ -199,14 +214,14 @@ const Inventory = () => {
   };
 
   const renderModalButton = () => {
-    const isAnyProductSelected = selectedItems.length > 0; // Check if any product is selected
+    const isAnyProductSelected = selectedItems.length > 0; 
 
     if (selectedStatus?.value === "true") {
       return (
         <Button
           variant="primary"
           onClick={() => setIsModalVisible(true)}
-          disabled={!isAnyProductSelected} // Disable button if no product is selected
+          disabled={!isAnyProductSelected} 
         >
           Move to Inactive
         </Button>
@@ -241,6 +256,43 @@ const Inventory = () => {
     setProductIdToDelete(null);
   };
 
+  const subcategoryOptions = {
+    "Fresh Vegetables": [
+      { label: "Daily Vegetables", value: "Daily Vegetables" },
+      { label: "Leafy Vegetables", value: "Leafy Vegetables" },
+      { label: "Exotic Vegetables", value: "Exotic Vegetables" }
+    ],
+    "Fresh Fruits": [
+      { label: "Daily Fruits", value: "Daily Fruits" },
+      { label: "Exotic Fruits", value: "Exotic Fruits" },
+      { label: "Dry Fruits", value: "Dry Fruits" }
+    ],
+    "Dairy": [
+      { label: "Milk", value: "Milk" },
+      { label: "Butter & Ghee", value: "Butter & Ghee" },
+      { label: "Paneer & Khowa", value: "Paneer & Khowa" }
+    ],
+    "Groceries": [
+      { label: "Cooking Oil", value: "Cooking Oil" },
+      { label: "Rice", value: "Rice" },
+      { label: "Daal", value: "Daal" },
+      { label: "Spices", value: "Spices" },
+      { label: "Snacks", value: "Snacks" }
+    ],
+    "Bengali Special": [
+      { label: "Bengali Vegetables", value: "Bengali Vegetables" },
+      { label: "Bengali Groceries", value: "Bengali Groceries" },
+      { label: "Bengali Home Needs", value: "Bengali Home Needs" }
+    ],
+    "Eggs Meat & Fish": [
+      { label: "Eggs", value: "Eggs" },
+      { label: "Fish", value: "Fish" },
+      { label: "Chicken", value: "Chicken" },
+      { label: "Mutton", value: "Mutton" }
+    ]
+  };
+
+
   return (
     <SpaceBetween size="s">
       <Flashbar items={items} />
@@ -256,14 +308,15 @@ const Inventory = () => {
         <strong>Items</strong>
       </Header>
       <SpaceBetween size="m">
-        <Grid
-          gridDefinition={[
-            { colspan: { default: 12, xs: 4 } },
-            { colspan: { default: 12, xs: 2 } },
-            { colspan: { default: 12, xs: 2 } },
-            { colspan: { default: 12, xs: 4 } },
-          ]}
-        >
+      <Grid
+  gridDefinition={[
+    { colspan: { default: 12, xs: 4 } },  
+    { colspan: { default: 12, xs: 2 } },
+    { colspan: { default: 12, xs: 2 } },
+    { colspan: { default: 12, xs: 2 } },
+    { colspan: { default: 12, xs: 2 } },  
+  ]}
+>
           <TextFilter
             filteringText={filteringText}
             filteringPlaceholder="Search"
@@ -297,6 +350,17 @@ const Inventory = () => {
             ]}
             placeholder="Select Category"
           />
+                    <Select
+            required
+            selectedOption={selectedSubCategory}
+            onChange={handleSubCategoryChange}
+            placeholder="Select Sub Category"
+            options={
+                    selectedCategory
+                      ? subcategoryOptions[selectedCategory.value] || []
+                      : []
+                  }
+                />
           <Select
             required
             selectedOption={selectedStatus}
@@ -308,7 +372,6 @@ const Inventory = () => {
             ]}
             placeholder="Select Status"
           />
-
           <Box float="right">
             <SpaceBetween size="xs" direction="horizontal">
               <Button href="/app/Inventory/addItem">Add Item</Button>
@@ -325,12 +388,12 @@ const Inventory = () => {
         >
           <Container
             size="xs"
-            header={<Header variant="h2">{allFetchedData.length}</Header>}
+            header={<Header variant="h2">{inventoryStats?.data?.totalProducts}</Header>}
           >
             <b>All Products</b>
           </Container>
 
-          <Container size="xs" header={<Header variant="h2">421</Header>}>
+          <Container size="xs" header={<Header variant="h2">{inventoryStats?.data?.active}</Header>}>
             <b>Published Stock</b>
           </Container>
 
@@ -338,7 +401,7 @@ const Inventory = () => {
             <b>Low Stock Alert</b>
           </Container>
 
-          <Container size="m" header={<Header variant="h2">223</Header>}>
+          <Container size="l" header={<Header variant="h2">223</Header>}>
             <b>Expired</b>
           </Container>
         </Grid>
@@ -367,6 +430,14 @@ const Inventory = () => {
             >
               Are you sure you want to change the status of this products?
             </Modal>{" "}
+            <Pagination
+              currentPageIndex={currentPage}
+              onChange={({ detail }) =>
+                handlePageChange(detail.currentPageIndex)
+              }
+              pagesCount={pagesCount} 
+            />
+
           </div>
         </Box>
         {isModalVisible && (
@@ -410,15 +481,7 @@ const Inventory = () => {
           renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
             `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
           }
-          pagination={
-            <Pagination
-              currentPageIndex={currentPage}
-              onChange={({ detail }) =>
-                handlePageChange(detail.currentPageIndex)
-              }
-              pagesCount={pagesCount} 
-            />
-          }
+          
           onSelectionChange={({ detail }) =>
             setSelectedItems(detail.selectedItems)
           }

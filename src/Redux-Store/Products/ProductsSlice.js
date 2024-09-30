@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'; 
-import { fetchProducts, PutToggle, updateProductsStatus, deleteProduct, fetchProductById, updateProductDetails  } from './ProductThunk'; // Ensure to import updateProductsStatus
+import { fetchProducts, PutToggle, updateProductsStatus, deleteProduct, fetchProductById, updateProductDetails, fetchInventoryStats  } from './ProductThunk'; // Ensure to import updateProductsStatus
 import status from "Redux-Store/Constants";
 
 const productsSlice = createSlice({
@@ -14,6 +14,11 @@ const productsSlice = createSlice({
     productDetail: null, // To store fetched product details
     productDetailStatus: 'idle', // Status for fetching product details
     productDetailError: null, // Error for fetching product details
+    inventoryStats: { // Initialize inventoryStats here
+      data: null, // or an empty object if applicable
+      status: 'idle', // or 'loading', etc.
+      error: null // Initialize error state
+    },
   },
   reducers: {
     toggleStatus: (state, action) => {
@@ -99,6 +104,18 @@ const productsSlice = createSlice({
       .addCase(deleteProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(fetchInventoryStats.pending, (state) => {
+        state.inventoryStats.status = 'loading'; // Use a string to represent the status
+        state.inventoryStats.error = null; // Reset error state when starting to load
+      })
+      .addCase(fetchInventoryStats.fulfilled, (state, action) => {
+        state.inventoryStats.data = action.payload; // Store the data from the payload
+        state.inventoryStats.status = 'succeeded'; // Mark as successful
+      })
+      .addCase(fetchInventoryStats.rejected, (state, action) => {
+        state.inventoryStats.status = 'failed'; // Mark as failed
+        state.inventoryStats.error = action.payload || action.error.message; // Store the error message
       })
       .addCase(updateProductDetails.pending, (state) => {
         state.productDetailStatus = status.IN_PROGRESS; // Set loading state

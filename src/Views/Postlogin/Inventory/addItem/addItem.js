@@ -171,9 +171,16 @@ const AddItem = () => {
         setImageUrl1("");
         setImageUrl2("");
         setImageUrl3("");
-        setStore("");
+        setFileUploadValue([]); // Clear the file upload
+              setStore("");
         setIsFormSubmitted(false);
+        setTimeout(() => {
+          setItems([]); // Clear flash message
+        }, 3000);
+        // window.location.reload(); // This will force a full page reload
+
       })
+
 
       .catch((error) => {
         console.error("Failed to add item:", error);

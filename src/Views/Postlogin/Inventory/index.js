@@ -50,7 +50,6 @@ const Inventory = () => {
   const [productIdToDelete, setProductIdToDelete] = useState(null);
   const inventoryStats = useSelector((state) => state.products.inventoryStats);
 
-
   const dispatch = useDispatch();
   const { data = [], status } = products;
 

@@ -147,7 +147,8 @@ const AddItem = () => {
         setItems([
           {
             type: "success",
-            content: "Item added successfully",
+            content: "Item Added Successfully",
+            header: "Added Item",
             dismissible: true,
             dismissLabel: "Dismiss message",
             onDismiss: () => setItems([]),

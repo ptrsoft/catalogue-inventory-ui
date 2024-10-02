@@ -119,9 +119,18 @@ export const deleteProduct = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const url = config.DELETE.replace("{id}", id);
+      
+      console.log("Payload (ID):", id);
+      console.log("URL:", url);
+
       const response = await postLoginService.delete(url);
+
+      console.log("Response:", response.data);
+
       return response.data; // Assuming this returns the ID of the deleted product
     } catch (error) {
+      console.log("Error:", error);
+
       return rejectWithValue(
         error.response ? error.response.data : error.message
       );
@@ -140,12 +149,15 @@ export const fetchProductById = createAsyncThunk("products/fetchById", async (id
   }
 });
 
-export const updateProductDetails = createAsyncThunk(
+export const updateProductDetails = createAsyncThunk( 
   "products/updateProductDetails",
   async ({ id, productData }, { rejectWithValue }) => {
     try {
       const url = `${config.PRODUCT_DETAIL.replace("{id}", id)}`; // Construct the URL
+      console.log("Payload (ID):", id); // Log the ID
+      console.log("Product Data:", productData); // Log the product data
       const response = await postLoginService.put(url, productData); // Send PUT request
+      console.log("Response:", response.data); // Log the response data
       return response.data; // Return the updated product data
     } catch (error) {
       return rejectWithValue(error.response.data); // Handle errors

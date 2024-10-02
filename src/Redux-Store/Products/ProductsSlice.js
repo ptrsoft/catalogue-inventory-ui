@@ -98,9 +98,13 @@ const productsSlice = createSlice({
       })
       .addCase(deleteProduct.fulfilled, (state, action) => {
         state.loading = false;
-        // Filter out the deleted product from the products data array
-        state.products.data.items = state.products.data.items.filter(items => items.id !== action.payload);
+        if (Array.isArray(state.products.data)) {
+          state.products.data = state.products.data.filter(product => product.id !== action.payload);
+        } else {
+          console.warn("Expected products.data to be an array but found:", state.products.data);
+        }
       })
+                  
       .addCase(deleteProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

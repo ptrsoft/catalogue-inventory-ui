@@ -141,7 +141,7 @@ const Inventory = () => {
     dispatch(PutToggle({ ids, active: newStatus }))
       .unwrap()
       .then((response) => {
-        console.log("Update Response:", response); // Log response for debugging
+        console.log("Update Response:", response); 
         setItems([
           {
             type: "success",
@@ -246,12 +246,61 @@ const Inventory = () => {
   };
   const handleConfirmDelete = () => {
     if (productIdToDelete) {
-      dispatch(deleteProduct(productIdToDelete));
-      setVisible(false);
-      setProductIdToDelete(null);
+      dispatch(deleteProduct(productIdToDelete))
+        .then((response) => {
+          console.log("Delete Response:", response);
+          if (response.meta.requestStatus === 'fulfilled') {
+            // Display success notification
+            setItems([
+              {
+                type: "success",
+                content: "Item Deleted Successfully!",
+                header: "Deleted Item",
+                dismissible: true,
+                dismissLabel: "Dismiss message",
+                onDismiss: () => setItems([]),
+                id: "delete_success",
+              },
+            ]);
+            
+            // Automatically clear the notification after 5 seconds
+            setTimeout(() => {
+              setItems([]); // Clear the message
+              window.location.reload(); // Refresh the page
+            }, 3000); // 5000 milliseconds = 5 seconds
+          }
+          setVisible(false); // Close the modal
+          setProductIdToDelete(null); // Clear the product ID
+        })
+        .catch((error) => {
+          console.error("Error during deletion:", error); // Log the error for debugging
+  
+          // Display error notification
+          setItems([
+            {
+              type: "error",
+              content: `Failed to delete item: ${
+                error.message || "Unknown error"
+              }`,
+              dismissible: true,
+              dismissLabel: "Dismiss message",
+              onDismiss: () => setItems([]),
+              id: "delete_error",
+            },
+          ]);
+  
+          // Automatically clear the error message after 5 seconds
+          setTimeout(() => {
+            setItems([]); // Clear the message
+          }, 5000); // 5000 milliseconds = 5 seconds
+  
+          setVisible(false); // Close the modal in case of error
+          setProductIdToDelete(null); // Clear the product ID
+        });
     }
   };
-  const handleCancelDelete = () => {
+
+    const handleCancelDelete = () => {
     setVisible(false);
     setProductIdToDelete(null);
   };
@@ -408,7 +457,7 @@ const Inventory = () => {
         <Box float="right">
           <div style={{ display: "flex", gap: "0.5rem" }}>
             {renderModalButton()}
-            <Modal
+            {/* <Modal
               onDismiss={() => setIsModalVisible(false)}
               visible={isModalVisible}
               footer={
@@ -429,7 +478,7 @@ const Inventory = () => {
               header="Modal title"
             >
               Are you sure you want to change the status of this products?
-            </Modal>{" "}
+            </Modal>{" "} */}
             <Pagination
               currentPageIndex={currentPage}
               onChange={({ detail }) =>

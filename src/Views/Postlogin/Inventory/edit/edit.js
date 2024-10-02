@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { fetchProductById, updateProductDetails } from "Redux-Store/Products/ProductThunk";
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+
 import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
 import Grid from "@cloudscape-design/components/grid";
 import {
@@ -18,10 +20,14 @@ import {
   Textarea,
 } from "@cloudscape-design/components"; // Adjust the import path if needed
 import Checkbox from "@cloudscape-design/components/checkbox";
+import Flashbar from "@cloudscape-design/components/flashbar";
+
 
 const Edit = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
+  const navigate = useNavigate(); // Initialize useNavigate
+
 
   const dispatch = useDispatch();
 
@@ -49,10 +55,9 @@ const Edit = () => {
   const [showQuantityFields, setShowQuantityFields] = useState(false);
   const [selectedUnits, setSelectedUnits] = React.useState(null);
   const [subCategory, setSubCategory] = useState(""); // Add this line
+  const [items, setItems] = React.useState([]);
+
   
-
-
-
   useEffect(() => {
     if (id) {
       dispatch(fetchProductById(id));
@@ -99,21 +104,64 @@ setSubCategory(productDetail.subCategory || "")
 
   const handleSubmit = (event) => {
     event.preventDefault();
-  
+
     // Prepare the product data object to be updated
     const productData = {
       name,
       description,
       category,
-      subCategory, // Add subCategory
+      subCategory, 
       units,
       expiry: addExpiry ? new Date(expiryDate).toISOString() : null, // Format expiry date
     };
-  
-    // Dispatch the update action
-    dispatch(updateProductDetails({ id, productData }));
+
+    // Dispatch the update action and handle response
+    dispatch(updateProductDetails({ id, productData }))
+      .unwrap() // Use unwrap to handle fulfilled/rejected cases
+      .then((response) => {
+        console.log("Payload (ID):", id); // Log the ID
+        console.log("Product Data:", productData); // Log the product data
+        console.log("Response:", response); // Log the response data
+
+        // Set success notification message
+        setItems([
+          {
+            type: "success",
+            content: "Item updated successfully!",
+            header: "Updated Item",
+            dismissible: true,
+            dismissLabel: "Dismiss message",
+            onDismiss: () => setItems([]),
+            id: "message_success",
+          },
+        ]);
+
+        // Clear the message after 3 seconds
+        setTimeout(() => {
+          setItems([]); // Clear the message after 3 seconds
+          navigate("/app/inventory"); // Redirect to /app/inventory
+
+        }, 3000);
+
+        // Optionally refresh the products or perform other actions
+        // dispatch(fetchProducts());
+        // window.location.reload(); // Uncomment if you want to force a page reload
+      })
+      .catch((error) => {
+        console.error("Error during update:", error); // Log the error for debugging
+        setItems([
+          {
+            type: "error",
+            content: `Failed to update item: ${error.message || "Unknown error"}`,
+            dismissible: true,
+            dismissLabel: "Dismiss message",
+            onDismiss: () => setItems([]),
+            id: "message_error",
+          },
+        ]);
+      });
   };
-  
+
   
 
   return (
@@ -126,6 +174,8 @@ setSubCategory(productDetail.subCategory || "")
         ]}
         ariaLabel="Breadcrumbs"
       />
+            <Flashbar items={items} /> {/* Render the Flashbar here */}
+
        <Header actions={<Button variant="primary" onClick={handleSubmit}>Update</Button>}>
         Edit Item
       </Header>

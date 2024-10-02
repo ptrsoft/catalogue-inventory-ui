@@ -212,32 +212,32 @@ const Inventory = () => {
     setSelectedProduct(null);
   };
 
-  const renderModalButton = () => {
-    const isAnyProductSelected = selectedItems.length > 0; 
+  // const renderModalButton = () => {
+  //   const isAnyProductSelected = selectedItems.length > 0; 
 
-    if (selectedStatus?.value === "true") {
-      return (
-        <Button
-          variant="primary"
-          onClick={() => setIsModalVisible(true)}
-          disabled={!isAnyProductSelected} 
-        >
-          Move to Inactive
-        </Button>
-      );
-    } else if (selectedStatus?.value === "false") {
-      return (
-        <Button
-          variant="primary"
-          onClick={() => setIsModalVisible(true)}
-          disabled={!isAnyProductSelected} // Disable button if no product is selected
-        >
-          Move to Active
-        </Button>
-      );
-    }
-    return null;
-  };
+  //   if (selectedStatus?.value === "true") {
+  //     return (
+  //       <Button
+  //         variant="primary"
+  //         onClick={() => setIsModalVisible(true)}
+  //         disabled={!isAnyProductSelected} 
+  //       >
+  //         Move to Inactive
+  //       </Button>
+  //     );
+  //   } else if (selectedStatus?.value === "false") {
+  //     return (
+  //       <Button
+  //         variant="primary"
+  //         onClick={() => setIsModalVisible(true)}
+  //         disabled={!isAnyProductSelected} // Disable button if no product is selected
+  //       >
+  //         Move to Active
+  //       </Button>
+  //     );
+  //   }
+  //   return null;
+  // };
 
   const openModal = (id) => {
     setProductIdToDelete(id); // Set the ID of the product to delete
@@ -361,8 +361,7 @@ const Inventory = () => {
     { colspan: { default: 12, xs: 4 } },  
     { colspan: { default: 12, xs: 2 } },
     { colspan: { default: 12, xs: 2 } },
-    { colspan: { default: 12, xs: 2 } },
-    { colspan: { default: 12, xs: 2 } },  
+    { colspan: { default: 12, xs: 4 } },
   ]}
 >
           <TextFilter
@@ -409,7 +408,7 @@ const Inventory = () => {
                       : []
                   }
                 />
-          <Select
+          {/* <Select
             required
             selectedOption={selectedStatus}
             onChange={handleSelectChange}
@@ -419,7 +418,7 @@ const Inventory = () => {
               { label: "Inactive", value: "false" },
             ]}
             placeholder="Select Status"
-          />
+          /> */}
           <Box float="right">
             <SpaceBetween size="xs" direction="horizontal">
               <Button href="/app/Inventory/addItem">Add Item</Button>
@@ -455,7 +454,7 @@ const Inventory = () => {
         </Grid>
         <Box float="right">
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            {renderModalButton()}
+            {/* {renderModalButton()} */}
             {/* <Modal
               onDismiss={() => setIsModalVisible(false)}
               visible={isModalVisible}
@@ -609,26 +608,26 @@ const Inventory = () => {
               header: "MSP",
               cell: (e) => `Rs. ${e.msp}`, 
             },
-            {
-              id: "status",
-              header: "Status",
-              cell: (e) => (
-                <div style={{ display: "flex", width: "100px" }}>
-                  <Toggle
-                    onChange={() => handleToggleClick(e)}
-                    checked={e.active}
-                  >
-                    {e.active ? "Active" : "Inactive"}
-                  </Toggle>
-                  <span
-                    style={{
-                      marginLeft: "10px",
-                      color: e.status === "Inactive" ? "gray" : "black",
-                    }}
-                  ></span>
-                </div>
-              ),
-            },
+            // {
+            //   id: "status",
+            //   header: "Status",
+            //   cell: (e) => (
+            //     <div style={{ display: "flex", width: "100px" }}>
+            //       <Toggle
+            //         onChange={() => handleToggleClick(e)}
+            //         checked={e.active}
+            //       >
+            //         {e.active ? "Active" : "Inactive"}
+            //       </Toggle>
+            //       <span
+            //         style={{
+            //           marginLeft: "10px",
+            //           color: e.status === "Inactive" ? "gray" : "black",
+            //         }}
+            //       ></span>
+            //     </div>
+            //   ),
+            // },
             {
               id: "action",
               header: "Action",

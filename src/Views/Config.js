@@ -6,7 +6,7 @@ const Config = {
   PUT_ACTIVE_INACTIVE:`${BASE_URL}/inventory/status`,
   DELETE:`${BASE_URL}/inventory/{id}`,
   PRODUCT_DETAIL:`${BASE_URL}/inventory/{id}`,
-  PUT_ACTIVE_INACTIVE:`${BASE_URL}/inventory/status`,
+
   CONTAINER_DIV:`${BASE_URL}/inventory/stats`,
   UPLOAD_IMAGE:`${BASE_URL}/uploadUrl`,
   AUTH_USER:`${BASE_URL}/auth/signin`,
@@ -29,6 +29,20 @@ const Config = {
    FETCH_PURCHASE_REQUSTION_LIST:`${BASE_URL}/users`,
    VENDOR_PROFILE:`${BASE_URL}/users`,
    FETCH_CUSTOMER:`${BASE_URL}/user`,
+
+   UPDATE_ORDER_STATUS:`${BASE_URL}/order/proceed?ids=`,
+   ASSIGN_DELIVERY_BOY: `${BASE_URL}/order/proceed?ids=`, // Will append `&assignee={assignee}` dynamically
+   UPDATE_SINGLE_ORDER_STATUS:`${BASE_URL}/order/proceed?ids=`,
+   ASSIGN_DELIVERY_BOY_SINGLEORDER: `${BASE_URL}/order/proceed?ids=`, // Will append `&assignee={assignee}` dynamically
+   ORDERS_STATUS:`${BASE_URL}/order/stats`,
+
+ 
+    FETCH_PRODUCTS:`${BASE_URL}/inventory`,
+
+    FETCH_PRODUCTS_DETAIL:`${BASE_URL}/inventory`,
+    PUT_PRODUCTS_DETAIL:`${BASE_URL}/publish`,
+    PUT_PRICING:`${BASE_URL}/inventory`,
+ 
 };
 
 export default Config;

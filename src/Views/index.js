@@ -8,6 +8,9 @@ import Edit from "./Postlogin/Inventory/edit/edit";
 
 import CreateAdjustment from "./Postlogin/Inventory/InventoryAdjustments/CreateAdjustment";
 import NewAdjustment from "./Postlogin/Inventory/InventoryAdjustments/NewAdjustment";
+import Runsheet from "./Postlogin/Orders/Runsheet";
+import ViewRunsheet from "./Postlogin/Orders/Runsheet/ViewRunSheet";
+import CreateRunsheet from "./Postlogin/Orders/Runsheet/CreateRunSheet";
 const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
 
 
@@ -71,7 +74,22 @@ const Views = () => {
             path={`${PREFIX_APP_PATH}/orders`}
             element={<Orders />}
           />
-
+              <Route
+            exact
+            path={`${PREFIX_APP_PATH}/orders/runsheet`}
+            element={<Runsheet/>}
+          />
+              <Route
+            exact
+            path={`${PREFIX_APP_PATH}/orders/runsheet/ViewRunSheet`}
+            element={<ViewRunsheet/>}
+          />
+            <Route
+            exact
+            path={`${PREFIX_APP_PATH}/orders/runsheet/CreateRunSheet`}
+            element={<CreateRunsheet/>}
+          />
+         
           <Route
             exact
             path={`${PREFIX_APP_PATH}/purchaseOrders`}

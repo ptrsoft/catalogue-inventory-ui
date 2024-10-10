@@ -57,10 +57,10 @@ const Runsheet = () => {
     const navigate = useNavigate();
 
     const handleViewDetailsClick = () => {
-      navigate('/app/orders/runsheet/ViewRunSheet');
+      navigate('/app/Logistics/runsheet/ViewRunSheet');
     };
     const handlecreateRunSheet = () => {
-        navigate('/app/orders/runsheet/CreateRunSheet');
+        navigate('/app/Logistics/runsheet/CreateRunSheet');
       };
   const columns = [
     { id: "sno", header: "Sno.", cell: (item) => item.sno },
@@ -95,8 +95,8 @@ const Runsheet = () => {
           <SpaceBetween direction="vertical" size="m">
       <BreadcrumbGroup
         items={[
-          { text: "Dashboard", href: "#" },
-          { text: "Logistics", href: "#" },
+          { text: "Dashboard", href: "/app/dashboard" },
+          { text: "Logistics", href: "/app/dashboard" },
           { text: "Runsheet", href: "#" },
         ]}
       />

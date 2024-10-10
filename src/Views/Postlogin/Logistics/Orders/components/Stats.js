@@ -4,7 +4,7 @@ import { Box,Container,ColumnLayout } from '@cloudscape-design/components';
 const Stats = () => {
   return (
     <Container className="top-container" style={{ marginBottom: "1rem" }}>
-    <ColumnLayout columns={5} variant="default" minColumnWidth={150}>
+    <ColumnLayout columns={4} variant="default" minColumnWidth={150}>
       <div>
         <Box variant="awsui-key-label">
           <p style={{ fontSize: 12, fontWeight: "bold" }}>Total Orders</p>
@@ -76,23 +76,7 @@ const Stats = () => {
           30
         </span>
       </div>
-      <div>
-        <Box variant="awsui-key-label">
-          <p style={{ fontSize: 12, fontWeight: "bold" }}>
-            Orders Refunded
-          </p>
-        </Box>
-        <span
-          style={{
-            fontSize: 34,
-            fontWeight: "900",
-            lineHeight: 1.3,
-            color: "#1D4ED8",
-          }}
-        >
-          {/* {orderStatus?.data?.refundedOrderCount} */} 22
-        </span>
-      </div>
+   
     </ColumnLayout>
   </Container>
 

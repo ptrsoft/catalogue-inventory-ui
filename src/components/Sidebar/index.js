@@ -16,12 +16,12 @@ const Sidebar = () => {
         {
           type: "link",
           text: "Orders",
-          href: "/app/orders"
+          href: "/app/Logistics/orders"
         },
         {
           type: "link",
           text: "Runsheet",
-          href: "/app/orders/runsheet"
+          href: "/app/Logistics/runsheet"
         },
         {
           type: "link",

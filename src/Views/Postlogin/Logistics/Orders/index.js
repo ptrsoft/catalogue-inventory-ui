@@ -39,29 +39,30 @@ const Orders = () => {
       };
     const data = [
       // Example data array
-      { orderId: '#10011', date: '26-07-2024', customerName: 'John Smith', items: '05 Items', paymentType: 'COD', status: 'Order Confirmed', amount: 'Rs. 85', area: 'PBEI' },
-      { orderId: '#69312', date: '26-07-2024', customerName: 'Jane Doe', items: '02 Items', paymentType: 'Prepaid', status: 'Order Confirmed', amount: 'Rs. 28', area: 'Vasati' },
-      { orderId: '#10011', date: '26-07-2024', customerName: 'John Smith', items: '05 Items', paymentType: 'COD', status: 'Order Confirmed', amount: 'Rs. 85', area: 'PBEI' },
-      { orderId: '#69312', date: '26-07-2024', customerName: 'Jane Doe', items: '02 Items', paymentType: 'Prepaid', status: 'Order Confirmed', amount: 'Rs. 28', area: 'Vasati' },
-      { orderId: '#10011', date: '26-07-2024', customerName: 'John Smith', items: '05 Items', paymentType: 'COD', status: 'Order Confirmed', amount: 'Rs. 85', area: 'PBEI' },
-      { orderId: '#69312', date: '26-07-2024', customerName: 'Jane Doe', items: '02 Items', paymentType: 'Prepaid', status: 'Order Confirmed', amount: 'Rs. 28', area: 'Vasati' },
-      { orderId: '#10011', date: '26-07-2024', customerName: 'John Smith', items: '05 Items', paymentType: 'COD', status: 'Order Confirmed', amount: 'Rs. 85', area: 'PBEI' },
-      { orderId: '#69312', date: '26-07-2024', customerName: 'Jane Doe', items: '02 Items', paymentType: 'Prepaid', status: 'Order Confirmed', amount: 'Rs. 28', area: 'Vasati' },
-      { orderId: '#10011', date: '26-07-2024', customerName: 'John Smith', items: '05 Items', paymentType: 'COD', status: 'Order Confirmed', amount: 'Rs. 85', area: 'PBEI' },
-      { orderId: '#69312', date: '26-07-2024', customerName: 'Jane Doe', items: '02 Items', paymentType: 'Prepaid', status: 'Order Confirmed', amount: 'Rs. 28', area: 'Vasati' },
-      { orderId: '#10011', date: '26-07-2024', customerName: 'John Smith', items: '05 Items', paymentType: 'COD', status: 'Order Confirmed', amount: 'Rs. 85', area: 'PBEI' },
-      { orderId: '#69312', date: '26-07-2024', customerName: 'Jane Doe', items: '02 Items', paymentType: 'Prepaid', status: 'Order Confirmed', amount: 'Rs. 28', area: 'Vasati' },
+      { orderId: '#10011', date: '26-07-2024', customerName: 'John Smith', items: '05 Items', number:'12345678',paymentType: 'COD',  amount: 'Rs. 85', area: 'PBEI' },
+      { orderId: '#69312', date: '26-07-2024', customerName: 'Jane Doe', items: '02 Items', number:'12345678',paymentType: 'Prepaid',  amount: 'Rs. 28', area: 'Vasati' },
+      { orderId: '#10011', date: '26-07-2024', customerName: 'John Smith', items: '05 Items', number:'12345678',paymentType: 'COD',  amount: 'Rs. 85', area: 'PBEI' },
+      { orderId: '#69312', date: '26-07-2024', customerName: 'Jane Doe', items: '02 Items', number:'12345678',paymentType: 'Prepaid',  amount: 'Rs. 28', area: 'Vasati' },
+      { orderId: '#10011', date: '26-07-2024', customerName: 'John Smith', items: '05 Items', number:'12345678',paymentType: 'COD',  amount: 'Rs. 85', area: 'PBEI' },
+      { orderId: '#69312', date: '26-07-2024', customerName: 'Jane Doe', items: '02 Items', number:'12345678',paymentType: 'Prepaid',  amount: 'Rs. 28', area: 'Vasati' },
+      { orderId: '#10011', date: '26-07-2024', customerName: 'John Smith', items: '05 Items', number:'12345678',paymentType: 'COD',  amount: 'Rs. 85', area: 'PBEI' },
+      { orderId: '#69312', date: '26-07-2024', customerName: 'Jane Doe', items: '02 Items', number:'12345678',paymentType: 'Prepaid',  amount: 'Rs. 28', area: 'Vasati' },
+      { orderId: '#10011', date: '26-07-2024', customerName: 'John Smith', items: '05 Items', number:'12345678',paymentType: 'COD',  amount: 'Rs. 85', area: 'PBEI' },
+      { orderId: '#69312', date: '26-07-2024', customerName: 'Jane Doe', items: '02 Items', number:'12345678',paymentType: 'Prepaid',  amount: 'Rs. 28', area: 'Vasati' },
+      { orderId: '#10011', date: '26-07-2024', customerName: 'John Smith', items: '05 Items', number:'12345678',paymentType: 'COD',  amount: 'Rs. 85', area: 'PBEI' },
+      { orderId: '#69312', date: '26-07-2024', customerName: 'Jane Doe', items: '02 Items', number:'12345678',paymentType: 'Prepaid',  amount: 'Rs. 28', area: 'Vasati' },
       // Add all other rows here
     ];
   
     const statusOptions = [
       { label: 'All', value: '' },
-      { label: 'Order Confirmed', value: 'Order Confirmed' },
-      { label: 'Pending', value: 'Pending' },
+      { label: 'Cash On Delivery', value: 'COD' },
+      { label: 'Prepaid', value: 'Prepaid' },
       // Add other statuses if needed
     ];
   
     const columns = [
+      { header: 'Order Date', cell: item => item.date },
       { header: 'Order ID',   cell: (item) => (
         <div
           style={{
@@ -77,11 +78,12 @@ const Orders = () => {
       ),
       width: 250,
       minWidth: 180, },
-      { header: 'Order Date', cell: item => item.date },
+     
       { header: 'Customer Name', cell: item => item.customerName },
-      { header: 'Items', cell: item => item.items },
+      { header: 'Total Items', cell: item => item.items },
+      { header: 'Contact No', cell: item => item.number },
       { header: 'Payment Type', cell: item => <strong>{item.paymentType}</strong> },
-      { header: 'Order Status', cell: item => item.status },
+   
       { header: 'Total Amount', cell: item => item.amount },
       { header: 'Deliver Area', cell: item => item.area },
     ];
@@ -90,7 +92,7 @@ const Orders = () => {
     const handleSortChange = ({ detail }) => setSelectedStatus(detail.selectedOption.value);
   
     const filteredData = selectedStatus
-      ? data.filter(item => item.status === selectedStatus)
+      ? data.filter(item => item.paymentType === selectedStatus)
       : data;
   
 

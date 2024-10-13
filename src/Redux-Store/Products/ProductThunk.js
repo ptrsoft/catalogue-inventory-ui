@@ -8,35 +8,25 @@ export const fetchProducts = createAsyncThunk(
     try {
       let url = config.FETCH_INVENTORY;
       let queryParams = [];
-      // Add search term, category, and active status if provided
-      if (params?.search) {
-        queryParams.push(`search=${encodeURIComponent(params.search)}`);
-      }
-      if (params?.category) {
-        queryParams.push(`category=${encodeURIComponent(params.category)}`);
-      }
-      if (params?.subCategory) {
-        queryParams.push(`subCategory=${encodeURIComponent(params.subCategory)}`);
-      }
-      if (params?.active) {
-        queryParams.push(`active=${encodeURIComponent(params.active)}`);
-      }
-      // Add pageKey if it exists
-      if (params?.pageKey) {
-        queryParams.push(`pageKey=${encodeURIComponent(params.pageKey)}`);
-      }
-      // Form final URL
-      if (queryParams.length > 0) {
-        url += `?${queryParams.join("&")}`;
-      }
-      // Fetch data from API
+
+      // Add search term, category, subCategory, etc.
+      if (params?.search) queryParams.push(`search=${encodeURIComponent(params.search)}`);
+      if (params?.category) queryParams.push(`category=${encodeURIComponent(params.category)}`);
+      if (params?.subCategory) queryParams.push(`subCategory=${encodeURIComponent(params.subCategory)}`);
+      
+      // Add pageKey for pagination (use categoryNextKey if category is selected)
+      if (params?.pageKey && !params.category) queryParams.push(`pageKey=${encodeURIComponent(params.pageKey)}`);
+      if (params?.categoryNextKey && params.category) queryParams.push(`pageKey=${encodeURIComponent(params.categoryNextKey)}`);
+
+      if (queryParams.length > 0) url += `?${queryParams.join("&")}`;
+
       const response = await postLoginService.get(url);
       return {
-        data: response.data,
-      // assuming your API returns the next page key
+        data: response.data.items,
+        nextKey: response.data.nextKey, // nextKey for pagination
       };
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );

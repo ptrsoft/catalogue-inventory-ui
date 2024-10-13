@@ -44,79 +44,109 @@ const Inventory = () => {
   const [selectedCategory, setSelectedCategory] = React.useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = React.useState(null);
   const [selectedStatus, setSelectedStatus] = React.useState(null);
-  const products = useSelector((state) => state.products.products);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedItems, setSelectedItems] = useState([]);
   const [visible, setVisible] = React.useState(false);
   const [productIdToDelete, setProductIdToDelete] = useState(null);
   const inventoryStats = useSelector((state) => state.products.inventoryStats);
+  const [nextKeys, setNextKeys] = useState({}); // Store nextKey per page
+
 
   const dispatch = useDispatch();
-  const { data = [], status } = products;
+  const products = useSelector((state) => state.products.products.data[currentPage] || []); // Access current page data
+  const status = useSelector((state) => state.products.products.status);
+  const { data = [] } = products;
+  const nextKey = useSelector((state) => state.products.products.nextKey);
 
-  console.log("data", data);
+  const [fetchedPages, setFetchedPages] = useState({}); // Store fetched data per page
+  const [pagesCount, setPagesCount] = useState(1); // Keep track of total pages
+
+  console.log("Current Page:", currentPage);
 
   useEffect(() => {
     dispatch(fetchInventoryStats());
   }, [dispatch]);
 
-
   useEffect(() => {
-    dispatch(
-      fetchProducts({
-        category: selectedCategory?.value || "",
-        subCategory: selectedSubCategory?.value || "",
-        search: filteringText || "",
-        active: selectedStatus?.value || "",
-      })
-    );
-      }, [dispatch, selectedCategory, filteringText, selectedStatus,selectedSubCategory ]);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageKey, setPageKey] = useState(null); // Holds the next page key from API
-  const [fetchedPages, setFetchedPages] = useState([]); // Store fetched data for all pages
-  const [allFetchedData, setAllFetchedData] = useState([]); // Store all fetched data across pages
-  const [pagesCount, setPagesCount] = useState(1); // Initially show only the first page
-  const itemsPerPage = 50; // Set items per page to 50
-
-  useEffect(() => {
-    if (!fetchedPages[currentPage - 1]) {
-      dispatch(fetchProducts({ pageKey, pageSize: itemsPerPage }))
+    // Define the pageKey for pagination (undefined for page 1)
+    const pageKey = currentPage === 1 ? undefined : nextKeys[currentPage - 1];
+  
+    // Create a key to represent the current filters and page
+    const filterKey = `${selectedCategory?.value || ""}-${selectedSubCategory?.value || ""}-${filteringText || ""}-${selectedStatus?.value || ""}-${currentPage}`;
+  
+    // Check if the current page with the current filter has already been fetched
+    if (!fetchedPages[filterKey]) {
+      dispatch(
+        fetchProducts({
+          category: selectedCategory?.value || "",
+          subCategory: selectedSubCategory?.value || "",
+          search: filteringText || "",
+          active: selectedStatus?.value || "",
+          pageKey, // Only pass the nextKey for pages beyond 1
+          pageSize: 50, // Items per page
+        })
+      )
         .unwrap()
         .then((result) => {
-          setFetchedPages((prevPages) => {
-            const updatedPages = [...prevPages];
-            updatedPages[currentPage - 1] = result.data.items; // Store the items for the current page
-            return updatedPages;
-          });
-
-          setAllFetchedData((prevData) => [...prevData, ...result.data.items]); // Add all new items to allFetchedData
-
-          if (result.data.nextKey) {
-            setPageKey(result.data.nextKey); // Store nextKey for future fetches
-            setPagesCount((prevCount) => prevCount + 1); // Increment the pages count to show next page
+          console.log("Fetched products for page:", currentPage, result);
+  
+          // Adjust to check the correct data structure
+          if (Array.isArray(result.data)) {
+            // Store fetched items for the current page and filters
+            setFetchedPages((prev) => ({
+              ...prev,
+              [filterKey]: result.data, // Directly using result.data since it's an array
+            }));
+  
+            // Store the nextKey for future pagination
+            if (result.nextKey) {
+              setNextKeys((prevKeys) => ({
+                ...prevKeys,
+                [currentPage]: result.nextKey, // Store nextKey for the current page
+              }));
+  
+              // Increment the pages count only if there's more data to fetch
+              setPagesCount((prevCount) => prevCount + 1);
+            }
           } else {
-            setPageKey(null);
+            console.error("Unexpected data structure:", result.data);
           }
         })
         .catch((error) => {
           console.error("Error fetching products:", error);
         });
     }
-  }, [dispatch, currentPage, pageKey, itemsPerPage, fetchedPages]);
-
+  }, [
+    dispatch,
+    currentPage,
+    filteringText,
+    selectedCategory,
+    selectedSubCategory,
+    selectedStatus,
+    nextKeys,
+    fetchedPages
+  ]);
+    // Handle page changes
   const handlePageChange = (pageIndex) => {
-    setCurrentPage(pageIndex);
+    setCurrentPage(pageIndex); // Update current page
   };
 
-  const handleCategoryChange = ({ detail }) => {
+  // Prepare items for the table
+        const handleCategoryChange = ({ detail }) => {
     setSelectedCategory(detail.selectedOption);
+    setCurrentPage(1); // Reset page to 1 when filters change
+
   };
   const handleSubCategoryChange = ({ detail }) => {
     setSelectedSubCategory(detail.selectedOption);
+    setCurrentPage(1); // Reset page to 1 when filters change
+
   };
 
   const handleSearchChange = ({ detail }) => {
     setFilteringText(detail.filteringText);
+    setCurrentPage(1); // Reset page to 1 when filters change
+
   };
   const handleSelectChange = ({ detail }) => {
     setSelectedStatus(detail.selectedOption);
@@ -477,13 +507,11 @@ const Inventory = () => {
             >
               Are you sure you want to change the status of this products?
             </Modal>{" "} */}
-            <Pagination
-              currentPageIndex={currentPage}
-              onChange={({ detail }) =>
-                handlePageChange(detail.currentPageIndex)
-              }
-              pagesCount={pagesCount} 
-            />
+    <Pagination
+      currentPageIndex={currentPage}
+      onChange={({ detail }) => handlePageChange(detail.currentPageIndex)}
+      pagesCount={pagesCount}
+    />
 
           </div>
         </Box>
@@ -648,8 +676,7 @@ const Inventory = () => {
             },
           ]}
           enableKeyboardNavigation
-          items={data?.data?.items}
-          selectionType="multi"
+          items={fetchedPages[`${selectedCategory?.value || ""}-${selectedSubCategory?.value || ""}-${filteringText || ""}-${selectedStatus?.value || ""}-${currentPage}`] || []}          selectionType="multi"
           trackBy="itemCode"
           empty={
             <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">

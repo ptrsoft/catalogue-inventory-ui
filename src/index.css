@@ -25,7 +25,7 @@ a.awsui_anchor_1kosq_101th_109{
   }
 }
 
-.drawer{
+.drawerInventory{
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -45,3 +45,202 @@ a.awsui_anchor_1kosq_101th_109{
     display: block;
   }
 }
+.info-row {
+  display: contents; /* Maintain inline structure for each row */
+}
+
+.label {
+  font-weight: normal;
+
+}
+
+.name, .items {
+  font-weight: bold;
+  justify-self: start; /* Align the value to the left */
+}
+
+.items {
+  font-style: italic;
+  justify-self: start; /* Align 16 Items to the left to reduce gap */
+}
+
+
+.otp-container {
+  max-width: 400px;
+  padding: 20px;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  text-align: center;
+}
+
+.otp-header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.otp-subtext {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.highlight {
+  color: #0073bb;
+  font-weight: bold;
+}
+
+.otp-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.otp-input {
+  width: 35px;
+  height: 36px;
+  font-size: 18px;
+  text-align: center;
+  border-radius: 5px;
+  border: 1px solid #9BA7B6;
+}
+
+.otp-input:focus {
+  border-color: #0073bb;
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(0, 115, 187, 0.5);
+}
+.details {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 20px; /* Control the gaps between the rows and columns */
+  font-family: Arial, sans-serif;
+  color: #333;
+  width: 100%; /* Full width to fill container */
+}
+
+.info-row {
+  display: contents; /* Allows the grid layout to keep consistent behavior */
+}
+
+.label {
+  font-weight: normal;
+  /* justify-self: end; */
+}
+.info-row .value {
+  font-style: italic; /* Apply italic to all values */
+  font-weight: 600;
+  font-size: 12px ;
+}
+
+/* Remove italic for the first and second info-row values */
+.info-row:nth-child(1) .value,
+.info-row:nth-child(2) .value {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px ;
+}
+
+
+
+
+.items-list {
+  grid-column: span 2; /* Spans across two columns */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+}
+
+.items-label {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.items-count {
+  font-weight: normal;
+  font-size: 12px;
+  color: #666;
+}
+
+
+
+
+
+.product-card {
+  display: flex;
+  align-items: center;
+
+}
+
+
+
+
+.button-container {
+  display: flex;
+  gap: 10px;
+}
+
+.cancel-btn, .print-btn {
+  font-size: 10px;
+  padding: 5px 15px;
+  font-weight: 800;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  color: #D91515;
+  background-color: transparent;
+  border: 2px solid #D91515;
+}
+
+.cancel-btn:hover {
+  background-color: #f8d7da;
+}
+
+.print-btn {
+  color: white;
+  background-color: #0972D3;
+  border: none;
+}
+
+.print-btn:hover {
+  background-color: #0056b3;
+}
+
+
+.detail-row:last-child {
+  margin-bottom: 0; /* Remove margin on the last row */
+}
+.orders-container {
+  transition: filter 0.3s ease;
+}
+
+.blur-background {
+  filter: blur(1px);
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 30%;
+  background-color: white;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  overflow-y: auto;
+}
+/* Additional styling for layout customization */
+.order-item {
+  padding: 8px 12px;
+  background-color: #f9fafb; /* Slight gray background */
+  border-radius: 4px;
+  border: 1px solid #d1d5db; /* Border color */
+  margin-bottom: 8px;
+}
+

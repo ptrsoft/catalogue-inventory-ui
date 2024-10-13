@@ -8,7 +8,33 @@ const Sidebar = () => {
 
   const items = [
     { type: "link", text: "Dashboard", href: "/app/dashboard" },
-    { type: "link", text: "Orders", href: "/app/search" },
+
+    {
+      type: "section",
+      text: "Logistics",
+      items: [
+        {
+          type: "link",
+          text: "Orders",
+          href: "/app/Logistics/orders"
+        },
+        {
+          type: "link",
+          text: "Runsheet",
+          href: "/app/Logistics/runsheet"
+        },
+        {
+          type: "link",
+          text: "Rider Summary",
+          href: "*"
+        },
+        {
+          type: "link",
+          text: "Payment",
+          href: "/app/inventory/adjustments"
+        }
+      ]
+    },
     {
       type: "section",
       text: "Inventory",

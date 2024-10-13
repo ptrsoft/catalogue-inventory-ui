@@ -8,6 +8,9 @@ import Edit from "./Postlogin/Inventory/edit/edit";
 
 import CreateAdjustment from "./Postlogin/Inventory/InventoryAdjustments/CreateAdjustment";
 import NewAdjustment from "./Postlogin/Inventory/InventoryAdjustments/NewAdjustment";
+import Runsheet from "./Postlogin/Logistics/Runsheet";
+import ViewRunsheet from "./Postlogin/Logistics/Runsheet/ViewRunSheet";
+import CreateRunsheet from "./Postlogin/Logistics/Runsheet/CreateRunSheet";
 const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
 
 
@@ -16,7 +19,7 @@ const AddNewCustomer = lazy(() =>
   import("./Postlogin/Customers/AddNewCustomer")
 );
 const Products = lazy(() => import("./Postlogin/Products"));
-const Orders = lazy(() => import("./Postlogin/Orders"));
+const Orders = lazy(() => import("./Postlogin/Logistics/Orders"));
 
 const PurchaseOrders = lazy(() =>
   import("./Postlogin/PurchaseOrders")
@@ -68,10 +71,25 @@ const Views = () => {
 
           <Route
             exact
-            path={`${PREFIX_APP_PATH}/orders`}
+            path={`${PREFIX_APP_PATH}/Logistics/orders`}
             element={<Orders />}
           />
-
+              <Route
+            exact
+            path={`${PREFIX_APP_PATH}/Logistics/runsheet`}
+            element={<Runsheet/>}
+          />
+              <Route
+            exact
+            path={`${PREFIX_APP_PATH}/Logistics/runsheet/ViewRunSheet`}
+            element={<ViewRunsheet/>}
+          />
+            <Route
+            exact
+            path={`${PREFIX_APP_PATH}/Logistics/runsheet/CreateRunSheet`}
+            element={<CreateRunsheet/>}
+          />
+         
           <Route
             exact
             path={`${PREFIX_APP_PATH}/purchaseOrders`}

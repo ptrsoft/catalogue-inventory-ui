@@ -63,7 +63,7 @@ const productsSlice = createSlice({
       .addCase(fetchProductById.rejected, (state, action) => {
         state.productDetailStatus = status.FAILURE;
         state.productDetailError = action.error.message;
-      })      .addCase(PutToggle.pending, (state) => {
+      }).addCase(PutToggle.pending, (state) => {
         state.products.status = status.IN_PROGRESS;
       })
       .addCase(PutToggle.fulfilled, (state, action) => {

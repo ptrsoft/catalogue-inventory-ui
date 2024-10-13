@@ -6,10 +6,10 @@ const productsSlice = createSlice({
   name: 'products',
   initialState: {
     products: {
-      data: [],
+      data: {},  // Change from array to object for pagination
       status: 'idle',
-      error: null
-      
+      error: null,
+      nextKey: null
     },
     productDetail: null, // To store fetched product details
     productDetailStatus: 'idle', // Status for fetching product details
@@ -30,18 +30,30 @@ const productsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProducts.pending, (state) => {
-        state.products.status = status.IN_PROGRESS;
-      })
-      .addCase(fetchProducts.fulfilled, (state, action) => {
-        state.products.data = action.payload;
-        state.products.status = status.SUCCESS;
-      })
+    .addCase(fetchProducts.pending, (state) => {
+      state.products.status = status.IN_PROGRESS;
+    })
+    .addCase(fetchProducts.fulfilled, (state, action) => {
+      const { data } = action.payload; // Directly access data from the API response
+  
+      // Get the current page based on the request
+      const currentPage = action.meta.arg.pageKey ? action.meta.arg.pageKey : 1;
+  
+      // Store items directly in the state for the current page
+      state.products.data[currentPage] = data.items; // Store items directly in the state
+  
+      // Set nextKey for pagination
+      state.products.nextKey = data.nextKey; // Save nextKey for further requests
+  
+      // Update status
+      state.products.status = status.SUCCESS;
+  })
+    
       .addCase(fetchProducts.rejected, (state, action) => {
-        state.products.status = status.FAILURE;
-        state.products.error = action.error.message;
-      })
-      .addCase(fetchProductById.pending, (state) => {
+      state.products.status = status.FAILURE;
+      state.products.error = action.error.message;
+    })
+        .addCase(fetchProductById.pending, (state) => {
         state.productDetailStatus = status.IN_PROGRESS;
       })
       .addCase(fetchProductById.fulfilled, (state, action) => {

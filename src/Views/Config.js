@@ -18,7 +18,8 @@ const Config = {
   FINISH_PRODUCT_SPECIFICATIONS: `${BASE_URL}/users`,
   FINISH_PRODUCT_VIEW_ATACHMENTS: `${BASE_URL}/users`,
   FINISH_PRODUCT_DETAILS: `${BASE_URL}/users`,
-  FETCH_ORDERS: `${BASE_URL}/users`,
+  FETCH_ORDERS: `${BASE_URL}/order-inventory`,
+  FETCH_ORDERBYID: `${BASE_URL}/order`,
   ORDERS_DETAILS:`${BASE_URL}/users`,
   ORDERS_VIEWATTACHMENTS:`${BASE_URL}/users`,
    FETCH_BATCH_SHEET:`${BASE_URL}/users`,
@@ -38,6 +39,8 @@ const Config = {
 
  
     FETCH_PRODUCTS:`${BASE_URL}/inventory`,
+    CREATE_RUNSHEET:`${BASE_URL}/runsheet`,
+    FETCH_RUNSHEET:`${BASE_URL}/runsheet`,
 
     FETCH_PRODUCTS_DETAIL:`${BASE_URL}/inventory`,
     PUT_PRODUCTS_DETAIL:`${BASE_URL}/publish`,

@@ -276,6 +276,61 @@ a.awsui_anchor_1kosq_101th_109{
 }
 .section-header {
   font-weight: bold;
-  margin-top: 16px;
+  /* margin-top: 16px; */
   margin-bottom: 8px;
+}
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.custom-modal {
+  background: white;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  position: relative;
+}
+
+.custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.custom-modal-body {
+  margin: 15px 0;
+}
+
+
+
+.image-container {
+  display: flex;
+  justify-content: center; /* Center images horizontally */
+  align-items: center;    /* Center images vertically */
+  gap: 10px;             /* Space between images */
+}
+
+.document-image {
+  width: 100%;           /* Make images responsive */
+  height: auto;         /* Maintain aspect ratio */
+  max-width: 280px;     /* Limit the max width */
+  border-radius: 5px;   /* Optional: Add rounded corners */
 }

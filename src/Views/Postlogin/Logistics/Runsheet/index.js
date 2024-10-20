@@ -82,6 +82,15 @@ const Runsheet = () => {
       ),
     },
     {
+      id: "createdAt",
+      header: "Date",
+      cell: (item) => 
+      
+        item.createdAt.slice(0, 10)
+      
+      
+    },
+    {
       id: "runsheetId",
       header: "Runsheet ID",
       cell: (item) => item.id, // Assuming the runsheet ID is the same as item.id

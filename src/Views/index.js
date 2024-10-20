@@ -14,6 +14,7 @@ import CreateRunsheet from "./Postlogin/Logistics/Runsheet/CreateRunSheet";
 import RiderSummary from "./Postlogin/Logistics/Ridersummary";
 import Onboarding from "./Postlogin/Logistics/Ridersummary/Onboarding";
 import RiderDetails from "./Postlogin/Logistics/Ridersummary/Onboarding/RiderDetails";
+import ApproveRider from "./Postlogin/Logistics/Ridersummary/Onboarding/ApproveRider";
 const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
 
 
@@ -98,6 +99,11 @@ const Views = () => {
             exact
             path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding`}
             element={<Onboarding></Onboarding>}
+          />
+            <Route
+            exact
+            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/ApproveRider`}
+            element={<ApproveRider/>}
           />
             <Route
             exact

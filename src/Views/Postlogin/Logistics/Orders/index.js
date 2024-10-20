@@ -132,16 +132,20 @@ const Orders = () => {
       width: 250,
       minWidth: 180,
     },
-    { header: "Order Date", cell: (item) => item.orderDate },
+    { header: "Order Date", cell: (item) => item.orderDate.slice(0, 10) },
 
     { header: "Customer Name", cell: (item) => item.customerName },
     { header: "Items", cell: (item) => item.items },
    
     {
       header: "Payment Type",
-      cell: (item) => <strong>{item.paymentType}</strong>,
+      cell: (item) => <strong>{item.paymentType === 'cash' ? (
+        'COD'
+      ) : (
+        <strong style={{  color: "#1D4ED8", }}>Prepaid</strong>
+      )}</strong>,
     },
-    { header: "Order Status", cell: (item) => item.Status },
+    { header: "Order Status", cell: (item) => item.orderStatus },
 
     { header: "Total Amount", cell: (item) => item.totalAmount },
     { header: "Deliver Area", cell: (item) => item.area },
@@ -316,7 +320,7 @@ const Orders = () => {
                     <div className="product-card">
                       <div className="details">
                         <div className="info-row">
-                          <span className="label">Name:</span>
+                          <span className="label">Customer Name:</span>
                           <span className="value">
                             {selectedOrder?.userInfo?.name}
                             <span
@@ -329,7 +333,12 @@ const Orders = () => {
                                 marginLeft: "5px",
                               }}
                             >
-                              {selectedOrder?.paymentDetails?.method}
+                             { selectedOrder?.paymentDetails?.method === 'cash' ? (
+        'COD'
+      ) : (
+        'Prepaid'
+      )}
+                             
                             </span>
                           </span>
                         </div>

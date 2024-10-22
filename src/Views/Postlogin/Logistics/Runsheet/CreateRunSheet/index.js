@@ -94,12 +94,12 @@ const CreateRunsheet = () => {
                   onChange={({ detail }) => setRiderName(detail.selectedOption)}
                   options={[
                     {
-                      label: "Santu",
-                      value: "fe809b1e-1203-494f-a764-6784877ca6cf",
+                      label: "furqan",
+                      value: "ad6f18b8-b40d-4fe4-921a-655a5c64661f",
                     },
                     {
-                      label: "Other",
-                      value: "cda80d22-42e7-426c-8b8f-28cc5bcef85b",
+                      label: "santu",
+                      value: "221a403b-b492-4310-b369-ca89b0629af3",
                     },
                   ]}
                   placeholder="Select Rider Name"

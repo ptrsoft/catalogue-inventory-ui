@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   Table,
   Header,
@@ -13,8 +13,22 @@ import {
   SpaceBetween,Toggle
 } from '@cloudscape-design/components';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchRiders } from 'Redux-Store/RiderSummary/RiderSummaryThunk';
 
 const Onboarding = () => {
+     const dispatch = useDispatch();
+    const { items, count, error } = useSelector((state) => state.riders);
+
+    useEffect(() => {
+   
+            dispatch(fetchRiders());
+
+    }, [dispatch]);
+     console.log(items,"rider");
+
+
+
   const [status, setStatus] = useState('Pending');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPageIndex, setCurrentPageIndex] = useState(1);

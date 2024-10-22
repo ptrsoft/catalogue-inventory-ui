@@ -1,6 +1,6 @@
 // orderInventorySlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchOrderInventory, fetchOrderById } from './OrdersThunk'; // Import the new thunk
+import { fetchOrderInventory, fetchOrderById, cancelOrder } from './OrdersThunk'; // Import the cancelOrder thunk
 
 // Define the initial state
 const initialState = {
@@ -9,6 +9,8 @@ const initialState = {
     loading: false,
     error: null,
     selectedOrder: null, // To hold the specific order fetched by ID
+    cancelStatus: 'idle', // To track the cancel order request status
+    cancelError: null,    // To track errors related to order cancellation
 };
 
 // Create the slice
@@ -18,6 +20,7 @@ const orderInventorySlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
+            // Handle fetchOrderInventory actions
             .addCase(fetchOrderInventory.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -31,6 +34,7 @@ const orderInventorySlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message;
             })
+
             // Handle fetchOrderById actions
             .addCase(fetchOrderById.pending, (state) => {
                 state.loading = true;
@@ -43,6 +47,24 @@ const orderInventorySlice = createSlice({
             .addCase(fetchOrderById.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
+            })
+
+            // Handle cancelOrder actions
+            .addCase(cancelOrder.pending, (state) => {
+                state.cancelStatus = 'loading';
+                state.cancelError = null; // Reset the error state for cancel order
+            })
+            .addCase(cancelOrder.fulfilled, (state, action) => {
+                state.cancelStatus = 'succeeded';
+                // Optionally update the order's status in the list
+                const cancelledOrderId = action.meta.arg.orderId; // Get the orderId from the action
+                state.orders = state.orders.map(order => 
+                    order.id === cancelledOrderId ? { ...order, status: 'Cancelled' } : order
+                );
+            })
+            .addCase(cancelOrder.rejected, (state, action) => {
+                state.cancelStatus = 'failed';
+                state.cancelError = action.payload || action.error.message;
             });
     },
 });

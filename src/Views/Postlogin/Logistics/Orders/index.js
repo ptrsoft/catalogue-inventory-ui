@@ -10,7 +10,9 @@ import {
   Header,
   Container,
   TextFilter,
-  Modal
+  Modal,
+  Textarea,
+  Flashbar
 } from "@cloudscape-design/components";
 
 import {
@@ -23,23 +25,67 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchOrderInventory,
   fetchOrderById,
+  cancelOrder,
 } from "Redux-Store/Orders/OrdersThunk";
 const Orders = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cancelOrderId, setCancelOrderId] = useState(null); // Store the order ID to cancel
+  const [cancellationReason, setCancellationReason] = useState(""); // State for cancellation reason
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (orderId) => {
+    console.log(orderId, "modal");
+    setCancelOrderId(orderId); // Set the order ID to cancel
+    // console.log(Cancelo,"id from modal");
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setCancelOrderId(null); // Clear the order ID
+    setCancellationReason(""); // Clear the cancellation reason
+  };
+  const [flashMessages, setFlashMessages] = useState([]);
+  const handleCancelOrder = () => {
+    if (cancelOrderId) {
+      console.log(cancelOrderId, "id");
+
+      // Dispatch the cancel order thunk with order ID and reason
+      dispatch(cancelOrder({ orderId: cancelOrderId, reason: cancellationReason }))
+        .unwrap() // to handle the response if you're using Redux Thunk
+        .then(() => {
+          // Show success flashbar when order is successfully canceled (e.g., 200 status)
+          setFlashMessages([
+            {
+              type: "info",
+              content: "Order successfully cancel.",
+              dismissible: true,
+              id: "successCancel",
+              onDismiss: () => setFlashMessages([]),
+            },
+          ]);
+
+          // Automatically dismiss the flash message after 3 seconds
+          setTimeout(() => {
+            setFlashMessages([]);
+          }, 3000);
+
+          handleCloseModal(); // Close the modal after dispatch
+        })
+        .catch((error) => {
+          // Show an error flashbar if the cancellation fails
+          setFlashMessages([
+            {
+              type: "error",
+              content: "Failed to cancel the order. Please try again.",
+              dismissible: true,
+              id: "errorCancel",
+              onDismiss: () => setFlashMessages([]),
+            },
+          ]);
+        });
+    }
   };
 
-  const handleCancelOrder = () => {
-    // Logic for canceling the order can go here
-    console.log('Order Canceled');
-    handleCloseModal();
-  };
   const [currentPageIndex, setCurrentPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(50); // Number of rows per page
 
@@ -54,28 +100,31 @@ const Orders = () => {
   );
   // const [search, setSearch] = useState('');
   const [category, setCategory] = useState(null);
-  const [pageKey, setPageKey] = useState('');
+  const [statuscategory, setstatuscategory] = useState(null);
+  const [pageKey, setPageKey] = useState("");
   const [filteringText, setFilteringText] = React.useState("");
-
 
   const handleSearchChange = ({ detail }) => {
     setFilteringText(detail.filteringText);
     // setCurrentPage(1); // Reset page to 1 when filters change
-
   };
-  console.log(filteringText,"search");
+  console.log(filteringText, "search");
   useEffect(() => {
-    dispatch(fetchOrderInventory({ search:filteringText ||"",type: category?.value||"", pageKey }));
-  }, [dispatch, filteringText, category, pageKey]);
-
+    dispatch(
+      fetchOrderInventory({
+        search: filteringText || "",
+        type: category?.value || "",
+        status: statuscategory?.value || "",
+        pageKey,
+      })
+    );
+  }, [dispatch, filteringText, statuscategory, category, pageKey]);
 
   useEffect(() => {
     if (selectedProduct) {
       dispatch(fetchOrderById(selectedProduct)); // Dispatch the thunk to fetch order details
     }
   }, [dispatch, selectedProduct]);
-
-
 
   if (error) {
     return <div>Error: {error}</div>; // Error state
@@ -90,23 +139,18 @@ const Orders = () => {
     setSelectedProduct(null);
   };
 
-
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
   const statusOptions = [
     { label: "All", value: "" },
-    { label: "Order Confirmed", value: "confirmed" },
+    { label: "Order Placed", value: "order placed" },
+    { label: "Cancel Orders", value: "cancelled" },
     { label: "Packed", value: "packed" },
     { label: "On The Way", value: "ontheway" },
     { label: "Delivered", value: "delivered" },
 
     // Add other statuses if needed
   ];
-  
-  const paymentOptions= [
+
+  const paymentOptions = [
     { label: "All", value: "" },
     { label: "Cash On Delivery", value: "cash" },
     { label: "Prepaid", value: "online" },
@@ -114,7 +158,6 @@ const Orders = () => {
   ];
 
   const columns = [
-    
     {
       header: "Order ID",
       cell: (item) => (
@@ -136,14 +179,18 @@ const Orders = () => {
 
     { header: "Customer Name", cell: (item) => item.customerName },
     { header: "Items", cell: (item) => item.items },
-   
+
     {
       header: "Payment Type",
-      cell: (item) => <strong>{item.paymentType === 'cash' ? (
-        'COD'
-      ) : (
-        <strong style={{  color: "#1D4ED8", }}>Prepaid</strong>
-      )}</strong>,
+      cell: (item) => (
+        <strong>
+          {item.paymentType === "cash" ? (
+            "COD"
+          ) : (
+            <strong style={{ color: "#1D4ED8" }}>Prepaid</strong>
+          )}
+        </strong>
+      ),
     },
     { header: "Order Status", cell: (item) => item.orderStatus },
 
@@ -154,11 +201,13 @@ const Orders = () => {
   const handlePageChange = ({ detail }) =>
     setCurrentPageIndex(detail.currentPageIndex);
 
-  const handleSortChange = ({ detail }) =>
+  const handlepaymentChange = ({ detail }) =>
     setCategory(detail.selectedOption);
 
+  const handlestatusChange = ({ detail }) =>
+    setstatuscategory(detail.selectedOption);
 
- 
+
 
   return (
     <ContentLayout
@@ -175,50 +224,88 @@ const Orders = () => {
       }
       header={<Header variant="h1">Orders</Header>}
     >
+    
       <SpaceBetween direction="vertical" size="xl">
         <Stats />
         {isModalOpen && (
-  <Modal size="medium" visible={isModalOpen} onDismiss={handleCloseModal} closeAriaLabel="Close"
-  header={<Header>Order Cancel Reason</Header>}>
-  <hr />
+          <Modal
+            size="medium"
+            visible={isModalOpen}
+            onDismiss={handleCloseModal}
+            closeAriaLabel="Close"
+            header={<Header>Order Cancel Reason</Header>}
+          >
+            <hr />
 
-  <div> 
-    {/* Adjusted line-height here */}
-    <SpaceBetween direction="vertical" size="s">
-    <p style={{  color: "#1D4ED8",}}><strong>Order ID:</strong> <b>54764</b></p>
-    <p><strong>Abram Botosh</strong>    <span
-                              style={{
-                                backgroundColor: "#4B5563",
-                                color: "#FFF",
-                                padding: "2px 8px",
-                                borderRadius: "5px",
-                                fontSize: "12px",
-                                marginLeft: "5px",
-                              }}
-                            >
-                              {selectedOrder?.paymentDetails?.method}
-                            </span></p>
-    <p>13-54-854/4A/B1, B-Block Jains Bandlaguda, Prestige High Fields, Madhapur, Telangana 500038</p>
-    <p>+91 1234567890</p>
-    <hr />
-    
-    {/* Payment and Items on the same line */}
-    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <p><strong>Payment:</strong> <b style={{  color: "#1D4ED8",}}><i>₹ 2980</i></b></p>
-      <p><strong>16 Items</strong></p>
-    </div>
+            <div>
+              {/* Adjusted line-height here */}
+              <SpaceBetween direction="vertical" size="s">
+                <p style={{ color: "#1D4ED8" }}>
+                  <strong>Order ID:</strong>{" "}
+                  <b>{selectedOrder?.userInfo?.id}</b>
+                </p>
+                <p>
+                  <strong>{selectedOrder?.userInfo?.name}</strong>{" "}
+                  <span
+                    style={{
+                      backgroundColor: "#4B5563",
+                      color: "#FFF",
+                      padding: "2px 8px",
+                      borderRadius: "5px",
+                      fontSize: "12px",
+                      marginLeft: "5px",
+                    }}
+                  >
+                    {selectedOrder?.paymentDetails?.method === "cash"
+                      ? "COD"
+                      : "Prepaid"}
+                  </span>
+                </p>
+                <p>
+                  {selectedOrder?.shippingDetails?.address}{" "}
+                  {selectedOrder?.shippingDetails?.zipcode}
+                </p>
+                <p>{selectedOrder?.userInfo?.number}</p>
+                <hr />
 
-    {/* Reason Textarea */}
-    <b>Reason</b>
-    <textarea id="reason" rows="4" style={{ width: '100%', marginBottom: '1rem' }}></textarea>
+                {/* Payment and Items on the same line */}
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <p>
+                    <strong>Payment:</strong>{" "}
+                    <b style={{ color: "#1D4ED8" }}>
+                      <i>{selectedOrder?.totalPrice}</i>
+                    </b>
+                  </p>
+                  <p>
+                    <strong>{selectedOrder?.items?.length} Items</strong>
+                  </p>
+                </div>
 
-    {/* Cancel Order Button */}
-    <button className="cancel-btn" style={{float:"right"}} onClick={handleCancelOrder}>Cancel Order</button>
-    </SpaceBetween>
-  </div>
-</Modal>
+                {/* Reason Textarea */}
+                <b>Reason</b>
+                <Textarea
+                  rows={4} // Use curly braces for numbers
+                  value={cancellationReason} // Controlled input
+                  onChange={({ detail }) => setCancellationReason(detail.value)} // Capture the reason using Cloudscape's `detail.value`
+                  placeholder="Enter cancellation reason"
+                  ariaLabel="Cancellation reason"
+                  style={{ width: "100%", marginBottom: "1rem" }} // Inline styles
+                />
 
-      )}
+                {/* Cancel Order Button */}
+                <button
+                  className="cancel-btn"
+                  style={{ float: "right" }}
+                  onClick={handleCancelOrder}
+                >
+                  confirm Cancel
+                </button>
+              </SpaceBetween>
+            </div>
+          </Modal>
+        )}
 
         <div>
           <Grid
@@ -231,25 +318,25 @@ const Orders = () => {
           >
             {/* Search bar */}
             <TextFilter
-            filteringText={filteringText}
-            filteringPlaceholder="Search"
-            filteringAriaLabel="Filter instances"
-            onChange={handleSearchChange}
-          />
+              filteringText={filteringText}
+              filteringPlaceholder="Search"
+              filteringAriaLabel="Filter instances"
+              onChange={handleSearchChange}
+            />
 
             {/* Sort dropdown */}
             <Select
-             required
+              required
               selectedOption={category}
-              onChange={handleSortChange}
+              onChange={handlepaymentChange}
               options={paymentOptions}
               placeholder="Sort By Payment Type"
               selectedAriaLabel="Selected status"
             />
-             <Select
-             required
-              selectedOption={category}
-              onChange={handleSortChange}
+            <Select
+              required
+              selectedOption={statuscategory}
+              onChange={handlestatusChange}
               options={statusOptions}
               placeholder="Sort By Status"
               selectedAriaLabel="Selected status"
@@ -288,6 +375,7 @@ const Orders = () => {
         </div>
 
         {isDrawerOpen && selectedProduct && (
+          
           <div
             style={{
               position: "fixed",
@@ -301,7 +389,9 @@ const Orders = () => {
               overflowY: "auto",
               color: "red",
             }}
-          >
+          >      {flashMessages.length > 0 && (
+            <Flashbar items={flashMessages} />
+          )}
             <Box padding="l">
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <Header variant="h3">Orders Details</Header>
@@ -320,6 +410,12 @@ const Orders = () => {
                     <div className="product-card">
                       <div className="details">
                         <div className="info-row">
+                          <b>Order ID:</b>
+                          <span className="value">
+                            {selectedOrder?.userInfo?.id}
+                          </span>
+                        </div>
+                        <div className="info-row">
                           <span className="label">Customer Name:</span>
                           <span className="value">
                             {selectedOrder?.userInfo?.name}
@@ -333,12 +429,9 @@ const Orders = () => {
                                 marginLeft: "5px",
                               }}
                             >
-                             { selectedOrder?.paymentDetails?.method === 'cash' ? (
-        'COD'
-      ) : (
-        'Prepaid'
-      )}
-                             
+                              {selectedOrder?.paymentDetails?.method === "cash"
+                                ? "COD"
+                                : "Prepaid"}
                             </span>
                           </span>
                         </div>
@@ -367,6 +460,10 @@ const Orders = () => {
                             {selectedOrder?.items.length}
                           </span>
                         </div>
+                        <div className="info-row">
+                          <span className="label">Order Status:</span>
+                          <span className="value">{selectedOrder?.status}</span>
+                        </div>
                       </div>
                     </div>
                   </Container>
@@ -385,7 +482,13 @@ const Orders = () => {
               >
                 <Box variant="h4">Items List </Box>
                 <div class="button-container">
-                  <button class="cancel-btn" onClick={handleOpenModal}>Cancel Order</button>
+                  <button
+                    class="cancel-btn"
+                    onClick={() => handleOpenModal(selectedOrder?.userInfo?.id)}
+                  >
+                    Cancel Order
+                  </button>
+
                   <button class="print-btn">Print Bill</button>
                 </div>
               </div>
@@ -419,3 +522,4 @@ const Orders = () => {
 };
 
 export default Orders;
+

@@ -12,8 +12,10 @@ import signupReducer from "Redux-Store/signup/signupSlice"
 import signoutReducer from "Redux-Store/authenticate/signout/signoutSlice"
 import uploadSlice from "Redux-Store/uploadImage/uploadSlice" 
 import runsheetReducer from "./Runsheet/RunsheetSlice";
+import ridersReducer from './RiderSummary/RiderSummarySlice';
 const store = configureStore({
   reducer: {
+    riders: ridersReducer,
     runsheet: runsheetReducer,
     orderInventory: orderInventoryReducer,
     customers: CustomersReducer,

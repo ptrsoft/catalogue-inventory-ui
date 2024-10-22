@@ -6,11 +6,11 @@ import {
   Container,
   Header,
   SpaceBetween,
-  Grid
+  Grid,
+  ColumnLayout
 } from '@cloudscape-design/components';
 import jsPDF from 'jspdf';
 import riderimg from "../../../../../assets/images/riderimage.jpeg";
-import CustomModal from './CustomModal'; // Import the custom modal
 
 const documents = [
     { id: 1, name: 'Aadhar Card', front: riderimg, back: riderimg, status: 'Pending' },
@@ -21,7 +21,7 @@ const documents = [
 ];
 
 const ApproveRider = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [selectedDocument, setSelectedDocument] = useState(null);
 
   const breadcrumbItems = [
@@ -30,16 +30,13 @@ const ApproveRider = () => {
     { text: 'Rider Summary', href: '#' },
     { text: 'Rider Details', href: '#' },
   ];
-
-  const openModal = (document) => {
-    setSelectedDocument(document);  
-    setIsModalOpen(true);           
+ 
+  const [docStatus, setDocStatus] = useState(documents);
+  const handleDocClick = (doc) => {
+    setSelectedDocument(doc);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedDocument(null); 
-  };
+
 
   const downloadPDF = () => {
     if (!selectedDocument) return;
@@ -59,12 +56,7 @@ const ApproveRider = () => {
 
   return (
     <Box>
-      <CustomModal 
-        isOpen={isModalOpen} 
-        onDismiss={closeModal} 
-        document={selectedDocument} 
-        onDownload={downloadPDF} 
-      />
+ 
 
       <SpaceBetween direction="vertical" size="s">
         <BreadcrumbGroup items={breadcrumbItems} />
@@ -144,18 +136,48 @@ const ApproveRider = () => {
                   </div>
                   <div className="section-header">KYC Documents Details ( <i>Uploaded Documents </i> )</div>
                   <hr />
-                  {documents.map((doc) => (
-                    <div  style={{paddingBottom:"5px"}}>
-                    <div key={doc.id} className="info-item">
-                         <span className="label">Document Name :</span>
-                      <span className="value">{doc.name}</span>
-                   
-                      </div>
-                         <span>
-                         <Button variant='inline-link' onClick={() => openModal(doc)}>Download Or View</Button>
-                      </span>
-                    </div>
-                  ))}
+                  <SpaceBetween direction='vertical' size="s">
+                    {docStatus.map((doc) => (
+                      selectedDocument && selectedDocument.name === doc.name ? (
+                        <Container
+                          key={doc.name}
+                          header={<Header>{selectedDocument.name}</Header>}
+                          margin={{ top: 'm' }}
+                        >
+                          <ColumnLayout columns={2}>
+                            <Box>
+                              <img src={selectedDocument.front} alt={`${selectedDocument.name} (Front)`} style={{ maxWidth: '100%' }} />
+                              <p>{`${selectedDocument.name} (Front)`}</p>
+                            </Box>
+                            {selectedDocument.back && (
+                              <Box>
+                                <img src={selectedDocument.back} alt={`${selectedDocument.name} (Back)`} style={{ maxWidth: '100%' }} />
+                                <p>{`${selectedDocument.name} (Back)`}</p>
+                              </Box>
+                            )}
+                          </ColumnLayout>
+                          <Box float='right'>
+                            <div className="button-container">
+                              <button className="cancel-btn" onClick={downloadPDF}>Download PDF</button>
+                            </div>
+                          </Box>
+                        </Container>
+                      ) : (
+                        <div onClick={() => handleDocClick(doc)} style={{ position: "relative", width: "72vw", cursor: "pointer" }}>
+                          <div style={{ paddingBottom: "5px" }}>
+                            <div key={doc.id} className="info-item">
+                              <span className="label">Document Name :</span>
+                              <span className="value">{doc.name}</span>
+                            </div>
+                            <span>
+                              <Button variant='inline-link' onClick={() => handleDocClick(doc)}>Download Or View</Button>
+                            </span>
+                          </div>
+                        </div>
+                      )
+                    ))}
+                  </SpaceBetween>
+               
                           <div className="section-header">Bank Details</div>
                   <hr />
                   <div className="address-info">

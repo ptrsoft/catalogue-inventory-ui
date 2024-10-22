@@ -95,8 +95,8 @@ const Runsheet = () => {
       header: "Runsheet ID",
       cell: (item) => item.id, // Assuming the runsheet ID is the same as item.id
     },
-    { id: "name", header: "Rider Name", cell: (item) => item.name }, // Adjust according to your API response
-    { id: "contactNo", header: "Contact No", cell: (item) => item.contact }, // Placeholder for contact number
+    { id: "name", header: "Rider Name", cell: (item) => item?.rider?.name }, // Adjust according to your API response
+    { id: "contactNo", header: "Contact No", cell: (item) => item?.rider?.number }, // Placeholder for contact number
     {
       id: "action",
       header: "Action",

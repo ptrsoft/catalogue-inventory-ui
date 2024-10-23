@@ -60,7 +60,7 @@ const ApproveRider = () => {
 
       <SpaceBetween direction="vertical" size="s">
         <BreadcrumbGroup items={breadcrumbItems} />
-        <Header variant="h1">Approve Rider Details</Header>
+        <Header variant="h1">Approved Rider Details</Header>
         <Container header={<Header variant="h2">View Details</Header>}>
           <SpaceBetween direction="vertical" size="s">
             <hr />

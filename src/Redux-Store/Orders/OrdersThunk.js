@@ -5,7 +5,7 @@ import { postLoginService } from 'Services'; // Assuming you have a service for 
 // Thunk to fetch all orders with optional parameters for search, category, and pageKey
 export const fetchOrderInventory = createAsyncThunk(
   'orderInventory/fetchOrderInventory',
-  async ({ search = '', type = '',status='', pageKey = '' } = {}) => {
+  async ({ search = '', type = '', status = '', pageKey = '' } = {}) => {
     // Construct the URL
     let url = `${config.FETCH_ORDERS}`;
     const params = [];
@@ -22,7 +22,7 @@ export const fetchOrderInventory = createAsyncThunk(
     }
 
     const response = await postLoginService.get(url);
-    console.log(url, "url");
+    console.log(url, 'url');
     console.log(response, 'order');
     return response.data; // Axios automatically parses JSON
   }
@@ -34,7 +34,7 @@ export const fetchOrderById = createAsyncThunk(
   async (orderId) => {
     const url = `${config.FETCH_ORDERBYID}/${orderId}`; // Update this line to match your API
     const response = await postLoginService.get(url);
-    console.log(response, "specific order");
+    console.log(response, 'specific order');
     return response.data; // Axios automatically parses JSON
   }
 );
@@ -51,11 +51,30 @@ export const cancelOrder = createAsyncThunk(
       const response = await postLoginService.put(url, { reason });
 
       // Return the response data on success
-      console.log(response.data,"cancel");
+      console.log(response.data, 'cancel');
       return response.data;
     } catch (error) {
       // Handle error by returning a rejected action
       return rejectWithValue(error.response?.data || 'Failed to cancel the order');
+    }
+  }
+);
+
+// Thunk to fetch order stats (new)
+export const fetchOrderStats = createAsyncThunk(
+  'orderInventory/fetchOrderStats',
+  async () => {
+    try {
+      // Hit the stats API endpoint
+      const url = `${config.FETCH_ORDERBYID}/stats`;
+      const response = await postLoginService.get(url);
+      console.log(response.data, 'order stats');
+      
+      // Return the data from the API
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching order stats:', error);
+      throw error;
     }
   }
 );

@@ -69,7 +69,10 @@ const Orders = () => {
             setFlashMessages([]);
           }, 3000);
 
-          handleCloseModal(); // Close the modal after dispatch
+          handleCloseModal(); 
+          if (selectedProduct) {
+            dispatch(fetchOrderById(selectedProduct)); // Dispatch the thunk to fetch order details
+          }// Close the modal after dispatch
         })
         .catch((error) => {
           // Show an error flashbar if the cancellation fails
@@ -126,9 +129,7 @@ const Orders = () => {
     }
   }, [dispatch, selectedProduct]);
 
-  if (error) {
-    return <div>Error: {error}</div>; // Error state
-  }
+
   const handleOrderClick = (orderId) => {
     setSelectedProduct(orderId);
 
@@ -494,6 +495,20 @@ const Orders = () => {
               </div>
 
               <Table
+                 empty={
+                  <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
+                    <SpaceBetween size="m">
+                      {error ? (
+                        <b>{error} No orders</b>
+                      ) : (
+                        <>
+                          <b>No Orders available</b>  {/* Show no data message */}
+                       
+                        </>
+                      )}
+                    </SpaceBetween>
+                  </Box>
+                }
                 columnDefinitions={[
                   {
                     header: "Product Name",

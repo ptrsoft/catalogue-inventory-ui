@@ -19,6 +19,10 @@ import UserManagement from "./Postlogin/Settingmenu/Usermanagement/usermanagemen
 
 import CreateRunsheet from "./Postlogin/Logistics/Runsheet/CreateRunSheet";
 import Settings from "./Postlogin/Settingmenu";
+import RiderSummary from "./Postlogin/Logistics/Ridersummary";
+import Onboarding from "./Postlogin/Logistics/Ridersummary/Onboarding";
+import RiderDetails from "./Postlogin/Logistics/Ridersummary/Onboarding/RiderDetails";
+import ApproveRider from "./Postlogin/Logistics/Ridersummary/Onboarding/ApproveRider";
 const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
 
 const Customers = lazy(() => import("./Postlogin/Customers"));
@@ -125,16 +129,39 @@ const Views = () => {
             path={`${PREFIX_APP_PATH}/Logistics/orders`}
             element={<Orders />}
           />
-              <Route
+              
+             <Route
+  exact
+  path={`${PREFIX_APP_PATH}/Logistics/runsheet/ViewRunSheet/:id`} // Notice the added slash before ':id'
+  element={<ViewRunsheet/>}
+/>
+<Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/runsheet`}
             element={<Runsheet/>}
           />
-              <Route
+
+             <Route
             exact
-            path={`${PREFIX_APP_PATH}/Logistics/runsheet/ViewRunSheet`}
-            element={<ViewRunsheet/>}
+            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary`}
+            element={<RiderSummary/>}
           />
+            <Route
+            exact
+            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding`}
+            element={<Onboarding></Onboarding>}
+          />
+            <Route
+            exact
+            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/ApproveRider`}
+            element={<ApproveRider/>}
+          />
+            <Route
+            exact
+            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/riderDetails`}
+            element={<RiderDetails/>}
+          />
+
             <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/runsheet/CreateRunSheet`}

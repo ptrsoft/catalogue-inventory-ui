@@ -243,4 +243,94 @@ a.awsui_anchor_1kosq_101th_109{
   border: 1px solid #d1d5db; /* Border color */
   margin-bottom: 8px;
 }
+.runsheet-container{
+  border-radius: 16px;
 
+    box-shadow: 0px 0px 4px 0px #414D5C33, 0px 1px 14px 0px #00071624;
+    padding: 25px;
+
+}
+.custom-table{
+  margin-left: 10px;
+}
+.rider-info {
+  font-family: Arial, sans-serif;
+  color: #1a1a1a;
+}
+
+.info-item {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.label {
+
+  margin-right: 16px; /* Increased spacing between label and value */
+  min-width: 110px; /* Ensures consistent spacing across items */
+}
+
+
+.value {
+  color: #000;
+  font-weight: bold;
+}
+.section-header {
+  font-weight: bold;
+  /* margin-top: 16px; */
+  margin-bottom: 8px;
+}
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.custom-modal {
+  background: white;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  position: relative;
+}
+
+.custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.custom-modal-body {
+  margin: 15px 0;
+}
+
+
+
+.image-container {
+  display: flex;
+  justify-content: center; /* Center images horizontally */
+  align-items: center;    /* Center images vertically */
+  gap: 10px;             /* Space between images */
+}
+
+.document-image {
+  width: 100%;           /* Make images responsive */
+  height: auto;         /* Maintain aspect ratio */
+  max-width: 280px;     /* Limit the max width */
+  border-radius: 5px;   /* Optional: Add rounded corners */
+}

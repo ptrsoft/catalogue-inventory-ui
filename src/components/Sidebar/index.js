@@ -26,7 +26,7 @@ const Sidebar = () => {
         {
           type: "link",
           text: "Rider Summary",
-          href: "*"
+          href: "/app/Logistics/RiderSummary"
         },
         {
           type: "link",

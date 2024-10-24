@@ -1,28 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom'; // Import useParams from react-router-dom
 import {
   Box,
-  Button,
-  Container,
+
   Header,
   SpaceBetween,
   Input,
   BreadcrumbGroup,
-  Modal
+
 } from "@cloudscape-design/components";
+import { fetchRunsheetById } from 'Redux-Store/Runsheet/RunsheetThunk'; // Update with the correct path to your thunk
 
 const ViewRunsheet = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const orderIds = [
-    "54764", "54764", "54764", "54764", "54764",
-    "54764", "54764", "54764", "54764", "54764"
-  ];
+  const dispatch = useDispatch();
+  const { selectedRunsheet, loading, error } = useSelector(state => state.runsheet); // Get selected runsheet data from the store
 
-  const handleCloseRunsheet = () => setIsModalVisible(true);
-  const handleConfirmClose = () => {
-    setIsModalVisible(false);
-    // Perform any additional actions to close the runsheet here
-  };
-  const handleCancel = () => setIsModalVisible(false);
+  
+  const { id: runsheetId } = useParams(); // Use useParams to get the runsheetId from the URL
+
+  useEffect(() => {
+    // Fetch runsheet data by ID when the component mounts
+    dispatch(fetchRunsheetById(runsheetId));
+  }, [dispatch, runsheetId]);
+
+  const orderIds = selectedRunsheet?.orders || []; // Use orders from fetched runsheet data
+
+
+ 
+
+  // Loading and error handling
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <Box>
@@ -36,24 +45,23 @@ const ViewRunsheet = () => {
           ]}
           ariaLabel="Breadcrumbs"
         />
-        <Header
-          variant="h1"
-          actions={<Button variant="primary" onClick={handleCloseRunsheet}>Close Runsheet</Button>}
-        >
-          View Runsheet
-        </Header>
+       
 
-        <Container>
+        <div className="runsheet-container">
           <SpaceBetween direction="vertical" size="s">
             {/* Runsheet Details */}
             <Box>
+              <Box fontWeight="bold">Date</Box>
+              <Box fontWeight="normal" variant="p">{selectedRunsheet?.createdAt.slice(0, 10) }</Box>
+            </Box>
+            <Box>
               <Box fontWeight="bold">Runsheet ID</Box>
-              <Box fontWeight="normal" variant="p">12345678</Box>
+              <Box fontWeight="normal" variant="p">{selectedRunsheet?.id}</Box>
             </Box>
 
             <Box>
               <Box fontWeight="bold">Rider Name</Box>
-              <Box fontWeight="normal" variant="p">Santu</Box>
+              <Box fontWeight="normal" variant="p">{selectedRunsheet?.ridername}</Box>
             </Box>
 
             {/* Line of Orders */}
@@ -69,27 +77,9 @@ const ViewRunsheet = () => {
               ))}
             </SpaceBetween>
           </SpaceBetween>
-        </Container>
+        </div>
 
-        {/* Confirmation Modal */}
-        {isModalVisible && (
-          <Modal
-            onDismiss={handleCancel}
-            visible={isModalVisible}
-            closeAriaLabel="Close"
-            header="Confirm Close Runsheet"
-            footer={
-              <Box float="right">
-                      <div class="button-container">
-    <button class="cancel-btn">Cancel Order</button>
-    <button class="print-btn">Confirm</button>
-  </div>
-  </Box>
-            }
-          >
-            Are you sure you want to close this runsheet?
-          </Modal>
-        )}
+      
       </SpaceBetween>
     </Box>
   );

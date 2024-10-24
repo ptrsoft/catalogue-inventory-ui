@@ -5,14 +5,21 @@ import Inventory from "./Postlogin/Inventory";
 import AddItem from "./Postlogin/Inventory/addItem/addItem";
 import InventoryAdjustments from "./Postlogin/Inventory/InventoryAdjustments";
 import Edit from "./Postlogin/Inventory/edit/edit";
-
+import Creategroup from "./Postlogin/Settingmenu/Usermanagement/creategroup";
 import CreateAdjustment from "./Postlogin/Inventory/InventoryAdjustments/CreateAdjustment";
 import NewAdjustment from "./Postlogin/Inventory/InventoryAdjustments/NewAdjustment";
 import Runsheet from "./Postlogin/Logistics/Runsheet";
 import ViewRunsheet from "./Postlogin/Logistics/Runsheet/ViewRunSheet";
-import CreateRunsheet from "./Postlogin/Logistics/Runsheet/CreateRunSheet";
-const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
+import UsersContent from "./Postlogin/Settingmenu/Usermanagement/UserContent";
+import PoliciesContent from "./Postlogin/Settingmenu/Usermanagement/PoliciesContent";
+import PermissionsContent from "./Postlogin/Settingmenu/Usermanagement/PermissionsContent";
+import GroupsContent from "./Postlogin/Settingmenu/Usermanagement/GroupsContent";
+import RolesContent from "./Postlogin/Settingmenu/Usermanagement/RolesContent";
+import UserManagement from "./Postlogin/Settingmenu/Usermanagement/usermanagement.js";
 
+import CreateRunsheet from "./Postlogin/Logistics/Runsheet/CreateRunSheet";
+import Settings from "./Postlogin/Settingmenu";
+const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
 
 const Customers = lazy(() => import("./Postlogin/Customers"));
 const AddNewCustomer = lazy(() =>
@@ -51,6 +58,7 @@ const Views = () => {
             path={`${PREFIX_AUTH_PATH}/edit`}
             element={<Edit />}
           /> */}
+          
                     <Route exact path="/app/inventory/edit" element={<Edit />} />
 
           <Route
@@ -58,6 +66,49 @@ const Views = () => {
             path={`${PREFIX_APP_PATH}/customers`}
             element={<Customers />}
           />
+                    <Route
+            exact
+            path={`${PREFIX_APP_PATH}/settings`}
+            element={<Settings />}
+          />
+                              <Route
+            exact
+            path={`${PREFIX_APP_PATH}/settings/usermanagement`}
+            element={<UserManagement />}
+          />
+                              <Route
+            exact
+            path={`${PREFIX_APP_PATH}/settings/usermanagement/creategroup`}
+            element={<Creategroup />}
+          />
+
+<Route
+            exact
+            path={`${PREFIX_APP_PATH}/settings/usermanagement/users`}
+            element={<UsersContent />}
+          />
+          <Route
+            exact
+            path={`${PREFIX_APP_PATH}/settings/usermanagement/roles`}
+            element={<RolesContent />}
+          />
+          <Route
+            exact
+            path={`${PREFIX_APP_PATH}/settings/usermanagement/groups`}
+            element={<GroupsContent />}
+          />
+          <Route
+            exact
+            path={`${PREFIX_APP_PATH}/settings/usermanagement/policies`}
+            element={<PoliciesContent />}
+          />
+          <Route
+            exact
+            path={`${PREFIX_APP_PATH}/settings/usermanagement/permissions`}
+            element={<PermissionsContent />}
+          />
+
+
           <Route
             exact
             path={`${PREFIX_APP_PATH}/add-new-customer`}

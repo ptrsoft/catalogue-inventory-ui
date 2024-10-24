@@ -64,7 +64,7 @@ const Sidebar = () => {
     { type: "link", text: "Purchase Order", href: "/app/inventory/purchase-order" },
     { type: "link", text: "Reports", href: "#" },
     { type: "divider" },
-    { type: "link", text: "Settings", href: "#" },
+    { type: "link", text: "Settings", href: "/app/settings" },
     {
       type: "link",
       text: "Support",

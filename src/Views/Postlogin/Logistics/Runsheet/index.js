@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useCallback } from "react";
 import {
   Button,
   Input,
@@ -13,6 +13,7 @@ import {
   Flashbar,
   TextFilter
 } from "@cloudscape-design/components";
+import { resetData } from "Redux-Store/cashCollection/cashCollectionSlice";
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRunsheet } from 'Redux-Store/Runsheet/RunsheetThunk'; // Adjust the import path as needed
@@ -30,16 +31,15 @@ const Runsheet = () => {
     navigate('/app/Logistics/runsheet/CreateRunSheet');
   };
 
-  // Function to fetch runsheet data
-  const fetchData = () => {
-    dispatch(fetchRunsheet({ search: filteringText || "", pageKey }));
-  };
+ // Memoize fetchData to prevent re-creation on each render
+ const fetchData = useCallback(() => {
+  dispatch(fetchRunsheet({ search: filteringText || "", pageKey }));
+}, [dispatch, filteringText, pageKey]);
 
-  // Fetch data initially when the component mounts
-  useEffect(() => {
-    fetchData(); // Fetch runsheet data initially
-  }, [filteringText, pageKey]); // Dependencies: filteringText and pageKey
-
+// Fetch data initially when the component mounts and when dependencies change
+useEffect(() => {
+  fetchData(); // Fetch runsheet data initially
+}, [fetchData]); // Only depends on fetchData
   // Handle success message and trigger data re-fetch
   useEffect(() => {
     if (location.state?.successMessage) {
@@ -50,7 +50,7 @@ const Runsheet = () => {
       const timer = setTimeout(() => setSuccessMessage(null), 3000);
       return () => clearTimeout(timer); // Clear the timeout if component unmounts
     }
-  }, [location.state]); // Re-run when location state changes
+  }, [location.state,fetchData]); // Re-run when location state changes
 
   // Handle search filter change
   const handleSearchChange = ({ detail }) => {
@@ -62,7 +62,12 @@ const Runsheet = () => {
     ...item,
     sno: index + 1, // Assign sequential sno based on index
   }));
-
+  useEffect(() => {
+    return () => {
+      dispatch(resetData());
+    };
+  }, [dispatch]);
+  
   // Table column definitions
   const columns = [
     {
@@ -75,9 +80,9 @@ const Runsheet = () => {
       header: "Status",
       cell: (item) => (
         <StatusIndicator
-          type={item.status === "Active" ? "success" : "pending"}
+          type={item.status === "closed" ? "success" : "pending"}
         >
-          {item.status}
+          {item.status === "closed" ? "Active" : "pending"}
         </StatusIndicator>
       ),
     },
@@ -96,7 +101,8 @@ const Runsheet = () => {
       cell: (item) => item.id, // Assuming the runsheet ID is the same as item.id
     },
     { id: "name", header: "Rider Name", cell: (item) => item?.rider?.name }, // Adjust according to your API response
-    { id: "contactNo", header: "Contact No", cell: (item) => item?.rider?.number }, // Placeholder for contact number
+    { id: "contactNo", header: "Contact No", cell: (item) => item?.rider?.number },
+    { id: "RiderId", header: "Rider ID", cell: (item) => item?.rider?.id },  // Placeholder for contact number
     {
       id: "action",
       header: "Action",

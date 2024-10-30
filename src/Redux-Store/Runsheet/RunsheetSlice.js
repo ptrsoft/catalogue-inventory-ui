@@ -1,6 +1,6 @@
 // runsheetSlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import { createRunsheet, fetchRunsheet, fetchRunsheetById } from './RunsheetThunk'; // Import the thunk
+import { createRunsheet, fetchRunsheet, fetchRunsheetById,closeRunsheet } from './RunsheetThunk'; // Import the thunk
 
 // Define the initial state
 const initialState = {
@@ -57,7 +57,20 @@ const runsheetSlice = createSlice({
       .addCase(fetchRunsheetById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(closeRunsheet.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(closeRunsheet.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedRunsheet = { ...state.selectedRunsheet, status: "closed" };
+      })
+      .addCase(closeRunsheet.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
+  
   },
 });
 

@@ -23,6 +23,8 @@ import RiderSummary from "./Postlogin/Logistics/Ridersummary";
 import Onboarding from "./Postlogin/Logistics/Ridersummary/Onboarding";
 import RiderDetails from "./Postlogin/Logistics/Ridersummary/Onboarding/RiderDetails";
 import ApproveRider from "./Postlogin/Logistics/Ridersummary/Onboarding/ApproveRider";
+import CollectionPayment from "./Postlogin/Logistics/CollectionPayment";
+import ViewDetailsPage from "./Postlogin/Logistics/CollectionPayment/ViewCollection";
 const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
 
 const Customers = lazy(() => import("./Postlogin/Customers"));
@@ -135,6 +137,12 @@ const Views = () => {
   path={`${PREFIX_APP_PATH}/Logistics/runsheet/ViewRunSheet/:id`} // Notice the added slash before ':id'
   element={<ViewRunsheet/>}
 />
+            
+<Route
+  exact
+  path={`${PREFIX_APP_PATH}/Logistics/CashCollection/View-details/:id`} // Notice the added slash before ':id'
+  element={<ViewDetailsPage/>}
+/>
 <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/runsheet`}
@@ -148,17 +156,22 @@ const Views = () => {
           />
             <Route
             exact
+            path={`${PREFIX_APP_PATH}/Logistics/CollectionPayment`}
+            element={<CollectionPayment/>}
+          />
+            <Route
+            exact
             path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding`}
             element={<Onboarding></Onboarding>}
           />
             <Route
             exact
-            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/ApproveRider`}
+            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/ApproveRider/:id`}
             element={<ApproveRider/>}
           />
             <Route
             exact
-            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/riderDetails`}
+            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/riderDetails/:id`}
             element={<RiderDetails/>}
           />
 

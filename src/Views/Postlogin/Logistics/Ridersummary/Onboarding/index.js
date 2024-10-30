@@ -2,6 +2,7 @@ import React, { useState,useEffect } from 'react';
 import {
   Table,
   Header,
+  Button,
   Input,
   Select,
   Box,
@@ -43,15 +44,15 @@ const Onboarding = () => {
     
     if (item.status === 'Rejected') {
       tabIndex = 1; // Professional Details tab for rejected status
-      navigate('/app/Logistics/RiderSummary/onboarding/riderDetails', { state: { activeTab: tabIndex } });
+      navigate(`/app/Logistics/RiderSummary/onboarding/riderDetails/${item.id}`, { state: { activeTab: tabIndex } });
     } 
     else   if (item.status === 'Review Pending') {
       tabIndex = 0; // Professional Details tab for rejected status
-      navigate('/app/Logistics/RiderSummary/onboarding/riderDetails', { state: { activeTab: tabIndex } });
+      navigate(`/app/Logistics/RiderSummary/onboarding/riderDetails/${item.id}`, { state: { activeTab: tabIndex } });
     }
     else if (item.status === 'Active' || item.status === 'Inactive') {
       // Optional: You can set specific tab index for Active/Inactive status if needed
-      navigate('/app/Logistics/RiderSummary/onboarding/ApproveRider');
+      navigate(`/app/Logistics/RiderSummary/onboarding/ApproveRider/${item.id}`);
       // tabIndex = 0;
        // Default to Personal Details tab
     }

@@ -97,10 +97,10 @@ const CreateRunsheet = () => {
                       label: "furqan",
                       value: "ad6f18b8-b40d-4fe4-921a-655a5c64661f",
                     },
-                    {
-                      label: "santu",
-                      value: "221a403b-b492-4310-b369-ca89b0629af3",
-                    },
+                    // {
+                    //   label: "santu",
+                    //   value: "221a403b-b492-4310-b369-ca89b0629af3",
+                    // },
                   ]}
                   placeholder="Select Rider Name"
                 />

@@ -42,3 +42,30 @@ export const verifyOrRejectDocument = createAsyncThunk(
         }
     }
 );
+
+// Async Thunk to activate, inactivate, or reject a rider
+export const updateRiderStatus = createAsyncThunk(
+    'riders/updateRiderStatus',
+    async ({ id, status, reason }, { rejectWithValue }) => {
+        console.log(id,status,reason,"directly approving or rejecting");
+        try {
+            // Check if reason is required for rejection
+            if (status === 'rejected' && !reason) {
+                throw new Error('Reason is required if the status is rejected.');
+            }
+
+            const response = await axios.patch(
+                `https://api.admin.promodeagro.com/rider/${id}`,
+                {
+                    status,
+                    reason: status === 'rejected' ? reason : undefined, // Include reason only if status is rejected
+                }
+            );
+            console.log(response.data);
+            return response.data;
+        } catch (error) {
+            // Return the error response data if available, otherwise return a general error message
+            return rejectWithValue(error.response?.data || { message: error.message });
+        }
+    }
+);

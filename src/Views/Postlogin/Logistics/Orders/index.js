@@ -94,7 +94,8 @@ const Orders = () => {
 
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
-
+  const [ageFilter, setAgeFilter] = useState(  { label: "7 Days Old",
+    value: "7",}); // New state for age filter
   // Get loading, error, and selectedOrder from the Redux store
   const dispatch = useDispatch();
   const { selectedOrder } = useSelector((state) => state.orderInventory);
@@ -118,10 +119,11 @@ const Orders = () => {
         search: filteringText || "",
         type: category?.value || "",
         status: statuscategory?.value || "",
+        date: ageFilter?.value || "",
         pageKey,
       })
     );
-  }, [dispatch, filteringText, statuscategory, category, pageKey]);
+  }, [dispatch, filteringText,ageFilter, statuscategory, category, pageKey]);
 
   useEffect(() => {
     if (selectedProduct) {
@@ -150,6 +152,16 @@ const Orders = () => {
 
     // Add other statuses if needed
   ];
+  const ageOptions = [
+    { label: "7 days old delivered", value: "7" },
+    { label: "14 days old delivered", value: "14" },
+    { label: "1 month old delivered", value: "1m" },
+    { label: "2 months old delivered", value: "2m" },
+    { label: "Older", value: "older" },
+  ];
+  const handleAgeFilterChange = ({ detail }) => {
+    setAgeFilter(detail.selectedOption);
+  };
 
   const paymentOptions = [
     { label: "All", value: "" },
@@ -314,7 +326,8 @@ const Orders = () => {
               { colspan: { default: 12, xxs: 4 } },
               { colspan: { default: 12, xxs: 2 } },
               { colspan: { default: 12, xxs: 2 } },
-              { colspan: { default: 12, xxs: 4 } },
+              { colspan: { default: 12, xxs: 2 } },
+              { colspan: { default: 12, xxs: 2 } },
             ]}
           >
             {/* Search bar */}
@@ -342,6 +355,17 @@ const Orders = () => {
               placeholder="Sort By Status"
               selectedAriaLabel="Selected status"
             />
+                {/* {statuscategory?.value === "delivered" && ( */}
+                    {/* Conditionally render age filter */}
+              <Select
+                required
+                selectedOption={ageFilter}
+                onChange={handleAgeFilterChange}
+                options={ageOptions}
+                placeholder="Filter by Delivery Age"
+                selectedAriaLabel="Selected age filter"
+              />
+            {/* )} */}
             <Box float="right">
               <Pagination
                 currentPageIndex={currentPageIndex}

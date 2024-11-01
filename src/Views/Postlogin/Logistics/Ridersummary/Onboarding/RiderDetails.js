@@ -4,12 +4,12 @@ import {
   Button,
   BreadcrumbGroup,
   Container,
-  FormField,
+  Modal,
+  Textarea,
   Header,
   Input,
   SpaceBetween,
   Tabs,
-  Grid,
   ColumnLayout,
   StatusIndicator,
   Icon,
@@ -18,7 +18,10 @@ import { useLocation, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch and useSelector
 
 import { fetchRiderById } from "Redux-Store/RiderSummary/RiderSummaryThunk"; //
-import { verifyOrRejectDocument } from "Redux-Store/RiderSummary/RiderSummaryThunk";
+import { verifyOrRejectDocument,updateRiderStatus } from "Redux-Store/RiderSummary/RiderSummaryThunk";
+
+import AddressTab from "./RiderDetailsComponents/AddressTab";
+import PersonalDetails from "./RiderDetailsComponents/PersonalDetails.js";
 
 const RiderDetails = () => {
   const { id: riderId } = useParams();
@@ -64,18 +67,75 @@ const RiderDetails = () => {
       setSelectedDoc(null);
     }
   };
-
-  const handleReject = () => {
+  const [isRejectModalVisible, setRejectModalVisible] = useState(false);
+  const [isRejecDirectlyModalVisible, setRejectDirectlyModalVisible] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [DirectrejectReason, setDirectRejectReason] = useState("");
+  const formatAddress = (address) => {
+    if (!address) return "";
+    return `${address.address1}, ${address.address2}, ${address.landmark}, ${address.city}, ${address.state} ${address.pincode}`;
+  };
+  const HandleDirectlyReject = () => {
+    setRejectDirectlyModalVisible(true);
+  };
+  const handleRejectClick = () => {
+    setRejectModalVisible(true);
+  };
+  const handleRejectConfirm = () => {
     if (selectedDoc) {
       dispatch(
         verifyOrRejectDocument({
+          id: selectedDoc.id,
           name: selectedDoc.name,
-          status: "rejected",
-          id: riderDetails.id,
-          reason: "not clear",
+          reason: rejectReason,
         })
       );
+      setRejectModalVisible(false);
+      setRejectReason("");
       setSelectedDoc(null);
+    }
+  };
+  const handleApprove = () => {
+    dispatch(updateRiderStatus({ id: riderId, status: "active" }));
+  };
+  const handleDirectRejectionConfirm = () => {
+  
+      dispatch(
+        updateRiderStatus({
+          id: riderId,
+          reason: DirectrejectReason,
+          status: "rejected", // Pass rejected status here
+        })
+      );
+      setRejectDirectlyModalVisible(false);
+      setDirectRejectReason("");
+    
+
+  };
+    // Function to check if all documents are verified
+    const areAllDocumentsVerified = () => {
+      return riderDetails?.documents?.every((doc) => doc.verified === "verified");
+    };
+  const getDocumentLabel = (docName) => {
+    switch (docName) {
+      case "userPhoto":
+        return "Rider Photo";
+      case "aadharFront":
+        return "Aadhar Card Front";
+      case "aadharBack":
+        return "Aadhar Card Back";
+      case "dl":
+        return "Driving License";
+      case "pan":
+        return "Pan Card";
+      case "vehicleImage":
+        return "Vehicle  Image";
+
+      case "rcBook":
+        return "RC Book";
+      // Add more cases as needed
+      default:
+        return docName;
     }
   };
 
@@ -85,6 +145,7 @@ const RiderDetails = () => {
     { text: "Rider Summary", href: "#" },
     { text: "Rider Details", href: "#" },
   ];
+  console.log(riderDetails.reviewStatus);
 
   return (
     <Box>
@@ -94,15 +155,83 @@ const RiderDetails = () => {
           variant="h1"
           actions={
             <div class="button-container">
-              <button
-                class="cancel-btn"
-                style={{ borderRadius: "16px", fontSize: "14px" }}
-                // onClick={() => handleOpenModal(selectedOrder?.userInfo?.id)}
-              >
+            <button
+  className="cancel-btn"
+  style={{
+    borderRadius: "16px",
+    fontSize: "14px",
+    border: `2px solid ${
+      riderDetails.reviewStatus === "rejected"
+        ? "#5F6B7A"
+        : "red"
+    }`,
+    backgroundColor: riderDetails?.reviewStatus === 'rejected' ? 'white' : 'initial',
+    color: riderDetails?.reviewStatus === 'rejected' ? "#5F6B7A" : 'initial',
+    cursor: riderDetails?.reviewStatus === 'rejected' ? 'not-allowed' : 'pointer',
+  }}
+  onClick={HandleDirectlyReject}
+  disabled={riderDetails?.reviewStatus === 'rejected'}
+>
                 Reject
               </button>
+              {isRejecDirectlyModalVisible && (
+                                  <Modal
+                                    onDismiss={() =>
+                                      setRejectDirectlyModalVisible(false)
+                                    }
+                                    visible={isRejecDirectlyModalVisible}
+                                    header="Rider Document Rejected"
+                                    footer={
+                                      <Box float="right">
+                                        <Button
+                                        
+                                          variant="primary"
+                                          onClick={handleDirectRejectionConfirm}
+                                        >
+                                          Confirm Rejection
+                                        </Button>
+                                      </Box>
+                                    }
+                                  >
+                                    <SpaceBetween direction="vertical" size="s">
+                                      <hr></hr>
+                                      <Box fontWeight="heavy" variant="h2">
+                                        {
+                                          riderDetails?.personalDetails
+                                            ?.fullName
+                                        }
+                                      </Box>
+                                      <Box>
+                                        {riderDetails?.personalDetails?.dob.slice(
+                                          0,
+                                          10
+                                        )}
+                                      </Box>
+                                      <Box>{riderDetails.number}</Box>
+                                      <Box>
+                                        {riderDetails?.personalDetails?.email}
+                                      </Box>
+                                      <Box>
+                                        {formatAddress(
+                                          riderDetails?.personalDetails?.address
+                                        )}
+                                      </Box>
+                                      <hr></hr>
+                                      <Box>
+                                        <Header variant="h5">Reason</Header>
+                                        <Textarea
+                                          value={DirectrejectReason}
+                                          onChange={(e) =>
+                                            setDirectRejectReason(e.detail.value)
+                                          }
+                                          placeholder="Enter rejection reason"
+                                        />
+                                      </Box>
+                                    </SpaceBetween>
+                                  </Modal>
+                                )}
 
-              <Button disabled>Approve</Button>
+              <Button variant="primary" disabled={!areAllDocumentsVerified()||riderDetails?.reviewStatus==='rejected'} onClick={handleApprove}>Approve</Button>
             </div>
           }
         >
@@ -111,53 +240,7 @@ const RiderDetails = () => {
         <Container header={<Header variant="h2">View Details</Header>}>
           <SpaceBetween direction="vertical" size="s">
             <hr />
-            <Container>
-              <Grid gridDefinition={[{ colspan: 2 }, { colspan: 10 }]}>
-                <Box>
-                  <img
-                    src={riderDetails?.documents[0].image}
-                    alt="Rider"
-                    style={{ width: "180px", height: "140px" }}
-                  />
-                </Box>
-                <Box>
-                  <Header variant="h3">Personal Details</Header>
-                  <hr />
-                  <Box>
-                    {riderDetails ? (
-                      <div className="rider-info">
-                        <div className="info-item">
-                          <span className="label">Rider Name :</span>
-                          <span className="value">
-                            {riderDetails.personalDetails.fullName}
-                          </span>
-                        </div>
-                        <div className="info-item">
-                          <span className="label">Date of Birth :</span>
-                          <span className="value">
-                            {new Date(
-                              riderDetails.personalDetails.dob
-                            ).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <div className="info-item">
-                          <span className="label">Contact No :</span>
-                          <span className="value">{riderDetails.number}</span>
-                        </div>
-                        <div className="info-item">
-                          <span className="label">Email :</span>
-                          <span className="value">
-                            {riderDetails.personalDetails.email}
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div>Loading...</div>
-                    )}
-                  </Box>
-                </Box>
-              </Grid>
-            </Container>
+            <PersonalDetails riderDetails={riderDetails} />
             <Tabs
               activeTabId={activeTab}
               onChange={handleTabChange}
@@ -165,85 +248,7 @@ const RiderDetails = () => {
                 {
                   label: "Address",
                   id: 0,
-                  content: (
-                    <Container>
-                      {riderDetails ? (
-                        <Box>
-                          <div className="address-info">
-                            <div className="info-item">
-                              <span className="label">Address Line 01 :</span>
-                              <span className="value">
-                                {riderDetails.personalDetails.address.address1}
-                              </span>
-                            </div>
-                            <div className="info-item">
-                              <span className="label">Address Line 02 :</span>
-                              <span className="value">
-                                {riderDetails.personalDetails.address.address2}
-                              </span>
-                            </div>
-                            <div className="info-item">
-                              <span className="label">LandMark :</span>
-                              <span className="value">
-                                {riderDetails.personalDetails.address.landmark}
-                              </span>
-                            </div>
-                            <div className="info-item">
-                              <span className="label">State :</span>
-                              <span className="value">
-                                {riderDetails.personalDetails.address.state}
-                              </span>
-                            </div>
-                            <div className="info-item">
-                              <span className="label">City :</span>
-                              <span className="value">
-                                {riderDetails.personalDetails.address.city}
-                              </span>
-                            </div>
-                            <div className="info-item">
-                              <span className="label">Pin Code :</span>
-                              <span className="value">
-                                {riderDetails.personalDetails.address.pincode}
-                              </span>
-                            </div>
-                            <div className="section-header">
-                              References Contact
-                            </div>
-                            <hr />
-                            <div className="info-item">
-                              <span className="label">Name:</span>
-                              <span className="value">
-                                {
-                                  riderDetails?.personalDetails?.reference
-                                    ?.fatherName
-                                }
-                              </span>
-                            </div>
-                            <div className="info-item">
-                              <span className="label">Relation:</span>
-                              <span className="value">
-                                {
-                                  riderDetails?.personalDetails?.reference
-                                    ?.relation
-                                }
-                              </span>
-                            </div>
-                            <div className="info-item">
-                              <span className="label">Contact No:</span>
-                              <span className="value">
-                                {
-                                  riderDetails?.personalDetails?.reference
-                                    ?.number
-                                }
-                              </span>
-                            </div>
-                          </div>
-                        </Box>
-                      ) : (
-                        <div>Loading...</div>
-                      )}
-                    </Container>
-                  ),
+                  content: <AddressTab riderDetails={riderDetails} />,
                 },
                 {
                   label: "Rider Document",
@@ -254,30 +259,130 @@ const RiderDetails = () => {
                         selectedDoc && selectedDoc.name === doc.name ? (
                           <Container
                             key={doc.name}
-                            header={<Header>{doc.name}</Header>}
+                            header={
+                              <Header>{getDocumentLabel(doc?.name)}</Header>
+                            }
                           >
                             <ColumnLayout columns={2}>
                               <Box>
                                 <img
                                   src={doc.image}
-                                  alt={`${doc.name} (Front)`}
+                                  alt={getDocumentLabel(doc?.name)}
                                   style={{ maxWidth: "100%" }}
                                 />
-                                <p>{`${doc.name} (Front)`}</p>
+                                <p>{getDocumentLabel(doc?.name)}</p>
                               </Box>
                             </ColumnLayout>
                             <Box float="right">
                               <div className="button-container">
                                 <button
                                   className="cancel-btn"
-                                  onClick={handleReject}
+                                  onClick={handleRejectClick}
+                                  disabled={doc.verified === "verified"}
+                                  style={{
+                                    border: `2px solid ${
+                                      doc.verified === "verified"
+                                        ? "#5F6B7A"
+                                        : "red"
+                                    }`,
+                                    cursor:
+                                      doc.verified === "verified"
+                                        ? "not-allowed"
+                                        : "pointer",
+                                    color:
+                                      doc.verified === "verified"
+                                        ? "#5F6B7A"
+                                        : "red",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor =
+                                      doc.verified === "verified"
+                                        ? "#C0C0C0"
+                                        : "#FFB3B3";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor =
+                                      doc.verified === "verified"
+                                        ? "#F5F5F5"
+                                        : "#FFCCCC";
+                                  }}
                                 >
-                                  Reject Document
+                                  Cancel
                                 </button>
+                                {isRejectModalVisible && (
+                                  <Modal
+                                    onDismiss={() =>
+                                      setRejectModalVisible(false)
+                                    }
+                                    visible={isRejectModalVisible}
+                                    header="Rider Document Rejected"
+                                    footer={
+                                      <Box float="right">
+                                        <Button
+                                          onClick={handleRejectConfirm}
+                                          variant="primary"
+                                        >
+                                          Confirm
+                                        </Button>
+                                      </Box>
+                                    }
+                                  >
+                                    <SpaceBetween direction="vertical" size="s">
+                                      <hr></hr>
+                                      <Box fontWeight="heavy" variant="h2">
+                                        {
+                                          riderDetails?.personalDetails
+                                            ?.fullName
+                                        }
+                                      </Box>
+                                      <Box>
+                                        {riderDetails?.personalDetails?.dob.slice(
+                                          0,
+                                          10
+                                        )}
+                                      </Box>
+                                      <Box>{riderDetails.number}</Box>
+                                      <Box>
+                                        {riderDetails?.personalDetails?.email}
+                                      </Box>
+                                      <Box>
+                                        {formatAddress(
+                                          riderDetails?.personalDetails?.address
+                                        )}
+                                      </Box>
+                                      <hr></hr>
+                                      <Box>
+                                        <Header variant="h5">Reason</Header>
+                                        <Textarea
+                                          value={rejectReason}
+                                          onChange={(e) =>
+                                            setRejectReason(e.detail.value)
+                                          }
+                                          placeholder="Enter rejection reason"
+                                        />
+                                      </Box>
+                                    </SpaceBetween>
+                                  </Modal>
+                                )}
+
                                 <button
                                   className="print-btn"
-                                  style={{ backgroundColor: "green" }}
                                   onClick={handleVerify}
+                                  disabled={doc.verified === "verified"}
+                                  style={{
+                                    backgroundColor:
+                                      doc.verified === "verified"
+                                        ? "#E9EBED"
+                                        : "green",
+                                    cursor:
+                                      doc.verified === "verified"
+                                        ? "not-allowed"
+                                        : "pointer",
+                                    color:
+                                      doc.verified === "verified"
+                                        ? "#7D8998"
+                                        : "white",
+                                  }}
                                 >
                                   Verify Document
                                 </button>
@@ -296,11 +401,10 @@ const RiderDetails = () => {
                           >
                             <Input
                               readOnly
-                              value={doc.name}
+                              value={getDocumentLabel(doc?.name)}
                               ariaLabel={doc.name}
                               className="document-input"
                             />
-
                             <div
                               style={{
                                 position: "absolute",

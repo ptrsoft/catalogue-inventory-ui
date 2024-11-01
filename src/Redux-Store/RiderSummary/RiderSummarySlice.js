@@ -1,6 +1,6 @@
 // src/redux/slices/ridersSlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchRiders, fetchRiderById, verifyOrRejectDocument } from './RiderSummaryThunk'; // Adjust import path as necessary
+import { fetchRiders, fetchRiderById, verifyOrRejectDocument, updateRiderStatus } from './RiderSummaryThunk'; // Adjust import path as necessary
 
 const ridersSlice = createSlice({
     name: 'riders',
@@ -14,6 +14,8 @@ const ridersSlice = createSlice({
         riderError: null,    // Error message for fetching a specific rider
         documentStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
         documentError: null, // Error message for document verification/rejection
+        updateStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+        updateError: null,   // Error message for updating rider status
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -71,6 +73,28 @@ const ridersSlice = createSlice({
             .addCase(verifyOrRejectDocument.rejected, (state, action) => {
                 state.documentStatus = 'failed';
                 state.documentError = action.error.message; // Store the error message if the request fails
+            });
+
+        // Handling updateRiderStatus (Updating rider status)
+        builder
+            .addCase(updateRiderStatus.pending, (state) => {
+                state.updateStatus = 'loading';
+                state.updateError = null; // Clear previous errors
+            })
+            .addCase(updateRiderStatus.fulfilled, (state, action) => {
+                state.updateStatus = 'succeeded';
+                
+                const { id, status } = action.meta.arg; // Get parameters passed when thunk was dispatched
+
+                // Find the rider in the items array by ID and update status
+                const riderIndex = state.items.findIndex((rider) => rider.id === id);
+                if (riderIndex !== -1) {
+                    state.items[riderIndex].status = status; // Update rider's status
+                }
+            })
+            .addCase(updateRiderStatus.rejected, (state, action) => {
+                state.updateStatus = 'failed';
+                state.updateError = action.error.message; // Store the error message if the request fails
             });
     }
 });

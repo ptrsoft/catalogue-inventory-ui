@@ -147,7 +147,7 @@ const Views = () => {
           />
           <Route
               
-             <Route
+            
   exact
   path={`${PREFIX_APP_PATH}/Logistics/runsheet/ViewRunSheet/:id`} // Notice the added slash before ':id'
   element={<ViewRunsheet/>}

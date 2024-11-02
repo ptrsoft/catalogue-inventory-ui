@@ -5,7 +5,7 @@ import { postLoginService } from 'Services'; // Assuming you have a service for 
 // Thunk to fetch all orders with optional parameters for search, category, and pageKey
 export const fetchOrderInventory = createAsyncThunk(
   'orderInventory/fetchOrderInventory',
-  async ({ search = '', type = '', status = '', pageKey = '' } = {}) => {
+  async ({ search = '', type = '', status = '', pageKey = '',date='' } = {}) => {
     // Construct the URL
     let url = `${config.FETCH_ORDERS}`;
     const params = [];
@@ -15,6 +15,7 @@ export const fetchOrderInventory = createAsyncThunk(
     if (type) params.push(`type=${encodeURIComponent(type)}`);
     if (status) params.push(`status=${encodeURIComponent(status)}`);
     if (pageKey) params.push(`pageKey=${encodeURIComponent(pageKey)}`);
+    if (date) params.push(`date=${encodeURIComponent(date)}`);
 
     // If there are any parameters, append them to the URL
     if (params.length > 0) {

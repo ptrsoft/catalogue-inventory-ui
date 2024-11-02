@@ -31,7 +31,7 @@ const ViewRunsheet = () => {
 
   // Loading and error handling
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (error) return <p>Error: {error.messege}</p>;
 
   return (
     <Box>
@@ -46,27 +46,40 @@ const ViewRunsheet = () => {
           ariaLabel="Breadcrumbs"
         />
        
-
+       <SpaceBetween direction="vertical" size="s">
         <div className="runsheet-container">
-          <SpaceBetween direction="vertical" size="s">
+         
             {/* Runsheet Details */}
-            <Box>
-              <Box fontWeight="bold">Date</Box>
-              <Box fontWeight="normal" variant="p">{selectedRunsheet?.createdAt.slice(0, 10) }</Box>
-            </Box>
-            <Box>
-              <Box fontWeight="bold">Runsheet ID</Box>
-              <Box fontWeight="normal" variant="p">{selectedRunsheet?.id}</Box>
-            </Box>
+            <div className="details">
+            <div className="info-row">
+                          <span className="label">Date:</span>
+                          <span className="value">
+                          {selectedRunsheet?.createdAt.slice(0, 10) }
+                          </span>
+                        </div>
+                        <div className="info-row">
+                          <span className="label">Runsheet ID:</span>
+                          <span className="value">
+                          {selectedRunsheet?.id}
+                          </span>
+                        </div>
+                        <div className="info-row">
+                          <span className="label">Rider Name:</span>
+                          <b>
+                          {selectedRunsheet?.rider.name}
+                          </b>
+                        </div>
+                        </div>
 
-            <Box>
-              <Box fontWeight="bold">Rider Name</Box>
-              <Box fontWeight="normal" variant="p">{selectedRunsheet?.ridername}</Box>
-            </Box>
+           
+
+           
+            </div>
+            <div className="runsheet-container">
 
             {/* Line of Orders */}
             <Box fontWeight="bold" variant="h2">
-              Line of orders <span style={{ color: "#000716", fontWeight: "700", fontSize: "14px" }}>({orderIds.length} Orders)</span>
+              Line of orders <span style={{ color: "#000716", fontWeight: "700", fontSize: "14px" }}>({orderIds.length} Order)</span>
             </Box>
             <Header variant="h4">Order ID</Header>
             <SpaceBetween direction="vertical">
@@ -76,9 +89,9 @@ const ViewRunsheet = () => {
                 </div>
               ))}
             </SpaceBetween>
-          </SpaceBetween>
+        
         </div>
-
+        </SpaceBetween>
       
       </SpaceBetween>
     </Box>

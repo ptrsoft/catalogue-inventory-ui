@@ -30,8 +30,8 @@ const Sidebar = () => {
         },
         {
           type: "link",
-          text: "Payment",
-          href: "/app/inventory/adjustments"
+          text: "Cash Collection",
+          href: "/app/Logistics/CollectionPayment"
         }
       ]
     },

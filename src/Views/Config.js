@@ -6,6 +6,7 @@ const Config = {
   PUT_ACTIVE_INACTIVE:`${BASE_URL}/inventory/status`,
   DELETE:`${BASE_URL}/inventory/{id}`,
   PRODUCT_DETAIL:`${BASE_URL}/inventory/{id}`,
+  FETCH_CASH_COLLECTION:`${BASE_URL}/runsheet/cash-collection`,
 
   CONTAINER_DIV:`${BASE_URL}/inventory/stats`,
   UPLOAD_IMAGE:`${BASE_URL}/uploadUrl`,
@@ -48,5 +49,6 @@ const Config = {
     PUT_PRICING:`${BASE_URL}/inventory`,
  
 };
+
 
 export default Config;

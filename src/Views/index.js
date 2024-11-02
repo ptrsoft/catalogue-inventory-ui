@@ -5,18 +5,19 @@ import Inventory from "./Postlogin/Inventory";
 import AddItem from "./Postlogin/Inventory/addItem/addItem";
 import InventoryAdjustments from "./Postlogin/Inventory/InventoryAdjustments";
 import Edit from "./Postlogin/Inventory/edit/edit";
-import Creategroup from "./Postlogin/Settingmenu/Usermanagement/creategroup";
 import CreateAdjustment from "./Postlogin/Inventory/InventoryAdjustments/CreateAdjustment";
 import NewAdjustment from "./Postlogin/Inventory/InventoryAdjustments/NewAdjustment";
 import Runsheet from "./Postlogin/Logistics/Runsheet";
 import ViewRunsheet from "./Postlogin/Logistics/Runsheet/ViewRunSheet";
-import UsersContent from "./Postlogin/Settingmenu/Usermanagement/UserContent";
-import PoliciesContent from "./Postlogin/Settingmenu/Usermanagement/PoliciesContent";
-import PermissionsContent from "./Postlogin/Settingmenu/Usermanagement/PermissionsContent";
-import GroupsContent from "./Postlogin/Settingmenu/Usermanagement/GroupsContent";
-import RolesContent from "./Postlogin/Settingmenu/Usermanagement/RolesContent";
-import UserManagement from "./Postlogin/Settingmenu/Usermanagement/usermanagement.js";
-
+import Createuser from "./Postlogin/Settingmenu/Rbac/createuser";
+import UsersContent from "./Postlogin/Settingmenu/Rbac/UserContent";
+import Creategroup from "./Postlogin/Settingmenu/Rbac/creategroup";
+import PoliciesContent from "./Postlogin/Settingmenu/Rbac/PoliciesContent";
+import PermissionsContent from "./Postlogin/Settingmenu/Rbac/PermissionsContent";
+import GroupsContent from "./Postlogin/Settingmenu/Rbac/GroupsContent";
+import RolesContent from "./Postlogin/Settingmenu/Rbac/RolesContent";
+import Viewgroupdetail from "./Postlogin/Settingmenu/Rbac/viewgroupdetail";
+import Alloptions from "./Postlogin/Settingmenu/Rbac/alloptions";
 import CreateRunsheet from "./Postlogin/Logistics/Runsheet/CreateRunSheet";
 import Settings from "./Postlogin/Settingmenu";
 import RiderSummary from "./Postlogin/Logistics/Ridersummary";
@@ -32,9 +33,7 @@ const AddNewCustomer = lazy(() =>
 const Products = lazy(() => import("./Postlogin/Products"));
 const Orders = lazy(() => import("./Postlogin/Logistics/Orders"));
 
-const PurchaseOrders = lazy(() =>
-  import("./Postlogin/PurchaseOrders")
-);
+const PurchaseOrders = lazy(() => import("./Postlogin/PurchaseOrders"));
 const PathNotFOund = lazy(() => import("./PathNotFound"));
 const Signin = lazy(() => import("./PreLogin/Signin"));
 const Signup = lazy(() => import("./PreLogin/Signup"));
@@ -57,61 +56,70 @@ const Views = () => {
             path={`${PREFIX_APP_PATH}/inventory`}
             element={<Inventory />}
           /> */}
-           {/* <Route
+          {/* <Route
             exact
             path={`${PREFIX_AUTH_PATH}/edit`}
             element={<Edit />}
           /> */}
-          
-                    <Route exact path="/app/inventory/edit" element={<Edit />} />
+
+          <Route exact path="/app/inventory/edit" element={<Edit />} />
 
           <Route
             exact
             path={`${PREFIX_APP_PATH}/customers`}
             element={<Customers />}
           />
-                    <Route
+          <Route
             exact
             path={`${PREFIX_APP_PATH}/settings`}
             element={<Settings />}
           />
-                              <Route
+          <Route
             exact
-            path={`${PREFIX_APP_PATH}/settings/usermanagement`}
-            element={<UserManagement />}
+            path={`${PREFIX_APP_PATH}/settings/rbac`}
+            element={<Alloptions />}
           />
-                              <Route
+          <Route
             exact
-            path={`${PREFIX_APP_PATH}/settings/usermanagement/creategroup`}
+            path={`${PREFIX_APP_PATH}/settings/rbac/creategroup`}
             element={<Creategroup />}
           />
 
-<Route
+          <Route
             exact
-            path={`${PREFIX_APP_PATH}/settings/usermanagement/users`}
+            path={`${PREFIX_APP_PATH}/settings/rbac/users`}
             element={<UsersContent />}
           />
           <Route
             exact
-            path={`${PREFIX_APP_PATH}/settings/usermanagement/roles`}
+            path={`${PREFIX_APP_PATH}/settings/rbac/roles`}
             element={<RolesContent />}
+          />
+                 <Route
+            exact
+            path={`${PREFIX_APP_PATH}/settings/rbac/createuser`}
+            element={<Createuser />}
           />
           <Route
             exact
-            path={`${PREFIX_APP_PATH}/settings/usermanagement/groups`}
+            path={`${PREFIX_APP_PATH}/settings/rbac/groups`}
             element={<GroupsContent />}
           />
           <Route
             exact
-            path={`${PREFIX_APP_PATH}/settings/usermanagement/policies`}
+            path={`${PREFIX_APP_PATH}/settings/rbac/groups/viewgroupdetail`}
+            element={<Viewgroupdetail />}
+          />
+          <Route
+            exact
+            path={`${PREFIX_APP_PATH}/settings/rbac/policies`}
             element={<PoliciesContent />}
           />
           <Route
             exact
-            path={`${PREFIX_APP_PATH}/settings/usermanagement/permissions`}
+            path={`${PREFIX_APP_PATH}/settings/rbac/permissions`}
             element={<PermissionsContent />}
           />
-
 
           <Route
             exact
@@ -129,45 +137,45 @@ const Views = () => {
             path={`${PREFIX_APP_PATH}/Logistics/orders`}
             element={<Orders />}
           />
-              
-             <Route
-  exact
-  path={`${PREFIX_APP_PATH}/Logistics/runsheet/ViewRunSheet/:id`} // Notice the added slash before ':id'
-  element={<ViewRunsheet/>}
-/>
-<Route
+
+          <Route
+            exact
+            path={`${PREFIX_APP_PATH}/Logistics/runsheet/ViewRunSheet/:id`} // Notice the added slash before ':id'
+            element={<ViewRunsheet />}
+          />
+          <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/runsheet`}
-            element={<Runsheet/>}
+            element={<Runsheet />}
           />
 
-             <Route
+          <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/RiderSummary`}
-            element={<RiderSummary/>}
+            element={<RiderSummary />}
           />
-            <Route
+          <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding`}
             element={<Onboarding></Onboarding>}
           />
-            <Route
+          <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/ApproveRider`}
-            element={<ApproveRider/>}
+            element={<ApproveRider />}
           />
-            <Route
+          <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/riderDetails`}
-            element={<RiderDetails/>}
+            element={<RiderDetails />}
           />
 
-            <Route
+          <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/runsheet/CreateRunSheet`}
-            element={<CreateRunsheet/>}
+            element={<CreateRunsheet />}
           />
-         
+
           <Route
             exact
             path={`${PREFIX_APP_PATH}/purchaseOrders`}
@@ -206,15 +214,15 @@ const Views = () => {
             path="/app/inventory/adjustments"
             element={<InventoryAdjustments />}
           />
-           <Route
+          <Route
             exact
             path="/app/inventory/create-adjustment"
             element={<CreateAdjustment />}
-          />  
+          />
           <Route
             exact
             path="/app/inventory/new-adjustment"
-            element={<NewAdjustment/>}
+            element={<NewAdjustment />}
           />
           <Route exact path="/app/inventory/addItem" element={<AddItem />} />
           <Route exact path="/" element={<Navigate to="/app/dashboard" />} />

@@ -10,13 +10,12 @@ import {
   FormField,
 } from "@cloudscape-design/components";
 import { ContentLayout, BreadcrumbGroup } from "@cloudscape-design/components";
-import UserManagement from "./usermanagement";
 import TextFilter from "@cloudscape-design/components/text-filter";
 import Toggle from "@cloudscape-design/components/toggle";
 import Select from "@cloudscape-design/components/select";
 import Modal from "@cloudscape-design/components/modal";
 import Badge from "@cloudscape-design/components/badge";
-
+import Alloptions from "./alloptions";
 
 const UsersContent = () => {
   const [selectedOption, setSelectedOption] = useState();
@@ -29,11 +28,7 @@ const UsersContent = () => {
   const [itemToUpdate, setItemToUpdate] = useState(null);
   const [isStatusChangeModalVisible, setIsStatusChangeModalVisible] =
     useState(false);
-    const [
-      selectedItems,
-      setSelectedItems
-    ] = React.useState();
-  
+  const [selectedItems, setSelectedItems] = React.useState();
 
   const handleCreateNewUser = () => {
     const hasError = {
@@ -64,7 +59,7 @@ const UsersContent = () => {
       header={<Header variant="h1">RBAC</Header>}
     >
       <SpaceBetween size="m">
-        <UserManagement />
+        <Alloptions />
         <Container
           header={
             <Header
@@ -153,20 +148,6 @@ const UsersContent = () => {
                 },
                 { id: "email", header: "Email", cell: (item) => item.email },
                 {
-                  id: "status",
-                  header: "Status",
-                  cell: (item) => (
-                    <span
-                      style={{
-                        color: item.status === "Active" ? "green" : "red",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {item.status}
-                    </span>
-                  ),
-                },
-                {
                   id: "logindetails",
                   header: "Login Details",
                   cell: (item) => item.logindetails,
@@ -190,7 +171,15 @@ const UsersContent = () => {
                         }}
                         checked={item.status === "Active"}
                       />
-                      <span style={{ marginLeft: "8px" }}>{item.status}</span>
+                      <span
+                        style={{
+                          color: item.status === "Active" ? "green" : "red",
+                          fontWeight: "bold",
+                          marginLeft: "0.5rem",
+                        }}
+                      >
+                        {item.status}
+                      </span>
                     </div>
                   ),
                 },
@@ -202,7 +191,7 @@ const UsersContent = () => {
                       User 1 <Badge color="green">Default</Badge>
                     </>
                   ),
-                                email: "user1@example.com",
+                  email: "user1@example.com",
                   status: "Active",
                   logindetails: "Logged in 2 days ago",
                   groups: "2",
@@ -247,16 +236,16 @@ const UsersContent = () => {
           >
             <SpaceBetween size="xxl">
               <Box>Are you sure you want to change the status?</Box>
-              <Box>
-              <button
+                <Box float="right">
+                <button
                   style={{
-                    color: "white",
+                    color: "red",
                     border: "2px solid red",
                     fontWeight: "bold",
                     height: "32px",
                     width: "100px",
                     borderRadius: "16px",
-                    background: "red",
+                    background: "white",
                     cursor: "pointer",
                     marginRight: "0.5rem",
                   }}
@@ -264,7 +253,7 @@ const UsersContent = () => {
                 >
                   Cancel
                 </button>
-                <Box float="right">
+
                   <Button
                     variant="primary"
                     onClick={() => {
@@ -273,8 +262,7 @@ const UsersContent = () => {
                   >
                     Confirm
                   </Button>
-                </Box></Box>
-
+                </Box>
             </SpaceBetween>
           </Modal>
 
@@ -310,12 +298,13 @@ const UsersContent = () => {
           >
             <SpaceBetween direction="vertical" size="m">
               <div style={{ width: "18rem" }}>
-                <FormField       label={
-        <span>
-          User Name <i>- optional</i>{" "}
-        </span>
-      }
->
+                <FormField
+                  label={
+                    <span>
+                      User Name <i>- optional</i>
+                    </span>
+                  }
+                >
                   <Input
                     value={newUser.name}
                     onChange={(e) => {
@@ -356,63 +345,58 @@ const UsersContent = () => {
               </SpaceBetween>
 
               <Table
-      renderAriaLive={({
-        firstIndex,
-        lastIndex,
-        totalItemsCount
-      }) =>
-        `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
-      }
-      onSelectionChange={({ detail }) =>
-        setSelectedItems(detail.selectedItems)
-      }
-      selectedItems={selectedItems}
-      ariaLabels={{
-        selectionGroupLabel: "Items selection",
-        allItemsSelectionLabel: () => "select all",
-        itemSelectionLabel: ({ selectedItems }, item) =>
-          item.name
-      }}
-      columnDefinitions={[
-        {
-          id: "group",
-          header: "Group",
-          cell: e => e.name,
-        },
-        {
-          id: "value",
-          header: "Attached Policies",
-          cell: e => e.alt,
-        }
-      ]}
-      enableKeyboardNavigation
-      items={[
-        {
-          name: "Super Admin",
-          alt: "Multiple",
-        },
-        {
-          name: "Default User",
-          alt: "Multiple",
-        }
-      ]}
-      loadingText="Loading resources"
-      selectionType="multi"
-      trackBy="name"
-      variant="borderless"
-      empty={
-        <Box
-          margin={{ vertical: "xs" }}
-          textAlign="center"
-          color="inherit"
-        >
-          <SpaceBetween size="m">
-            <b>No resources</b>
-            <Button>Create resource</Button>
-          </SpaceBetween>
-        </Box>
-      }
-    />
+                renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
+                  `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
+                }
+                onSelectionChange={({ detail }) =>
+                  setSelectedItems(detail.selectedItems)
+                }
+                selectedItems={selectedItems}
+                ariaLabels={{
+                  selectionGroupLabel: "Items selection",
+                  allItemsSelectionLabel: () => "select all",
+                  itemSelectionLabel: ({ selectedItems }, item) => item.name,
+                }}
+                columnDefinitions={[
+                  {
+                    id: "group",
+                    header: "Group",
+                    cell: (e) => e.name,
+                  },
+                  {
+                    id: "value",
+                    header: "Attached Policies",
+                    cell: (e) => e.alt,
+                  },
+                ]}
+                enableKeyboardNavigation
+                items={[
+                  {
+                    name: "Super Admin",
+                    alt: "Multiple",
+                  },
+                  {
+                    name: "Default User",
+                    alt: "Multiple",
+                  },
+                ]}
+                loadingText="Loading resources"
+                selectionType="multi"
+                trackBy="name"
+                variant="borderless"
+                empty={
+                  <Box
+                    margin={{ vertical: "xs" }}
+                    textAlign="center"
+                    color="inherit"
+                  >
+                    <SpaceBetween size="m">
+                      <b>No resources</b>
+                      <Button>Create resource</Button>
+                    </SpaceBetween>
+                  </Box>
+                }
+              />
             </SpaceBetween>
           </Modal>
         </Container>

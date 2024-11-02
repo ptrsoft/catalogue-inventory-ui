@@ -19,15 +19,13 @@ import { Link } from "react-router-dom";
 const Creategroup = () => {
   const [selectedUserItems, setSelectedUserItems] = useState([]); // For the first table
   const [selectedRoleItems, setSelectedRoleItems] = useState([]); // For the second table
-    const [groupName, setGroupName] = useState("");
+  const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
   const goBack = () => {
     window.history.back(); // Go to the previous page in browser history
   };
   const [filteringText1, setFilteringText1] = useState("");
   const [filteringText2, setFilteringText2] = useState("");
-
-
 
   return (
     <ContentLayout
@@ -36,8 +34,8 @@ const Creategroup = () => {
         <BreadcrumbGroup
           items={[
             { text: "Dashboard", href: "/app/dashboard" },
-            { text: "Setting", href: "/app/settings" },
-            { text: "User Management", href: "/app/settings/usermanagement" },
+            { text: "Settings", href: "/app/settings" },
+            { text: "RBAC", href: "/app/settings/rbac/users" },
             { text: "Create Group", href: "#" },
           ]}
           ariaLabel="Breadcrumbs"
@@ -56,13 +54,13 @@ const Creategroup = () => {
                 <button
                   onClick={goBack} // This will go back to the previous page
                   style={{
-                    color: "white",
+                    color: "red",
                     border: "2px solid red",
                     fontWeight: "bold",
                     height: "32px",
                     width: "100px",
                     borderRadius: "16px",
-                    background: "red",
+                    background: "white",
                     cursor: "pointer",
                     marginRight: "0.5rem",
                   }}
@@ -89,7 +87,7 @@ const Creategroup = () => {
                   <Input
                     value={groupName}
                     onChange={(event) => setGroupName(event.detail.value)}
-                    placeholder="Enter group name"
+                    placeholder="Enter Group Name"
                   />
                 </FormField>
               </div>
@@ -101,7 +99,11 @@ const Creategroup = () => {
                 { colspan: { default: 10, xxs: 8 } },
               ]}
             >
-              <b>Group Description: </b>
+              <span>
+                <b>Group Description: </b><br></br>
+                <i>- optional</i>
+              </span>
+
               <div>
                 <FormField>
                   <Textarea
@@ -109,7 +111,7 @@ const Creategroup = () => {
                     onChange={(event) =>
                       setGroupDescription(event.detail.value)
                     }
-                    placeholder="Enter group description"
+                    placeholder="Max. 120 letters"
                     rows={4}
                   />
                 </FormField>
@@ -121,19 +123,21 @@ const Creategroup = () => {
           <SpaceBetween size="m">
             <Header>Add User To Group</Header>
             <div style={{ width: "18rem" }}>
-            <TextFilter
-        filteringText={filteringText1}
-        filteringPlaceholder="Find resources"
-        onChange={({ detail }) => setFilteringText1(detail.filteringText)}
-      />
+              <TextFilter
+                filteringText={filteringText1}
+                filteringPlaceholder="Search User"
+                onChange={({ detail }) =>
+                  setFilteringText1(detail.filteringText)
+                }
+              />
             </div>
 
             <Table
               renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
                 `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
               }
-              onSelectionChange={({ detail }) =>
-                setSelectedUserItems(detail.selectedItems) // Use the user state
+              onSelectionChange={
+                ({ detail }) => setSelectedUserItems(detail.selectedItems) // Use the user state
               }
               selectedItems={selectedUserItems} // Use the user state
               ariaLabels={{
@@ -223,18 +227,20 @@ const Creategroup = () => {
           <SpaceBetween size="m">
             <Header>Add Roles To Group</Header>
             <div style={{ width: "18rem" }}>
-            <TextFilter
-        filteringText={filteringText2}
-        filteringPlaceholder="Find resources"
-        onChange={({ detail }) => setFilteringText2(detail.filteringText)}
-      />
+              <TextFilter
+                filteringText={filteringText2}
+                filteringPlaceholder="Search Role"
+                onChange={({ detail }) =>
+                  setFilteringText2(detail.filteringText)
+                }
+              />
             </div>
             <Table
               renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
                 `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
               }
-              onSelectionChange={({ detail }) =>
-                setSelectedRoleItems(detail.selectedItems) // Use the role state
+              onSelectionChange={
+                ({ detail }) => setSelectedRoleItems(detail.selectedItems) // Use the role state
               }
               selectedItems={selectedRoleItems} // Use the role state
               ariaLabels={{

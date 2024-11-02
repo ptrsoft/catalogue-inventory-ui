@@ -7,12 +7,11 @@ import Button from "@cloudscape-design/components/button";
 import TextFilter from "@cloudscape-design/components/text-filter";
 import Header from "@cloudscape-design/components/header";
 import Container from "@cloudscape-design/components/container";
-import Toggle from "@cloudscape-design/components/toggle";
 import {
   fetchProducts,
   PutToggle,
   deleteProduct,
-  fetchInventoryStats
+  fetchInventoryStats,
 } from "Redux-Store/Products/ProductThunk";
 import Tabs from "@cloudscape-design/components/tabs";
 import Overview from "./drawerTabs/overview";
@@ -23,8 +22,6 @@ import Modal from "@cloudscape-design/components/modal";
 import {
   SpaceBetween,
   StatusIndicator,
-  Icon,
-  ButtonDropdown,
   Select,
   Pagination,
   Flashbar,
@@ -50,10 +47,13 @@ const Inventory = () => {
   const [productIdToDelete, setProductIdToDelete] = useState(null);
   const inventoryStats = useSelector((state) => state.products.inventoryStats);
   const [nextKeys, setNextKeys] = useState({}); // Store nextKey per page
+  const [hoveredProductId, setHoveredProductId] = React.useState(null); // State to track hovered product ID
 
 
   const dispatch = useDispatch();
-  const products = useSelector((state) => state.products.products.data[currentPage] || []); // Access current page data
+  const products = useSelector(
+    (state) => state.products.products.data[currentPage] || []
+  ); // Access current page data
   const status = useSelector((state) => state.products.products.status);
   const { data = [] } = products;
   const nextKey = useSelector((state) => state.products.products.nextKey);
@@ -70,10 +70,12 @@ const Inventory = () => {
   useEffect(() => {
     // Define the pageKey for pagination (undefined for page 1)
     const pageKey = currentPage === 1 ? undefined : nextKeys[currentPage - 1];
-  
+
     // Create a key to represent the current filters and page
-    const filterKey = `${selectedCategory?.value || ""}-${selectedSubCategory?.value || ""}-${filteringText || ""}-${selectedStatus?.value || ""}-${currentPage}`;
-  
+    const filterKey = `${selectedCategory?.value || ""}-${
+      selectedSubCategory?.value || ""
+    }-${filteringText || ""}-${selectedStatus?.value || ""}-${currentPage}`;
+
     // Check if the current page with the current filter has already been fetched
     if (!fetchedPages[filterKey]) {
       dispatch(
@@ -89,7 +91,7 @@ const Inventory = () => {
         .unwrap()
         .then((result) => {
           console.log("Fetched products for page:", currentPage, result);
-  
+
           // Adjust to check the correct data structure
           if (Array.isArray(result.data)) {
             // Store fetched items for the current page and filters
@@ -97,14 +99,14 @@ const Inventory = () => {
               ...prev,
               [filterKey]: result.data, // Directly using result.data since it's an array
             }));
-  
+
             // Store the nextKey for future pagination
             if (result.nextKey) {
               setNextKeys((prevKeys) => ({
                 ...prevKeys,
                 [currentPage]: result.nextKey, // Store nextKey for the current page
               }));
-  
+
               // Increment the pages count only if there's more data to fetch
               setPagesCount((prevCount) => prevCount + 1);
             }
@@ -124,29 +126,26 @@ const Inventory = () => {
     selectedSubCategory,
     selectedStatus,
     nextKeys,
-    fetchedPages
+    fetchedPages,
   ]);
-    // Handle page changes
+  // Handle page changes
   const handlePageChange = (pageIndex) => {
     setCurrentPage(pageIndex); // Update current page
   };
 
   // Prepare items for the table
-        const handleCategoryChange = ({ detail }) => {
+  const handleCategoryChange = ({ detail }) => {
     setSelectedCategory(detail.selectedOption);
     setCurrentPage(1); // Reset page to 1 when filters change
-
   };
   const handleSubCategoryChange = ({ detail }) => {
     setSelectedSubCategory(detail.selectedOption);
     setCurrentPage(1); // Reset page to 1 when filters change
-
   };
 
   const handleSearchChange = ({ detail }) => {
     setFilteringText(detail.filteringText);
     setCurrentPage(1); // Reset page to 1 when filters change
-
   };
   const handleSelectChange = ({ detail }) => {
     setSelectedStatus(detail.selectedOption);
@@ -170,7 +169,7 @@ const Inventory = () => {
     dispatch(PutToggle({ ids, active: newStatus }))
       .unwrap()
       .then((response) => {
-        console.log("Update Response:", response); 
+        console.log("Update Response:", response);
         setItems([
           {
             type: "success",
@@ -243,14 +242,14 @@ const Inventory = () => {
   };
 
   // const renderModalButton = () => {
-  //   const isAnyProductSelected = selectedItems.length > 0; 
+  //   const isAnyProductSelected = selectedItems.length > 0;
 
   //   if (selectedStatus?.value === "true") {
   //     return (
   //       <Button
   //         variant="primary"
   //         onClick={() => setIsModalVisible(true)}
-  //         disabled={!isAnyProductSelected} 
+  //         disabled={!isAnyProductSelected}
   //       >
   //         Move to Inactive
   //       </Button>
@@ -278,7 +277,7 @@ const Inventory = () => {
       dispatch(deleteProduct(productIdToDelete))
         .then((response) => {
           console.log("Delete Response:", response);
-          if (response.meta.requestStatus === 'fulfilled') {
+          if (response.meta.requestStatus === "fulfilled") {
             // Display success notification
             setItems([
               {
@@ -291,7 +290,7 @@ const Inventory = () => {
                 id: "delete_success",
               },
             ]);
-            
+
             // Automatically clear the notification after 5 seconds
             setTimeout(() => {
               setItems([]); // Clear the message
@@ -303,7 +302,7 @@ const Inventory = () => {
         })
         .catch((error) => {
           console.error("Error during deletion:", error); // Log the error for debugging
-  
+
           // Display error notification
           setItems([
             {
@@ -317,19 +316,19 @@ const Inventory = () => {
               id: "delete_error",
             },
           ]);
-  
+
           // Automatically clear the error message after 5 seconds
           setTimeout(() => {
             setItems([]); // Clear the message
           }, 5000); // 5000 milliseconds = 5 seconds
-  
+
           setVisible(false); // Close the modal in case of error
           setProductIdToDelete(null); // Clear the product ID
         });
     }
   };
 
-    const handleCancelDelete = () => {
+  const handleCancelDelete = () => {
     setVisible(false);
     setProductIdToDelete(null);
   };
@@ -338,38 +337,37 @@ const Inventory = () => {
     "Fresh Vegetables": [
       { label: "Daily Vegetables", value: "Daily Vegetables" },
       { label: "Leafy Vegetables", value: "Leafy Vegetables" },
-      { label: "Exotic Vegetables", value: "Exotic Vegetables" }
+      { label: "Exotic Vegetables", value: "Exotic Vegetables" },
     ],
     "Fresh Fruits": [
       { label: "Daily Fruits", value: "Daily Fruits" },
       { label: "Exotic Fruits", value: "Exotic Fruits" },
-      { label: "Dry Fruits", value: "Dry Fruits" }
+      { label: "Dry Fruits", value: "Dry Fruits" },
     ],
-    "Dairy": [
+    Dairy: [
       { label: "Milk", value: "Milk" },
       { label: "Butter & Ghee", value: "Butter & Ghee" },
-      { label: "Paneer & Khowa", value: "Paneer & Khowa" }
+      { label: "Paneer & Khowa", value: "Paneer & Khowa" },
     ],
-    "Groceries": [
+    Groceries: [
       { label: "Cooking Oil", value: "Cooking Oil" },
       { label: "Rice", value: "Rice" },
       { label: "Daal", value: "Daal" },
       { label: "Spices", value: "Spices" },
-      { label: "Snacks", value: "Snacks" }
+      { label: "Snacks", value: "Snacks" },
     ],
     "Bengali Special": [
       { label: "Bengali Vegetables", value: "Bengali Vegetables" },
       { label: "Bengali Groceries", value: "Bengali Groceries" },
-      { label: "Bengali Home Needs", value: "Bengali Home Needs" }
+      { label: "Bengali Home Needs", value: "Bengali Home Needs" },
     ],
     "Eggs Meat & Fish": [
       { label: "Eggs", value: "Eggs" },
       { label: "Fish", value: "Fish" },
       { label: "Chicken", value: "Chicken" },
-      { label: "Mutton", value: "Mutton" }
-    ]
+      { label: "Mutton", value: "Mutton" },
+    ],
   };
-
 
   return (
     <SpaceBetween size="s">
@@ -386,14 +384,14 @@ const Inventory = () => {
         <strong>Items</strong>
       </Header>
       <SpaceBetween size="m">
-      <Grid
-  gridDefinition={[
-    { colspan: { default: 12, xs: 4 } },  
-    { colspan: { default: 12, xs: 2 } },
-    { colspan: { default: 12, xs: 2 } },
-    { colspan: { default: 12, xs: 4 } },
-  ]}
->
+        <Grid
+          gridDefinition={[
+            { colspan: { default: 12, xs: 4 } },
+            { colspan: { default: 12, xs: 2 } },
+            { colspan: { default: 12, xs: 2 } },
+            { colspan: { default: 12, xs: 4 } },
+          ]}
+        >
           <TextFilter
             filteringText={filteringText}
             filteringPlaceholder="Search"
@@ -427,17 +425,19 @@ const Inventory = () => {
             ]}
             placeholder="Select Category"
           />
-                    <Select
+          <Select
+           disabled={!selectedCategory} // Enable only if a category is selected
+
             required
             selectedOption={selectedSubCategory}
             onChange={handleSubCategoryChange}
             placeholder="Select Sub Category"
             options={
-                    selectedCategory
-                      ? subcategoryOptions[selectedCategory.value] || []
-                      : []
-                  }
-                />
+              selectedCategory
+                ? subcategoryOptions[selectedCategory.value] || []
+                : []
+            }
+          />
           {/* <Select
             required
             selectedOption={selectedStatus}
@@ -465,12 +465,21 @@ const Inventory = () => {
         >
           <Container
             size="xs"
-            header={<Header variant="h2">{inventoryStats?.data?.totalProducts}</Header>}
+            header={
+              <Header variant="h2">
+                {inventoryStats?.data?.totalProducts}
+              </Header>
+            }
           >
             <b>All Products</b>
           </Container>
 
-          <Container size="xs" header={<Header variant="h2">{inventoryStats?.data?.active}</Header>}>
+          <Container
+            size="xs"
+            header={
+              <Header variant="h2">{inventoryStats?.data?.active}</Header>
+            }
+          >
             <b>Published Stock</b>
           </Container>
 
@@ -507,12 +516,13 @@ const Inventory = () => {
             >
               Are you sure you want to change the status of this products?
             </Modal>{" "} */}
-    <Pagination
-      currentPageIndex={currentPage}
-      onChange={({ detail }) => handlePageChange(detail.currentPageIndex)}
-      pagesCount={pagesCount}
-    />
-
+            <Pagination
+              currentPageIndex={currentPage}
+              onChange={({ detail }) =>
+                handlePageChange(detail.currentPageIndex)
+              }
+              pagesCount={pagesCount}
+            />
           </div>
         </Box>
         {isModalVisible && (
@@ -556,7 +566,6 @@ const Inventory = () => {
           renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
             `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
           }
-          
           onSelectionChange={({ detail }) =>
             setSelectedItems(detail.selectedItems)
           }
@@ -577,31 +586,41 @@ const Inventory = () => {
             {
               id: "name",
               header: "Name",
-              cell: (e) => (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => handleProductClick(e)}
-                >
-                  <img
-                    src={e.image}
-                    alt={e.name}
+              cell: (e) => {
+                return (
+                  <div
                     style={{
-                      width: "30px",
-                      height: "30px",
-                      marginRight: "0.5rem",
+                      display: "flex",
+                      alignItems: "center",
+                      cursor: "pointer",
                     }}
-                  />
-                  {e.name}
-                </div>
-              ),
+                    onClick={() => handleProductClick(e)}
+                    onMouseEnter={() => setHoveredProductId(e.id)} // Set hovered product ID
+                    onMouseLeave={() => setHoveredProductId(null)} // Clear hovered product ID
+                  >
+                    <img
+                      src={e.image}
+                      alt={e.name}
+                      style={{
+                        width: "30px",
+                        height: "30px",
+                        marginRight: "0.5rem",
+                      }}
+                    />
+                    <span
+                      style={{
+                        textDecoration: "underline",
+                        color: hoveredProductId === e.id ? "blue" : "black", // Change color based on hovered product ID
+                      }}
+                    >
+                      {e.name}
+                    </span>
+                  </div>
+                );
+              },
               width: 250,
               minWidth: 180,
-            },
-            {
+            },                                    {
               id: "category",
               header: "Category",
               cell: (e) => e.category,
@@ -615,7 +634,7 @@ const Inventory = () => {
             {
               id: "quantityOnHand",
               header: "Quantity on Hand",
-              cell: (e) => `${e.stockQuantity} kgs`,
+              cell: (e) => `${e.stockQuantity} ${e.units}`, // Use e.unit to get the unit from the API
             },
             {
               id: "stockAlert",
@@ -629,12 +648,12 @@ const Inventory = () => {
             {
               id: "purchasingPrice",
               header: "Purchasing Price",
-              cell: (e) => `Rs. ${e.purchasingPrice}`, 
+              cell: (e) => `Rs. ${e.purchasingPrice}`,
             },
             {
               id: "msp",
               header: "MSP",
-              cell: (e) => `Rs. ${e.msp}`, 
+              cell: (e) => `Rs. ${e.msp}`,
             },
             // {
             //   id: "status",
@@ -676,7 +695,16 @@ const Inventory = () => {
             },
           ]}
           enableKeyboardNavigation
-          items={fetchedPages[`${selectedCategory?.value || ""}-${selectedSubCategory?.value || ""}-${filteringText || ""}-${selectedStatus?.value || ""}-${currentPage}`] || []}          selectionType="multi"
+          items={
+            fetchedPages[
+              `${selectedCategory?.value || ""}-${
+                selectedSubCategory?.value || ""
+              }-${filteringText || ""}-${
+                selectedStatus?.value || ""
+              }-${currentPage}`
+            ] || []
+          }
+          selectionType="multi"
           trackBy="itemCode"
           empty={
             <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
@@ -716,7 +744,6 @@ const Inventory = () => {
                 onClick={handleCloseDrawer}
               />
             </div>
-            <div class="drawer">
               <h1 style={{ color: "#0972D3" }}>
                 {selectedProduct.name}
                 <br />
@@ -727,7 +754,8 @@ const Inventory = () => {
                     paddingTop: "15px",
                   }}
                 >
-                  Stock : {selectedProduct.stockQuantity}Kg &nbsp;&nbsp;
+                  Stock : {selectedProduct.stockQuantity}{selectedProduct.units}
+
                   <h7 style={{ fontSize: "10px" }}>
                     {selectedProduct.stockAlert === "Low Stock" ? (
                       <StatusIndicator type="warning" size="small">
@@ -741,8 +769,8 @@ const Inventory = () => {
                   </h7>{" "}
                 </p>
               </h1>
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "15px" }}
+              {/* <div
+                style={{ display: "flex", alignItems: "center"}}
               >
                 <Toggle
                   onChange={() => handleToggleClick(selectedProduct)}
@@ -756,7 +784,10 @@ const Inventory = () => {
                 >
                   {selectedProduct.active ? "Active" : "Inactive"}
                 </Toggle>
-                <ButtonDropdown
+                </div> */}
+
+
+                {/* <ButtonDropdown
                   items={[
                     {
                       text: "Reorder",
@@ -778,9 +809,7 @@ const Inventory = () => {
                   variant="primary"
                 >
                   Action
-                </ButtonDropdown>
-              </div>
-            </div>
+                </ButtonDropdown> */}
 
             <Tabs
               onChange={({ detail }) => setActiveTabId(detail.activeTabId)}

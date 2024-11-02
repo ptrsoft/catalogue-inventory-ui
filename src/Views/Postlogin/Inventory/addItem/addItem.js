@@ -340,7 +340,7 @@ const AddItem = () => {
                 <Input
                   required
                   size="xs"
-                  placeholder="Kgs"
+                  placeholder="Add Quantity"
                   value={stockQuantity}
                   onChange={({ detail }) => setStockQuantity(detail.value)}
                 />

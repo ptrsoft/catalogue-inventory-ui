@@ -5,7 +5,7 @@ import {
 } from "@cloudscape-design/components";
 import { useNavigate, useLocation } from "react-router-dom";  // Import useNavigate and useLocation for routing
 
-const UserManagement = () => {
+const Alloptions = () => {
   const navigate = useNavigate();  // Initialize the navigation hook
   const location = useLocation();  // Get the current location
   const commonStyles = {
@@ -23,11 +23,11 @@ const UserManagement = () => {
 
   // Define categories with corresponding routes
   const categories = [
-    { label: "Users", count: "06", route: "/app/settings/usermanagement/users" },
-    { label: "Roles", count: "03", route: "/app/settings/usermanagement/roles" },
-    { label: "Groups", count: "02", route: "/app/settings/usermanagement/groups" },
-    { label: "Policies", count: "01", route: "/app/settings/usermanagement/policies" },
-    { label: "Permissions", count: "30", route: "/app/settings/usermanagement/permissions" },
+    { label: "Users", count: "06", route: "/app/settings/rbac/users" },
+    { label: "Roles", count: "03", route: "/app/settings/rbac/roles" },
+    { label: "Groups", count: "02", route: "/app/settings/rbac/groups" },
+    { label: "Policies", count: "01", route: "/app/settings/rbac/policies" },
+    { label: "Permissions", count: "30", route: "/app/settings/rbac/permissions" },
   ];
 
   const CategoryItem = ({ label, count, route }) => {
@@ -67,4 +67,4 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement;
+export default Alloptions;

@@ -72,7 +72,8 @@ const Overview = ({ selectedProduct }) => {
                         color: "#354150",
                       }}
                     >
-                      {selectedProduct.stockQuantity}KG
+                      {selectedProduct.stockQuantity}
+                      {selectedProduct.units}
                     </h1>
                   <ColumnLayout columns={2} minColumnWidth={170}>
                    
@@ -80,7 +81,8 @@ const Overview = ({ selectedProduct }) => {
                       <p>
                         <b>Main Warehouse :</b> 
                       </p>
-                      <p>{selectedProduct.stockQuantity}kg</p>
+                      <p>{selectedProduct.stockQuantity}{selectedProduct.units}
+                      </p>
                       <p>
                         Girdhari Store :
                       </p>

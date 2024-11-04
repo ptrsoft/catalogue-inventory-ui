@@ -233,7 +233,7 @@ const AddItem = () => {
                     { text: "Dashboard", href: "/app/dashboard" },
 
           { text: "Inventory", href: "/app/inventory" },
-          { text: "Add Items", href: "/app/inventory/addItem" },
+          { text: "Add Item", href: "/app/inventory/addItem" },
         ]}
         ariaLabel="Breadcrumbs"
       />
@@ -261,10 +261,11 @@ const AddItem = () => {
                 onChange={({ detail }) => setName(detail.value)}
               />
             </FormField>
-            <FormField label="Product Description">
+            <FormField label="Item Description">
               <Textarea
                 rows={5}
                 onChange={handleChange}
+                placeholder="Add Item Description"
                 value={description}
                 maxLength={247}
               />

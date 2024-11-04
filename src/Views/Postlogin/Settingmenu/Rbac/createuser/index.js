@@ -8,13 +8,25 @@ import {
   FormField,
   Button,
   Box,
-  Table,  ColumnLayout,
+  Table,
+  ColumnLayout,
 } from "@cloudscape-design/components";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+
 import TextFilter from "@cloudscape-design/components/text-filter";
 import { ContentLayout, BreadcrumbGroup } from "@cloudscape-design/components";
+import Grid from "@cloudscape-design/components/grid";
 
 const Createuser = () => {
+  const navigate = useNavigate(); // Initialize the navigate function
+
   const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItems1, setSelectedItems1] = useState([]);
+  const [firstName, setFirstName] = useState("");
+  const [secondName, setSecondName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  
   const [roleFilteringText, setRoleFilteringText] = useState("");
   const [activeStepIndex, setActiveStepIndex] = React.useState(0);
   return (
@@ -25,7 +37,8 @@ const Createuser = () => {
           items={[
             { text: "Dashboard", href: "/app/dashboard" },
             { text: "Settings", href: "/app/settings" },
-            { text: "RBAC", href: "#" },
+            { text: "RBAC", href: "/app/settings/rbac/users" },
+            { text: "New user", href: "#" },
           ]}
           ariaLabel="Breadcrumbs"
         />
@@ -43,11 +56,12 @@ const Createuser = () => {
             cancelButton: "Cancel",
             previousButton: "Previous",
             nextButton: "Next",
-            submitButton: "Create User0",
+            submitButton: "Create User",
           }}
           onNavigate={({ detail }) =>
             setActiveStepIndex(detail.requestedStepIndex)
           }
+          onCancel={() => navigate("/app/settings/rbac/users")} // Navigate on cancel
           activeStepIndex={activeStepIndex}
           allowSkipTo
           steps={[
@@ -55,24 +69,37 @@ const Createuser = () => {
               title: "User Details",
               content: (
                 <ColumnLayout minColumnWidth={170} columns={2}>
-                  <FormField label="First Name">
-                    <Input />
-                  </FormField>
-                  <FormField label="Second Name">
-                    <Input />
-                  </FormField>
-                  <FormField
-                    label={
-                      <span>
-                        User Name <i>- optional</i>
-                      </span>
-                    }
-                  >
-                    <Input />
-                  </FormField>
-                  <FormField label="Email Address">
-                    <Input />
-                  </FormField>
+                 <FormField label="First Name">
+  <Input
+    value={firstName} // Assuming you have a state variable for first name
+    onChange={({ detail }) => setFirstName(detail.value)} // Handle change
+  />
+</FormField>
+<FormField label="Second Name">
+  <Input
+    value={secondName} // Assuming you have a state variable for second name
+    onChange={({ detail }) => setSecondName(detail.value)} // Handle change
+  />
+</FormField>
+<FormField
+  label={
+    <span>
+      User Name <i>- optional</i>
+    </span>
+  }
+>
+  <Input
+    value={userName} // Assuming you have a state variable for user name
+    onChange={({ detail }) => setUserName(detail.value)} // Handle change
+  />
+</FormField>
+<FormField label="Email Address">
+  <Input
+    value={email} // Assuming you have a state variable for email
+    onChange={({ detail }) => setEmail(detail.value)} // Handle change
+  />
+</FormField>
+
                 </ColumnLayout>
               ),
             },
@@ -94,11 +121,20 @@ const Createuser = () => {
                       </div>
                     </Box>
                     <Box float="right">
-                      <Button variant="primary" href="/app/settings/rbac/creategroup">Create Group</Button>
+                      <Button
+                        variant="primary"
+                        href="/app/settings/rbac/creategroup"
+                      >
+                        Create Group
+                      </Button>
                     </Box>
                   </Box>
                   <Table
-                    renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
+                    renderAriaLive={({
+                      firstIndex,
+                      lastIndex,
+                      totalItemsCount,
+                    }) =>
                       `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
                     }
                     onSelectionChange={({ detail }) =>
@@ -122,7 +158,6 @@ const Createuser = () => {
                         header: "Attached Policies",
                         cell: (item) => item.description,
                       },
-                    
                     ]}
                     items={[
                       {
@@ -158,14 +193,82 @@ const Createuser = () => {
             {
               title: "Review and Create",
               content: (
-                  <SpaceBetween direction="vertical" size="l">
-                    <FormField label="First field">
-                      <Input />
-                    </FormField>
-                    <FormField label="Second field">
-                      <Input />
-                    </FormField>
-                  </SpaceBetween>
+                <SpaceBetween size="m">
+                  <Box>
+                    <Grid gridDefinition={[{ colspan: 4 }, { colspan: 8 }]}>
+                      <div>First Name:</div>
+                      <div style={{ fontWeight: "bold" }}>Shaistha samreen</div>
+                    </Grid>
+                    <Grid gridDefinition={[{ colspan: 4 }, { colspan: 8 }]}>
+                      <div>Second Name:</div>
+                      <div style={{ fontWeight: "bold" }}>Shaistha samreen</div>
+                    </Grid>
+                    <Grid gridDefinition={[{ colspan: 4 }, { colspan: 8 }]}>
+                      <div>Email Address:</div>
+                      <div style={{ fontWeight: "bold" }}>
+                        Shaisthasamreen123@gmail.com
+                      </div>
+                    </Grid>
+                  </Box>
+                  <Table
+                    renderAriaLive={({
+                      firstIndex,
+                      lastIndex,
+                      totalItemsCount,
+                    }) =>
+                      `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
+                    }
+                    onSelectionChange={({ detail }) =>
+                      setSelectedItems1(detail.selectedItems)
+                    }
+                    selectedItems={selectedItems1}
+                    ariaLabels={{
+                      selectionGroupLabel: "Items selection",
+                      allItemsSelectionLabel: () => "select all",
+                      itemSelectionLabel: ({ selectedItems1 }, item) =>
+                        item.name,
+                    }}
+                    columnDefinitions={[
+                      {
+                        id: "groups",
+                        header: "Groups",
+                        cell: (item) => item.name,
+                      },
+                      {
+                        id: "attachedpolicies",
+                        header: "Attached Policies",
+                        cell: (item) => item.description,
+                      },
+                    ]}
+                    items={[
+                      {
+                        name: "Admin",
+                        description: "Multiple",
+                      },
+                      {
+                        name: "Editor",
+                        description: "Single",
+                      },
+                      {
+                        name: "Viewer",
+                        description: "Single",
+                      },
+                    ]}
+                    loadingText="Loading roles"
+                    selectionType="multi"
+                    trackBy="name"
+                    variant="borderless"
+                    empty={
+                      <Box
+                        margin={{ vertical: "xs" }}
+                        textAlign="center"
+                        color="inherit"
+                      >
+                        <b>No Roles</b>
+                      </Box>
+                    }
+                  />
+                </SpaceBetween>
               ),
             },
           ]}

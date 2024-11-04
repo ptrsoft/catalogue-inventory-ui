@@ -20,8 +20,12 @@ import {
   Textarea,
 } from "@cloudscape-design/components";
 import Alloptions from "./alloptions";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+
 
 const RolesContent = () => {
+  const navigate = useNavigate(); // Initialize the navigate function
+
   const [filterText, setFilterText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [toggleModalVisible, setToggleModalVisible] = useState(false);
@@ -41,8 +45,12 @@ const RolesContent = () => {
       ),
       description: "Has full access to the system",
       preference: (
-        <span style={{ color: "blue", fontWeight: "bold" }}>view policy</span>
-      ),
+<span 
+          style={{ color: "blue", fontWeight: "bold", cursor: "pointer" }} 
+          onClick={() => navigate("/app/settings/rbac/viewpolicy")}
+        >
+          view policy
+        </span>      ),
     },
     {
       role: (
@@ -52,14 +60,23 @@ const RolesContent = () => {
       ),
       description: "Can edit content",
       preference: (
-        <span style={{ color: "blue", fontWeight: "bold" }}>view policy</span>
-      ),
+<span 
+          style={{ color: "blue", fontWeight: "bold", cursor: "pointer" }} 
+          onClick={() => navigate("/app/settings/rbac/viewpolicy")}
+        >
+          view policy
+        </span>      ),
     },
     {
       role: "Viewer",
       description: "Can view content only",
       preference: (
-        <span style={{ color: "blue", fontWeight: "bold" }}>view policy</span>
+        <span 
+          style={{ color: "blue", fontWeight: "bold", cursor: "pointer" }} 
+          onClick={() => navigate("/app/settings/rbac/viewpolicy")}
+        >
+          view policy
+        </span>
       ),
     },
   ];

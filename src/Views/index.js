@@ -26,6 +26,9 @@ import RiderDetails from "./Postlogin/Logistics/Ridersummary/Onboarding/RiderDet
 import ApproveRider from "./Postlogin/Logistics/Ridersummary/Onboarding/ApproveRider";
 import CollectionPayment from "./Postlogin/Logistics/CollectionPayment";
 import ViewDetailsPage from "./Postlogin/Logistics/CollectionPayment/ViewCollection";
+import Createpolicy from "./Postlogin/Settingmenu/Rbac/createpolicy";
+import Viewpolicy from "./Postlogin/Settingmenu/Rbac/viewpolicy";
+
 const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
 
 const Customers = lazy(() => import("./Postlogin/Customers"));
@@ -86,7 +89,16 @@ const Views = () => {
             path={`${PREFIX_APP_PATH}/settings/rbac/creategroup`}
             element={<Creategroup />}
           />
-
+          <Route
+            exact
+            path={`${PREFIX_APP_PATH}/settings/rbac/createpolicy`}
+            element={<Createpolicy />}
+          />
+          <Route
+            exact
+            path={`${PREFIX_APP_PATH}/settings/rbac/viewpolicy`}
+            element={<Viewpolicy />}
+          />
           <Route
             exact
             path={`${PREFIX_APP_PATH}/settings/rbac/users`}
@@ -97,7 +109,7 @@ const Views = () => {
             path={`${PREFIX_APP_PATH}/settings/rbac/roles`}
             element={<RolesContent />}
           />
-                 <Route
+          <Route
             exact
             path={`${PREFIX_APP_PATH}/settings/rbac/createuser`}
             element={<Createuser />}
@@ -146,19 +158,17 @@ const Views = () => {
             element={<ViewRunsheet />}
           />
           <Route
-              
-            
-  exact
-  path={`${PREFIX_APP_PATH}/Logistics/runsheet/ViewRunSheet/:id`} // Notice the added slash before ':id'
-  element={<ViewRunsheet/>}
-/>
-            
-<Route
-  exact
-  path={`${PREFIX_APP_PATH}/Logistics/CashCollection/View-details/:id`} // Notice the added slash before ':id'
-  element={<ViewDetailsPage/>}
-/>
-<Route
+            exact
+            path={`${PREFIX_APP_PATH}/Logistics/runsheet/ViewRunSheet/:id`} // Notice the added slash before ':id'
+            element={<ViewRunsheet />}
+          />
+
+          <Route
+            exact
+            path={`${PREFIX_APP_PATH}/Logistics/CashCollection/View-details/:id`} // Notice the added slash before ':id'
+            element={<ViewDetailsPage />}
+          />
+          <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/runsheet`}
             element={<Runsheet />}
@@ -172,22 +182,22 @@ const Views = () => {
           <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/CollectionPayment`}
-            element={<CollectionPayment/>}
+            element={<CollectionPayment />}
           />
-            <Route
+          <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding`}
             element={<Onboarding></Onboarding>}
           />
-            <Route
+          <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/ApproveRider/:id`}
-            element={<ApproveRider/>}
+            element={<ApproveRider />}
           />
-            <Route
+          <Route
             exact
             path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/riderDetails/:id`}
-            element={<RiderDetails/>}
+            element={<RiderDetails />}
           />
 
           <Route

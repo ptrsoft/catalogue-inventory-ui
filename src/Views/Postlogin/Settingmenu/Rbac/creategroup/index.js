@@ -35,7 +35,7 @@ const Creategroup = () => {
           items={[
             { text: "Dashboard", href: "/app/dashboard" },
             { text: "Settings", href: "/app/settings" },
-            { text: "RBAC", href: "/app/settings/rbac/users" },
+            { text: "RBAC", href: "/app/settings/rbac/groups" },
             { text: "Create Group", href: "#" },
           ]}
           ariaLabel="Breadcrumbs"

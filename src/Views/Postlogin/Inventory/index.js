@@ -426,7 +426,7 @@ const Inventory = () => {
             placeholder="Select Category"
           />
           <Select
-           disabled={!selectedCategory} // Enable only if a category is selected
+  disabled={!selectedCategory || selectedCategory.value === ""} // Disable if no category or "All" is selected
 
             required
             selectedOption={selectedSubCategory}

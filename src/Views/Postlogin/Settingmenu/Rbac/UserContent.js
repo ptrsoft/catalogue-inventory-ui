@@ -6,8 +6,6 @@ import {
   Button,
   Box,
   Table,
-  Input,
-  FormField,
 } from "@cloudscape-design/components";
 import { ContentLayout, BreadcrumbGroup } from "@cloudscape-design/components";
 import TextFilter from "@cloudscape-design/components/text-filter";
@@ -16,32 +14,17 @@ import Select from "@cloudscape-design/components/select";
 import Modal from "@cloudscape-design/components/modal";
 import Badge from "@cloudscape-design/components/badge";
 import Alloptions from "./alloptions";
+import { useNavigate } from "react-router-dom";
 
 const UsersContent = () => {
   const [selectedOption, setSelectedOption] = useState();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [newUser, setNewUser] = useState({ name: "", email: "" });
-  const [errors, setErrors] = useState({ name: false, email: false });
   const [userFilteringText, setUserFilteringText] = useState("");
-  const [groupFilteringText, setGroupFilteringText] = useState("");
   const [isRequestModalVisible, setIsRequestModalVisible] = useState(false); // Modal for user request
   const [itemToUpdate, setItemToUpdate] = useState(null);
   const [isStatusChangeModalVisible, setIsStatusChangeModalVisible] =
     useState(false);
-  const [selectedItems, setSelectedItems] = React.useState();
-
-  const handleCreateNewUser = () => {
-    const hasError = {
-      name: newUser.name === "",
-      email: newUser.email === "",
-    };
-    setErrors(hasError);
-    if (!hasError.name && !hasError.email) {
-      console.log("New User Created:", newUser);
-      setNewUser({ name: "", email: "" });
-      setIsModalVisible(false); // Close modal after user creation
-    }
-  };
+  const navigate = useNavigate(); // Initialize navigate
 
   return (
     <ContentLayout
@@ -102,7 +85,7 @@ const UsersContent = () => {
                     </Modal>
                     <Button
                       variant="primary"
-                      onClick={() => setIsModalVisible(true)}
+                      onClick={() => navigate("/app/settings/rbac/createuser")} // Navigate to the create user page
                     >
                       Create New User
                     </Button>
@@ -236,7 +219,7 @@ const UsersContent = () => {
           >
             <SpaceBetween size="xxl">
               <Box>Are you sure you want to change the status?</Box>
-                <Box float="right">
+              <Box float="right">
                 <button
                   style={{
                     color: "red",
@@ -254,149 +237,15 @@ const UsersContent = () => {
                   Cancel
                 </button>
 
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      setIsStatusChangeModalVisible(false); // Close the modal
-                    }}
-                  >
-                    Confirm
-                  </Button>
-                </Box>
-            </SpaceBetween>
-          </Modal>
-
-          <Modal
-            onDismiss={() => setIsModalVisible(false)}
-            visible={isModalVisible}
-            footer={
-              <>
-                <button
-                  style={{
-                    color: "white",
-                    border: "2px solid red",
-                    fontWeight: "bold",
-                    height: "32px",
-                    width: "100px",
-                    borderRadius: "16px",
-                    background: "red",
-                    cursor: "pointer",
-                    marginRight: "0.5rem",
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    setIsStatusChangeModalVisible(false); // Close the modal
                   }}
-                  onClick={() => setIsModalVisible(false)}
                 >
-                  Cancel
-                </button>
-                <Box float="right">
-                  <Button variant="primary" onClick={handleCreateNewUser}>
-                    Create
-                  </Button>
-                </Box>
-              </>
-            }
-            header="New User"
-          >
-            <SpaceBetween direction="vertical" size="m">
-              <div style={{ width: "18rem" }}>
-                <FormField
-                  label={
-                    <span>
-                      User Name <i>- optional</i>
-                    </span>
-                  }
-                >
-                  <Input
-                    value={newUser.name}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, name: e.detail.value });
-                      if (errors.name) setErrors({ ...errors, name: false });
-                    }}
-                  />
-                </FormField>
-              </div>
-              <div style={{ width: "18rem" }}>
-                <FormField
-                  label="Email Address"
-                  errorText={errors.email ? "Email is required." : ""}
-                >
-                  <Input
-                    value={newUser.email}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, email: e.detail.value });
-                      if (errors.email) setErrors({ ...errors, email: false });
-                    }}
-                  />
-                </FormField>
-              </div>
-
-              <Header>Add User To Group</Header>
-              <SpaceBetween direction="horizontal" size="s">
-                <div style={{ width: "18rem" }}>
-                  <TextFilter
-                    filteringText={groupFilteringText}
-                    filteringPlaceholder="Search Group"
-                    filteringAriaLabel="Filter groups"
-                    onChange={({ detail }) =>
-                      setGroupFilteringText(detail.filteringText)
-                    }
-                  />
-                </div>
-                <Button variant="primary">Create Group</Button>
-              </SpaceBetween>
-
-              <Table
-                renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
-                  `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
-                }
-                onSelectionChange={({ detail }) =>
-                  setSelectedItems(detail.selectedItems)
-                }
-                selectedItems={selectedItems}
-                ariaLabels={{
-                  selectionGroupLabel: "Items selection",
-                  allItemsSelectionLabel: () => "select all",
-                  itemSelectionLabel: ({ selectedItems }, item) => item.name,
-                }}
-                columnDefinitions={[
-                  {
-                    id: "group",
-                    header: "Group",
-                    cell: (e) => e.name,
-                  },
-                  {
-                    id: "value",
-                    header: "Attached Policies",
-                    cell: (e) => e.alt,
-                  },
-                ]}
-                enableKeyboardNavigation
-                items={[
-                  {
-                    name: "Super Admin",
-                    alt: "Multiple",
-                  },
-                  {
-                    name: "Default User",
-                    alt: "Multiple",
-                  },
-                ]}
-                loadingText="Loading resources"
-                selectionType="multi"
-                trackBy="name"
-                variant="borderless"
-                empty={
-                  <Box
-                    margin={{ vertical: "xs" }}
-                    textAlign="center"
-                    color="inherit"
-                  >
-                    <SpaceBetween size="m">
-                      <b>No resources</b>
-                      <Button>Create resource</Button>
-                    </SpaceBetween>
-                  </Box>
-                }
-              />
+                  Confirm
+                </Button>
+              </Box>
             </SpaceBetween>
           </Modal>
         </Container>

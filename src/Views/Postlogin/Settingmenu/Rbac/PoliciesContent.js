@@ -109,9 +109,7 @@ const PoliciesContent = () => {
                 <Box key={index} padding={{ vertical: "xs" }}>
                   {/* Main Accordion Item */}
                   <div
-                    onClick={() => toggleAccordion(index)}
                     style={{
-                      cursor: "pointer",
                       fontWeight: "bold",
                       borderBottom: "1px solid #ccc",
                       padding: "10px 0",
@@ -135,9 +133,7 @@ const PoliciesContent = () => {
                       {item.subItems.map((subItem, subIndex) => (
                         <Box key={subIndex} padding={{ vertical: "xs" }}>
                           <div
-                            onClick={() => toggleSubAccordion(subIndex)}
                             style={{
-                              cursor: "pointer",
                               fontWeight: "normal",
                               padding: "5px 0",
                               display: "flex",
@@ -161,9 +157,7 @@ const PoliciesContent = () => {
                               {subItem.subItems.map((subSubItem, subSubIndex) => (
                                 <Box key={subSubIndex} padding={{ vertical: "xs" }}>
                                   <div
-                                    onClick={() => toggleSubSubAccordion(subSubIndex)}
                                     style={{
-                                      cursor: "pointer",
                                       fontWeight: "normal",
                                       padding: "5px 0",
                                       borderBottom: subSubIndex === subItem.subItems.length - 1 ? "1px solid #f0f0f0" : "none", // Only add a border to the last sub-sub-item

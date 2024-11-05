@@ -1,31 +1,48 @@
 // src/redux/thunks/ridersThunk.js
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import config from 'Views/Config';
+import { postLoginService } from 'Services';
 
 // Async Thunk to fetch all riders from the API
-export const fetchRiders = createAsyncThunk('riders/fetchRiders', async () => {
-    const response = await axios.get('https://api.admin.promodeagro.com/rider');
+export const fetchRiders = createAsyncThunk('riders/fetchRiders', async ( {status ='', pageKey = ''}) => {
+    //  console.log(status,"from thunk");
+      // Construct the URL
+      let url = `${config.FETCH_RIDERS}`;
+      const params = [];
+      if (pageKey) params.push(`pageKey=${encodeURIComponent(pageKey)}`);
+      if (status) params.push(`status=${encodeURIComponent(status)}`);
+      // If there are any parameters, append them to the URL
+    if (params.length > 0) {
+        url += `?${params.join('&')}`;
+      }
+      const response = await postLoginService.get(url);
+      console.log(url,"rider url");
     return response.data;
 });
 
 // Async Thunk to fetch a specific rider by ID from the API
 export const fetchRiderById = createAsyncThunk('riders/fetchRiderById', async (id) => {
-    const response = await axios.get(`https://api.admin.promodeagro.com/rider/${id}`);
+      // Construct the URL
+      let url = `${config.FETCH_RIDERS}/${id}`;
+      const response = await postLoginService.get(url);
+    
     return response.data;
 });
 
 // Async Thunk to verify or reject a document for a rider
 export const verifyOrRejectDocument = createAsyncThunk(
     'riders/verifyOrRejectDocument',
-    async ({ id, name, status, reason }, { rejectWithValue }) => {
+    async ({ id, name, status, reason }, { rejectWithValue,dispatch }) => {
         try {
             // Check if reason is required for rejection
             if (status === 'rejected' && !reason) {
                 throw new Error('Reason is required if the status is rejected.');
             }
-
-            const response = await axios.patch(
-                `https://api.admin.promodeagro.com/rider/${id}/document`,
+            console.log(id,"idd ");
+            let url = `${config.FETCH_RIDERS}/${id}/document`;
+            console.log(url,"url");
+            const response = await postLoginService.patch(
+                url,
                 {
                     status,
                     reason: status === 'rejected' ? reason : undefined, // Include reason only if status is rejected
@@ -34,7 +51,8 @@ export const verifyOrRejectDocument = createAsyncThunk(
                     params: { name },
                 }
             );
-            console.log(response.data);
+            console.log(response);
+            dispatch(fetchRiderById(id))
             return response.data;
         } catch (error) {
             // Return the error response data if available, otherwise return a general error message
@@ -46,22 +64,23 @@ export const verifyOrRejectDocument = createAsyncThunk(
 // Async Thunk to activate, inactivate, or reject a rider
 export const updateRiderStatus = createAsyncThunk(
     'riders/updateRiderStatus',
-    async ({ id, status, reason }, { rejectWithValue }) => {
+    async ({ id, status, reason }, { rejectWithValue,dispatch }) => {
         console.log(id,status,reason,"directly approving or rejecting");
         try {
             // Check if reason is required for rejection
             if (status === 'rejected' && !reason) {
                 throw new Error('Reason is required if the status is rejected.');
             }
-
-            const response = await axios.patch(
-                `https://api.admin.promodeagro.com/rider/${id}`,
+            let url = `${config.FETCH_RIDERS}/${id}`;
+            const response = await postLoginService.patch(
+                url,
                 {
                     status,
                     reason: status === 'rejected' ? reason : undefined, // Include reason only if status is rejected
                 }
             );
             console.log(response.data);
+            dispatch(fetchRiders())
             return response.data;
         } catch (error) {
             // Return the error response data if available, otherwise return a general error message

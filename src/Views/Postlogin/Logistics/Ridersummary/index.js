@@ -79,11 +79,11 @@ const RiderSummary = () => {
       <Box>
 
     <Button variant="primary" iconName='envelope' onClick={onboardrider}>Onboarding Entries</Button>
-    <Box float='right' margin={{top:"xxl"}}> 
+    <Box float='right' margin={{top:"xl"}}> 
          <Pagination
             currentPageIndex={currentPage}
             onChange={({ detail }) => setCurrentPage(detail.currentPageIndex)}
-            pagesCount={5} // Adjust according to the data size
+            pagesCount={2} // Adjust according to the data size
           /></Box>
           </Box>
     </Grid>

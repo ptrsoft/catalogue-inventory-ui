@@ -25,7 +25,10 @@ export const fetchOrderInventory = createAsyncThunk(
     const response = await postLoginService.get(url);
     console.log(url, 'url');
     console.log(response, 'order');
-    return response.data; // Axios automatically parses JSON
+    return {
+      data: response.data.items,
+      nextKey: response.data.nextKey, // nextKey for pagination
+    };
   }
 );
 
@@ -43,7 +46,7 @@ export const fetchOrderById = createAsyncThunk(
 // Thunk to cancel a specific order by ID
 export const cancelOrder = createAsyncThunk(
   'orderInventory/cancelOrder',
-  async ({ orderId, reason }, { rejectWithValue }) => {
+  async ({ orderId, reason }, { rejectWithValue,dispatch }) => {
     try {
       // Construct the URL for the API request
       const url = `${config.CANCEL_ORDER}/${orderId}/cancel`;
@@ -53,6 +56,7 @@ export const cancelOrder = createAsyncThunk(
 
       // Return the response data on success
       console.log(response.data, 'cancel');
+      dispatch(fetchOrderInventory())
       return response.data;
     } catch (error) {
       // Handle error by returning a rejected action

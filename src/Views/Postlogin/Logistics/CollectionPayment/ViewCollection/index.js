@@ -143,7 +143,7 @@ const ViewDetailsPage = () => {
             }
           >
             <Box margin={{ bottom: "s" }}>
-              Did you collect the total amount of Rs.{selectedRunsheet?.amountCollected} for Runsheet ID :{selectedRunsheet?.id}?
+              Did you collect the total amount of Rs.{selectedRunsheet?.amountCollectable} for Runsheet ID :{selectedRunsheet?.id}?
             </Box>
             <FormField label="Runsheet Total Amount">
               <Input

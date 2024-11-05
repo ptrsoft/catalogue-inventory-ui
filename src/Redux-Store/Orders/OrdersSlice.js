@@ -1,10 +1,17 @@
 // orderInventorySlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchOrderInventory, fetchOrderById, cancelOrder, fetchOrderStats } from './OrdersThunk'; // Import the fetchOrderStats thunk
+import status from "Redux-Store/Constants";
 
 // Define the initial state
 const initialState = {
-    orders: [],
+    orders: {
+        nextKey: null, 
+        data: {},  // Change from array to object for pagination
+        status: 'idle',
+        error: null,
+
+    },
     count: 0,
     loading: false,
     error: null,
@@ -13,7 +20,8 @@ const initialState = {
     cancelError: null,    // To track errors related to order cancellation
     orderStats: null,     // To hold order stats data
     statsLoading: false,  // To track loading state for stats API
-    statsError: null      // To track errors related to stats API
+    statsError: null ,
+
 };
 
 // Create the slice
@@ -29,9 +37,14 @@ const orderInventorySlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchOrderInventory.fulfilled, (state, action) => {
-                state.loading = false;
-                state.orders = action.payload.items;
-                state.count = action.payload.count;
+                const { data } = action.payload; // Directly access data from the API response
+                 // Get the current page based on the request
+            
+      const currentPage = action.meta.arg.pageKey ? action.meta.arg.pageKey : 1;
+      state.orders.data[currentPage] = data.items; // Store items directly in the state
+        // Set nextKey for pagination
+        state.orders.nextKey = data.nextKey; // Save nextKey for further requests
+           
             })
             .addCase(fetchOrderInventory.rejected, (state, action) => {
                 state.loading = false;
@@ -64,6 +77,7 @@ const orderInventorySlice = createSlice({
                 state.orders = state.orders.map(order =>
                     order.id === cancelledOrderId ? { ...order, status: 'Cancelled' } : order
                 );
+                fetchOrderInventory()
             })
             .addCase(cancelOrder.rejected, (state, action) => {
                 state.cancelStatus = 'failed';

@@ -27,10 +27,40 @@ import {
   fetchOrderById,
   cancelOrder,
 } from "Redux-Store/Orders/OrdersThunk";
+
 const Orders = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cancelOrderId, setCancelOrderId] = useState(null); // Store the order ID to cancel
   const [cancellationReason, setCancellationReason] = useState(""); // State for cancellation reason
+  const [flashMessages, setFlashMessages] = useState([]);
+  const [pageSize, setPageSize] = useState(50); // Number of rows per page
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
+  const [selectedProduct, setSelectedProduct] = React.useState(null);
+  const [ageFilter, setAgeFilter] = useState(  { label: "7 Days Old",
+    value: "7",}); // New state for age filter
+    
+    const [currentPage, setCurrentPage] = useState(1);
+    const [fetchedPages, setFetchedPages] = useState({}); // Store fetched data per page
+    const [pagesCount, setPagesCount] = useState(1); // Keep track of total pages
+    const [currentPageIndex, setCurrentPageIndex] = React.useState(1);
+    const [nextKeys, setNextKeys] = useState({}); // Store nextKey per page
+  // const [search, setSearch] = useState('');
+  const [category, setCategory] = useState(null);
+  const [statuscategory, setstatuscategory] = useState(null);
+  const [pageKey, setPageKey] = useState("");
+  const [filteringText, setFilteringText] = React.useState("");
+    //functions 
+      // Get loading, error, and selectedOrder from the Redux store
+  const dispatch = useDispatch();
+  const { selectedOrder } = useSelector((state) => state.orderInventory);
+
+  const { orders, loading, error, count } = useSelector(
+    (state) => state.orderInventory.orders.data[currentPage]||[]
+  );
+  // const { data = [] } = orders;
+  // console.log(orders,"order for nextkey");
+  console.log("Current Page:", currentPage);
+
 
   const handleOpenModal = (orderId) => {
     console.log(orderId, "modal");
@@ -44,7 +74,7 @@ const Orders = () => {
     setCancelOrderId(null); // Clear the order ID
     setCancellationReason(""); // Clear the cancellation reason
   };
-  const [flashMessages, setFlashMessages] = useState([]);
+
   const handleCancelOrder = () => {
     if (cancelOrderId) {
       console.log(cancelOrderId, "id");
@@ -89,42 +119,74 @@ const Orders = () => {
     }
   };
 
-  const [currentPageIndex, setCurrentPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(50); // Number of rows per page
-
-  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
-  const [selectedProduct, setSelectedProduct] = React.useState(null);
-  const [ageFilter, setAgeFilter] = useState(  { label: "7 Days Old",
-    value: "7",}); // New state for age filter
-  // Get loading, error, and selectedOrder from the Redux store
-  const dispatch = useDispatch();
-  const { selectedOrder } = useSelector((state) => state.orderInventory);
-  const { orders, loading, error, count } = useSelector(
-    (state) => state.orderInventory
-  );
-  // const [search, setSearch] = useState('');
-  const [category, setCategory] = useState(null);
-  const [statuscategory, setstatuscategory] = useState(null);
-  const [pageKey, setPageKey] = useState("");
-  const [filteringText, setFilteringText] = React.useState("");
 
   const handleSearchChange = ({ detail }) => {
     setFilteringText(detail.filteringText);
     // setCurrentPage(1); // Reset page to 1 when filters change
   };
   console.log(filteringText, "search");
-  useEffect(() => {
-    dispatch(
-      fetchOrderInventory({
-        search: filteringText || "",
-        type: category?.value || "",
-        status: statuscategory?.value || "",
-        date: ageFilter?.value || "",
-        pageKey,
-      })
-    );
-  }, [dispatch, filteringText,ageFilter, statuscategory, category, pageKey]);
 
+  useEffect(() => {
+    // Define the pageKey for pagination (undefined for page 1)
+    const pageKey = currentPage === 1 ? undefined : nextKeys[currentPage - 1];
+    
+    // Create a unique key for the filter and page combination
+    const filterKey = `${category?.value || ""}-${statuscategory?.value || ""}-${filteringText || ""}-${ageFilter?.value || ""}-${currentPage}`;
+    
+    // Check if the data for the current filter and page combination has already been fetched
+    if (!fetchedPages[filterKey]) {
+      dispatch(
+        fetchOrderInventory({
+          type: category?.value || "",
+          status: statuscategory?.value || "",
+          search: filteringText || "",
+          date: ageFilter?.value || "",
+          pageKey, 
+          pageSize: 50,
+        })
+      )
+      .unwrap()
+      .then((result) => {
+        console.log("Fetched products for page:", currentPage, result);
+  
+        if (Array.isArray(result.data)) {
+          // Store fetched items for the current page and filters
+          setFetchedPages((prev) => ({
+            ...prev,
+            [filterKey]: result.data,
+          }));
+  
+          // Store nextKey and update pagesCount only if it's new data
+          if (result.nextKey && !nextKeys[currentPage]) {
+            setNextKeys((prevKeys) => ({
+              ...prevKeys,
+              [currentPage]: result.nextKey,
+            }));
+            setPagesCount((prevCount) => prevCount + 1);
+          }
+        } else {
+          console.error("Unexpected data structure:", result.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching products:", error);
+      });
+    }
+  }, [
+    dispatch,
+    currentPage,
+    filteringText,
+    category,
+    statuscategory,
+    ageFilter,
+    nextKeys,
+    fetchedPages,
+  ]);
+  
+      // Handle page changes
+      const handlePageChange = (pageIndex) => {
+        setCurrentPage(pageIndex); // Update current page
+      };
   useEffect(() => {
     if (selectedProduct) {
       dispatch(fetchOrderById(selectedProduct)); // Dispatch the thunk to fetch order details
@@ -147,7 +209,7 @@ const Orders = () => {
     { label: "Order Placed", value: "order placed" },
     { label: "Cancel Orders", value: "cancelled" },
     { label: "Packed", value: "packed" },
-    { label: "On The Way", value: "ontheway" },
+    { label: "On The Way", value: "on the way" },
     { label: "Delivered", value: "delivered" },
 
     // Add other statuses if needed
@@ -161,6 +223,7 @@ const Orders = () => {
   ];
   const handleAgeFilterChange = ({ detail }) => {
     setAgeFilter(detail.selectedOption);
+    setCurrentPage(1);
   };
 
   const paymentOptions = [
@@ -211,14 +274,17 @@ const Orders = () => {
     { header: "Deliver Area", cell: (item) => item.area },
   ];
 
-  const handlePageChange = ({ detail }) =>
-    setCurrentPageIndex(detail.currentPageIndex);
 
-  const handlepaymentChange = ({ detail }) =>
+
+  const handlepaymentChange = ({ detail }) =>{
     setCategory(detail.selectedOption);
+  setCurrentPage(1);
+  }
 
-  const handlestatusChange = ({ detail }) =>
+  const handlestatusChange = ({ detail }) =>{
     setstatuscategory(detail.selectedOption);
+  setCurrentPage(1);
+  }
 
 
 
@@ -365,20 +431,24 @@ const Orders = () => {
                 placeholder="Filter by Delivery Age"
                 selectedAriaLabel="Selected age filter"
               />
-            {/* )} */}
-            <Box float="right">
-              <Pagination
-                currentPageIndex={currentPageIndex}
-                onChange={handlePageChange}
-                pagesCount={Math.ceil(orders.length / pageSize)}
-                ariaLabels={{
-                  nextPageLabel: "Next page",
-                  previousPageLabel: "Previous page",
-                  pageLabel: (pageNumber) => `Page ${pageNumber} of all pages`,
-                }}
+                 <Select
+                required
+                // selectedOption={ageFilter}
+                // onChange={handleAgeFilterChange}
+                // options={ageOptions}
+                placeholder="Filter by Delivery Slot"
+                selectedAriaLabel="Selected age filter"
               />
+                 </Grid>
+          
+            <Box float="right" margin={{top:"xl"}}>
+            <Pagination
+      currentPageIndex={currentPage}
+      onChange={({ detail }) => handlePageChange(detail.currentPageIndex)}
+      pagesCount={pagesCount}
+    />
             </Box>
-          </Grid>
+       
 
           {/* Orders table */}
           <div
@@ -387,14 +457,20 @@ const Orders = () => {
             }`}
           >
             <Table
+              renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
+                `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
+              }
               variant="borderless"
               columnDefinitions={columns}
-              items={orders}
-              // pagination={
-
-              // }
-              // resizableColumns
-              // stickyHeader
+               items={fetchedPages[`${category?.value || ""}-${statuscategory?.value || ""}-${filteringText || ""}-${ageFilter?.value || ""}-${currentPage}`] || []}
+               empty={
+                <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
+                  <SpaceBetween size="m">
+                    <b>No Orders {loading||error}</b>
+                  </SpaceBetween>
+                </Box>
+              }
+             
             />
           </div>
         </div>

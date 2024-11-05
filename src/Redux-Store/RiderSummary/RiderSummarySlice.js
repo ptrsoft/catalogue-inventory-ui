@@ -69,6 +69,7 @@ const ridersSlice = createSlice({
                     }
                     state.items[riderIndex].documents[name] = status; // Update the specific document status
                 }
+                fetchRiderById()
             })
             .addCase(verifyOrRejectDocument.rejected, (state, action) => {
                 state.documentStatus = 'failed';
@@ -91,6 +92,7 @@ const ridersSlice = createSlice({
                 if (riderIndex !== -1) {
                     state.items[riderIndex].status = status; // Update rider's status
                 }
+                fetchRiders()
             })
             .addCase(updateRiderStatus.rejected, (state, action) => {
                 state.updateStatus = 'failed';

@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import {
   Table,
   Header,
@@ -6,205 +6,145 @@ import {
   Input,
   Select,
   Box,
-  BreadcrumbGroup,
-  Pagination,
   StatusIndicator,
+  Pagination,
+  Toggle,
+  BreadcrumbGroup,
   Grid,
-  SpaceBetween,Toggle
+  SpaceBetween
 } from '@cloudscape-design/components';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRiders } from 'Redux-Store/RiderSummary/RiderSummaryThunk';
+import { updateRiderStatus } from 'Redux-Store/RiderSummary/RiderSummaryThunk';
 
 const Onboarding = () => {
-     const dispatch = useDispatch();
-    const { items, count, error } = useSelector((state) => state.riders);
-
-    useEffect(() => {
-   
-            dispatch(fetchRiders());
-
-    }, [dispatch]);
-     console.log(items,"rider");
-
-
-
-  const [status, setStatus] = useState('Pending');
+  const dispatch = useDispatch();
+  const { items, count, error } = useSelector((state) => state.riders);
+  const [status, setStatus] = useState('active');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPageIndex, setCurrentPageIndex] = useState(1);
   const pageSize = 10;
   const navigate = useNavigate();
-  // Function to navigate to rider details page with active tab index
-  const riderdetails = (tabIndex = 0) => {
-    // navigate('/app/Logistics/RiderSummary/riderDetails', { state: { activeTab: tabIndex } });
-  };
 
   const handleViewDetails = (item) => {
-    let tabIndex = 0; // Default to Personal Details tab
-    
-    if (item.status === 'Rejected') {
-      tabIndex = 1; // Professional Details tab for rejected status
-      navigate(`/app/Logistics/RiderSummary/onboarding/riderDetails/${item.id}`, { state: { activeTab: tabIndex } });
-    } 
-    else   if (item.status === 'Review Pending') {
-      tabIndex = 0; // Professional Details tab for rejected status
-      navigate(`/app/Logistics/RiderSummary/onboarding/riderDetails/${item.id}`, { state: { activeTab: tabIndex } });
-    }
-    else if (item.status === 'Active' || item.status === 'Inactive') {
-      // Optional: You can set specific tab index for Active/Inactive status if needed
-      navigate(`/app/Logistics/RiderSummary/onboarding/ApproveRider/${item.id}`);
-      // tabIndex = 0;
-       // Default to Personal Details tab
-    }
-    riderdetails(tabIndex);
-  }
-// Function to handle the toggle change
-const handleStatusToggle = (id, isActive) => {
-  // Update the status based on the toggle state (isActive)
-  console.log(`Rider ID: ${id} status changed to: ${isActive ? 'Active' : 'Inactive'}`);
-  // Perform the necessary update logic here (e.g., API call or state update)
-};
-  const riderData = {
-    Pending: Array.from({ length: 25 }, (_, i) => ({
-      id: i + 1,
-      status: 'Review Pending',
-      date: '10/10/2024',
-      name: `Rider ${i + 1}`,
-      contact: '123456789',
-      action: 'View Details',
-    })),
-    Rejected: [
-      {
-        id: 1,
-        status: 'Rejected',
-        date: '10/10/2024',
-        name: 'William Taylor',
-        contact: '123456789',
-        issues: 'Pan Card Mismatch Documents',
-        reupload: 'Reupload Request Sent',
-        action: 'View Details',
-      },
-      {
-        id: 2,
-        status: 'Rejected',
-        date: '10/10/2024',
-        name: 'Jane Doe',
-        contact: '123456789',
-        issues: 'Reupload All Documents',
-        reupload: 'Reupload Request Sent',
-        action: 'View Details',
-      },
-      // Add more rejected data as needed
-    ],
-    Active: [
-      {
-        id: 1,
-        status: 'Active',
-        date: '10/10/2024',
-        name: 'William Taylor',
-        contact: '123456789',
-        action: 'View Details',
-      },
-      {
-        id: 2,
-        status: 'Inactive',
-        date: '10/10/2024',
-        name: 'Jane Doe',
-        contact: '123456789',
-        action: 'View Details',
-      },
-      // Add more active data as needed
-    ],
+    const tabIndex = item.reviewStatus === 'rejected' ? 1 : 0;
+    navigate(`/app/Logistics/RiderSummary/onboarding/riderDetails/${item.id}`, { state: { activeTab: tabIndex } });
   };
 
   const handleStatusChange = (e) => {
-    setStatus(e.detail.selectedOption.value);
-    setCurrentPageIndex(1); // Reset to the first page when status changes
+    setStatus(e.detail?.selectedOption.value);  // Use .value here to get the actual value
+    setCurrentPageIndex(1);
   };
 
-  const filteredData = riderData[status].filter((item) =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    // Fetch riders with current status and page index
+    dispatch(fetchRiders({ status: status || "", pageIndex: currentPageIndex, pageSize }));
+    console.log(status, "from dispatch status");
+  }, [dispatch, status, currentPageIndex]);
 
-  const paginatedData = filteredData.slice(
-    (currentPageIndex - 1) * pageSize,
-    currentPageIndex * pageSize
-  );
+  const handleAproveRiderDetails = (item) => {
+    // Optional: You can set specific tab index for Active/Inactive status if needed
+    navigate(`/app/Logistics/RiderSummary/onboarding/ApproveRider/${item.id}`);
+    // tabIndex = 0;
+     // Default to Personal Details tab
+  }
+   // Add sno to the rider data
+  const runsheetDataWithSno = items.map((item, index) => ({
+    ...item,
+    sno: index + 1, // Assign sequential sno based on index
+  }));
+//active or inactive rider 
+const handleStatusToggle = async (item) => {
+  try {
+    await dispatch(updateRiderStatus({
+      id: item.id,
+      status: item?.reviewStatus === 'active' ? 'inactive' : 'active'
+    })).unwrap();
+        // navigate("/app/Logistics/RiderSummary");
+  } catch (error) {
+    console.error("Failed to update rider status:", error);
+    // Handle error (e.g., show error message to the user)
+  }
+};
 
   const columnDefinitions = {
-    Pending: [
-      { id: 'sno', header: 'Sno.', cell: (item) => item.id },
-      {
-        id: 'status',
-        header: 'Status',
-        cell: (item) => (
-          <StatusIndicator type="pending">Review Pending</StatusIndicator>
-        ),
-      },
-      { id: 'date', header: 'Date', cell: (item) => item.date },
-      { id: 'name', header: 'Rider Name', cell: (item) => item.name },
-      { id: 'contact', header: 'Contact No', cell: (item) => item.contact },
+    pending: [
+      { id: 'sno', header: 'Sno.', cell: (item, index) => item.sno },
+      { id: 'status', header: 'Status', cell: (item) => <StatusIndicator type="pending">{item.reviewStatus}</StatusIndicator> },
+      { id: 'submittedAt', header: 'Submitted At', cell: (item) => item.submittedAt },
+      { id: 'name', header: 'Rider Name', cell: (item) => item.personalDetails.fullName },
+      { id: 'contact', header: 'Contact No', cell: (item) => item.number },
       { id: 'action', header: 'Action', cell: (item) => (
         <div style={{ width: '100px', cursor: 'pointer' }} onClick={() => handleViewDetails(item)}>
-          {item.action}
+          View Details
         </div>
       ) },
     ],
-    Rejected: [
-      { id: 'sno', header: 'Sno.', cell: (item) => item.id },
-      {
-        id: 'status',
-        header: 'Status',
-        cell: (item) => (
-          <StatusIndicator type="error">Rejected</StatusIndicator>
-        ),
-      },
-      { id: 'date', header: 'Date', cell: (item) => item.date },
-      { id: 'name', header: 'Rider Name', cell: (item) => item.name },
-      { id: 'contact', header: 'Contact No', cell: (item) => item.contact },
-      { id: 'issues', header: 'Issues', cell: (item) => item.issues },
-      {
-        id: 'reupload',
-        header: 'Reupload',
-        cell: (item) => <div style={{ width: '100px' }}>{item.reupload}</div>,
-      },
+    rejected: [
+      { id: 'sno', header: 'Sno.', cell: (item, index) => item.sno },
+      { id: 'status', header: 'Status', cell: (item) => <StatusIndicator type="error">{item.reviewStatus}</StatusIndicator> },
+      { id: 'submittedAt', header: 'Date', cell: (item) => item.submittedAt?.slice(0,10) },
+      { id: 'name', header: 'Rider Name', cell: (item) => item.personalDetails.fullName },
+      { id: 'contact', header: 'Contact No', cell: (item) => item.number },
+      { id: 'rejectionReason', header: 'Issues', cell: (item) => item.rejectionReason || 'N/A' },
       { id: 'action', header: 'Action', cell: (item) => (
         <div style={{ width: '100px', cursor: 'pointer' }} onClick={() => handleViewDetails(item)}>
-          {item.action}
+          View Details
         </div>
       ) },
     ],
-    Active: [
-      { id: 'riderId', header: 'Rider ID', cell: (item) => `#${item.id}` },
-      { id: 'dateOfJoining', header: 'Date Of Joining', cell: (item) => item.date },
-      { id: 'riderName', header: 'Rider Name', cell: (item) => item.name },
-      { id: 'contactNo', header: 'Contact No', cell: (item) => item.contact },
+    active: [
+      { id: 'id', header: 'Rider ID', cell: (item, index) => item.id },
+      { id: 'createdAt', header: 'Date Of Joining', cell: (item) => item.createdAt?.slice(0,10) },
+      { id: 'name', header: 'Rider Name', cell: (item) => item.personalDetails.fullName },
+      { id: 'contact', header: 'Contact No', cell: (item) => item.number },
       {
-        id: 'status',
+        id: 'statusToggle',
         header: 'Status',
         cell: (item) => (
-          <div style={{ width: '100px' }}>
           <Toggle 
-            checked={item.status === 'Active'}
-            onChange={(e) => handleStatusToggle(item.id, e.detail.checked)}
+            checked={item.reviewStatus === 'active'}
+            onChange={(e) => handleStatusToggle(item)}
           >
-            {item.status}
+            {item.reviewStatus === 'active' ? 'Active' : 'Inactive'}
           </Toggle>
-        </div>
         ),
       },
       { id: 'action', header: 'Action', cell: (item) => (
-        <div style={{ width: '100px', cursor: 'pointer' }} onClick={() => handleViewDetails(item)}>
-          {item.action}
+        <div style={{ width: '100px', cursor: 'pointer' }} onClick={() => handleAproveRiderDetails(item)}>
+          View Details
+        </div>
+      ) },
+    ],
+    inactive: [
+      { id: 'id', header: 'Rider ID', cell: (item, index) => item.id },
+      { id: 'createdAt', header: 'Date Of Joining', cell: (item) => item.createdAt?.slice(0,10) },
+      { id: 'name', header: 'Rider Name', cell: (item) => item.personalDetails.fullName },
+      { id: 'contact', header: 'Contact No', cell: (item) => item.number },
+      {
+        id: 'statusToggle',
+        header: 'Status',
+        cell: (item) => (
+          <Toggle 
+            checked={item.reviewStatus === 'active'}
+            onChange={(e) => handleStatusToggle(item)}
+          >
+            {item.reviewStatus === 'active' ? 'Active' : 'Inactive'}
+          </Toggle>
+        ),
+      },
+      { id: 'action', header: 'Action', cell: (item) => (
+        <div style={{ width: '100px', cursor: 'pointer' }} onClick={() => handleAproveRiderDetails(item)}>
+          View Details
         </div>
       ) },
     ],
   };
-  
 
   return (
     <Box>
-      <SpaceBetween direction="vertical" size="m">
+       <SpaceBetween direction="vertical" size="m">
         <BreadcrumbGroup
           items={[
             { text: 'Dashboard', href: '#' },
@@ -213,40 +153,38 @@ const handleStatusToggle = (id, isActive) => {
           ]}
         />
         <Header variant="h1">Rider Summary</Header>
+
+      {error && <Box color="text-status-error">{error}</Box>}
         <Grid
           gridDefinition={[
-            { colspan: { default: 12, xxs: 6 } },
-            { colspan: { default: 12, xxs: 3 } },
+            { colspan: { default: 12, xxs: 5 } },
+            // { colspan: { default: 12, xxs: 3 } },
             { colspan: { default: 12, xxs: 3 } },
           ]}
         >
-          <Input
-            placeholder="Search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.detail.value)}
-          />
-          <Select
-            selectedOption={{ label: status, value: status }}
-            onChange={handleStatusChange}
-            options={[
-              { label: 'Pending', value: 'Pending' },
-              { label: 'Rejected', value: 'Rejected' },
-              { label: 'Active', value: 'Active' },
-            ]}
-          />
-          <Box margin={{ top: 'l' }} float="right">
-            <Pagination
-              currentPageIndex={currentPageIndex}
-              pagesCount={Math.ceil(filteredData.length / pageSize)}
-              onChange={({ detail }) => setCurrentPageIndex(detail.selectedPageIndex)}
-            />
-          </Box>
-        </Grid>
-        <Table
-          variant="borderless"
-          columnDefinitions={columnDefinitions[status]}
-          items={paginatedData}
-        />
+      <Input
+        placeholder="Search by name"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.detail.value)}
+      />
+      <Select
+        selectedOption={{ label: status, value: status }}  // Set selected option properly
+        onChange={handleStatusChange}
+        options={[
+          { label: 'Pending', value: 'pending' },
+          { label: 'Rejected', value: 'rejected' },
+          { label: 'Active', value: 'active' },
+          { label: 'Inactive', value: 'inactive' }
+        ]}
+      />
+      </Grid>
+      <Table
+        variant='borderless'
+        columnDefinitions={columnDefinitions[status] || []}  // Provide fallback in case of undefined
+        items={runsheetDataWithSno}  // Directly use items from backend response
+    
+        pagination={<Pagination currentPageIndex={currentPageIndex} onChange={({ detail }) => setCurrentPageIndex(detail.selectedPageIndex)} />}
+      />
       </SpaceBetween>
     </Box>
   );

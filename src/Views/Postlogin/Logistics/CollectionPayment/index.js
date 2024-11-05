@@ -1,4 +1,3 @@
-// src/components/CashCollectionTable.js
 
 import React, { useEffect, useState, useCallback } from 'react';
 import {
@@ -13,6 +12,9 @@ import {
   Grid,
   StatusIndicator,
   Pagination,
+  Box,
+  Popover, // Import Popover
+  Calendar, // Import Calendar
 } from '@cloudscape-design/components';
 import * as XLSX from 'xlsx';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,71 +29,80 @@ const CashCollectionTable = () => {
   const statusOptions = [
     { label: 'Active', value: 'closed' },
     { label: 'Pending', value: 'pending' },
-    // Add other statuses if needed
   ];
 
   const [statusCategory, setStatusCategory] = useState(statusOptions[1]);
   const [filteringText, setFilteringText] = useState('');
   const [successMessage, setSuccessMessage] = useState(null);
-
+  const [showCalendar, setShowCalendar] = useState(false); // State to control calendar visibility
+  const [selectedDate, setSelectedDate] = useState(''); // Initialize selectedDate as an empty string
   const { data: tableData, loading, error } = useSelector((state) => state.cashCollection);
 
   const fetchData = useCallback(() => {
-    dispatch(fetchCashCollection({ search: filteringText || '', status: statusCategory?.value || '' }));
-  }, [dispatch, filteringText, statusCategory]);
+    dispatch(fetchCashCollection({
+      search: filteringText || '',
+      status: statusCategory?.value || '',
+      date: selectedDate || '', // pass the selected date as a parameter
+    }));
+  }, [dispatch, filteringText, statusCategory, selectedDate]);
 
   useEffect(() => {
-    fetchData(); // Fetch data when component mounts or when dependencies change
+    fetchData();
   }, [fetchData]);
 
   useEffect(() => {
     if (location.state?.successMessage) {
       setSuccessMessage(location.state.successMessage);
-      fetchData(); // Fetch updated data after setting success message
-  
-      // Clear the success message after 3 seconds
+      fetchData();
       const timer = setTimeout(() => setSuccessMessage(null), 3000);
-      return () => clearTimeout(timer); // Clear the timeout if component unmounts
+      return () => clearTimeout(timer);
     }
-  }, [location.state, fetchData]); // Keep fetchData in the dependency array
-  
+  }, [location.state, fetchData]);
 
-  // Handle search filter change
-  const handleSearchChange = ({ detail }) => {
-    setFilteringText(detail.filteringText);
-  };
+  const handleSearchChange = ({ detail }) => setFilteringText(detail.filteringText);
 
   const handleExportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(tableData);
+    const formattedData = tableData.map((item, index) => ({
+      'S.No': index + 1,
+      'Status': item.status,
+      'Date': new Date(item.createdAt).toLocaleDateString(),
+      'Runsheet ID': item.id,
+      'Rider Name': item.rider ? item.rider.name : 'Unknown',
+      'Contact No': item.rider ? item.rider.number : 'Unknown',
+      'Deliveries': item.delivered,
+      'Total Amount': `Rs. ${item.amountCollectable}`,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Cash Collection Data');
     XLSX.writeFile(workbook, 'CashCollectionData.xlsx');
   };
-
   const filteredData = tableData.map((item, index) => ({
     ...item,
     sno: index + 1,
     status: item.status === 'pending' ? 'Cash Pending' : 'Cash Received',
     date: new Date(item.createdAt).toLocaleDateString(),
     runsheetId: item.id,
-    riderName: item.rider ? item.rider.number : 'Unknown',
-    contactNo: item.rider ? item.rider.name : 'Unknown',
+    riderName: item.rider ? item.rider.name : 'Unknown',
+    contactNo: item.rider ? item.rider.number : 'Unknown',
     deliveries: item.delivered,
     amount: `Rs. ${item.amountCollectable}`,
   }));
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
   const handleViewDetailsClick = (status, runsheetId) => {
     navigate(`/app/Logistics/CashCollection/view-details/${runsheetId}`, { state: { status } });
+  };
+
+  const handleDateSelect = ({ detail }) => {
+    setSelectedDate(detail.value); // Update selectedDate with the chosen date
+    setShowCalendar(false); // Hide Calendar after selection
   };
 
   const handleStatusChange = ({ detail }) => setStatusCategory(detail.selectedOption);
 
   return (
     <SpaceBetween direction="vertical" size="s">
-      {/* Display success message using Flashbar */}
       {successMessage && (
         <Flashbar
           items={[
@@ -119,7 +130,23 @@ const CashCollectionTable = () => {
             <Button iconName="external" onClick={handleExportToExcel}>
               Export
             </Button>
-            <Button iconName="calendar">Today</Button>
+            <Popover
+              wrapTriggerText={false}
+              triggerType='custom'
+            
+              content={
+                <Calendar
+                  onChange={handleDateSelect} // Set selected date on change
+                  selectedDate={selectedDate} // Display the selected date in the calendar
+                />
+              }
+              onOpen={() => setShowCalendar(true)}
+              // onClose={() => setShowCalendar(false)}
+              // dismissButton={true}
+              isOpen={showCalendar} // Control visibility with showCalendar
+            >
+<Button iconName="calendar">{selectedDate || 'Sort by Date'}</Button>
+</Popover>
           </div>
         }
       >
@@ -141,9 +168,16 @@ const CashCollectionTable = () => {
           placeholder="Sort By Status"
           selectedAriaLabel="Selected status"
         />
-        <Pagination></Pagination>
+        <Box float='right' margin={{top:"xl"}}> 
+         <Pagination
+            // currentPageIndex={currentPage}
+            // onChange={({ detail }) => setCurrentPage(detail.currentPageIndex)}
+            pagesCount={2} // Adjust according to the data size
+          /></Box>
+      
       </Grid>
 
+      
       <Table
         variant="borderless"
         columnDefinitions={[
@@ -177,6 +211,13 @@ const CashCollectionTable = () => {
         ]}
         items={filteredData}
         stickyHeader
+        empty={
+          <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
+            <SpaceBetween size="m">
+              <b>{loading ? "Loading..." : error ? `Error: ${error}` : "No data available"}</b>
+            </SpaceBetween>
+          </Box>
+        }
       />
     </SpaceBetween>
   );

@@ -102,7 +102,7 @@ useEffect(() => {
     },
     { id: "name", header: "Rider Name", cell: (item) => item?.rider?.name }, // Adjust according to your API response
     { id: "contactNo", header: "Contact No", cell: (item) => item?.rider?.number },
-    { id: "RiderId", header: "Rider ID", cell: (item) => item?.rider?.id },  // Placeholder for contact number
+   
     {
       id: "action",
       header: "Action",
@@ -112,7 +112,7 @@ useEffect(() => {
 
   return (
     <Box>
-      <SpaceBetween direction="vertical" size="m">
+      <SpaceBetween direction="vertical" size="s">
         {/* Display success message using Flashbar */}
         {successMessage && (
           <Flashbar
@@ -150,12 +150,27 @@ useEffect(() => {
             Create Runsheet
           </Button>
         </Grid>
+        <Box float='right'> 
+         <Pagination
+            // currentPageIndex={currentPage}
+            // onChange={({ detail }) => setCurrentPage(detail.currentPageIndex)}
+            pagesCount={2} // Adjust according to the data size
+          />
+          </Box>
+
 
         <Table
           variant="borderless"
           columnDefinitions={columns}
           items={runsheetDataWithSno} // Use fetched runsheet data
-          pagination={<Pagination currentPageIndex={1} pagesCount={5} />}
+
+          empty={
+            <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
+              <SpaceBetween size="m">
+                <b>No Runsheet {loading||error}</b>
+              </SpaceBetween>
+            </Box>
+          }
         />
       </SpaceBetween>
     </Box>

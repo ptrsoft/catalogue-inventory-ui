@@ -14,7 +14,7 @@ import {
   StatusIndicator,
   Icon,
 } from "@cloudscape-design/components";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch and useSelector
 
 import { fetchRiderById } from "Redux-Store/RiderSummary/RiderSummaryThunk"; //
@@ -52,6 +52,20 @@ const RiderDetails = () => {
   const handleDocClick = (doc) => {
     setSelectedDoc(doc);
   };
+  const handleVerifybank = () => {
+  
+    
+      // Update verification status based on name
+      dispatch(
+        verifyOrRejectDocument({
+          name: "bankDetails",
+          status: "verified",
+          id: riderDetails.id,
+        })
+      );
+
+    }
+
 
   const handleVerify = () => {
     if (selectedDoc) {
@@ -85,9 +99,10 @@ const RiderDetails = () => {
     if (selectedDoc) {
       dispatch(
         verifyOrRejectDocument({
-          id: selectedDoc.id,
+          id: riderDetails.id,
           name: selectedDoc.name,
           reason: rejectReason,
+          status:"rejected"
         })
       );
       setRejectModalVisible(false);
@@ -95,9 +110,16 @@ const RiderDetails = () => {
       setSelectedDoc(null);
     }
   };
-  const handleApprove = () => {
-    dispatch(updateRiderStatus({ id: riderId, status: "active" }));
-  };
+  const navigate=useNavigate()
+const handleApprove = async () => {
+  try {
+    await dispatch(updateRiderStatus({ id: riderId, status: "active" })).unwrap();
+    navigate("/app/Logistics/RiderSummary");
+  } catch (error) {
+    console.error("Failed to update rider status:", error);
+    // Handle error (e.g., show error message to the user)
+  }
+};
   const handleDirectRejectionConfirm = () => {
   
       dispatch(
@@ -145,7 +167,7 @@ const RiderDetails = () => {
     { text: "Rider Summary", href: "#" },
     { text: "Rider Details", href: "#" },
   ];
-  console.log(riderDetails.reviewStatus);
+  console.log(riderDetails?.reviewStatus);
 
   return (
     <Box>
@@ -161,12 +183,12 @@ const RiderDetails = () => {
     borderRadius: "16px",
     fontSize: "14px",
     border: `2px solid ${
-      riderDetails.reviewStatus === "rejected"
+      riderDetails?.reviewStatus === "rejected"
         ? "#5F6B7A"
         : "red"
     }`,
     backgroundColor: riderDetails?.reviewStatus === 'rejected' ? 'white' : 'initial',
-    color: riderDetails?.reviewStatus === 'rejected' ? "#5F6B7A" : 'initial',
+    color: riderDetails?.reviewStatus === 'rejected' ? "#5F6B7A" : 'red',
     cursor: riderDetails?.reviewStatus === 'rejected' ? 'not-allowed' : 'pointer',
   }}
   onClick={HandleDirectlyReject}
@@ -231,7 +253,7 @@ const RiderDetails = () => {
                                   </Modal>
                                 )}
 
-              <Button variant="primary" disabled={!areAllDocumentsVerified()||riderDetails?.reviewStatus==='rejected'} onClick={handleApprove}>Approve</Button>
+              <Button variant="primary" disabled={!areAllDocumentsVerified()|| riderDetails?.reviewStatus==='rejected' } onClick={handleApprove}>Approve</Button>
             </div>
           }
         >
@@ -480,20 +502,36 @@ const RiderDetails = () => {
                         <div>Loading...</div>
                       )}
                       <Box float="right">
-                        <button
-                          className="print-btn"
-                          style={{
-                            backgroundColor: "green",
-                            display: "flex",
-                            gap: "5px",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            fontSize: "11px",
-                          }}
-                        >
-                          <p>Verify Details</p>
-                          <Icon name="status-positive" size="small"></Icon>
-                        </button>
+                      <button
+  className="print-btn"
+  style={{
+    backgroundColor: riderDetails?.bankDetails?.status === 'verified' 
+      ? '#5F6B7A' 
+      : riderDetails?.bankDetails?.status === 'rejected' 
+      ? 'red' 
+      : riderDetails?.bankDetails?.status === 'pending' 
+      ? '#037F0C' 
+      : '#037F0C',  // Background color when disabled
+    display: 'flex',
+    gap: '5px',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: '11px',
+    color:"white"
+  }}
+  disabled={riderDetails?.bankDetails?.status === 'verified'}
+  onClick={handleVerifybank}
+>
+  <p>Verify Details</p>
+
+   
+  
+  {riderDetails?.bankDetails?.status === 'rejected' ? (
+    <Icon name="status-negative" size="small" />
+  ): <Icon name="status-positive" size="small" />}
+
+</button>
+
                       </Box>
                     </Container>
                   ),

@@ -1,6 +1,7 @@
 // runsheetSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import { createRunsheet, fetchRunsheet, fetchRunsheetById,closeRunsheet } from './RunsheetThunk'; // Import the thunk
+import { fetchCashCollection } from 'Redux-Store/cashCollection/cashCollectionThunk';
 
 // Define the initial state
 const initialState = {
@@ -26,6 +27,7 @@ const runsheetSlice = createSlice({
       .addCase(createRunsheet.fulfilled, (state, action) => {
         state.loading = false;
         state.message = action.payload.message; // Adjust this according to your response structure
+        fetchRunsheet(); // This will need to be dispatched, as shown below
       })
       .addCase(createRunsheet.rejected, (state, action) => {
         state.loading = false;
@@ -65,6 +67,7 @@ const runsheetSlice = createSlice({
       .addCase(closeRunsheet.fulfilled, (state, action) => {
         state.loading = false;
         state.selectedRunsheet = { ...state.selectedRunsheet, status: "closed" };
+        fetchCashCollection()
       })
       .addCase(closeRunsheet.rejected, (state, action) => {
         state.loading = false;

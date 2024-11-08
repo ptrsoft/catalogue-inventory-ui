@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import {
   Box,  
   Button,
@@ -10,19 +10,22 @@ import {
   ColumnLayout
 } from '@cloudscape-design/components';
 import jsPDF from 'jspdf';
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux"; 
 import riderimg from "../../../../../assets/images/riderimage.jpeg";
-
-const documents = [
-    { id: 1, name: 'Aadhar Card', front: riderimg, back: riderimg, status: 'Pending' },
-    { id: 2, name: 'Pan Card', front: riderimg, back: riderimg, status: 'Pending' },
-    { id: 3, name: 'Driving License', front: riderimg, back: riderimg, status: 'Pending' },
-    { id: 4, name: 'Vehicle Image', front: riderimg, back: riderimg, status: 'Pending' },
-    { id: 5, name: 'RC Book', front: riderimg, back: riderimg, status: 'Pending' },
-];
+import { fetchRiderById } from "Redux-Store/RiderSummary/RiderSummaryThunk"; 
 
 const ApproveRider = () => {
-
+  const { id: riderId } = useParams();
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const riderDetails = useSelector((state) => state.riders.rider);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (riderId) {
+      dispatch(fetchRiderById(riderId));
+    }
+  }, [riderId, dispatch]);
 
   const breadcrumbItems = [
     { text: 'Dashboard', href: '#' },
@@ -31,12 +34,9 @@ const ApproveRider = () => {
     { text: 'Rider Details', href: '#' },
   ];
  
-  const [docStatus, setDocStatus] = useState(documents);
   const handleDocClick = (doc) => {
     setSelectedDocument(doc);
   };
-
-
 
   const downloadPDF = () => {
     if (!selectedDocument) return;
@@ -56,8 +56,6 @@ const ApproveRider = () => {
 
   return (
     <Box>
- 
-
       <SpaceBetween direction="vertical" size="s">
         <BreadcrumbGroup items={breadcrumbItems} />
         <Header variant="h1">Approved Rider Details</Header>
@@ -68,7 +66,8 @@ const ApproveRider = () => {
               <Grid gridDefinition={[{ colspan: 2 }, { colspan: 10 }]}>
                 <Box>
                   <img
-                    src={riderimg}
+                  
+                    src={riderDetails?.documents[0]?.image}
                     alt="Rider"
                     style={{ width: '180px', height: "140px", borderRadius: "5px" }}
                   />
@@ -80,19 +79,19 @@ const ApproveRider = () => {
                     <div className="rider-info">
                       <div className="info-item">
                         <span className="label">Rider Name :</span>
-                        <span className="value">Alfredo Aminoff</span>
+                        <span className="value">{riderDetails?.personalDetails?.fullName || 'N/A'}</span>
                       </div>
                       <div className="info-item">
                         <span className="label">Date of Birth :</span>
-                        <span className="value">30/05/1998</span>
+                        <span className="value">{riderDetails?.personalDetails?.dob ? new Date(riderDetails.personalDetails.dob).toLocaleDateString() : 'N/A'}</span>
                       </div>
                       <div className="info-item">
                         <span className="label">Contact No :</span>
-                        <span className="value">9966996516</span>
+                        <span className="value">{riderDetails?.number || 'N/A'}</span>
                       </div>
                       <div className="info-item">
                         <span className="label">Email :</span>
-                        <span className="value">alfredoaminoff@gmail.com</span>
+                        <span className="value">{riderDetails?.personalDetails?.email || 'N/A'}</span>
                       </div>
                     </div>
                   </Box>
@@ -101,43 +100,43 @@ const ApproveRider = () => {
                   <div className="address-info">
                     <div className="info-item">
                       <span className="label">Address Line 01 :</span>
-                      <span className="value">Suncity</span>
+                      <span className="value">{riderDetails?.personalDetails?.address?.address1 || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">Address Line 02 :</span>
-                      <span className="value">Suncity</span>
+                      <span className="value">{riderDetails?.personalDetails?.address?.address2 || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">LandMark :</span>
-                      <span className="value">Zeeshan Hotel</span>
+                      <span className="value">{riderDetails?.personalDetails?.address?.landmark || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">Select State :</span>
-                      <span className="value">Telangana</span>
+                      <span className="value">{riderDetails?.personalDetails?.address?.state || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">Select City :</span>
-                      <span className="value">Bandlaguda Jagir</span>
+                      <span className="value">{riderDetails?.personalDetails?.address?.city || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">Pin Code :</span>
-                      <span className="value">500081</span>
+                      <span className="value">{riderDetails?.personalDetails?.address?.pincode || 'N/A'}</span>
                     </div>
                     <div className="section-header">References Contact</div>
                     <hr />
                     <div className="info-item">
-                      <span className="label">Father Name :</span>
-                      <span className="value">Alfredo Aminoff</span>
+                      <span className="label">Reference Name :</span>
+                      <span className="value">{riderDetails?.personalDetails?.reference?.number || 'N/A'}</span>
                     </div>
                     <div className="info-item">
-                      <span className="label">Contact No :</span>
-                      <span className="value">9966996516</span>
+                      <span className="label">Relation :</span>
+                      <span className="value">{riderDetails?.personalDetails?.reference?.relation || 'N/A'}</span>
                     </div>
                   </div>
                   <div className="section-header">KYC Documents Details ( <i>Uploaded Documents </i> )</div>
                   <hr />
                   <SpaceBetween direction='vertical' size="s">
-                    {docStatus.map((doc) => (
+                    {riderDetails?.documents?.map((doc) => (
                       selectedDocument && selectedDocument.name === doc.name ? (
                         <Container
                           key={doc.name}
@@ -146,19 +145,17 @@ const ApproveRider = () => {
                         >
                           <ColumnLayout columns={2}>
                             <Box>
-                              <img src={selectedDocument.front} alt={`${selectedDocument.name} (Front)`} style={{ maxWidth: '100%' }} />
-                              <p>{`${selectedDocument.name} (Front)`}</p>
+                              <img src={doc.image} alt={`${doc.name} (Front)`} style={{ maxWidth: '100%' }} />
+                              <p>{`${doc.name} (Front)`}</p>
                             </Box>
-                            {selectedDocument.back && (
-                              <Box>
-                                <img src={selectedDocument.back} alt={`${selectedDocument.name} (Back)`} style={{ maxWidth: '100%' }} />
-                                <p>{`${selectedDocument.name} (Back)`}</p>
-                              </Box>
-                            )}
+                            <Box>
+                              <img src={doc.image} alt={`${doc.name} (Back)`} style={{ maxWidth: '100%' }} />
+                              <p>{`${doc.name} (Back)`}</p>
+                            </Box>
                           </ColumnLayout>
                           <Box float='right'>
                             <div className="button-container">
-                              <button className="cancel-btn" onClick={downloadPDF}>Download PDF</button>
+                              <Button className="cancel-btn" onClick={downloadPDF}>Download PDF</Button>
                             </div>
                           </Box>
                         </Container>
@@ -177,25 +174,25 @@ const ApproveRider = () => {
                       )
                     ))}
                   </SpaceBetween>
-               
-                          <div className="section-header">Bank Details</div>
+
+                  <div className="section-header">Bank Details</div>
                   <hr />
                   <div className="address-info">
                     <div className="info-item">
                       <span className="label" style={{ width: "180px" }}>Bank Name: </span>
-                      <span className="value">HDFC Bank </span>
+                      <span className="value">{riderDetails?.bankDetails?.bankName || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label" style={{ width: "180px" }}>Account Number:</span>
-                      <span className="value">100500459883</span>
+                      <span className="value">{riderDetails?.bankDetails?.acc || 'N/A'}</span>
                     </div>
                     <div className="info-item">
-                      <span className="label" style={{ width: "180px" }}>Re-enter Account Number:</span>
-                      <span className="value">100500459883</span>
+                      <span className="label" style={{ width: "180px" }}>IFSC Code:</span>
+                      <span className="value">{riderDetails?.bankDetails?.ifsc || 'N/A'}</span>
                     </div>
                     <div className="info-item">
-                      <span className="label" style={{ width: "180px" }}>IFC Code:</span>
-                      <span className="value">HDFC00003881</span>
+                      <span className="label" style={{ width: "180px" }}>Bank Status:</span>
+                      <span className="value">{riderDetails?.bankDetails?.status || 'N/A'}</span>
                     </div>
                   </div>
                 </Box>

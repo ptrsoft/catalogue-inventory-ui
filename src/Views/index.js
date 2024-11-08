@@ -28,6 +28,7 @@ import CollectionPayment from "./Postlogin/Logistics/CollectionPayment";
 import ViewDetailsPage from "./Postlogin/Logistics/CollectionPayment/ViewCollection";
 import Createpolicy from "./Postlogin/Settingmenu/Rbac/createpolicy";
 import Viewpolicy from "./Postlogin/Settingmenu/Rbac/viewpolicy";
+import Pincodes from "./Postlogin/Inventory/pincondes";
 
 const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
 
@@ -94,6 +95,7 @@ const Views = () => {
             path={`${PREFIX_APP_PATH}/settings/rbac/createpolicy`}
             element={<Createpolicy />}
           />
+          
           <Route
             exact
             path={`${PREFIX_APP_PATH}/settings/rbac/viewpolicy`}
@@ -243,6 +245,11 @@ const Views = () => {
             exact
             path="/app/inventory/adjustments"
             element={<InventoryAdjustments />}
+          />
+             <Route
+            exact
+            path="/app/inventory/pincodes"
+            element={<Pincodes />}
           />
           <Route
             exact

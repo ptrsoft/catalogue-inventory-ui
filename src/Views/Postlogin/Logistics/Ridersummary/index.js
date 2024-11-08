@@ -16,6 +16,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const RiderSummary = () => {
+  const [successMessage, setSuccessMessage] = useState(null);
   const navigate=useNavigate()
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);

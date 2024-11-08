@@ -18,7 +18,10 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch and useSelector
 
 import { fetchRiderById } from "Redux-Store/RiderSummary/RiderSummaryThunk"; //
-import { verifyOrRejectDocument,updateRiderStatus } from "Redux-Store/RiderSummary/RiderSummaryThunk";
+import {
+  verifyOrRejectDocument,
+  updateRiderStatus,
+} from "Redux-Store/RiderSummary/RiderSummaryThunk";
 
 import AddressTab from "./RiderDetailsComponents/AddressTab";
 import PersonalDetails from "./RiderDetailsComponents/PersonalDetails.js";
@@ -53,19 +56,15 @@ const RiderDetails = () => {
     setSelectedDoc(doc);
   };
   const handleVerifybank = () => {
-  
-    
-      // Update verification status based on name
-      dispatch(
-        verifyOrRejectDocument({
-          name: "bankDetails",
-          status: "verified",
-          id: riderDetails.id,
-        })
-      );
-
-    }
-
+    // Update verification status based on name
+    dispatch(
+      verifyOrRejectDocument({
+        name: "bankDetails",
+        status: "verified",
+        id: riderDetails.id,
+      })
+    );
+  };
 
   const handleVerify = () => {
     if (selectedDoc) {
@@ -82,7 +81,8 @@ const RiderDetails = () => {
     }
   };
   const [isRejectModalVisible, setRejectModalVisible] = useState(false);
-  const [isRejecDirectlyModalVisible, setRejectDirectlyModalVisible] = useState(false);
+  const [isRejecDirectlyModalVisible, setRejectDirectlyModalVisible] =
+    useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [DirectrejectReason, setDirectRejectReason] = useState("");
   const formatAddress = (address) => {
@@ -102,7 +102,7 @@ const RiderDetails = () => {
           id: riderDetails.id,
           name: selectedDoc.name,
           reason: rejectReason,
-          status:"rejected"
+          status: "rejected",
         })
       );
       setRejectModalVisible(false);
@@ -110,34 +110,43 @@ const RiderDetails = () => {
       setSelectedDoc(null);
     }
   };
-  const navigate=useNavigate()
-const handleApprove = async () => {
-  try {
-    await dispatch(updateRiderStatus({ id: riderId, status: "active" })).unwrap();
-    navigate("/app/Logistics/RiderSummary");
+  const navigate = useNavigate();
+  const handleApprove = async () => {
+    try {
+      await dispatch(
+        updateRiderStatus({ id: riderId, status: "active" })
+      ).unwrap();
+      navigate("/app/Logistics/RiderSummary", {
+        state: { successMessage: `Rider ID ${riderId}.${riderDetails?.PersonalDetails?.fullName}rider account Created Successfully.`  },
+      });
+    } catch (error) {
+      console.error("Failed to update rider status:", error);
+      // Handle error (e.g., show error message to the user)
+    }
+  };
+  const handleDirectRejectionConfirm = async () => {
+    try {
+     await dispatch(
+      updateRiderStatus({
+        id: riderId,
+        reason: DirectrejectReason,
+        status: "rejected", // Pass rejected status here
+      })
+    ).unwrap();
+    navigate("/app/Logistics/RiderSummary/Onboarding",{
+      state: { RejectedMessege: `Rider ID ${riderId}.${riderDetails?.PersonalDetails?.fullName} Rejected` },
+    });
   } catch (error) {
     console.error("Failed to update rider status:", error);
     // Handle error (e.g., show error message to the user)
-  }
-};
-  const handleDirectRejectionConfirm = () => {
-  
-      dispatch(
-        updateRiderStatus({
-          id: riderId,
-          reason: DirectrejectReason,
-          status: "rejected", // Pass rejected status here
-        })
-      );
-      setRejectDirectlyModalVisible(false);
-      setDirectRejectReason("");
-    
-
   };
-    // Function to check if all documents are verified
-    const areAllDocumentsVerified = () => {
-      return riderDetails?.documents?.every((doc) => doc.verified === "verified");
-    };
+    setRejectDirectlyModalVisible(false);
+    setDirectRejectReason("");
+  };
+  // Function to check if all documents are verified
+  const areAllDocumentsVerified = () => {
+    return riderDetails?.documents?.every((doc) => doc.verified === "verified");
+  };
   const getDocumentLabel = (docName) => {
     switch (docName) {
       case "userPhoto":
@@ -177,83 +186,84 @@ const handleApprove = async () => {
           variant="h1"
           actions={
             <div class="button-container">
-            <button
-  className="cancel-btn"
-  style={{
-    borderRadius: "16px",
-    fontSize: "14px",
-    border: `2px solid ${
-      riderDetails?.reviewStatus === "rejected"
-        ? "#5F6B7A"
-        : "red"
-    }`,
-    backgroundColor: riderDetails?.reviewStatus === 'rejected' ? 'white' : 'initial',
-    color: riderDetails?.reviewStatus === 'rejected' ? "#5F6B7A" : 'red',
-    cursor: riderDetails?.reviewStatus === 'rejected' ? 'not-allowed' : 'pointer',
-  }}
-  onClick={HandleDirectlyReject}
-  disabled={riderDetails?.reviewStatus === 'rejected'}
->
+              <button
+                className="cancel-btn"
+                style={{
+                  borderRadius: "16px",
+                  fontSize: "14px",
+                  border: `2px solid ${
+                    riderDetails?.reviewStatus === "rejected"
+                      ? "#5F6B7A"
+                      : "red"
+                  }`,
+                  backgroundColor:
+                    riderDetails?.reviewStatus === "rejected"
+                      ? "white"
+                      : "initial",
+                  color:
+                    riderDetails?.reviewStatus === "rejected"
+                      ? "#5F6B7A"
+                      : "red",
+                  cursor:
+                    riderDetails?.reviewStatus === "rejected"
+                      ? "not-allowed"
+                      : "pointer",
+                }}
+                onClick={HandleDirectlyReject}
+                disabled={riderDetails?.reviewStatus === "rejected"}
+              >
                 Reject
               </button>
               {isRejecDirectlyModalVisible && (
-                                  <Modal
-                                    onDismiss={() =>
-                                      setRejectDirectlyModalVisible(false)
-                                    }
-                                    visible={isRejecDirectlyModalVisible}
-                                    header="Rider Document Rejected"
-                                    footer={
-                                      <Box float="right">
-                                        <Button
-                                        
-                                          variant="primary"
-                                          onClick={handleDirectRejectionConfirm}
-                                        >
-                                          Confirm Rejection
-                                        </Button>
-                                      </Box>
-                                    }
-                                  >
-                                    <SpaceBetween direction="vertical" size="s">
-                                      <hr></hr>
-                                      <Box fontWeight="heavy" variant="h2">
-                                        {
-                                          riderDetails?.personalDetails
-                                            ?.fullName
-                                        }
-                                      </Box>
-                                      <Box>
-                                        {riderDetails?.personalDetails?.dob.slice(
-                                          0,
-                                          10
-                                        )}
-                                      </Box>
-                                      <Box>{riderDetails.number}</Box>
-                                      <Box>
-                                        {riderDetails?.personalDetails?.email}
-                                      </Box>
-                                      <Box>
-                                        {formatAddress(
-                                          riderDetails?.personalDetails?.address
-                                        )}
-                                      </Box>
-                                      <hr></hr>
-                                      <Box>
-                                        <Header variant="h5">Reason</Header>
-                                        <Textarea
-                                          value={DirectrejectReason}
-                                          onChange={(e) =>
-                                            setDirectRejectReason(e.detail.value)
-                                          }
-                                          placeholder="Enter rejection reason"
-                                        />
-                                      </Box>
-                                    </SpaceBetween>
-                                  </Modal>
-                                )}
+                <Modal
+                  onDismiss={() => setRejectDirectlyModalVisible(false)}
+                  visible={isRejecDirectlyModalVisible}
+                  header="Rider Document Rejected"
+                  footer={
+                    <Box float="right">
+                      <Button
+                        variant="primary"
+                        onClick={handleDirectRejectionConfirm}
+                      >
+                        Confirm Rejection
+                      </Button>
+                    </Box>
+                  }
+                >
+                  <SpaceBetween direction="vertical" size="s">
+                    <hr></hr>
+                    <Box fontWeight="heavy" variant="h2">
+                      {riderDetails?.personalDetails?.fullName}
+                    </Box>
+                    <Box>{riderDetails?.personalDetails?.dob.slice(0, 10)}</Box>
+                    <Box>{riderDetails.number}</Box>
+                    <Box>{riderDetails?.personalDetails?.email}</Box>
+                    <Box>
+                      {formatAddress(riderDetails?.personalDetails?.address)}
+                    </Box>
+                    <hr></hr>
+                    <Box>
+                      <Header variant="h5">Reason</Header>
+                      <Textarea
+                        value={DirectrejectReason}
+                        onChange={(e) => setDirectRejectReason(e.detail.value)}
+                        placeholder="Enter rejection reason"
+                      />
+                    </Box>
+                  </SpaceBetween>
+                </Modal>
+              )}
 
-              <Button variant="primary" disabled={!areAllDocumentsVerified()|| riderDetails?.reviewStatus==='rejected' } onClick={handleApprove}>Approve</Button>
+              <Button
+                variant="primary"
+                disabled={
+                  !areAllDocumentsVerified() ||
+                  riderDetails?.reviewStatus === "rejected"
+                }
+                onClick={handleApprove}
+              >
+                Approve
+              </Button>
             </div>
           }
         >
@@ -502,36 +512,39 @@ const handleApprove = async () => {
                         <div>Loading...</div>
                       )}
                       <Box float="right">
-                      <button
-  className="print-btn"
-  style={{
-    backgroundColor: riderDetails?.bankDetails?.status === 'verified' 
-      ? '#5F6B7A' 
-      : riderDetails?.bankDetails?.status === 'rejected' 
-      ? 'red' 
-      : riderDetails?.bankDetails?.status === 'pending' 
-      ? '#037F0C' 
-      : '#037F0C',  // Background color when disabled
-    display: 'flex',
-    gap: '5px',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: '11px',
-    color:"white"
-  }}
-  disabled={riderDetails?.bankDetails?.status === 'verified'}
-  onClick={handleVerifybank}
->
-  <p>Verify Details</p>
+                        <button
+                          className="print-btn"
+                          style={{
+                            backgroundColor:
+                              riderDetails?.bankDetails?.status === "verified"
+                                ? "#5F6B7A"
+                                : riderDetails?.bankDetails?.status ===
+                                  "rejected"
+                                ? "red"
+                                : riderDetails?.bankDetails?.status ===
+                                  "pending"
+                                ? "#037F0C"
+                                : "#037F0C", // Background color when disabled
+                            display: "flex",
+                            gap: "5px",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            fontSize: "11px",
+                            color: "white",
+                          }}
+                          disabled={
+                            riderDetails?.bankDetails?.status === "verified"
+                          }
+                          onClick={handleVerifybank}
+                        >
+                          <p>Verify Details</p>
 
-   
-  
-  {riderDetails?.bankDetails?.status === 'rejected' ? (
-    <Icon name="status-negative" size="small" />
-  ): <Icon name="status-positive" size="small" />}
-
-</button>
-
+                          {riderDetails?.bankDetails?.status === "rejected" ? (
+                            <Icon name="status-negative" size="small" />
+                          ) : (
+                            <Icon name="status-positive" size="small" />
+                          )}
+                        </button>
                       </Box>
                     </Container>
                   ),

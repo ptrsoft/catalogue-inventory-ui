@@ -58,6 +58,11 @@ const Sidebar = () => {
           type: "link",
           text: "Inventory Adjustments",
           href: "/app/inventory/adjustments"
+        },
+        {
+          type: "link",
+          text: "Pincodes",
+          href: "/app/inventory/pincodes"
         }
       ]
     },

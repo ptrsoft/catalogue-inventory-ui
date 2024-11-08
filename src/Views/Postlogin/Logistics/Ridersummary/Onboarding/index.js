@@ -23,7 +23,7 @@ const Onboarding = () => {
   const dispatch = useDispatch();
   const [RejectedMessage, setRejectedMessage] = useState(null);
   const { items, count, error } = useSelector((state) => state.riders);
-  const [status, setStatus] = useState('active');
+  const [status, setStatus] = useState('rejected');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPageIndex, setCurrentPageIndex] = useState(1);
   const pageSize = 10;
@@ -74,7 +74,7 @@ const handleStatusToggle = async (item) => {
     pending: [
       { id: 'sno', header: 'Sno.', cell: (item, index) => item.sno },
       { id: 'status', header: 'Status', cell: (item) => <StatusIndicator type="pending">{item.reviewStatus}</StatusIndicator> },
-      { id: 'submittedAt', header: 'Submitted At', cell: (item) => item.submittedAt.slice(0,10) },
+      { id: 'submittedAt', header: 'Submitted At', cell: (item) => item?.submittedAt?.slice(0,10) },
       { id: 'name', header: 'Rider Name', cell: (item) => item.personalDetails.fullName },
       { id: 'contact', header: 'Contact No', cell: (item) => item.number },
       { id: 'action', header: 'Action', cell: (item) => (

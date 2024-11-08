@@ -62,11 +62,7 @@ useEffect(() => {
     ...item,
     sno: index + 1, // Assign sequential sno based on index
   }));
-  useEffect(() => {
-    return () => {
-      dispatch(resetData());
-    };
-  }, [dispatch]);
+
   
   // Table column definitions
   const columns = [

@@ -29,6 +29,8 @@ import ViewDetailsPage from "./Postlogin/Logistics/CollectionPayment/ViewCollect
 import Createpolicy from "./Postlogin/Settingmenu/Rbac/createpolicy";
 import Viewpolicy from "./Postlogin/Settingmenu/Rbac/viewpolicy";
 import Pincodes from "./Postlogin/Inventory/pincondes";
+import Addpincode from "./Postlogin/Inventory/pincondes/Addpincode";
+import Viewpincode from "./Postlogin/Inventory/pincondes/Viewpincode";
 
 const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
 
@@ -95,7 +97,7 @@ const Views = () => {
             path={`${PREFIX_APP_PATH}/settings/rbac/createpolicy`}
             element={<Createpolicy />}
           />
-          
+
           <Route
             exact
             path={`${PREFIX_APP_PATH}/settings/rbac/viewpolicy`}
@@ -246,10 +248,16 @@ const Views = () => {
             path="/app/inventory/adjustments"
             element={<InventoryAdjustments />}
           />
-             <Route
+          <Route exact path="/app/inventory/pincodes" element={<Pincodes />} />
+          <Route
             exact
-            path="/app/inventory/pincodes"
-            element={<Pincodes />}
+            path="/app/inventory/pincodes/viewpincode"
+            element={<Viewpincode />}
+          />
+          <Route
+            exact
+            path="/app/inventory/pincodes/addpincode"
+            element={<Addpincode />}
           />
           <Route
             exact
@@ -272,3 +280,4 @@ const Views = () => {
 };
 
 export default Views;
+

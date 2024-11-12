@@ -117,8 +117,8 @@ const CashCollectionTable = () => {
       )}
       <BreadcrumbGroup
         items={[
-          { text: 'Dashboard', href: '#' },
-          { text: 'Logistics', href: '#' },
+          { text: 'Dashboard', href: '/app/dashboard' },
+          { text: 'Logistics', href: '/app/dashboard' },
           { text: 'Cash Collection', href: '#' },
         ]}
       />

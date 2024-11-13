@@ -13,7 +13,8 @@ import signoutReducer from "Redux-Store/authenticate/signout/signoutSlice"
 import uploadSlice from "Redux-Store/uploadImage/uploadSlice" 
 import runsheetReducer from "./Runsheet/RunsheetSlice";
 import ridersReducer from './RiderSummary/RiderSummarySlice';
-import cashCollectionReducer from './cashCollection/cashCollectionSlice'
+import cashCollectionReducer from './cashCollection/cashCollectionSlice';
+import pincodeReducer from "./Pincode/pincodeSlice"
 const store = configureStore({
   reducer: {
     cashCollection: cashCollectionReducer,
@@ -22,7 +23,7 @@ const store = configureStore({
     orderInventory: orderInventoryReducer,
     customers: CustomersReducer,
     products: ProductsSlice,
-  
+    pincode: pincodeReducer,
     InvertorAdjustments: InventoryAdjustmentsSlice,
     auth:authReducer,
     forgotPwd : forgotPwdReducer,

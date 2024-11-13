@@ -16,11 +16,15 @@ import {
   Modal,
   FormField,
   // ButtonFlow,
-  TextContent
+  TextContent,
 } from "@cloudscape-design/components";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getPincodes, updateDeliveryType,updateStatus } from "Redux-Store/Pincode/pincodeThunk"; // Assuming you have imported the thunk
+import {
+  getPincodes,
+  updateDeliveryType,
+  updateStatus,
+} from "Redux-Store/Pincode/pincodeThunk"; // Assuming you have imported the thunk
 
 function PincodeList() {
   const navigate = useNavigate();
@@ -31,21 +35,27 @@ function PincodeList() {
   const [deliveryTypeFilter, setDeliveryTypeFilter] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const [selectedPincode, setSelectedPincode] = useState(null); // Store selected pincode for modal
-  const [statusToUpdate, setStatusToUpdate] = useState(""); // Track the status to update
+  const [statusToUpdate, setStatusToUpdate] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const ITEMS_PER_PAGE = 15;
+  // Track the status to update
   // Get pincodes data from Redux store
-  const { data: pincodes, loading, error } = useSelector((state) => state.pincode);
+  const {
+    data: pincodes,
+    loading,
+    error,
+  } = useSelector((state) => state.pincode);
   console.log(pincodes);
 
   // Fetch pincodes on component mount
   useEffect(() => {
-    dispatch(getPincodes({search:searchQuery})); // Fetch pincodes from the API
-  }, [dispatch,searchQuery]);
+    dispatch(getPincodes({ search: searchQuery })); // Fetch pincodes from the API
+  }, [dispatch, searchQuery]);
 
   const Addpincode = () => {
     navigate("/app/inventory/pincodes/addpincode");
   };
-
-
 
   // Handle selection of pincode cards
   const handleSelect = (code) => {
@@ -56,67 +66,78 @@ function PincodeList() {
 
   // Open modal when clicking the "Convert Delivery Type" button
   const handleConvertDeliveryTypeClick = () => {
-    const selectedPincodeData = pincodes?.items.find((p) => p.pincode === selectedCodes[0]);
+    const selectedPincodeData = pincodes?.items.find(
+      (p) => p.pincode === selectedCodes[0]
+    );
     setSelectedPincode(selectedPincodeData);
 
     setIsModalOpen(true);
-   
   };
 
- // Open modal for updating status
- const handleConvertStatusClick = () => {
-  const selectedPincodeData = pincodes?.items.find((p) => selectedCodes.includes(p.pincode));
-  setSelectedPincode(selectedPincodeData);
-  const oppositeStatus = selectedPincodeData?.active === "active" ? "inactive" : "active";
-  setStatusToUpdate(oppositeStatus);
-  setIsModalOpen(true);
-
-};
+  // Open modal for updating status
+  const handleConvertStatusClick = () => {
+    const selectedPincodeData = pincodes?.items.find((p) =>
+      selectedCodes.includes(p.pincode)
+    );
+    setSelectedPincode(selectedPincodeData);
+    const oppositeStatus = selectedPincodeData?.active === true ? false : true;
+    setStatusToUpdate(oppositeStatus);
+    setIsModalOpen(true);
+  };
 
   // Close modal
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedPincode(null);
-    setStatusToUpdate("");
+    setStatusToUpdate(null);
     setSelectedCodes([]);
   };
 
-// Confirm the action and dispatch updateDeliveryType
-const confirmConvertDeliveryType = () => {
-  const oppositeType = selectedPincode.deliveryType === "same day" ? "next day" : "same day";
-  dispatch(updateDeliveryType({
-    type: oppositeType,
-    pincodes: selectedCodes,
-  }));
-  setIsModalOpen(false); // Close modal after confirming
-  setSelectedPincode(null);
-  setStatusToUpdate("");
-  setSelectedCodes([]); // Unselect all selected cards after confirming
-};
-
-// Confirm status update
-const confirmUpdateStatus = () => {
-  if (selectedCodes.length > 0 && selectedPincode) {
-    dispatch(updateStatus({
-      status: statusToUpdate,
-      pincodes: selectedCodes,
-    }));
-    setIsModalOpen(false);
+  // Confirm the action and dispatch updateDeliveryType
+  const confirmConvertDeliveryType = () => {
+    const oppositeType =
+      selectedPincode.deliveryType === "same day" ? "next day" : "same day";
+    dispatch(
+      updateDeliveryType({
+        type: oppositeType,
+        pincodes: selectedCodes,
+      })
+    );
+    setIsModalOpen(false); // Close modal after confirming
     setSelectedPincode(null);
-    setStatusToUpdate("");
+    setStatusToUpdate(null);
     setSelectedCodes([]); // Unselect all selected cards after confirming
-  }
-};
-const handleViewPincode = (pincodes) => {
-  console.log(pincodes,"pincode values");
-  navigate("/app/inventory/pincodes/viewpincode", { state: { pincodes } });
-};
+  };
 
-const handleSearchChange = ({ detail }) => {
-  setSearchQuery(detail.filteringText);
-  // setCurrentPage(1); // Reset page to 1 when filters change
-};
+  // Confirm status update
+  const confirmUpdateStatus = () => {
+    if (selectedCodes.length > 0 && selectedPincode) {
+      dispatch(
+        updateStatus({
+          status: statusToUpdate,
+          pincodes: selectedCodes,
+        })
+      );
+      setIsModalOpen(false);
+      setSelectedPincode(null);
+      setStatusToUpdate("");
+      setSelectedCodes([]); // Unselect all selected cards after confirming
+    }
+  };
+  const handleViewPincode = (pincodes) => {
+    console.log(pincodes, "pincode values");
+    navigate("/app/inventory/pincodes/viewpincode", { state: { pincodes } });
+  };
 
+  const handleSearchChange = ({ detail }) => {
+    setSearchQuery(detail.filteringText);
+    // setCurrentPage(1); // Reset page to 1 when filters change
+  };
+  const totalPages = Math.ceil((pincodes?.items.length || 0) / ITEMS_PER_PAGE);
+  const currentItems = pincodes?.items.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
     <Box>
@@ -132,7 +153,7 @@ const handleSearchChange = ({ detail }) => {
           variant="h1"
           actions={
             <SpaceBetween direction="horizontal" size="s">
-             <Button
+              <Button
                 disabled={selectedCodes.length === 0}
                 onClick={handleConvertStatusClick}
               >
@@ -154,30 +175,37 @@ const handleSearchChange = ({ detail }) => {
             </SpaceBetween>
           }
         >
-          Pincodes
+          <span style={{ fontWeight: "bolder" }}>Pincodes</span>
         </Header>
         <Grid
-          gridDefinition={[{ colspan: 5 }, { colspan: 2 }, { colspan: 2 }, { colspan: 3 }]}
+          gridDefinition={[
+            { colspan: 5 },
+            { colspan: 2 },
+            { colspan: 2 },
+            { colspan: 3 },
+          ]}
         >
           <TextFilter
-              filteringText={searchQuery}
-              filteringPlaceholder="Search Pincodes"
-              filteringAriaLabel="Filter instances"
-              onChange={handleSearchChange}
+            filteringText={searchQuery}
+            filteringPlaceholder="Search Pincodes"
+            filteringAriaLabel="Filter instances"
+            onChange={handleSearchChange}
           />
           <Select
             placeholder="Status"
             selectedOption={statusFilter}
             onChange={({ detail }) => setStatusFilter(detail.selectedOption)}
             options={[
-              { label: "Active", value: "active" },
-              { label: "Inactive", value: "inactive" },
+              { label: "Active", value: true },
+              { label: "Inactive", value: false },
             ]}
           />
           <Select
             placeholder="Delivery Type"
             selectedOption={deliveryTypeFilter}
-            onChange={({ detail }) => setDeliveryTypeFilter(detail.selectedOption)}
+            onChange={({ detail }) =>
+              setDeliveryTypeFilter(detail.selectedOption)
+            }
             options={[
               { label: "Same Day Delivery", value: "same day" },
               { label: "Next Day Delivery", value: "next day" },
@@ -185,40 +213,46 @@ const handleSearchChange = ({ detail }) => {
           />
           <Box float="right">
             <Pagination
-              currentPageIndex={1}
-              pagesCount={2}
+              currentPageIndex={currentPage}
+              pagesCount={totalPages}
               onChange={(event) =>
-                console.log("Page change:", event.detail.currentPageIndex)
+                setCurrentPage(event.detail.currentPageIndex)
               }
             />
           </Box>
         </Grid>
 
         <ColumnLayout columns={3}>
-        {(pincodes?.items || pincodes || []).map((pincode) => (
-            <Container
-              key={pincode.pincode}
-              header={
-                <Header
-                  variant="h3"
-                  actions={
-                    <Checkbox
-                      checked={selectedCodes.includes(pincode.pincode)}
-                      onChange={() => handleSelect(pincode.pincode)}
-                    />
-                  }
+          {pincodes?.items.map((pincode) => (
+            <div className="runsheet-container" key={pincode.pincode}>
+              <Header
+                // variant="h2"
+                actions={
+                  <Checkbox
+                    checked={selectedCodes.includes(pincode.pincode)}
+                    onChange={() => handleSelect(pincode.pincode)}
+                  />
+                }
+              >
+                <div
+                  onClick={() => handleViewPincode(pincode)}
+                  style={{
+                    cursor: "pointer",
+                    color: "#0972D3",
+
+                    fontSize: "20px",
+                    fontWeight: "bolder",
+                  }}
                 >
-                <div onClick={() => handleViewPincode(pincode)} style={{ cursor: 'pointer' }}>
-                    {pincode.pincode}
-                  </div>
-                </Header>
-              }
-            >
-              <ColumnLayout minColumnWidth={2} disableGutters columns={2}>
+                  {pincode.pincode}
+                </div>
+              </Header>
+
+              <ColumnLayout minColumnWidth={20} columns={2}>
                 <Box>
                   <strong>Status</strong>
                   <div>
-                    {pincode.active === "active" ? (
+                    {pincode.active === true ? (
                       <StatusIndicator type="success">Active</StatusIndicator>
                     ) : (
                       <StatusIndicator type="stopped">Inactive</StatusIndicator>
@@ -232,7 +266,10 @@ const handleSearchChange = ({ detail }) => {
 
                 <Box>
                   <strong>Shifts</strong>
-                  <p>{pincode.shifts?.length} Shift(s)</p>
+                  <p>
+                    {pincode.shifts?.length}{" "}
+                    {pincode.shifts?.length === 1 ? "Shift" : "Shifts"}
+                  </p>
                 </Box>
 
                 <Box>
@@ -242,25 +279,39 @@ const handleSearchChange = ({ detail }) => {
                       (total, shift) => total + (shift.slots?.length || 0),
                       0
                     )}{" "}
-                    Slot(s)
+                    {pincode.shifts?.reduce(
+                      (total, shift) => total + (shift.slots?.length || 0),
+                      0
+                    ) === 1
+                      ? "Slot"
+                      : "Slots"}
                   </p>
                 </Box>
               </ColumnLayout>
-            </Container>
+            </div>
           ))}
         </ColumnLayout>
 
-      {/* Modal for confirming status or delivery type change */}
-      <Modal
+        {/* Modal for confirming status or delivery type change */}
+        <Modal
           visible={isModalOpen}
           onDismiss={closeModal}
-          header={`Confirm ${statusToUpdate ? 'Status' : 'Delivery Type'} Change`}
+          header={`Confirm ${
+            statusToUpdate ? "Status" : "Delivery Type"
+          } Change`}
           footer={
             <Box>
               <Button variant="link" onClick={closeModal}>
                 Cancel
               </Button>
-              <Button variant="primary" onClick={statusToUpdate ? confirmUpdateStatus : confirmConvertDeliveryType}>
+              <Button
+                variant="primary"
+                onClick={
+                  statusToUpdate !== null
+                    ? confirmUpdateStatus
+                    : confirmConvertDeliveryType
+                }
+              >
                 Confirm
               </Button>
             </Box>
@@ -268,11 +319,15 @@ const handleSearchChange = ({ detail }) => {
         >
           <TextContent>
             <p>
-              {statusToUpdate
-                ? `Are you sure you want to change the status of the selected pincode(s) to ${statusToUpdate}?`
-                : `Are you sure you want to change the delivery type of the selected pincode(s) to ${
-                    selectedPincode?.deliveryType === "same day" ? "Next Day" : "Same Day"
-                  }?`}
+              {statusToUpdate !== null
+                ? `Are you sure you want to change the status of the selected pincodes to ${
+                    statusToUpdate ? "active" : "inactive"
+                  }?`
+                : `Are you sure you want to change the delivery type of the selected pincodes to ${
+                    selectedPincode?.deliveryType === "same day"
+                      ? "Next Day"
+                      : "Same Day"
+                  } service?`}
             </p>
           </TextContent>
         </Modal>

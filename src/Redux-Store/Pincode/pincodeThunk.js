@@ -5,8 +5,8 @@ import { postLoginService } from 'Services'; // Assuming postLoginService uses A
 
 export const checkPincode = createAsyncThunk(
   'pincode/checkPincode',
-  async ({ pincode, deliveryType, shifts }, { rejectWithValue }) => {
-    console.log(pincode, deliveryType, shifts, "all values");
+  async ({ pincode, deliveryType, shifts,active }, { rejectWithValue }) => {
+    console.log(pincode, deliveryType, shifts,active, "all values");
     try {
       const url = `${config.Add_PINCODE}`;
       
@@ -14,6 +14,7 @@ export const checkPincode = createAsyncThunk(
         pincode,
         deliveryType,
         shifts,
+        active,
       });
 
       console.log(response.data);
@@ -28,8 +29,8 @@ export const checkPincode = createAsyncThunk(
 );
 export const updatePincode = createAsyncThunk(
     'pincode/updatePincode',
-    async ({ pincode, deliveryType, shifts }, { rejectWithValue }) => {
-      console.log(pincode, deliveryType, shifts, "all values");
+    async ({ pincode, deliveryType, shifts,active }, { rejectWithValue }) => {
+      console.log(pincode, deliveryType, shifts,active, "all values");
   
       try {
         // Make sure the URL is correct
@@ -40,6 +41,7 @@ export const updatePincode = createAsyncThunk(
           pincode,
           deliveryType,
           shifts,
+          active
         });
   
         console.log(response.data);

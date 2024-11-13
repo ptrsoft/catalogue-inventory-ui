@@ -66,6 +66,7 @@ const AddPincode = () => {
       pincode,
       deliveryType: deliveryMethod,
       shifts: formattedShifts,
+      active:true
     };
 
     // If there's a payload, update the existing pincode, otherwise, save as a new pincode
@@ -104,6 +105,7 @@ const AddPincode = () => {
       />
       <Header
         variant="h1"
+        
         actions={
           <SpaceBetween direction="horizontal" size="s">
             <Button variant="normal" onClick={backtopincodes}>Cancel</Button>
@@ -113,10 +115,11 @@ const AddPincode = () => {
           </SpaceBetween>
         }
       >
-        {payload ? "Edit Pincode" : "Add Pincode"}  {/* Change header text based on payload existence */}
+      {payload ? <span style={{ fontWeight: "bolder" }}>Edit Pincode</span> : <span style={{fontWeight:"bolder"}}>Add Pincode</span>}
+      {/* Change header text based on payload existence */}
       </Header>
 
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      {/* {error && <p style={{ color: "red" }}>Error: {error}</p>} */}
 
       <Container header={<Header variant="h3">Pincode</Header>}>
         <FormField label="Pincode No.">
@@ -165,6 +168,7 @@ const AddPincode = () => {
         <SpaceBetween direction="vertical" size="l">
           {shifts.map((shift, shiftIndex) => (
             <Container key={shiftIndex}>
+              <SpaceBetween direction="vertical" size="m">
               <div style={{ display: "flex", gap: "5px" }}>
                 <FormField label="Shift Name">
                   <div style={{ width: "400px" }}>
@@ -185,7 +189,9 @@ const AddPincode = () => {
                   </Button>
                 </div>
               </div>
+              <h3>Add Slot</h3>
               {shift.slots.map((slot, slotIndex) => (
+               
                 <SpaceBetween direction="horizontal" size="s" key={slotIndex}>
                   <FormField label="Start Time">
                     <Input
@@ -226,15 +232,19 @@ const AddPincode = () => {
                         display: "flex",
                         alignItems: "center",
                         gap: "5px",
+                        color:"#7D8998",
+                        fontWeight:"normal",
+                        fontSize:"14px"
                       }}
                       onClick={() => handleRemoveSlot(shiftIndex, slotIndex)}
                     >
                       <AiTwotoneDelete />
-                      <span> Remove</span>
+                      <span color="#7D8998"> Remove</span>
                     </div>
                   </div>
                 </SpaceBetween>
               ))}
+              </SpaceBetween>
             </Container>
           ))}
         </SpaceBetween>

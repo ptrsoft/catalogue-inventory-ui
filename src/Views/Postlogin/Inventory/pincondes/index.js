@@ -31,8 +31,10 @@ function PincodeList() {
   const dispatch = useDispatch();
   const [selectedCodes, setSelectedCodes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState(null);
-  const [deliveryTypeFilter, setDeliveryTypeFilter] = useState(null);
+  const [statusFilter, setStatusFilter] = useState({ label: "Active",
+    value: true,});
+  const [deliveryTypeFilter, setDeliveryTypeFilter] = useState({ label: "Same Day Delivery",
+    value: "same day",});
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const [selectedPincode, setSelectedPincode] = useState(null); // Store selected pincode for modal
   const [statusToUpdate, setStatusToUpdate] = useState(null);
@@ -50,8 +52,9 @@ function PincodeList() {
 
   // Fetch pincodes on component mount
   useEffect(() => {
-    dispatch(getPincodes({ search: searchQuery })); // Fetch pincodes from the API
-  }, [dispatch, searchQuery]);
+    console.log(statusFilter?.value,"status");
+    dispatch(getPincodes({ search: searchQuery ,status: statusFilter?.value === true || statusFilter?.value === false ? statusFilter.value : "", type:deliveryTypeFilter?.value ||""})); // Fetch pincodes from the API
+  }, [dispatch, searchQuery,statusFilter,deliveryTypeFilter]);
 
   const Addpincode = () => {
     navigate("/app/inventory/pincodes/addpincode");
@@ -120,7 +123,7 @@ function PincodeList() {
       );
       setIsModalOpen(false);
       setSelectedPincode(null);
-      setStatusToUpdate("");
+      setStatusToUpdate(null);
       setSelectedCodes([]); // Unselect all selected cards after confirming
     }
   };
@@ -157,13 +160,13 @@ function PincodeList() {
                 disabled={selectedCodes.length === 0}
                 onClick={handleConvertStatusClick}
               >
-                Convert Status
+                Mark
               </Button>
               <Button
                 disabled={selectedCodes.length === 0} // Disable if no pincode is selected
                 onClick={handleConvertDeliveryTypeClick}
               >
-                Convert Delivery Type
+                 Delivery Type
               </Button>
               <Button
                 variant="primary"
@@ -179,10 +182,10 @@ function PincodeList() {
         </Header>
         <Grid
           gridDefinition={[
-            { colspan: 5 },
+            { colspan: 4 },
             { colspan: 2 },
             { colspan: 2 },
-            { colspan: 3 },
+            { colspan: 4 },
           ]}
         >
           <TextFilter

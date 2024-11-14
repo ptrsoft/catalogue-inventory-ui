@@ -62,9 +62,9 @@ export const updatePincode = createAsyncThunk(
 
   export const getPincodes = createAsyncThunk(
     'pincode/getPincodes', // Unique action type for getPincodes
-    async ({ search = '' }, { rejectWithValue }) => { // Default to an empty string
+    async ({ search = '', type = '', status = '', }, { rejectWithValue }) => { // Default to an empty string
       try {
-        console.log(String(search), "search",typeof(search)); // Convert search to string here
+        console.log(String(search),status, type, "search",typeof(search)); // Convert search to string here
   
         let url = `${config.GET_PINCODE}`; // Base URL for the request
         const params = [];
@@ -73,6 +73,11 @@ export const updatePincode = createAsyncThunk(
         if (String(search).trim()) {
           params.push(`search=${encodeURIComponent(String(search))}`);
         }
+        if (type) params.push(`type=${encodeURIComponent(type)}`);
+        if (status === true || status === false) {
+          params.push(`status=${encodeURIComponent(status)}`);
+        }
+        
   
         // Append parameters to the URL if they exist
         if (params.length > 0) {
@@ -80,7 +85,7 @@ export const updatePincode = createAsyncThunk(
         }
   
         const response = await postLoginService.get(url); // Use .get() for GET requests
-  
+      console.log(url,"pincode url");
         console.log(response.data);
         return response.data; // Axios automatically returns data inside the 'data' property
       } catch (error) {

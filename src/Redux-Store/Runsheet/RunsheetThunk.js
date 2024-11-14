@@ -2,7 +2,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import config from "Views/Config";
 import { postLoginService } from "Services"; // Assuming you have a service for making API calls
-import axios from 'axios';
+
 import { fetchCashCollection } from 'Redux-Store/cashCollection/cashCollectionThunk';
 // Thunk for creating a runsheet (already implemented)
 export const createRunsheet = createAsyncThunk(
@@ -66,7 +66,8 @@ export const closeRunsheet = createAsyncThunk(
   async ({ id, amount }, { rejectWithValue,dispatch}) => {
     console.log(parseInt(amount),"from thunk");
     try {
-      const response = await axios.put(`https://api.admin.promodeagro.com/runsheet/${id}/close`, {
+      const url = `${config.FETCH_RUNSHEET}/${id}/close`; 
+      const response = await postLoginService.put(url, {
         "status": "closed",
         "amount":parseInt(amount)
       });

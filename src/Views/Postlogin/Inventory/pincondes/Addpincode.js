@@ -92,6 +92,17 @@ const AddPincode = () => {
         });
     }
   };
+  const isFormValid = () => {
+    if (!pincode) return false;
+    if (!deliveryMethod) return false;
+    for (let shift of shifts) {
+      if (!shift.name) return false;
+      for (let slot of shift.slots) {
+        if (!slot.start || !slot.end) return false;
+      }
+    }
+    return true;
+  };
 
   return (
     <SpaceBetween size="m">
@@ -109,7 +120,7 @@ const AddPincode = () => {
         actions={
           <SpaceBetween direction="horizontal" size="s">
             <Button variant="normal" onClick={backtopincodes}>Cancel</Button>
-            <Button variant="primary" onClick={handleSavePincode} disabled={loading}>
+            <Button variant="primary" onClick={handleSavePincode}   disabled={loading || !isFormValid()}>
               {loading ? (payload ? "Updating..." : "Saving...") : (payload ? "Update" : "Save")}
             </Button>
           </SpaceBetween>
@@ -171,7 +182,7 @@ const AddPincode = () => {
               <SpaceBetween direction="vertical" size="m">
               <div style={{ display: "flex", gap: "5px" }}>
                 <FormField label="Shift Name">
-                  <div style={{ width: "400px" }}>
+                  <div style={{ width: "48vw" }}>
                     <Input
                       placeholder="Add shift"
                       value={shift.name}

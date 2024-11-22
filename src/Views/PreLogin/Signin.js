@@ -27,6 +27,8 @@ const Signin = () => {
       .then((response) => {
         console.log("Signin Response:", response.accessToken);
         localStorage.setItem("user", JSON.stringify(response));
+        localStorage.setItem("accessToken", JSON.stringify(response.accessToken));
+
         localStorage.setItem("userEmail", JSON.stringify(email));
 
         setItems([

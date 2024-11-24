@@ -97,7 +97,8 @@ export const cancelOrder = createAsyncThunk(
         },
       });
 
-      dispatch(fetchOrderInventory());
+      // dispatch(fetchOrderInventory());
+      // dispatch(fetchOrderById())
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to cancel the order');

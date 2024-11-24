@@ -1,8 +1,8 @@
 import React from 'react'
 import { useRef } from 'react';
 import logo from "../../../../../assets/images/image.png"
-const Invoice = ({selectedOrder}) => {
-  const printRef = useRef();
+const Invoice = ({selectedOrder,printRef}) => {
+ 
   return (
     <div
     ref={printRef}
@@ -12,7 +12,6 @@ const Invoice = ({selectedOrder}) => {
       padding: "20px",
       border: "1px dashed #000",
       fontFamily: "'Arial', sans-serif",
-
     }}
     className="print-content"
   >
@@ -20,13 +19,15 @@ const Invoice = ({selectedOrder}) => {
       <img
         src={logo}
         alt="Logo"
-        style={{ width: "50px",height:"50px", marginBottom: "10px" }}
+        style={{ width: "100px", height: "100px", marginBottom: "10px" }}
       />
       <h2 style={{ margin: "0", fontSize: "20px" }}>PROMODE AGRO FARMS</h2>
       <p style={{ margin: "0", fontSize: "14px" }}>Deliver Season’s Best</p>
       <p style={{ fontSize: "12px", margin: "5px 0" }}>
-        Dargah Khaleej Khan<br />
-        Kismatpur, Hyderabad, Telangana, 500028<br />
+        Dargah Khaleej Khan
+        <br />
+        Kismatpur, Hyderabad, Telangana, 500028
+        <br />
         Phone: 9701610033
       </p>
       <p style={{ fontSize: "12px", margin: "5px 0" }}>
@@ -47,8 +48,8 @@ const Invoice = ({selectedOrder}) => {
       {new Date(selectedOrder?.createdAt).toLocaleTimeString()})
     </p>
     <p>
-      <strong>Slot Time:</strong> {selectedOrder?.deliverySlot?.startTime} To{" "}
-      {selectedOrder?.deliverySlot?.endTime}
+      <strong>Slot Time:</strong> {selectedOrder?.deliverySlot?.startTime}{" "}
+      To {selectedOrder?.deliverySlot?.endTime}
     </p>
     <table
       style={{
@@ -92,7 +93,8 @@ const Invoice = ({selectedOrder}) => {
       <strong>Sub Total:</strong> Rs. {selectedOrder?.subTotal}
     </p>
     <p style={{ textAlign: "right", marginRight: "20px" }}>
-      <strong>Shipping Charges:</strong> Rs. {selectedOrder?.deliveryCharges}
+      <strong>Shipping Charges:</strong> Rs.{" "}
+      {selectedOrder?.deliveryCharges}
     </p>
     <p style={{ textAlign: "right", marginRight: "20px" }}>
       <strong>Discount Amount:</strong> (-) Rs. {selectedOrder?.discount}

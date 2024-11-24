@@ -75,11 +75,8 @@ const orderInventorySlice = createSlice({
             .addCase(cancelOrder.fulfilled, (state, action) => {
                 state.cancelStatus = 'succeeded';
                 // Optionally update the order's status in the list
-                const cancelledOrderId = action.meta.arg.orderId; // Get the orderId from the action
-                state.orders = state.orders.map(order =>
-                    order.id === cancelledOrderId ? { ...order, status: 'Cancelled' } : order
-                );
-                fetchOrderInventory()
+          
+                // fetchOrderInventory()
             })
             .addCase(cancelOrder.rejected, (state, action) => {
                 state.cancelStatus = 'failed';

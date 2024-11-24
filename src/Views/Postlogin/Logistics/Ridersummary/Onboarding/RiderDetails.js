@@ -59,7 +59,7 @@ const RiderDetails = () => {
     // Update verification status based on name
     dispatch(
       verifyOrRejectDocument({
-        name: "bankDetails",
+        document: "bankDetails",
         status: "verified",
         id: riderDetails.id,
       })
@@ -72,10 +72,11 @@ const RiderDetails = () => {
       // Update verification status based on name
       dispatch(
         verifyOrRejectDocument({
-          name: selectedDoc.name,
+          document: selectedDoc.name,
           status: "verified",
           id: riderDetails.id,
         })
+        
       );
       setSelectedDoc(null);
     }
@@ -100,7 +101,7 @@ const RiderDetails = () => {
       dispatch(
         verifyOrRejectDocument({
           id: riderDetails.id,
-          name: selectedDoc.name,
+          document: selectedDoc.name,
           reason: rejectReason,
           status: "rejected",
         })
@@ -153,17 +154,21 @@ const RiderDetails = () => {
         return "Rider Photo";
       case "aadharFront":
         return "Aadhar Card Front";
-      case "aadharBack":
+      case "aadharback":
         return "Aadhar Card Back";
-      case "dl":
-        return "Driving License";
+      case "drivingFront":
+        return "Driving License Front";
+        case "drivingBack":
+          return "Driving License Back";
       case "pan":
         return "Pan Card";
-      case "vehicleImage":
+      case "VehicleImage":
         return "Vehicle  Image";
 
-      case "rcBook":
-        return "RC Book";
+      case "rcFront":
+        return "RC Book Front";
+        case "rcBack":
+        return "RC Book Back";
       // Add more cases as needed
       default:
         return docName;

@@ -16,7 +16,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createRunsheet } from "Redux-Store/Runsheet/RunsheetThunk";
-
+import { fetchRiders } from 'Redux-Store/RiderSummary/RiderSummaryThunk';
 const CreateRunsheet = () => {
   const [orderIDs, setOrderIDs] = useState([""]);
   const [riderName, setRiderName] = useState("");
@@ -39,10 +39,11 @@ const CreateRunsheet = () => {
   const handleSubmit = () => {
     const filteredOrderIDs = orderIDs.filter((id) => id.trim() !== "");
     if (riderName && filteredOrderIDs.length > 0) {
+      console.log(riderName.value,"name details")
       dispatch(
-        createRunsheet({ riderId: riderName.value, orders: filteredOrderIDs })
+        createRunsheet({ riderId: riderName?.value, orders: filteredOrderIDs })
       );
-      console.log(response, "response");
+      // console.log(response, "response");
       navigate("/app/Logistics/runsheet", {
         state: { successMessage: "Runsheet created successfully!" },
       });
@@ -53,7 +54,13 @@ const CreateRunsheet = () => {
 
   // Check for successful response and navigate
   useEffect(() => {}, [response, navigate]);
+  const { items } = useSelector((state) => state.riders);
 
+  useEffect(() => {
+    // Fetch riders with current status and page index
+    dispatch(fetchRiders({ status: 'active' || ""}));
+
+  }, [dispatch,]);
   return (
     <Box>
       <SpaceBetween direction="vertical" size="m">
@@ -92,16 +99,10 @@ const CreateRunsheet = () => {
                 <Select
                   selectedOption={riderName}
                   onChange={({ detail }) => setRiderName(detail.selectedOption)}
-                  options={[
-                    {
-                      label: "furqan",
-                      value: "83408179-75ed-4469-adef-2b077f8ae5aa",
-                    },
-                    // {
-                    //   label: "santu",
-                    //   value: "221a403b-b492-4310-b369-ca89b0629af3",
-                    // },
-                  ]}
+                  options={items.map((item) => ({
+                    label: item?.personalDetails?.fullName, // Assuming 'name' contains the rider's name
+                    value: item.id,   // Assuming 'id' contains the rider's ID
+                  }))}
                   placeholder="Select Rider Name"
                 />
               </FormField>

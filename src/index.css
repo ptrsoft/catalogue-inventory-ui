@@ -335,3 +335,21 @@ a.awsui_anchor_1kosq_101th_109{
   max-width: 280px;     /* Limit the max width */
   border-radius: 5px;   /* Optional: Add rounded corners */
 }
+/* Hide the content by default */
+.print-content {
+  display: none;
+}
+
+/* Make it visible only during printing */
+@media print {
+  img {
+    max-width: 100px; /* Ensure the image fits within the print layout */
+    height: 100px;
+  }
+  .print-content {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}

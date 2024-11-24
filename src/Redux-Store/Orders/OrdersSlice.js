@@ -1,6 +1,6 @@
 // orderInventorySlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchOrderInventory, fetchOrderById, cancelOrder, fetchOrderStats } from './OrdersThunk'; // Import the fetchOrderStats thunk
+import { fetchOrderInventory, fetchOrderById, cancelOrder, fetchOrderStats,fetchUsers } from './OrdersThunk'; // Import the fetchOrderStats thunk
 import status from "Redux-Store/Constants";
 
 // Define the initial state
@@ -21,6 +21,7 @@ const initialState = {
     orderStats: null,     // To hold order stats data
     statsLoading: false,  // To track loading state for stats API
     statsError: null ,
+    users:null,
 
 };
 
@@ -43,6 +44,7 @@ const orderInventorySlice = createSlice({
       const currentPage = action.meta.arg.pageKey ? action.meta.arg.pageKey : 1;
       state.orders.data[currentPage] = data.items; // Store items directly in the state
         // Set nextKey for pagination
+        console.log(data.items,"data");
         state.orders.nextKey = data.nextKey; // Save nextKey for further requests
            
             })
@@ -96,7 +98,21 @@ const orderInventorySlice = createSlice({
             .addCase(fetchOrderStats.rejected, (state, action) => {
                 state.statsLoading = false;
                 state.statsError = action.error.message;
-            });
+            })
+                    // Handle fetchUsers actions
+                    .addCase(fetchUsers.pending, (state) => {
+                        state.statsLoading = true;
+                        state.statsError = null;
+                    })
+                    .addCase(fetchUsers.fulfilled, (state, action) => {
+                        state.loading = false;
+                        state.users = action.payload; // Assuming user stats or list is stored here
+                    })
+                    .addCase(fetchUsers.rejected, (state, action) => {
+                        state.statsLoading = false;
+                        state.statsError = action.payload || action.error.message;
+                    });
+        
     },
 });
 

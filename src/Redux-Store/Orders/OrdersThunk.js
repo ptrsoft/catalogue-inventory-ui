@@ -9,7 +9,7 @@ export const fetchOrderInventory = createAsyncThunk(
     // Construct the URL
     let url = `${config.FETCH_ORDERS}`;
     const params = [];
-
+  console.log(pageKey,"pagekey");
     // Add parameters if they are provided
     if (search) params.push(`search=${encodeURIComponent(search)}`);
     if (type) params.push(`type=${encodeURIComponent(type)}`);
@@ -80,6 +80,38 @@ export const fetchOrderStats = createAsyncThunk(
     } catch (error) {
       console.error('Error fetching order stats:', error);
       throw error;
+    }
+  }
+);
+const getToken = () => {
+  const token = localStorage.getItem("user");
+  return token ? JSON.parse(token).accessToken : null;
+};
+// Thunk to fetch users
+export const fetchUsers = createAsyncThunk(
+  'orderInventory/fetchUsers',
+  async ( {search = ''}, { rejectWithValue }) => {
+    try {
+      const token = getToken();  // Get the JWT token from localStorage
+      let url = `${config.FETCH_USERS}`;
+      const params = [];
+          // Add parameters if they are provided
+          if (search) params.push(`search=${encodeURIComponent(search)}`);
+                 // If there are any parameters, append them to the URL
+    if (params.length > 0) {
+      url += `&${params.join('&')}`;
+    }
+    console.log(url,"packer url");
+      const response = await postLoginService.get(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data, 'users');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch users');
     }
   }
 );

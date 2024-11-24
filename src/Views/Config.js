@@ -33,6 +33,7 @@ const Config = {
    FETCH_PURCHASE_REQUSTION_LIST:`${BASE_URL}/users`,
    VENDOR_PROFILE:`${BASE_URL}/users`,
    FETCH_CUSTOMER:`${BASE_URL}/user`,
+   FETCH_USERS:`${BASE_URL}/admin/users?role=packer`,
 
    UPDATE_ORDER_STATUS:`${BASE_URL}/order/proceed?ids=`,
    ASSIGN_DELIVERY_BOY: `${BASE_URL}/order/proceed?ids=`, // Will append `&assignee={assignee}` dynamically

@@ -9,6 +9,7 @@ export const createRunsheet = createAsyncThunk(
   'runsheet/createRunsheet',
   async (payload, { rejectWithValue,dispatch }) => {
     try {
+      console.log(payload,"from thunk");
       const url = `${config.CREATE_RUNSHEET}`;
       const response = await postLoginService.post(url, payload);
       console.log(response.data);

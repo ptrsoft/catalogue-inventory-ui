@@ -32,7 +32,7 @@ export const fetchRiderById = createAsyncThunk('riders/fetchRiderById', async (i
 // Async Thunk to verify or reject a document for a rider
 export const verifyOrRejectDocument = createAsyncThunk(
     'riders/verifyOrRejectDocument',
-    async ({ id, name, status, reason }, { rejectWithValue,dispatch }) => {
+    async ({ id, document, status, reason }, { rejectWithValue,dispatch }) => {
         try {
             // Check if reason is required for rejection
             if (status === 'rejected' && !reason) {
@@ -44,12 +44,13 @@ export const verifyOrRejectDocument = createAsyncThunk(
             const response = await postLoginService.patch(
                 url,
                 {
+                    document,
                     status,
                     reason: status === 'rejected' ? reason : undefined, // Include reason only if status is rejected
                 },
-                {
-                    params: { name },
-                }
+                // {
+                //     params: { name },
+                // }
             );
             console.log(response);
             dispatch(fetchRiderById(id))

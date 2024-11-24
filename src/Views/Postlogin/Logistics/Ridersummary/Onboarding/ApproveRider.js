@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import {
-  Box,  
+  Box,
   Button,
   BreadcrumbGroup,
   Container,
@@ -9,15 +9,44 @@ import {
   Grid,
   ColumnLayout
 } from '@cloudscape-design/components';
+
 import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux"; 
-import riderimg from "../../../../../assets/images/riderimage.jpeg";
-import { fetchRiderById } from "Redux-Store/RiderSummary/RiderSummaryThunk"; 
+import { fetchRiderById } from "Redux-Store/RiderSummary/RiderSummaryThunk";
+
+
+// Helper function to get document labels
+const getDocumentLabel = (docName) => {
+  switch (docName) {
+    case "userPhoto":
+      return "Rider Photo";
+    case "aadharFront":
+      return "Aadhar Card Front";
+    case "aadharback":
+      return "Aadhar Card Back";
+    case "drivingFront":
+      return "Driving License Front";
+    case "drivingBack":
+      return "Driving License Back";
+    case "pan":
+      return "Pan Card";
+    case "VehicleImage":
+      return "Vehicle Image";
+    case "rcFront":
+      return "RC Book Front";
+    case "rcBack":
+      return "RC Book Back";
+    default:
+      return docName;
+  }
+};
 
 const ApproveRider = () => {
   const { id: riderId } = useParams();
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const [base64, setBase64] = useState('');
   const riderDetails = useSelector((state) => state.riders.rider);
   const dispatch = useDispatch();
 
@@ -27,33 +56,64 @@ const ApproveRider = () => {
     }
   }, [riderId, dispatch]);
 
-  const breadcrumbItems = [
-    { text: 'Dashboard', href: '#' },
-    { text: 'Logistics', href: '#' },
-    { text: 'Rider Summary', href: '#' },
-    { text: 'Rider Details', href: '#' },
-  ];
- 
+  useEffect(() => {
+    if (selectedDocument?.image) {
+      const imageUrl = selectedDocument.image;
+
+      // Fetch the image as a blob and convert it to base64
+      fetch(imageUrl)
+        .then((response) => response.blob())
+        .then((blob) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setBase64(reader.result); // Set the base64 result
+          };
+          reader.readAsDataURL(blob); // Convert blob to base64
+        })
+        .catch((error) => {
+          console.error('Error converting image to base64:', error);
+        });
+    }
+  }, [selectedDocument]);
+
+  // Function to handle document click
   const handleDocClick = (doc) => {
     setSelectedDocument(doc);
   };
 
-  const downloadPDF = () => {
-    if (!selectedDocument) return;
+  // Function to download PDF
+  const downloadPDF = async () => {
+    if (!selectedDocument || !base64) return;  // Ensure base64 is available
 
-    const pdf = new jsPDF();
-    const { name, front, back } = selectedDocument;
+    try {
+      const { name } = selectedDocument;
+      const tempElement = document.createElement('div');
+      tempElement.innerHTML = `
+        <h3>${getDocumentLabel(name)}</h3>
+        <img src="${base64}" alt="${name}" style="width: 500px; height: 500px;" />
+      `;
+      document.body.appendChild(tempElement);
 
-    pdf.addImage(front, 'PNG', 10, 10, 180, 160);
-    pdf.addPage(); 
-
-    if (back) {
-      pdf.addImage(back, 'PNG', 10, 10, 180, 160);
+      // Use html2canvas to render the content into a canvas
+      html2canvas(tempElement, { useCORS: true }).then((canvas) => {
+        const pdf = new jsPDF();
+        // Add the image to the PDF from the canvas
+        pdf.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 0, 0);
+        pdf.save(`${name}.pdf`);
+        document.body.removeChild(tempElement); // Cleanup the temporary element
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
     }
-
-    pdf.save(`${name}.pdf`);
   };
 
+  // Breadcrumb items
+  const breadcrumbItems = [
+    { text: 'Dashboard', href: '/app/dashboard' },
+    { text: 'Logistics', href: '/app/dashboard' },
+    { text: 'Rider Summary', href: '/app/Logistics/RiderSummary' },
+    { text: 'Rider Details', href: '#' },
+  ];
   return (
     <Box>
       <SpaceBetween direction="vertical" size="s">
@@ -140,18 +200,15 @@ const ApproveRider = () => {
                       selectedDocument && selectedDocument.name === doc.name ? (
                         <Container
                           key={doc.name}
-                          header={<Header>{selectedDocument.name}</Header>}
+                          header={<Header>{getDocumentLabel(doc?.name)}</Header>}
                           margin={{ top: 'm' }}
                         >
                           <ColumnLayout columns={2}>
                             <Box>
-                              <img src={doc.image} alt={`${doc.name} (Front)`} style={{ maxWidth: '100%' }} />
-                              <p>{`${doc.name} (Front)`}</p>
+                              <img src={doc.image} alt={getDocumentLabel(doc?.name)} style={{ maxWidth: '100%' }} />
+                              <p>{getDocumentLabel(doc?.name)}</p>
                             </Box>
-                            <Box>
-                              <img src={doc.image} alt={`${doc.name} (Back)`} style={{ maxWidth: '100%' }} />
-                              <p>{`${doc.name} (Back)`}</p>
-                            </Box>
+                       
                           </ColumnLayout>
                           <Box float='right'>
                             <div className="button-container">
@@ -164,7 +221,7 @@ const ApproveRider = () => {
                           <div style={{ paddingBottom: "5px" }}>
                             <div key={doc.id} className="info-item">
                               <span className="label">Document Name :</span>
-                              <span className="value">{doc.name}</span>
+                              <span className="value">{getDocumentLabel(doc?.name)}</span>
                             </div>
                             <span>
                               <Button variant='inline-link' onClick={() => handleDocClick(doc)}>Download Or View</Button>

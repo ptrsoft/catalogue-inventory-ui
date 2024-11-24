@@ -131,3 +131,32 @@ export const fetchOrderStats = createAsyncThunk(
     }
   }
 );
+
+// Thunk to fetch users
+export const fetchUsers = createAsyncThunk(
+  'orderInventory/fetchUsers',
+  async ( {search = ''}, { rejectWithValue }) => {
+    try {
+      const token = getToken();  // Get the JWT token from localStorage
+      let url = `${config.FETCH_USERS}`;
+      const params = [];
+          // Add parameters if they are provided
+          if (search) params.push(`search=${encodeURIComponent(search)}`);
+                 // If there are any parameters, append them to the URL
+    if (params.length > 0) {
+      url += `&${params.join('&')}`;
+    }
+    console.log(url,"packer url");
+      const response = await postLoginService.get(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data, 'users');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch users');
+    }
+  }
+);

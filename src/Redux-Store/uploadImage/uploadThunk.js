@@ -1,10 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import config from "Views/Config";
-
+// Get the token from localStorage (where it's presumably stored)
 const getToken = () => {
   const token = localStorage.getItem("user");
   return token ? JSON.parse(token).accessToken : null;
 };
+
+
+
 
 export const uploadImage = createAsyncThunk(
   "image/upload",
@@ -18,6 +21,8 @@ export const uploadImage = createAsyncThunk(
 
       // Step 1: Get the upload URL from the server
       const fileName = encodeURIComponent(file.name);
+
+
       const response = await fetch(
         `${config.UPLOAD_IMAGE}?fileName=${fileName}`,
         {

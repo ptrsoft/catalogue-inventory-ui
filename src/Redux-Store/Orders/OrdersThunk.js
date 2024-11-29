@@ -11,7 +11,7 @@ const getToken = () => {
 // Thunk to fetch all orders with optional parameters for search, category, and pageKey
 export const fetchOrderInventory = createAsyncThunk(
   'orderInventory/fetchOrderInventory',
-  async ({ search = '', type = '', status = '', pageKey = '', date = '' } = {}, { rejectWithValue }) => {
+  async ({ search = '', type = '', status = '', pageKey = '', date = '',shift='' } = {}, { rejectWithValue }) => {
     try {
       const token = getToken();
 
@@ -29,6 +29,7 @@ export const fetchOrderInventory = createAsyncThunk(
       if (status) params.push(`status=${encodeURIComponent(status)}`);
       if (pageKey) params.push(`pageKey=${encodeURIComponent(pageKey)}`);
       if (date) params.push(`date=${encodeURIComponent(date)}`);
+      if (shift) params.push(`shift=${encodeURIComponent(shift)}`);
 
       // If there are any parameters, append them to the URL
       if (params.length > 0) {
@@ -161,3 +162,59 @@ export const fetchUsers = createAsyncThunk(
     }
   }
 );
+// Thunk to fetch users by id
+export const fetchUsersbyid = createAsyncThunk(
+  'orderInventory/fetchUsersbyid',
+  async ( {id}, { rejectWithValue }) => {
+    console.log(id,"from thunk");
+    
+    try {
+      const token = getToken();  // Get the JWT token from localStorage
+      let url = `${config.FETCH_USERS_BYID}/${id}`;
+      console.log(url,"user details url");
+ 
+   
+      const response = await postLoginService.get(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data, 'users by id ');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch users by id');
+    }
+  }
+);
+// Thunk to pack orders
+export const packOrders = createAsyncThunk(
+  'orderInventory/packOrders',
+  async (requestBody, { rejectWithValue }) => {
+    try {
+      const token = getToken(); // Get the JWT token from localStorage
+
+      if (!token) {
+        return rejectWithValue("Authorization token is missing.");
+      }
+
+      const url = `${config.PACK_ORDERS}`; // Replace with the correct URL from config
+      const response = await postLoginService.put(
+        url,
+        requestBody, // Send the array of order objects as the request body
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // Add token here
+          },
+        }
+      );
+      console.log(response.data);
+  
+      return response.data; // Return response data on success
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to pack orders');
+    }
+  }
+);
+

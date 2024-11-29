@@ -4,13 +4,14 @@ import config from 'Views/Config';
 import { postLoginService } from 'Services';
 
 // Async Thunk to fetch all riders from the API
-export const fetchRiders = createAsyncThunk('riders/fetchRiders', async ( {status ='', pageKey = ''}) => {
+export const fetchRiders = createAsyncThunk('riders/fetchRiders', async ( {status ='', pageKey = '',search=''}) => {
     //  console.log(status,"from thunk");
       // Construct the URL
       let url = `${config.FETCH_RIDERS}`;
       const params = [];
       if (pageKey) params.push(`pageKey=${encodeURIComponent(pageKey)}`);
       if (status) params.push(`status=${encodeURIComponent(status)}`);
+      if (search) params.push(`search=${encodeURIComponent(search)}`);
       // If there are any parameters, append them to the URL
     if (params.length > 0) {
         url += `?${params.join('&')}`;

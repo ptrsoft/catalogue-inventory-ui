@@ -36,21 +36,31 @@ const CreateRunsheet = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const filteredOrderIDs = orderIDs.filter((id) => id.trim() !== "");
     if (riderName && filteredOrderIDs.length > 0) {
-      console.log(riderName.value,"name details")
-      dispatch(
-        createRunsheet({ riderId: riderName?.value, orders: filteredOrderIDs })
-      );
-      // console.log(response, "response");
-      navigate("/app/Logistics/runsheet", {
-        state: { successMessage: "Runsheet created successfully!" },
-      });
+      try {
+        console.log(riderName.value, "name details");
+  
+        // Dispatch the API action and unwrap the result
+        const result = await dispatch(
+          createRunsheet({ riderId: riderName?.value, orders: filteredOrderIDs })
+        ).unwrap();
+  
+        // If successful, navigate to the desired route
+        navigate("/app/Logistics/runsheet", {
+          state: { successMessage: "Runsheet created successfully!" },
+        });
+      } catch (error) {
+        // Handle any errors from the API
+        alert("Error: " + (error.message || "Unable to create runsheet."));
+      }
     } else {
       alert("Please select a rider and add at least one valid Order ID.");
     }
   };
+  
+  
 
   // Check for successful response and navigate
   useEffect(() => {}, [response, navigate]);

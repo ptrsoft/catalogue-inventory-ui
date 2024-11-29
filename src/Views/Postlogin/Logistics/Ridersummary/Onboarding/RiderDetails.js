@@ -176,9 +176,9 @@ const RiderDetails = () => {
   };
 
   const breadcrumbItems = [
-    { text: "Dashboard", href: "#" },
-    { text: "Logistics", href: "#" },
-    { text: "Rider Summary", href: "#" },
+    { text: "Dashboard", href: "/app/dashboard" },
+    { text: "Logistics", href: "/app/dashboard" },
+    { text: "Rider Summary", href: "/app/Logistics/RiderSummary/onboarding" },
     { text: "Rider Details", href: "#" },
   ];
   console.log(riderDetails?.reviewStatus);
@@ -262,9 +262,11 @@ const RiderDetails = () => {
               <Button
                 variant="primary"
                 disabled={
-                  !areAllDocumentsVerified() ||
+                  (!areAllDocumentsVerified() && riderDetails?.bankDetails?.status) || 
                   riderDetails?.reviewStatus === "rejected"
                 }
+                
+                
                 onClick={handleApprove}
               >
                 Approve
@@ -300,7 +302,7 @@ const RiderDetails = () => {
                               <Header>{getDocumentLabel(doc?.name)}</Header>
                             }
                           >
-                            <ColumnLayout columns={2}>
+                          
                               <Box>
                                 <img
                                   src={doc.image}
@@ -309,7 +311,7 @@ const RiderDetails = () => {
                                 />
                                 <p>{getDocumentLabel(doc?.name)}</p>
                               </Box>
-                            </ColumnLayout>
+                          
                             <Box float="right">
                               <div className="button-container">
                                 <button

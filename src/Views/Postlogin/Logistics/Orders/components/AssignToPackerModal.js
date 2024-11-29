@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Input, Button, SpaceBetween, Box,TextFilter } from "@cloudscape-design/components";
-import { fetchUsers } from "Redux-Store/Orders/OrdersThunk";
+import { fetchUsers,packOrders } from "Redux-Store/Orders/OrdersThunk";
 import { useDispatch, useSelector } from "react-redux";
 
-const AssignToPackersModal = ({ isOpen, onClose, onAssign,selectedOrders }) => {
+const AssignToPackersModal = ({ isOpen, onClose, onAssign,selectedOrders,showFlashbar }) => {
   console.log(selectedOrders,"selected orders");
+
   const handleSearchChange = ({ detail }) => {
     setFilteringText(detail.filteringText);
   };
@@ -29,13 +30,42 @@ const AssignToPackersModal = ({ isOpen, onClose, onAssign,selectedOrders }) => {
 };
 console.log(selectedPacker,"selected packer and order" ,selectedOrders);
   // Handle assigning orders and reset states
-  const handleAssignOrders = () => {
+  const handleAssignOrders = async () => {
     if (selectedPacker) {
-      onAssign(selectedOrders); // Pass selected packer and orders to the parent
-      setSelectedPacker(null); // Reset selected packer
-      onClose(); // Close the modal after assigning
+      const requestBody = selectedOrders.map((order) => ({
+        orderId: order.id,
+        packerId: selectedPacker.id,
+      }));
+  
+      try {
+        await dispatch(packOrders(requestBody)).unwrap();
+        console.log(showFlashbar,"flashbar")
+        if (showFlashbar) {
+          const message =
+          selectedOrders.length > 1
+            ? `${selectedOrders.length} orders has been assigned to ${selectedPacker.name} for Packing successfully!`
+            : `${selectedOrders.length} order has been assigned to ${selectedPacker.name} for Packing successfully!`
+          showFlashbar({
+            type: "success",
+            message,
+          });
+        }
+        onAssign(selectedOrders);
+        setSelectedPacker(null);
+        onClose();
+      } catch (error) {
+        if (showFlashbar) {
+          showFlashbar({
+            type: "error",
+            message: `Failed to assign orders. Please try again.Because of ${error}`,
+          });
+        }
+        console.error("Error assigning orders:", error);
+      }
     }
   };
+  
+  
 
   return (
     <Modal
@@ -66,6 +96,7 @@ console.log(selectedPacker,"selected packer and order" ,selectedOrders);
           />
             <div
               style={{
+                display:'flex',
                 maxHeight: "215px", // Limit height to show only 3 items (50px each as an example)
                 overflowY: "auto", // Enable vertical scrolling
               }}
@@ -86,11 +117,11 @@ console.log(selectedPacker,"selected packer and order" ,selectedOrders);
                   }}
                   onClick={() => handlePackerSelect(packer)} // Select the packer on click
                 >
-                  <img
+                  {/* <img
                     src="https://via.placeholder.com/40"
                     alt="Packer avatar"
                     style={{ borderRadius: "50%" }}
-                  />
+                  /> */}
                   <Box>
                     <div style={{ fontWeight: "bold" }}>{packer.name}</div>
                     <div>{packer.email}</div>

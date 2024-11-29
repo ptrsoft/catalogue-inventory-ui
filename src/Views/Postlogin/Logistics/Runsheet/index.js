@@ -76,9 +76,9 @@ useEffect(() => {
       header: "Status",
       cell: (item) => (
         <StatusIndicator
-          type={item.status === "closed" ? "success" : "pending"}
+          type={item.status === "active" ? "success" : "pending"}
         >
-          {item.status === "closed" ? "Active" : "pending"}
+          {item.status === "active" ? "Active" : "pending"}
         </StatusIndicator>
       ),
     },

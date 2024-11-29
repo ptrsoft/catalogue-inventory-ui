@@ -10,6 +10,8 @@ import {
   TextFilter,
   Modal,
   Textarea,
+  Flashbar,
+  StatusIndicator
 } from "@cloudscape-design/components";
 
 import {
@@ -23,12 +25,15 @@ import {
   fetchOrderInventory,
   fetchOrderById,
   cancelOrder,
+  fetchUsersbyid
 } from "Redux-Store/Orders/OrdersThunk";
 import AssignToPackersModal from "./components/AssignToPackerModal";
 import Drawer from "./components/Drawer";
 import Invoice from "./components/Invoice";
+import status from "Redux-Store/Constants";
 
 const Orders = () => {
+  const [flashbarItems, setFlashbarItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]); // Track selected orders
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cancelOrderId, setCancelOrderId] = useState(null); // Store the order ID to cancel
@@ -40,7 +45,8 @@ const Orders = () => {
     label: "7 Days Old",
     value: "7",
   }); // New state for age filter
-
+  const [shifts, setShifts] = useState(null); // New state for age filter
+  console.log(flashbarItems,"items");
   const [currentPage, setCurrentPage] = useState(1);
   const [fetchedPages, setFetchedPages] = useState({}); // Store fetched data per page
   const [pagesCount, setPagesCount] = useState(1); // Keep track of total pages
@@ -48,7 +54,9 @@ const Orders = () => {
   const [nextKeys, setNextKeys] = useState({}); // Store nextKey per page
   // const [search, setSearch] = useState('');
   const [category, setCategory] = useState(null);
-  const [statuscategory, setstatuscategory] = useState(null);
+  const [statuscategory, setstatuscategory] = useState({  label: "Order Placed",
+    value: "order placed",
+  });
 
   const [filteringText, setFilteringText] = React.useState("");
   //functions
@@ -119,6 +127,21 @@ const Orders = () => {
         });
     }
   };
+  const showFlashbar = ({ type, message }) => {
+    setFlashbarItems((prev) => [
+      ...prev,
+      {
+        type,
+        content: message,
+        dismissible: true,
+        onDismiss: () =>
+          setFlashbarItems((items) =>
+            items.filter((item) => item.content !== message)
+          ),
+      },
+    ]);
+  };
+
 
   const handleSearchChange = ({ detail }) => {
     setFilteringText(detail.filteringText);
@@ -133,7 +156,7 @@ const Orders = () => {
     // Create a unique key for the filter and page combination
     const filterKey = `${category?.value || ""}-${
       statuscategory?.value || ""
-    }-${filteringText || ""}-${ageFilter?.value || ""}-${currentPage}`;
+    }-${filteringText || ""}-${ageFilter?.value || ""}-${shifts?.value || ""}-${currentPage}`;
 
     // Check if the data for the current filter and page combination has already been fetched
     if (!fetchedPages[filterKey]) {
@@ -143,6 +166,7 @@ const Orders = () => {
           status: statuscategory?.value || "",
           search: filteringText || "",
           date: ageFilter?.value || "",
+          shift: shifts?.value || "",
           pageKey,
           pageSize: 50,
         })
@@ -183,6 +207,7 @@ const Orders = () => {
     ageFilter,
     nextKeys,
     fetchedPages,
+    shifts
   ]);
   console.log("Next Keys:", nextKeys);
 
@@ -219,12 +244,32 @@ const Orders = () => {
 
     // Make the invoice visible again
   };
+  console.log(status?.value==='order placed');
+
+  const { usersbyid } = useSelector((state) => state.orderInventory);
+  console.log(usersbyid,"user from order");
+  useEffect(() => {
+    const packerId = selectedOrder?.packerId;
+    const riderId = selectedOrder?.riderId;
+
+   
+      if (packerId) {
+        dispatch(fetchUsersbyid({ id: packerId }));
+      }
+      if (riderId) {
+        dispatch(fetchUsersbyid({ id: riderId }));
+      }
+    
+  }, [selectedOrder, dispatch]);
+
+
 
   const statusOptions = [
-    { label: "All", value: "" },
+  
     { label: "Order Placed", value: "order placed" },
     { label: "Cancel Orders", value: "cancelled" },
     { label: "Packed", value: "packed" },
+    { label: "Order Processing", value: "order processing" },
     { label: "On The Way", value: "on the way" },
     { label: "Delivered", value: "delivered" },
 
@@ -241,11 +286,23 @@ const Orders = () => {
     setAgeFilter(detail.selectedOption);
     setCurrentPage(1);
   };
+  const handleShiftsChange = ({ detail }) => {
+    setShifts(detail.selectedOption);
+    setCurrentPage(1);
+  };
+  console.log(shifts?.value,"shift");
 
   const paymentOptions = [
     { label: "All", value: "" },
     { label: "Cash On Delivery", value: "cash" },
     { label: "Prepaid", value: "online" },
+    // Add other statuses if needed
+  ];
+  //shifts options
+  const shiftsOptions = [
+    // { label: "All", value: "" },
+    { label: "Morning", value: "morning" },
+    { label: "Evening", value: "evening" },
     // Add other statuses if needed
   ];
 
@@ -284,9 +341,31 @@ const Orders = () => {
         </strong>
       ),
     },
-    { header: "Order Status", cell: (item) => item.orderStatus },
+    {
+      header: "Order Status",
+      cell: (item) => {
+        // Map order statuses to StatusIndicator types
+        const statusMapping = {
+          "order processing": { type: "pending", text: "Order Processing" },
+          packed: { type: "success", text: "Packed" },
+          "on the way": { type: "info", text: "On the Way" },
+          delivered: { type: "success", text: "Delivered" },
+          cancelled: { type: "error", text: "Cancelled" },
+          "order placed": { type: "in-progress", text: "Order Placed" },
+        };
+  
+        const status = statusMapping[item.orderStatus] || { type: "info", text: "Unknown Status" };
+  
+        return (
+          <StatusIndicator type={status.type}>
+            {status.text}
+          </StatusIndicator>
+        );
+      },
+},
 
     { header: "Total Amount", cell: (item) => item.totalAmount },
+    { header: "Delivery Slot Time", cell: (item) => `${item?.deliverySlot.startTime} To ${item?.deliverySlot.endTime}`},
     { header: "Deliver Area", cell: (item) => item.area },
   ];
 
@@ -311,6 +390,9 @@ const Orders = () => {
   return (
     <ContentLayout
       headerVariant="high-contrast"
+      notifications={
+        <Flashbar items={flashbarItems} />
+      }
       breadcrumbs={
         <BreadcrumbGroup
           items={[
@@ -321,10 +403,12 @@ const Orders = () => {
           ariaLabel="Breadcrumbs"
         />
       }
+      
       header={
         <Header
           actions={
             <>
+            {statuscategory?.value==='order placed' && 
               <Button
                 variant="primary"
                 onClick={() => setIsModalOpenForPacker(true)}
@@ -332,11 +416,14 @@ const Orders = () => {
               >
                 Assign To Packer
               </Button>
+          }
               <AssignToPackersModal
                 isOpen={isModalOpenForPacker}
                 onClose={() => setIsModalOpenForPacker(false)}
                 onAssign={handleAssignOrders}
                 selectedOrders={selectedItems}
+                showFlashbar={showFlashbar} // Correctly passed here
+
               />
             </>
           }
@@ -348,6 +435,7 @@ const Orders = () => {
     >
       <SpaceBetween direction="vertical" size="xl">
         <Stats />
+        
         {isModalOpen && (
           <Modal
             size="medium"
@@ -475,11 +563,11 @@ const Orders = () => {
             />
             <Select
               required
-              // selectedOption={ageFilter}
-              // onChange={handleAgeFilterChange}
-              // options={ageOptions}
-              placeholder="Filter by Delivery Slot"
-              selectedAriaLabel="Selected age filter"
+              selectedOption={shifts}
+              onChange={handleShiftsChange}
+              options={shiftsOptions}
+              placeholder="Filter by Shifts"
+              selectedAriaLabel="Selected shift filter"
             />
           </Grid>
 
@@ -509,7 +597,7 @@ const Orders = () => {
                 fetchedPages[
                   `${category?.value || ""}-${statuscategory?.value || ""}-${
                     filteringText || ""
-                  }-${ageFilter?.value || ""}-${currentPage}`
+                  }-${ageFilter?.value || ""}-${shifts?.value || ""}-${currentPage}`
                 ] || []
               }
               empty={
@@ -546,9 +634,13 @@ const Orders = () => {
           handlePrint={handlePrint}
           error={error}
           flashMessages={flashMessages}
+          usersbyid={usersbyid}
+        
         />
+     
       </SpaceBetween>
       <Invoice printRef={printRef} selectedOrder={selectedOrder} />
+      
     </ContentLayout>
   );
 };

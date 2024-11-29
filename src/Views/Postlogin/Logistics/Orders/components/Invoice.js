@@ -1,116 +1,218 @@
-import React from 'react'
-import { useRef } from 'react';
-import logo from "../../../../../assets/images/image.png"
-const Invoice = ({selectedOrder,printRef}) => {
- 
+import React from "react";
+
+import logo from "../../../../../assets/images/image.png";
+
+const Invoice = ({ selectedOrder, printRef }) => {
   return (
     <div
-    ref={printRef}
-    style={{
-      maxWidth: "400px",
-      margin: "0 auto",
-      padding: "20px",
-      border: "1px dashed #000",
-      fontFamily: "'Arial', sans-serif",
-    }}
-    className="print-content"
-  >
-    <div>
-      <img
-        src={logo}
-        alt="Logo"
-        style={{ width: "100px", height: "100px", marginBottom: "10px" }}
-      />
-      <h2 style={{ margin: "0", fontSize: "20px" }}>PROMODE AGRO FARMS</h2>
-      <p style={{ margin: "0", fontSize: "14px" }}>Deliver Season’s Best</p>
-      <p style={{ fontSize: "12px", margin: "5px 0" }}>
-        Dargah Khaleej Khan
-        <br />
-        Kismatpur, Hyderabad, Telangana, 500028
-        <br />
-        Phone: 9701610033
-      </p>
-      <p style={{ fontSize: "12px", margin: "5px 0" }}>
+      ref={printRef}
+      style={{
+        width: "90mm",
+        margin: "0 auto",
+        padding: "20px",
+        border: "0.1px dotted black",
+        borderRadius:"10px",
+        fontFamily: "'Arial', sans-serif",
+        backgroundColor: "#fff",
+     
+      }}
+      className="print-content"
+    >
+      {/* Header Section */}
+
+      <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+        <img
+          src={logo}
+          alt="Logo"
+          style={{
+            width: "45px",
+            height: "45px",
+            marginBottom: "10px",
+            borderRadius: "5px",
+          }}
+        />
+        <div style={{textAlign:"center"}}>
+          <h3 style={{ margin: "0", fontSize: "20px",fontWeight:'700px' }}>PROMODE AGRO FARMS</h3>
+          <h4 style={{ margin: "0", fontSize: "14px",fontWeight:'400px' }}>
+            Deliver Season’s Best
+          </h4>
+        </div>
+      </div>
+      <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} />
+      <div style={{textAlign:"center"}}>
+        <p style={{ margin: "5px 0" }}>Dargah Khaleej Khan</p>
+        <p style={{ margin: "5px 0" }}>
+          Kismatpur, Hyderabad, Telangana, 500028
+        </p>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            margin: "5px 0",
+          }}
+        >
+          <hr
+            style={{ flex: 1, border: "none", borderTop: "1px solid #000" }}
+          />
+          <p style={{ margin: 0, fontWeight: "bold" }}>Phone: 9701610033</p>
+          <hr
+            style={{ flex: 1, border: "none", borderTop: "1px solid #000" }}
+          />
+        </div>
+      </div>
+      <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} />
+     <div style={{textAlign:'center'}}>
+      <p style={{ fontSize: "12px", margin: "5px 0", textAlign:"center" }}>
         GSTIN NO: 36ABCFP1254A1ZS
       </p>
-      <p style={{ fontSize: "12px", margin: "5px 0" }}>
+      <p style={{ fontSize: "12px", margin: "5px 0",textAlign:"center" }}>
         FSSAI NO: 13624010000109
       </p>
-    </div>
-    <hr />
-    <h3 style={{ fontSize: "16px" }}>TAX INVOICE</h3>
-    <p>
-      <strong>Order ID:</strong> {selectedOrder?.orderId}
-    </p>
-    <p>
-      <strong>Date:</strong>{" "}
-      {new Date(selectedOrder?.createdAt).toLocaleDateString()} (
-      {new Date(selectedOrder?.createdAt).toLocaleTimeString()})
-    </p>
-    <p>
-      <strong>Slot Time:</strong> {selectedOrder?.deliverySlot?.startTime}{" "}
-      To {selectedOrder?.deliverySlot?.endTime}
-    </p>
-    <table
-      style={{
-        width: "100%",
-        borderCollapse: "collapse",
-        margin: "10px 0",
-        fontSize: "12px",
-      }}
-    >
-      <thead>
-        <tr>
-          <th style={{ borderBottom: "1px dashed #000" }}>ITEM NAME</th>
-          <th style={{ borderBottom: "1px dashed #000" }}>QTY</th>
-          <th style={{ borderBottom: "1px dashed #000" }}>RATE</th>
-          <th style={{ borderBottom: "1px dashed #000" }}>AMOUNT</th>
-        </tr>
-      </thead>
-      <tbody>
-        {selectedOrder?.items.map((item, index) => (
-          <tr key={index}>
-            <td style={{ borderBottom: "1px dashed #000" }}>
-              {item.productName}
-            </td>
-            <td style={{ borderBottom: "1px dashed #000" }}>
-              {item.quantity} {item.unit}
-            </td>
-            <td style={{ borderBottom: "1px dashed #000" }}>
-              {item.price.toFixed(2)}
-            </td>
-            <td style={{ borderBottom: "1px dashed #000" }}>
-              {item.subtotal.toFixed(2)}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-    <p style={{ textAlign: "right", marginRight: "20px" }}>
-      <strong>Items:</strong> {selectedOrder?.items.length}
-    </p>
-    <p style={{ textAlign: "right", marginRight: "20px" }}>
-      <strong>Sub Total:</strong> Rs. {selectedOrder?.subTotal}
-    </p>
-    <p style={{ textAlign: "right", marginRight: "20px" }}>
-      <strong>Shipping Charges:</strong> Rs.{" "}
-      {selectedOrder?.deliveryCharges}
-    </p>
-    <p style={{ textAlign: "right", marginRight: "20px" }}>
-      <strong>Discount Amount:</strong> (-) Rs. {selectedOrder?.discount}
-    </p>
-    <hr />
-    <h3 style={{ textAlign: "right", marginRight: "20px" }}>
-      <strong>Grand Total:</strong> Rs. {selectedOrder?.totalPrice}
-    </h3>
-    <hr />
-    <p style={{ fontSize: "14px", marginTop: "10px" }}>
-      <strong>Thank You</strong>
-    </p>
-  </div>
+      </div>
 
+      <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} />
+
+      {/* Invoice Details */}
   
-  )
-}
+   
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              // alignItems: "center",
+            }}
+          >
+            
+          <div>
+          <h4 style={{ fontSize: "14px", margin: "0",fontWeight:'normal' }}>TAX INVOICE</h4>
+          <p>
+            <strong>Name:</strong> {selectedOrder?.userInfo?.name}
+          </p>
+          <p>
+            <strong>Order ID:</strong> {selectedOrder?.orderId}
+          </p>
+          <p>
+          Date:{" "}
+            {new Date(selectedOrder?.createdAt).toLocaleDateString()} (
+            {new Date(selectedOrder?.createdAt).toLocaleTimeString()})
+          </p>
+          <p>
+            Slot Time:{selectedOrder?.deliverySlot?.startTime}{" "}
+            To {selectedOrder?.deliverySlot?.endTime}
+          </p>
+          </div>
+          <div>
+           
+            <div style={{
+               padding: "2px",
+               border: "0.1px solid",
+               borderRadius:"5px",
+               textAlign:'center',
+               width:'95px',
+               fontFamily: "'Arial', sans-serif",
+               backgroundColor: "#fff",
+            }}> {selectedOrder?.paymentDetails?.method === "cash"
+              ? "COD"
+              : "Prepaid"}</div>
+            
+          
+          </div>
+     </div>
+      
+      <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} />
 
-export default Invoice
+      {/* Table Section */}
+      <table
+        style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          // margin: "10px 0",
+          fontSize: "12px",
+          textAlign:"center",
+        //  borderBottom: "1px dashed #000", paddingBottom:"2px"
+        }}
+      >
+        <thead style={{ borderBottom: "1px dashed #000", padding:"10px" }}>
+          <tr  >
+            <th>ITEM NAME</th>
+            <th>QTY</th>
+            <th>RATE</th>
+            <th>AMOUNT</th>
+          </tr>
+        </thead>
+        
+        
+        {/* <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} /> */}
+        <tbody style={{padding:'10px'}}>
+          {selectedOrder?.items.map((item, index) => (
+            <tr key={index}>
+              <td>{item.productName}</td>
+              <td>
+                {item.quantity} {item.unit}
+              </td>
+              <td>{item.price.toFixed(2)}</td>
+              <td>{item.subtotal.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      
+        {/* <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} /> */}
+      </table>
+      <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} />
+
+      {/* Summary Section */}
+      
+      <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              // alignItems: "center",
+            }}
+          >
+        <p>
+          Items:{selectedOrder?.items.length}
+        </p>
+        <div>
+        <p>
+          Sub Total:Rs. {selectedOrder?.subTotal}
+        </p>
+        <p>
+          Shipping Charges: Rs.{" "}
+          {selectedOrder?.deliveryCharges}
+        </p>
+        <p>
+          Discount Amount: (-) Rs. {selectedOrder?.discount}
+        </p>
+        </div>
+        </div>
+   
+
+      <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} />
+
+      <h3 style={{ textAlign: "right" }}>
+        <strong>Grand Total:</strong> Rs. {selectedOrder?.totalPrice}
+      </h3>
+
+
+
+      {/* Footer */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          marginTop: "20px",
+        }}
+      >
+       <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} />
+        <p style={{ margin: 0, fontWeight: "bold", fontSize: "14px" }}>
+          Thank You
+        </p>
+        <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} />
+      </div>
+    </div>
+  );
+};
+
+export default Invoice;

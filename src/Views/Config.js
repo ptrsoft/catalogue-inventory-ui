@@ -34,13 +34,13 @@ const Config = {
    VENDOR_PROFILE:`${BASE_URL}/users`,
    FETCH_CUSTOMER:`${BASE_URL}/user`,
    FETCH_USERS:`${BASE_URL}/admin/users?role=packer`,
-
+   FETCH_USERS_BYID:`${BASE_URL}/admin/users`,
    UPDATE_ORDER_STATUS:`${BASE_URL}/order/proceed?ids=`,
    ASSIGN_DELIVERY_BOY: `${BASE_URL}/order/proceed?ids=`, // Will append `&assignee={assignee}` dynamically
    UPDATE_SINGLE_ORDER_STATUS:`${BASE_URL}/order/proceed?ids=`,
    ASSIGN_DELIVERY_BOY_SINGLEORDER: `${BASE_URL}/order/proceed?ids=`, // Will append `&assignee={assignee}` dynamically
    ORDERS_STATUS:`${BASE_URL}/order/stats`,
-
+   PACK_ORDERS:`${BASE_URL}/order/pack`,
  
     FETCH_PRODUCTS:`${BASE_URL}/inventory`,
     CREATE_RUNSHEET:`${BASE_URL}/runsheet`,

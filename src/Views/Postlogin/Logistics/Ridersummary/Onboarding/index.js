@@ -11,7 +11,8 @@ import {
   Toggle,
   BreadcrumbGroup,
   Grid,
-  SpaceBetween
+  SpaceBetween,
+  TextFilter
 } from '@cloudscape-design/components';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,7 +24,7 @@ const Onboarding = () => {
   const dispatch = useDispatch();
   const [RejectedMessage, setRejectedMessage] = useState(null);
   const { items, count, error } = useSelector((state) => state.riders);
-  const [status, setStatus] = useState('rejected');
+  const [status, setStatus] = useState('pending');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPageIndex, setCurrentPageIndex] = useState(1);
   const pageSize = 10;
@@ -38,12 +39,17 @@ const Onboarding = () => {
     setStatus(e.detail?.selectedOption.value);  // Use .value here to get the actual value
     setCurrentPageIndex(1);
   };
+  const [filteringText, setFilteringText] = useState("");
+    // Handle search filter change
+    const handleSearchChange = ({ detail }) => {
+      setFilteringText(detail.filteringText);
+    };
 
   useEffect(() => {
     // Fetch riders with current status and page index
-    dispatch(fetchRiders({ status: status || "", pageIndex: currentPageIndex, pageSize }));
+    dispatch(fetchRiders({ seatch:filteringText ,status: status || "", pageIndex: currentPageIndex, pageSize }));
     console.log(status, "from dispatch status");
-  }, [dispatch, status, currentPageIndex]);
+  }, [dispatch, status,filteringText, currentPageIndex]);
 
   const handleAproveRiderDetails = (item) => {
     // Optional: You can set specific tab index for Active/Inactive status if needed
@@ -149,8 +155,8 @@ const handleStatusToggle = async (item) => {
        <SpaceBetween direction="vertical" size="m">
         <BreadcrumbGroup
           items={[
-            { text: 'Dashboard', href: '#' },
-            { text: 'Logistics', href: '#' },
+            { text: 'Dashboard', href: '/app/dashboard' },
+            { text: 'Logistics', href: '/app/dashboard' },
             { text: 'Rider Summary', href: '#' },
           ]}
         />
@@ -164,11 +170,12 @@ const handleStatusToggle = async (item) => {
             { colspan: { default: 12, xxs: 3 } },
           ]}
         >
-      <Input
-        placeholder="Search by name"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.detail.value)}
-      />
+     <TextFilter
+            filteringText={filteringText}
+            filteringPlaceholder="Search By Name"
+            filteringAriaLabel="Filter instances"
+            onChange={handleSearchChange}
+          />
       <Select
         selectedOption={{ label: status, value: status }}  // Set selected option properly
         onChange={handleStatusChange}

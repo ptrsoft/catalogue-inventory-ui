@@ -3,7 +3,7 @@ import { Modal, Input, Button, SpaceBetween, Box,TextFilter } from "@cloudscape-
 import { fetchUsers,packOrders } from "Redux-Store/Orders/OrdersThunk";
 import { useDispatch, useSelector } from "react-redux";
 
-const AssignToPackersModal = ({ isOpen, onClose, onAssign,selectedOrders,showFlashbar }) => {
+const AssignToPackersModal = ({ isOpen, onClose, onAssign,selectedOrders,showFlashbar,onAssignOrderStatusChange }) => {
   console.log(selectedOrders,"selected orders");
 
   const handleSearchChange = ({ detail }) => {
@@ -53,6 +53,11 @@ console.log(selectedPacker,"selected packer and order" ,selectedOrders);
         onAssign(selectedOrders);
         setSelectedPacker(null);
         onClose();
+            // Call the parent handler to update the state
+            const orderIds = selectedOrders.map(order => order.id);
+    if (onAssignOrderStatusChange) {
+      onAssignOrderStatusChange(orderIds);
+    }
       } catch (error) {
         if (showFlashbar) {
           showFlashbar({

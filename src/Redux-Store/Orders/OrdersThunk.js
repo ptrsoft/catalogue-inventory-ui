@@ -35,6 +35,7 @@ export const fetchOrderInventory = createAsyncThunk(
       if (params.length > 0) {
         url += `?${params.join('&')}`;
       }
+      console.log(url,'order url ');
 
       const response = await postLoginService.get(url, {
         headers: {
@@ -99,7 +100,8 @@ export const cancelOrder = createAsyncThunk(
       });
 
       // dispatch(fetchOrderInventory());
-      // dispatch(fetchOrderById())
+      dispatch(fetchOrderById(orderId))
+      dispatch(fetchOrderStats())
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to cancel the order');

@@ -1,132 +1,134 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   Table,
   Button,
   Box,
   Grid,
   Pagination,
-  Select,
   Header,
   TextFilter,
-  Modal,
-  Textarea,
   Flashbar,
-  StatusIndicator
-} from "@cloudscape-design/components";
-
-import {
+  StatusIndicator,
   ContentLayout,
   BreadcrumbGroup,
   SpaceBetween,
 } from "@cloudscape-design/components";
-import Stats from "./components/Stats";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchOrderInventory,
   fetchOrderById,
-  cancelOrder,
-  fetchUsersbyid
+  fetchUsersbyid,
 } from "Redux-Store/Orders/OrdersThunk";
+//components import
+import Stats from "./components/Stats";
 import AssignToPackersModal from "./components/AssignToPackerModal";
 import Drawer from "./components/Drawer";
 import Invoice from "./components/Invoice";
-import status from "Redux-Store/Constants";
+import FilterComponent from "./components/FilterComponent";
 
 const Orders = () => {
+  //declaring states
   const [flashbarItems, setFlashbarItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]); // Track selected orders
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [cancelOrderId, setCancelOrderId] = useState(null); // Store the order ID to cancel
-  const [cancellationReason, setCancellationReason] = useState(""); // State for cancellation reason
-  const [flashMessages, setFlashMessages] = useState([]);
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
-  const [ageFilter, setAgeFilter] = useState({
-    label: "7 Days Old",
-    value: "7",
-  }); // New state for age filter
-  const [shifts, setShifts] = useState(null); // New state for age filter
-  console.log(flashbarItems,"items");
+  const [filteringText, setFilteringText] = React.useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [fetchedPages, setFetchedPages] = useState({}); // Store fetched data per page
   const [pagesCount, setPagesCount] = useState(1); // Keep track of total pages
-
   const [nextKeys, setNextKeys] = useState({}); // Store nextKey per page
-  // const [search, setSearch] = useState('');
-  const [category, setCategory] = useState(null);
-  const [statuscategory, setstatuscategory] = useState({  label: "Order Placed",
-    value: "order placed",
-  });
 
-  const [filteringText, setFilteringText] = React.useState("");
-  //functions
-  // Get loading, error, and selectedOrder from the Redux store
-  const dispatch = useDispatch();
+  // getting redux states using useselector
   const { selectedOrder } = useSelector((state) => state.orderInventory);
 
-  const { orders, loading, error, count } = useSelector(
+  const { orders, loading, error } = useSelector(
     (state) => state.orderInventory.orders.data[currentPage] || []
   );
-  console.log(orders, "orders");
-  // const { data = [] } = orders;
-  // console.log(orders,"order for nextkey");
-  console.log("Current Page:", currentPage);
+  console.log(orders, "orderssss");
+  const { usersbyid } = useSelector((state) => state.orderInventory);
+  console.log(usersbyid, "user from order");
+  const [filters, setFilters] = useState({
+    category: null,
+    statuscategory: { label: "All", value: "" },
+    ageFilter: {
+      label: "7 Days Old",
+      value: "7",
+    },
+    shifts: null,
+  });
+  console.log(filters?.category?.value);
+  console.log(filters, "filter from order compo");
+  const getFilterKey = useCallback(() => {
+    const category = filters?.category?.value || "";
+    const statuscategory = filters?.statuscategory?.value || "";
+    const ageFilter = filters?.ageFilter?.value || "";
+    const shifts = filters?.shifts?.value || "";
 
-  const handleOpenModal = (orderId) => {
-    console.log(orderId, "modal");
-    setCancelOrderId(orderId); // Set the order ID to cancel
-    // console.log(Cancelo,"id from modal");
-    setIsModalOpen(true);
-  };
+    return `${category}-${statuscategory}-${ageFilter}-${shifts}-${
+      filteringText || ""
+    }-${currentPage}`;
+  }, [
+    filters?.category?.value,
+    filters?.statuscategory?.value,
+    filters?.ageFilter?.value,
+    filters?.shifts?.value,
+    currentPage,
+    filteringText,
+  ]);
+ 
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setCancelOrderId(null); // Clear the order ID
-    setCancellationReason(""); // Clear the cancellation reason
-  };
+  //using dispatch hitting apis
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const pageKey = currentPage === 1 ? undefined : nextKeys[currentPage - 1];
+    const filterKey = getFilterKey();
 
-  const handleCancelOrder = () => {
-    if (cancelOrderId) {
-      console.log(cancelOrderId, "id");
-
-      // Dispatch the cancel order thunk with order ID and reason
+    if (!fetchedPages[filterKey]) {
       dispatch(
-        cancelOrder({ orderId: cancelOrderId, reason: cancellationReason })
+        fetchOrderInventory({
+          type: filters.category?.value || "",
+          status: filters.statuscategory?.value || "",
+          date: filters.ageFilter?.value || "",
+          shift: filters.shifts?.value || "",
+          search: filteringText || "",
+          pageKey,
+          pageSize: 50,
+        })
       )
-        .unwrap() // to handle the response if you're using Redux Thunk
-        .then(() => {
-          // Show success flashbar when order is successfully canceled (e.g., 200 status)
-          setFlashMessages([
-            {
-              type: "info",
-              content: "Order successfully cancel.",
-              dismissible: true,
-              id: "successCancel",
-              onDismiss: () => setFlashMessages([]),
-            },
-          ]);
+        .unwrap()
+        .then((result) => {
+          if (Array.isArray(result.data)) {
+            setFetchedPages((prev) => ({
+              ...prev,
+              [filterKey]: result.data,
+            }));
 
-          // Automatically dismiss the flash message after 3 seconds
-          setTimeout(() => {
-            setFlashMessages([]);
-          }, 3000);
-
-          handleCloseModal();
+            if (result.nextKey && !nextKeys[currentPage]) {
+              setNextKeys((prevKeys) => ({
+                ...prevKeys,
+                [currentPage]: result.nextKey,
+              }));
+              setPagesCount((prevCount) => prevCount + 1);
+            }
+          }
         })
         .catch((error) => {
-          // Show an error flashbar if the cancellation fails
-          setFlashMessages([
-            {
-              type: "error",
-              content: `Failed to cancel the order. Please try again.${error}`,
-              dismissible: true,
-              id: "errorCancel",
-              onDismiss: () => setFlashMessages([]),
-            },
-          ]);
+          console.error("Error fetching inventory data:", error);
         });
     }
-  };
+  }, [
+    filters,
+    filteringText,
+    currentPage,
+    fetchedPages,
+    nextKeys,
+    dispatch,
+    getFilterKey,
+  ]);
+
+  console.log("Next Keys:", nextKeys);
+
   const showFlashbar = ({ type, message }) => {
     setFlashbarItems((prev) => [
       ...prev,
@@ -141,86 +143,76 @@ const Orders = () => {
       },
     ]);
   };
-
-
-  const handleSearchChange = ({ detail }) => {
-    setFilteringText(detail.filteringText);
-    // setCurrentPage(1); // Reset page to 1 when filters change
+  // function for imidiates changes in Ui after Cancelling order
+  const handleCancelOrder = (orderId) => {
+    const orderIdsArray = Array.isArray(orderId) ? orderId : [orderId];
+    const isMultipleOrders = orderIdsArray.length > 1;  // Check if it's multiple orders
+  
+    // Update the fetchedPages state after canceling an order
+    setFetchedPages((prev) => {
+      const filterKey = getFilterKey(); // Get the current filter key (e.g., filter by status)
+      
+      const updatedPage = prev[filterKey]?.map((order) =>
+        // Apply dynamic orderStatus based on whether it's a single order or multiple orders
+        orderIdsArray.includes(order.id)
+          ? { ...order, orderStatus: isMultipleOrders ? "order processing" : "cancelled" }
+          : order
+      );
+  
+      return {
+        ...prev,
+        [filterKey]: updatedPage,
+      };
+    });
+  
+    // Optional: If needed, trigger other actions (e.g., API call, flash messages)
   };
-  console.log(filteringText, "search");
+  //function for immidiate changes in UI after assigning order
+  const handleAssignOrdersStatus = (orderId) => {
+    const orderIdsArray = Array.isArray(orderId) ? orderId : [orderId];
 
-  useEffect(() => {
-    // Define the pageKey for pagination (undefined for page 1)
-    const pageKey = currentPage === 1 ? undefined : nextKeys[currentPage - 1];
-    console.log("Page Key for Current Page:", pageKey);
-    // Create a unique key for the filter and page combination
-    const filterKey = `${category?.value || ""}-${
-      statuscategory?.value || ""
-    }-${filteringText || ""}-${ageFilter?.value || ""}-${shifts?.value || ""}-${currentPage}`;
-
-    // Check if the data for the current filter and page combination has already been fetched
-    if (!fetchedPages[filterKey]) {
-      dispatch(
-        fetchOrderInventory({
-          type: category?.value || "",
-          status: statuscategory?.value || "",
-          search: filteringText || "",
-          date: ageFilter?.value || "",
-          shift: shifts?.value || "",
-          pageKey,
-          pageSize: 50,
-        })
-      )
-        .unwrap()
-        .then((result) => {
-          console.log("Fetched products for page:", currentPage, result);
-
-          if (Array.isArray(result.data)) {
-            // Store fetched items for the current page and filters
-            setFetchedPages((prev) => ({
-              ...prev,
-              [filterKey]: result.data,
-            }));
-
-            // Store nextKey and update pagesCount only if it's new data
-            if (result.nextKey && !nextKeys[currentPage]) {
-              setNextKeys((prevKeys) => ({
-                ...prevKeys,
-                [currentPage]: result.nextKey,
-              }));
-              setPagesCount((prevCount) => prevCount + 1);
-            }
-          } else {
-            console.error("Unexpected data structure:", result.data);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching products:", error);
-        });
-    }
-  }, [
-    dispatch,
-    currentPage,
-    filteringText,
-    category,
-    statuscategory,
-    ageFilter,
-    nextKeys,
-    fetchedPages,
-    shifts
-  ]);
-  console.log("Next Keys:", nextKeys);
-
-  // Handle page changes
-  const handlePageChange = (pageIndex) => {
-    setCurrentPage(pageIndex); // Update current page
+  
+    // Update the fetchedPages state after canceling an order
+    setFetchedPages((prev) => {
+      const filterKey = getFilterKey(); // Get the current filter key (e.g., filter by status)
+      
+      const updatedPage = prev[filterKey]?.map((order) =>
+        // Apply dynamic orderStatus based on whether it's a single order or multiple orders
+        orderIdsArray.includes(order.id)
+          ? { ...order, orderStatus: "order processing"  }
+          : order
+      );
+  
+      return {
+        ...prev,
+        [filterKey]: updatedPage,
+      };
+    });
+  
+    // Optional: If needed, trigger other actions (e.g., API call, flash messages)
   };
+  
+  // dispatching order by id
   useEffect(() => {
     if (selectedProduct) {
       dispatch(fetchOrderById(selectedProduct)); // Dispatch the thunk to fetch order details
     }
   }, [dispatch, selectedProduct]);
 
+  // dispatching assign order to packer
+  useEffect(() => {
+    const packerId = selectedOrder?.packerId;
+    const riderId = selectedOrder?.riderId;
+
+    if (packerId) {
+      dispatch(fetchUsersbyid({ id: packerId }));
+    }
+    if (riderId) {
+      dispatch(fetchUsersbyid({ id: riderId }));
+    }
+  }, [selectedOrder, dispatch]);
+
+  // for drawer
   const handleOrderClick = (orderId) => {
     setSelectedProduct(orderId);
 
@@ -230,6 +222,7 @@ const Orders = () => {
     setIsDrawerOpen(false);
     setSelectedProduct(null);
   };
+  // for printing bill
   const printRef = useRef();
 
   const handlePrint = () => {
@@ -241,71 +234,17 @@ const Orders = () => {
     WinPrint.focus();
     WinPrint.print();
     WinPrint.close();
-
-    // Make the invoice visible again
   };
-  console.log(status?.value==='order placed');
 
-  const { usersbyid } = useSelector((state) => state.orderInventory);
-  console.log(usersbyid,"user from order");
-  useEffect(() => {
-    const packerId = selectedOrder?.packerId;
-    const riderId = selectedOrder?.riderId;
-
-   
-      if (packerId) {
-        dispatch(fetchUsersbyid({ id: packerId }));
-      }
-      if (riderId) {
-        dispatch(fetchUsersbyid({ id: riderId }));
-      }
-    
-  }, [selectedOrder, dispatch]);
-
-
-
-  const statusOptions = [
-  
-    { label: "Order Placed", value: "order placed" },
-    { label: "Cancel Orders", value: "cancelled" },
-    { label: "Packed", value: "packed" },
-    { label: "Order Processing", value: "order processing" },
-    { label: "On The Way", value: "on the way" },
-    { label: "Delivered", value: "delivered" },
-
-    // Add other statuses if needed
-  ];
-  const ageOptions = [
-    { label: "7 days old delivered", value: "7" },
-    { label: "14 days old delivered", value: "14" },
-    { label: "1 month old delivered", value: "1m" },
-    { label: "2 months old delivered", value: "2m" },
-    { label: "Older", value: "older" },
-  ];
-  const handleAgeFilterChange = ({ detail }) => {
-    setAgeFilter(detail.selectedOption);
-    setCurrentPage(1);
+  const handleSearchChange = ({ detail }) => {
+    setFilteringText(detail.filteringText);
+    // setCurrentPage(1); // Reset page to 1 when filters change
   };
-  const handleShiftsChange = ({ detail }) => {
-    setShifts(detail.selectedOption);
-    setCurrentPage(1);
+  // Handle page changes
+  const handlePageChange = (pageIndex) => {
+    setCurrentPage(pageIndex); // Update current page
   };
-  console.log(shifts?.value,"shift");
-
-  const paymentOptions = [
-    { label: "All", value: "" },
-    { label: "Cash On Delivery", value: "cash" },
-    { label: "Prepaid", value: "online" },
-    // Add other statuses if needed
-  ];
-  //shifts options
-  const shiftsOptions = [
-    // { label: "All", value: "" },
-    { label: "Morning", value: "morning" },
-    { label: "Evening", value: "evening" },
-    // Add other statuses if needed
-  ];
-
+  // difining table columns
   const columns = [
     {
       header: "Order ID",
@@ -350,34 +289,47 @@ const Orders = () => {
           packed: { type: "success", text: "Packed" },
           "on the way": { type: "info", text: "On the Way" },
           delivered: { type: "success", text: "Delivered" },
+          undelivered: { type: "loading", text: "undelivered" },
           cancelled: { type: "error", text: "Cancelled" },
           "order placed": { type: "in-progress", text: "Order Placed" },
         };
-  
-        const status = statusMapping[item.orderStatus] || { type: "info", text: "Unknown Status" };
-  
+
+        const status = statusMapping[item.orderStatus] || {
+          type: "info",
+          text: "Unknown Status",
+        };
+
         return (
-          <StatusIndicator type={status.type}>
-            {status.text}
-          </StatusIndicator>
+          <StatusIndicator type={status.type}>{status.text}</StatusIndicator>
         );
       },
-},
+    },
+   
+  // Conditionally add "Reason" column if filters.statuscategory is "cancelled" and order status is "cancelled" or "undelivered"
+  ...(filters?.statuscategory?.value === 'cancelled' || filters?.statuscategory?.value === 'undelivered' ? [
+    {
+      header: "Reason",
+      cell: (item) => {
+        if (item.orderStatus === "cancelled" || item.orderStatus === "undelivered") {
+          return item.reason || "No reason provided";
+        }
+        return "-"; // or return null if you don't want to show anything
+      },
+      width: 250,
+      minWidth: 180,
+    }
+  ] : []),
+
 
     { header: "Total Amount", cell: (item) => item.totalAmount },
-    { header: "Delivery Slot Time", cell: (item) => `${item?.deliverySlot.startTime} To ${item?.deliverySlot.endTime}`},
+    {
+      header: "Delivery Slot Time",
+      cell: (item) =>
+        `${item?.deliverySlot.startTime} To ${item?.deliverySlot.endTime}`,
+    },
     { header: "Deliver Area", cell: (item) => item.area },
+
   ];
-
-  const handlepaymentChange = ({ detail }) => {
-    setCategory(detail.selectedOption);
-    setCurrentPage(1);
-  };
-
-  const handlestatusChange = ({ detail }) => {
-    setstatuscategory(detail.selectedOption);
-    setCurrentPage(1);
-  };
 
   const [isModalOpenForPacker, setIsModalOpenForPacker] = useState(false);
 
@@ -386,13 +338,22 @@ const Orders = () => {
     setIsModalOpenForPacker(false);
     setSelectedItems([]);
   };
+  const handleFilterChange = (newFilters) => {
+    console.log("Received filters:", newFilters);
+    if (typeof newFilters === "object" && newFilters !== null) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        ...newFilters,
+      }));
+    } else {
+      console.error("Invalid filters received:", newFilters);
+    }
+  };
 
   return (
     <ContentLayout
       headerVariant="high-contrast"
-      notifications={
-        <Flashbar items={flashbarItems} />
-      }
+      notifications={<Flashbar items={flashbarItems} />}
       breadcrumbs={
         <BreadcrumbGroup
           items={[
@@ -403,12 +364,11 @@ const Orders = () => {
           ariaLabel="Breadcrumbs"
         />
       }
-      
       header={
         <Header
           actions={
             <>
-            {statuscategory?.value==='order placed' && 
+              {(filters?.statuscategory?.value==='order placed'||filters?.statuscategory?.value==='') && 
               <Button
                 variant="primary"
                 onClick={() => setIsModalOpenForPacker(true)}
@@ -416,14 +376,15 @@ const Orders = () => {
               >
                 Assign To Packer
               </Button>
-          }
+               } 
               <AssignToPackersModal
                 isOpen={isModalOpenForPacker}
                 onClose={() => setIsModalOpenForPacker(false)}
                 onAssign={handleAssignOrders}
                 selectedOrders={selectedItems}
-                showFlashbar={showFlashbar} // Correctly passed here
-
+                showFlashbar={showFlashbar}
+                 // Correctly passed here
+                 onAssignOrderStatusChange={handleAssignOrdersStatus}
               />
             </>
           }
@@ -435,95 +396,11 @@ const Orders = () => {
     >
       <SpaceBetween direction="vertical" size="xl">
         <Stats />
-        
-        {isModalOpen && (
-          <Modal
-            size="medium"
-            visible={isModalOpen}
-            onDismiss={handleCloseModal}
-            closeAriaLabel="Close"
-            header={<Header>Order Cancel Reason</Header>}
-          >
-            <hr />
-
-            <div>
-              {/* Adjusted line-height here */}
-              <SpaceBetween direction="vertical" size="s">
-                <p style={{ color: "#1D4ED8" }}>
-                  <strong>Order ID:</strong>{" "}
-                  <b>{selectedOrder?.userInfo?.id}</b>
-                </p>
-                <p>
-                  <strong>{selectedOrder?.userInfo?.name}</strong>{" "}
-                  <span
-                    style={{
-                      backgroundColor: "#4B5563",
-                      color: "#FFF",
-                      padding: "2px 8px",
-                      borderRadius: "5px",
-                      fontSize: "12px",
-                      marginLeft: "5px",
-                    }}
-                  >
-                    {selectedOrder?.paymentDetails?.method === "cash"
-                      ? "COD"
-                      : "Prepaid"}
-                  </span>
-                </p>
-                <p>
-                  {selectedOrder?.shippingDetails?.address}{" "}
-                  {selectedOrder?.shippingDetails?.zipcode}
-                </p>
-                <p>{selectedOrder?.userInfo?.number}</p>
-                <hr />
-
-                {/* Payment and Items on the same line */}
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <p>
-                    <strong>Payment:</strong>{" "}
-                    <b style={{ color: "#1D4ED8" }}>
-                      <i>{selectedOrder?.totalPrice}</i>
-                    </b>
-                  </p>
-                  <p>
-                    <strong>{selectedOrder?.items?.length} Items</strong>
-                  </p>
-                </div>
-
-                {/* Reason Textarea */}
-                <b>Reason</b>
-                <Textarea
-                  rows={4} // Use curly braces for numbers
-                  value={cancellationReason} // Controlled input
-                  onChange={({ detail }) => setCancellationReason(detail.value)} // Capture the reason using Cloudscape's `detail.value`
-                  placeholder="Enter cancellation reason"
-                  ariaLabel="Cancellation reason"
-                  style={{ width: "100%", marginBottom: "1rem" }} // Inline styles
-                />
-
-                {/* Cancel Order Button */}
-                <button
-                  className="cancel-btn"
-                  style={{ float: "right" }}
-                  onClick={handleCancelOrder}
-                >
-                  confirm Cancel
-                </button>
-              </SpaceBetween>
-            </div>
-          </Modal>
-        )}
-
         <div>
           <Grid
             gridDefinition={[
               { colspan: { default: 12, xxs: 4 } },
-              { colspan: { default: 12, xxs: 2 } },
-              { colspan: { default: 12, xxs: 2 } },
-              { colspan: { default: 12, xxs: 2 } },
-              { colspan: { default: 12, xxs: 2 } },
+              { colspan: { default: 12, xxs: 8 } },
             ]}
           >
             {/* Search bar */}
@@ -535,42 +412,15 @@ const Orders = () => {
             />
 
             {/* Sort dropdown */}
-            <Select
-              required
-              selectedOption={category}
-              onChange={handlepaymentChange}
-              options={paymentOptions}
-              placeholder="Sort By Payment Type"
-              selectedAriaLabel="Selected status"
-            />
-            <Select
-              required
-              selectedOption={statuscategory}
-              onChange={handlestatusChange}
-              options={statusOptions}
-              placeholder="Sort By Status"
-              selectedAriaLabel="Selected status"
-            />
-            {/* {statuscategory?.value === "delivered" && ( */}
-            {/* Conditionally render age filter */}
-            <Select
-              required
-              selectedOption={ageFilter}
-              onChange={handleAgeFilterChange}
-              options={ageOptions}
-              placeholder="Filter by Delivery Age"
-              selectedAriaLabel="Selected age filter"
-            />
-            <Select
-              required
-              selectedOption={shifts}
-              onChange={handleShiftsChange}
-              options={shiftsOptions}
-              placeholder="Filter by Shifts"
-              selectedAriaLabel="Selected shift filter"
+            <FilterComponent
+              statuscategory={filters.statuscategory}
+              ageFilter={filters.ageFilter}
+              shifts={filters.shifts}
+              category={filters.category}
+              currentPage={currentPage}
+              onFilterChange={handleFilterChange} // Corrected prop name
             />
           </Grid>
-
           {/* Orders table */}
           <div
             className={`orders-container ${
@@ -593,13 +443,7 @@ const Orders = () => {
               trackBy="id" // Unique identifier for items
               variant="borderless"
               columnDefinitions={columns}
-              items={
-                fetchedPages[
-                  `${category?.value || ""}-${statuscategory?.value || ""}-${
-                    filteringText || ""
-                  }-${ageFilter?.value || ""}-${shifts?.value || ""}-${currentPage}`
-                ] || []
-              }
+              items={fetchedPages[getFilterKey()] || []}
               empty={
                 <Box
                   margin={{ vertical: "xs" }}
@@ -630,17 +474,15 @@ const Orders = () => {
           selectedProduct={selectedProduct}
           handleCloseDrawer={handleCloseDrawer}
           selectedOrder={selectedOrder}
-          handleOpenModal={handleOpenModal}
           handlePrint={handlePrint}
           error={error}
-          flashMessages={flashMessages}
           usersbyid={usersbyid}
+          fetchpages={fetchedPages}
+          onCancelOrder={handleCancelOrder} // Pass handler to child
         
         />
-     
       </SpaceBetween>
       <Invoice printRef={printRef} selectedOrder={selectedOrder} />
-      
     </ContentLayout>
   );
 };

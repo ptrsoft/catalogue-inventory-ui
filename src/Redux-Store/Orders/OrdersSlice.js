@@ -1,34 +1,41 @@
-// orderInventorySlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchOrderInventory, fetchOrderById, cancelOrder, fetchOrderStats, fetchUsers, packOrders, fetchUsersbyid } from './OrdersThunk'; // Import the fetchOrderStats thunk
-import status from "Redux-Store/Constants";
+import { 
+    fetchOrderInventory, 
+    fetchOrderById, 
+    cancelOrder, 
+    fetchOrderStats, 
+    fetchUsers, 
+    packOrders, 
+    fetchUsersbyid 
+} from './OrdersThunk'; 
+import status from 'Redux-Store/Constants';
 
-// Define the initial state
+
+// Initial state
 const initialState = {
     orders: {
-        nextKey: null, 
-        data: {},  // Change from array to object for pagination
+        nextKey: null,
+        data: {}, // Object for paginated data
         status: 'idle',
         error: null,
     },
     count: 0,
     loading: false,
     error: null,
-    selectedOrder: null,  // To hold the specific order fetched by ID
-    cancelStatus: 'idle', // To track the cancel order request status
-    cancelError: null,    // To track errors related to order cancellation
-    orderStats: null,     // To hold order stats data
-    statsLoading: false,  // To track loading state for stats API
+    selectedOrder: null,
+    cancelStatus: 'idle',
+    cancelError: null,
+    orderStats: null,
+    statsLoading: false,
     statsError: null,
     users: null,
-    usersbyid: [], // Updated to handle multiple users
-    userStatusLoading: false,  // Renamed from 'useridstatusloading' for clarity
-    cancelUserStatus: 'idle',  // Renamed from 'canceluser' for clarity
-    cancelUserError: null,    // Renamed for consistency
-    packStatus: null,         // Track packOrders status
+    usersbyid: [],
+    userStatusLoading: false,
+    cancelUserStatus: 'idle',
+    cancelUserError: null,
+    packStatus: null,
 };
 
-// Create the slice
 const orderInventorySlice = createSlice({
     name: 'orderInventory',
     initialState,
@@ -42,9 +49,18 @@ const orderInventorySlice = createSlice({
             })
             .addCase(fetchOrderInventory.fulfilled, (state, action) => {
                 const { data } = action.payload;
-                const currentPage = action.meta.arg.pageKey || 1;
-                state.orders.data[currentPage] = data.items;
+                const currentPageKey = action.meta.arg?.pageKey || 1; // Fallback to page 1
+                console.log('Fetching orders for pageKey:', currentPageKey);
+
+                if (typeof state.orders.data !== 'object' || state.orders.data === null) {
+                    console.error('state.orders.data not initialized properly, resetting.');
+                    state.orders.data = {}; // Initialize as an empty object
+                }
+
+                // Ensure the page key is initialized as an array
+                state.orders.data[currentPageKey] = Array.isArray(data.items) ? data.items : [];
                 state.orders.nextKey = data.nextKey;
+                state.loading = false;
             })
             .addCase(fetchOrderInventory.rejected, (state, action) => {
                 state.loading = false;
@@ -71,8 +87,21 @@ const orderInventorySlice = createSlice({
                 state.cancelError = null;
             })
             .addCase(cancelOrder.fulfilled, (state, action) => {
-                state.cancelStatus = 'succeeded';
+                const canceledOrderId = action.payload.id;
+
+                // Update the order's status to "Cancelled"
+                state.orders.data = Object.keys(state.orders.data).reduce((acc, pageKey) => {
+                    acc[pageKey] = state.orders.data[pageKey].map(order =>
+                        order.id === canceledOrderId
+                            ? { ...order, orderStatus: 'Cancelled' }
+                            : order
+                    );
+                    return acc;
+                }, {});
+
+                state.cancelStatus = status.SUCCESS;
             })
+            
             .addCase(cancelOrder.rejected, (state, action) => {
                 state.cancelStatus = 'failed';
                 state.cancelError = action.payload || action.error.message;
@@ -106,20 +135,17 @@ const orderInventorySlice = createSlice({
                 state.error = action.error.message;
             })
 
-            // Handle fetchUsers by ID actions
+            // Handle fetchUsersbyid actions
             .addCase(fetchUsersbyid.pending, (state) => {
                 state.userStatusLoading = true;
                 state.cancelUserError = null;
             })
             .addCase(fetchUsersbyid.fulfilled, (state, action) => {
                 state.userStatusLoading = false;
-
-                // Ensure no duplicates in `usersbyid` array
                 const newUser = action.payload;
                 const userExists = state.usersbyid.some(user => user.id === newUser.id);
-
                 if (!userExists) {
-                    state.usersbyid = [...state.usersbyid, newUser];
+                    state.usersbyid.push(newUser);
                 }
             })
             .addCase(fetchUsersbyid.rejected, (state, action) => {
@@ -132,14 +158,25 @@ const orderInventorySlice = createSlice({
                 state.packStatus = 'loading';
                 state.error = null;
             })
-            .addCase(packOrders.fulfilled, (state) => {
-                state.packStatus = 'succeeded';
-                
-             
+            .addCase(packOrders.fulfilled, (state, action) => {
+                const updatedOrderId = action.payload.id;
+
+                // Update the order's status to "Packed"
+                state.orders.data = Object.keys(state.orders.data).reduce((acc, pageKey) => {
+                    acc[pageKey] = state.orders.data[pageKey].map(order =>
+                        order.id === updatedOrderId
+                            ? { ...order, orderStatus: 'Packed' }
+                            : order
+                    );
+                    return acc;
+                }, {});
+
+                state.packStatus = status.SUCCESS;
             })
+            
             .addCase(packOrders.rejected, (state, action) => {
                 state.packStatus = 'failed';
-                state.error = action.payload;
+                state.error = action.payload || action.error.message;
             });
     },
 });

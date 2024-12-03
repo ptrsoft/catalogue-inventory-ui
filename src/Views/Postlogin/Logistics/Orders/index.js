@@ -13,6 +13,7 @@ import {
   BreadcrumbGroup,
   SpaceBetween,
 } from "@cloudscape-design/components";
+import { useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -50,7 +51,7 @@ const Orders = () => {
   console.log(usersbyid, "user from order");
   const [filters, setFilters] = useState({
     category: null,
-    statuscategory: { label: "All", value: "" },
+    statuscategory: { label: "order placed", value: "order placed" },
     ageFilter: {
       label: "7 Days Old",
       value: "7",
@@ -349,6 +350,10 @@ const Orders = () => {
       console.error("Invalid filters received:", newFilters);
     }
   };
+  const navigate = useNavigate();
+  const NavigateToRunsheet = () => {
+    navigate('/app/Logistics/runsheet/CreateRunSheet', { state: { selectedItems } });
+  };
 
   return (
     <ContentLayout
@@ -368,15 +373,24 @@ const Orders = () => {
         <Header
           actions={
             <>
-              {(filters?.statuscategory?.value==='order placed'||filters?.statuscategory?.value==='') && 
-              <Button
-                variant="primary"
-                onClick={() => setIsModalOpenForPacker(true)}
-                disabled={selectedItems.length === 0} // Disable when no items are selected
-              >
-                Assign To Packer
-              </Button>
-               } 
+          {filters?.statuscategory?.value === 'order placed' ? (
+  <Button
+    variant="primary"
+    onClick={() => setIsModalOpenForPacker(true)}
+    disabled={selectedItems.length === 0} // Disable when no items are selected
+  >
+    Assign To Packer
+  </Button>
+) : filters?.statuscategory?.value === 'undelivered'|| filters?.statuscategory?.value === 'packed' ? (
+  <Button
+    variant="primary"
+    onClick={NavigateToRunsheet}
+    disabled={selectedItems.length === 0} // Disable when no items are selected
+  >
+    Create Runsheet
+  </Button>
+) : null}
+
               <AssignToPackersModal
                 isOpen={isModalOpenForPacker}
                 onClose={() => setIsModalOpenForPacker(false)}

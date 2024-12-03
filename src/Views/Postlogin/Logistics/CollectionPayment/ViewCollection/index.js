@@ -94,7 +94,7 @@ const ViewDetailsPage = () => {
           
       <div style={{display:"flex",gap:"5px",alignItems:"center"}}>
         <div style={{ fontWeight: "bold",width:"280px" }}>Runsheet Total Amount:</div>
-        <Input value={selectedRunsheet?.amountCollected} readOnly />
+        <Input value={selectedRunsheet?.amountCollectable} readOnly />
   </div>
   
               </div>

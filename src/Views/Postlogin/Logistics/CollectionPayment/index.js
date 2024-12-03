@@ -27,7 +27,7 @@ const CashCollectionTable = () => {
   const navigate = useNavigate();
 
   const statusOptions = [
-    { label: 'Active', value: 'closed' },
+    { label: 'Closed', value: 'closed' },
     { label: 'Pending', value: 'pending' },
   ];
 
@@ -81,7 +81,12 @@ const CashCollectionTable = () => {
   const filteredData = tableData.map((item, index) => ({
     ...item,
     sno: index + 1,
-    status: item.status === 'pending' ? 'Cash Pending' : 'Cash Received',
+    status: item.status === 'pending' 
+    ? 'Rider not Accept Runsheet Yet' 
+    : item.status === 'active' 
+    ? 'Rider Accepted Runsheet' 
+    : 'Cash Received',
+  
     date: new Date(item.createdAt).toLocaleDateString(),
     runsheetId: item.id,
     riderName: item.rider ? item.rider.name : 'Unknown',

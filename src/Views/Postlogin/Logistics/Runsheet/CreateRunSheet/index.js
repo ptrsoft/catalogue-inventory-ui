@@ -22,7 +22,10 @@ const CreateRunsheet = () => {
   const location = useLocation();
  // Retrieve selectedItems from location state
  const { selectedItems } = location.state || { selectedItems: [] };
- const [orderIDs, setOrderIDs] = useState(selectedItems.map(item => item.id || ""));
+ // Initialize with at least one empty string if no selected items
+ const [orderIDs, setOrderIDs] = useState(
+  selectedItems.map(item => item.id || "") || [""]
+);
   const [riderName, setRiderName] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -39,6 +42,12 @@ const CreateRunsheet = () => {
       setOrderIDs([...newOrderIDs, ""]);
     }
   };
+    // Add at least one input field if orderIDs array is empty
+    useEffect(() => {
+      if (orderIDs.length === 0) {
+        setOrderIDs([""]);
+      }
+    }, [orderIDs]);
 
   const handleSubmit = async () => {
     const filteredOrderIDs = orderIDs.filter((id) => id.trim() !== "");
@@ -63,7 +72,7 @@ const CreateRunsheet = () => {
       alert("Please select a rider and add at least one valid Order ID.");
     }
   };
-  console.log(orderIDs,"selected");
+  console.log(selectedItems,orderIDs,"selected");
   
   
 

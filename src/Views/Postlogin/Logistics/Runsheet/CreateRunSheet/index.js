@@ -13,12 +13,16 @@ import {
   StatusIndicator,
   Grid
 } from "@cloudscape-design/components";
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createRunsheet } from "Redux-Store/Runsheet/RunsheetThunk";
 import { fetchRiders } from 'Redux-Store/RiderSummary/RiderSummaryThunk';
 const CreateRunsheet = () => {
-  const [orderIDs, setOrderIDs] = useState([""]);
+  const location = useLocation();
+ // Retrieve selectedItems from location state
+ const { selectedItems } = location.state || { selectedItems: [] };
+ const [orderIDs, setOrderIDs] = useState(selectedItems.map(item => item.id || ""));
   const [riderName, setRiderName] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -59,6 +63,7 @@ const CreateRunsheet = () => {
       alert("Please select a rider and add at least one valid Order ID.");
     }
   };
+  console.log(orderIDs,"selected");
   
   
 

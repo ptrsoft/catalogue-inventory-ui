@@ -79,7 +79,7 @@ const ViewDetailsPage = () => {
                 <b>{selectedRunsheet?.rider.name}</b>
               </div>
             </div>
-            {status === "Cash Pending" && (
+            {status === "Rider Accepted Runsheet"&& (
               <div className="status-container" style={{ width: "155px" }}>
                 <Button
                   variant="primary"
@@ -94,7 +94,7 @@ const ViewDetailsPage = () => {
           
       <div style={{display:"flex",gap:"5px",alignItems:"center"}}>
         <div style={{ fontWeight: "bold",width:"280px" }}>Runsheet Total Amount:</div>
-        <Input value={selectedRunsheet?.amountCollected} readOnly />
+        <Input value={selectedRunsheet?.amountCollectable} readOnly />
   </div>
   
               </div>

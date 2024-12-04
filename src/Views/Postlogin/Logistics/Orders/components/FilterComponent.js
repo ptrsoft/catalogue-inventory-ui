@@ -20,7 +20,7 @@ const FilterComponent = ({
 
 
 const statusOptions = [
-    { label: "All", value: "" },
+   
   { label: "Order Placed", value: "order placed" },
   { label: "Cancel Orders", value: "cancelled" },
   { label: "Packed", value: "packed" },

@@ -129,21 +129,29 @@ const Orders = () => {
   ]);
 
   console.log("Next Keys:", nextKeys);
+// flashbar for assign order to packer
+const showFlashbar = ({ type, message }) => {
+  setFlashbarItems((prev) => [
+    ...prev,
+    {
+      type,
+      content: message,
+      dismissible: true,
+      onDismiss: () =>
+        setFlashbarItems((items) =>
+          items.filter((item) => item.content !== message)
+        ),
+    },
+  ]);
 
-  const showFlashbar = ({ type, message }) => {
-    setFlashbarItems((prev) => [
-      ...prev,
-      {
-        type,
-        content: message,
-        dismissible: true,
-        onDismiss: () =>
-          setFlashbarItems((items) =>
-            items.filter((item) => item.content !== message)
-          ),
-      },
-    ]);
-  };
+  // Automatically dismiss the flashbar after 3 seconds
+  setTimeout(() => {
+    setFlashbarItems((items) =>
+      items.filter((item) => item.content !== message)
+    );
+  }, 3000);
+};
+
   // function for imidiates changes in Ui after Cancelling order
   const handleCancelOrder = (orderId) => {
     const orderIdsArray = Array.isArray(orderId) ? orderId : [orderId];
@@ -290,7 +298,7 @@ const Orders = () => {
           packed: { type: "success", text: "Packed" },
           "on the way": { type: "info", text: "On the Way" },
           delivered: { type: "success", text: "Delivered" },
-          undelivered: { type: "loading", text: "undelivered" },
+          undelivered: { type: "warning", text: "undelivered" },
           cancelled: { type: "error", text: "Cancelled" },
           "order placed": { type: "in-progress", text: "Order Placed" },
         };
@@ -312,7 +320,7 @@ const Orders = () => {
       header: "Reason",
       cell: (item) => {
         if (item.orderStatus === "cancelled" || item.orderStatus === "undelivered") {
-          return item.reason || "No reason provided";
+          return item?.cancelReason || item?.cancellationData?.cancelReason;
         }
         return "-"; // or return null if you don't want to show anything
       },
@@ -465,7 +473,7 @@ const Orders = () => {
                   color="inherit"
                 >
                   <SpaceBetween size="m">
-                    <b>No Orders {loading || error}</b>
+                    <b>No Orders {error}</b>
                   </SpaceBetween>
                 </Box>
               }

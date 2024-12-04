@@ -79,7 +79,7 @@ const ViewDetailsPage = () => {
                 <b>{selectedRunsheet?.rider.name}</b>
               </div>
             </div>
-            {status === "Cash Pending" && (
+            {status === "Rider Accepted Runsheet"&& (
               <div className="status-container" style={{ width: "155px" }}>
                 <Button
                   variant="primary"

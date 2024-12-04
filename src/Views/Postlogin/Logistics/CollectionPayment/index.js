@@ -29,6 +29,7 @@ const CashCollectionTable = () => {
   const statusOptions = [
     { label: 'Closed', value: 'closed' },
     { label: 'Pending', value: 'pending' },
+    { label: 'Active', value: 'active' },
   ];
 
   const [statusCategory, setStatusCategory] = useState(statusOptions[1]);

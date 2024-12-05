@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { fetchProductById, updateProductDetails } from "Redux-Store/Products/ProductThunk";
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import {
+  fetchProductById,
+  updateProductDetails,
+} from "Redux-Store/Products/ProductThunk";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
 import Grid from "@cloudscape-design/components/grid";
@@ -22,12 +25,10 @@ import {
 import Checkbox from "@cloudscape-design/components/checkbox";
 import Flashbar from "@cloudscape-design/components/flashbar";
 
-
 const Edit = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const navigate = useNavigate(); // Initialize useNavigate
-
 
   const dispatch = useDispatch();
 
@@ -56,8 +57,9 @@ const Edit = () => {
   const [selectedUnits, setSelectedUnits] = React.useState(null);
   const [subCategory, setSubCategory] = useState(""); // Add this line
   const [items, setItems] = React.useState([]);
+  const [invalidFields, setInvalidFields] = useState({}); // State to track invalid fields
 
-  
+
   useEffect(() => {
     if (id) {
       dispatch(fetchProductById(id));
@@ -87,7 +89,7 @@ const Edit = () => {
       setPurchasingPrice(productDetail.purchasingPrice || "");
       setMsp(productDetail.msp || "");
       setDescription(productDetail.description || "");
-setSubCategory(productDetail.subCategory || "")
+      setSubCategory(productDetail.subCategory || "");
       setExpiryDate(productDetail.expiryDate || "");
     }
   }, [productDetail]);
@@ -104,66 +106,72 @@ setSubCategory(productDetail.subCategory || "")
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
+  
+    // Check for empty fields and mark them as invalid
+    const validationFlags = {
+      name: !name,
+      category: !category,
+      subCategory: !subCategory,
+      units: !units,
+      description: !description,
+      expiryDate: !expiryDate, // Always check for expiryDate
+    };
+  
+    // If any field is invalid, return early and set invalid fields
+    if (Object.values(validationFlags).some((isInvalid) => isInvalid)) {
+      setInvalidFields(validationFlags);
+      return;
+    }
+  
+    // Reset invalid fields if all fields are valid
+    setInvalidFields({});
+  
     // Prepare the product data object to be updated
     const productData = {
       name,
       description,
       category,
-      subCategory, 
+      subCategory,
       units,
-      expiry: addExpiry ? new Date(expiryDate).toISOString() : null, // Format expiry date
+      expiry: new Date(expiryDate).toISOString(),
     };
-
+  
     // Dispatch the update action and handle response
     dispatch(updateProductDetails({ id, productData }))
-      .unwrap() // Use unwrap to handle fulfilled/rejected cases
+      .unwrap()
       .then((response) => {
-        console.log("Payload (ID):", id); // Log the ID
-        console.log("Product Data:", productData); // Log the product data
-        console.log("Response:", response); // Log the response data
-
-        // Set success notification message
+        console.log("Payload (ID):", id);
+        console.log("Product Data:", productData);
+        console.log("Response:", response);
+  
         setItems([
           {
             type: "success",
             content: "Item updated successfully!",
             header: "Updated Item",
             dismissible: true,
-            dismissLabel: "Dismiss message",
-            onDismiss: () => setItems([]),
             id: "message_success",
           },
         ]);
-
-        // Clear the message after 3 seconds
+  
         setTimeout(() => {
-          setItems([]); // Clear the message after 3 seconds
-          navigate("/app/inventory"); // Redirect to /app/inventory
-
+          setItems([]);
+          navigate("/app/inventory");
         }, 3000);
-
-        // Optionally refresh the products or perform other actions
-        // dispatch(fetchProducts());
-        // window.location.reload(); // Uncomment if you want to force a page reload
       })
       .catch((error) => {
-        console.error("Error during update:", error); // Log the error for debugging
+        console.error("Error during update:", error);
         setItems([
           {
             type: "error",
             content: `Failed to update item: ${error.message || "Unknown error"}`,
             dismissible: true,
-            dismissLabel: "Dismiss message",
-            onDismiss: () => setItems([]),
             id: "message_error",
           },
         ]);
       });
   };
-
-  
-
+    
   return (
     <SpaceBetween size="xs">
       <BreadcrumbGroup
@@ -174,9 +182,14 @@ setSubCategory(productDetail.subCategory || "")
         ]}
         ariaLabel="Breadcrumbs"
       />
-            <Flashbar items={items} /> {/* Render the Flashbar here */}
-
-       <Header actions={<Button variant="primary" onClick={handleSubmit}>Update</Button>}>
+      <Flashbar items={items} /> {/* Render the Flashbar here */}
+      <Header
+        actions={
+          <Button variant="primary" onClick={handleSubmit}>
+            Update
+          </Button>
+        }
+      >
         Edit Item
       </Header>
       <form onSubmit={handleSubmit}>
@@ -192,18 +205,23 @@ setSubCategory(productDetail.subCategory || "")
                 <SpaceBetween size="s">
                   <FormField label="Item Name">
                     <Input
+                        invalid={invalidFields.name}
+
                       value={name}
                       onChange={({ detail }) => setName(detail.value)}
                     />
                   </FormField>
                   <FormField label="Category">
                     <Input
-                      value={category}
+    invalid={invalidFields.category}
+    value={category}
                       onChange={({ detail }) => setCategory(detail.value)}
                     />
                   </FormField>
                   <FormField label="Sub Category">
                     <Input
+                        invalid={invalidFields.subCategory}
+
                       value={subCategory}
                       onChange={({ detail }) => setSubCategory(detail.value)}
                     />
@@ -216,13 +234,20 @@ setSubCategory(productDetail.subCategory || "")
                         { label: "Kgs", value: "kgs" },
                         { label: "Litres", value: "litres" },
                       ]}
-                      value={units}
-                      selectedOption={selectedUnits}
+                      value={units} // Set the value from productDetail
+                      invalid={invalidFields.units}
 
-                      onChange={({ detail }) =>
-                        setSelectedUnits(detail.selectedOption)
-                      }                    />
+                      selectedOption={{
+                        label: units.charAt(0).toUpperCase() + units.slice(1),
+                        value: units,
+                      }} // Ensure the label is capitalized
+                      onChange={({ detail }) => {
+                        setUnits(detail.selectedOption.value);
+                        setSelectedUnits(detail.selectedOption); // Update selectedUnits state
+                      }}
+                    />
                   </FormField>
+
                   <FormField label="Quantity in Stock">
                     <Input
                       value={stockQuantity}
@@ -285,34 +310,21 @@ setSubCategory(productDetail.subCategory || "")
                   <FormField label="Item Description">
                     <Textarea
                       value={description}
+                      invalid={invalidFields.description}
+
                       onChange={({ detail }) => setDescription(detail.value)}
                     />
                   </FormField>
-                  <FormField>
-                    <Toggle
-                      onChange={({ detail }) => setAddExpiry(detail.checked)}
-                      checked={addExpiry}
-                    >
-                      Add Expiry
-                    </Toggle>
-                  </FormField>
-                  {addExpiry && (
-                    <FormField label="Expiry Date">
-                      <Input
-                        type="date"
-                        value={expiryDate}
-                        onChange={({ detail }) => setExpiryDate(detail.value)}
-                        required
-                      />
-                    </FormField>
-                  )}
-                  <Checkbox
-                    onChange={({ detail }) => setKeepInformed(detail.checked)}
-                    checked={keepInformed}
-                  >
-                    Keep me informed about stock updates for this item.
-                  </Checkbox>
-                </SpaceBetween>
+                  <FormField label="Expiry Date">
+  <Input
+    type="date"
+    value={expiryDate}
+    invalid={invalidFields.expiryDate}
+    onChange={({ detail }) => setExpiryDate(detail.value)}
+    required
+  />
+</FormField>
+                                </SpaceBetween>
               </ColumnLayout>
             </SpaceBetween>
           </Container>

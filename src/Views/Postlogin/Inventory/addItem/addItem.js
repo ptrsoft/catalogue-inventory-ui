@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; 
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   Textarea,
@@ -43,41 +43,41 @@ const AddItem = () => {
   const [isFormSubmitted, setIsFormSubmitted] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
   const [fileUploadValue, setFileUploadValue] = useState([]);
-  
+
   const subcategoryOptions = {
     "Fresh Vegetables": [
       { label: "Daily Vegetables", value: "Daily Vegetables" },
       { label: "Leafy Vegetables", value: "Leafy Vegetables" },
-      { label: "Exotic Vegetables", value: "Exotic Vegetables" }
+      { label: "Exotic Vegetables", value: "Exotic Vegetables" },
     ],
     "Fresh Fruits": [
       { label: "Daily Fruits", value: "Daily Fruits" },
       { label: "Exotic Fruits", value: "Exotic Fruits" },
-      { label: "Dry Fruits", value: "Dry Fruits" }
+      { label: "Dry Fruits", value: "Dry Fruits" },
     ],
-    "Dairy": [
+    Dairy: [
       { label: "Milk", value: "Milk" },
       { label: "Butter & Ghee", value: "Butter & Ghee" },
-      { label: "Paneer & Khowa", value: "Paneer & Khowa" }
+      { label: "Paneer & Khowa", value: "Paneer & Khowa" },
     ],
-    "Groceries": [
+    Groceries: [
       { label: "Cooking Oil", value: "Cooking Oil" },
       { label: "Rice", value: "Rice" },
       { label: "Daal", value: "Daal" },
       { label: "Spices", value: "Spices" },
-      { label: "Snacks", value: "Snacks" }
+      { label: "Snacks", value: "Snacks" },
     ],
     "Bengali Special": [
       { label: "Bengali Vegetables", value: "Bengali Vegetables" },
       { label: "Bengali Groceries", value: "Bengali Groceries" },
-      { label: "Bengali Home Needs", value: "Bengali Home Needs" }
+      { label: "Bengali Home Needs", value: "Bengali Home Needs" },
     ],
     "Eggs Meat & Fish": [
       { label: "Eggs", value: "Eggs" },
       { label: "Fish", value: "Fish" },
       { label: "Chicken", value: "Chicken" },
-      { label: "Mutton", value: "Mutton" }
-    ]
+      { label: "Mutton", value: "Mutton" },
+    ],
   };
 
   const handleImageUpload = async (file, setImageUrl) => {
@@ -90,7 +90,7 @@ const AddItem = () => {
       }
     }
   };
-  
+
   const isFormValid = () => {
     if (
       !name ||
@@ -111,7 +111,7 @@ const AddItem = () => {
       setDescription(detail.value);
     }
   };
-  
+
   const handleSave = () => {
     setIsFormSubmitted(true);
     if (!imageUrl1) {
@@ -172,15 +172,13 @@ const AddItem = () => {
         setImageUrl2("");
         setImageUrl3("");
         setFileUploadValue([]); // Clear the file upload
-              setStore("");
+        setStore("");
         setIsFormSubmitted(false);
         setTimeout(() => {
           setItems([]); // Clear flash message
         }, 3000);
         // window.location.reload(); // This will force a full page reload
-
       })
-
 
       .catch((error) => {
         console.error("Failed to add item:", error);
@@ -226,11 +224,11 @@ const AddItem = () => {
   };
 
   return (
-  <SpaceBetween size="s">
+    <SpaceBetween size="s">
       <Flashbar items={items} />
       <BreadcrumbGroup
         items={[
-                    { text: "Dashboard", href: "/app/dashboard" },
+          { text: "Dashboard", href: "/app/dashboard" },
 
           { text: "Inventory", href: "/app/inventory" },
           { text: "Add Item", href: "/app/inventory/addItem" },
@@ -288,11 +286,11 @@ const AddItem = () => {
                     { label: "Dairy", value: "Dairy" },
                     { label: "Groceries", value: "Groceries" },
                     { label: "Bengali Special", value: "Bengali Special" },
-                    { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" }
+                    { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" },
                   ]}
                   placeholder="Select Category"
                 />
-                            </FormField>
+              </FormField>
               <FormField
                 label="Sub Category"
                 errorText={
@@ -327,7 +325,6 @@ const AddItem = () => {
                     { label: "Grams", value: "grams" },
                     { label: "Kgs", value: "kgs" },
                     { label: "Litres", value: "litres" },
-
                   ]}
                 />
               </FormField>
@@ -442,31 +439,35 @@ const AddItem = () => {
         </Form>
 
         <Container variant="borderless">
-<FileUpload
-      onChange={({ detail }) => {
-        setFileUploadValue(detail.value);
-        handleFileChange(detail.value); 
-      }}
-      value={fileUploadValue}
-      i18nStrings={{
-        uploadButtonText: e => (e ? "Choose files" : "Choose file"),
-        dropzoneText: e => (e ? "Drop files to upload" : "Drop file to upload"),
-        removeFileAriaLabel: e => `Remove file ${e + 1}`,
-        limitShowFewer: "Show fewer files",
-        limitShowMore: "Show more files",
-        errorIconAriaLabel: "Error"
-      }}
-      multiple
-      showFileSize
-      showFileThumbnail
-      tokenLimit={3}
-      errorText={fileUploadValue.length === 0 && isFormSubmitted ? (
-        "At least one image is required"
-      ) : ""} 
-            />
+          <FileUpload
+            onChange={({ detail }) => {
+              setFileUploadValue(detail.value);
+              handleFileChange(detail.value);
+            }}
+            value={fileUploadValue}
+            i18nStrings={{
+              uploadButtonText: (e) => (e ? "Choose files" : "Choose file"),
+              dropzoneText: (e) =>
+                e ? "Drop files to upload" : "Drop file to upload",
+              removeFileAriaLabel: (e) => `Remove file ${e + 1}`,
+              limitShowFewer: "Show fewer files",
+              limitShowMore: "Show more files",
+              errorIconAriaLabel: "Error",
+            }}
+            multiple
+            showFileSize
+            showFileThumbnail
+            tokenLimit={3}
+            errorText={
+              fileUploadValue.length === 0 && isFormSubmitted
+                ? "At least one image is required"
+                : ""
+            }
+          />
         </Container>
       </Container>
-      </SpaceBetween>  );
+    </SpaceBetween>
+  );
 };
 
 export default AddItem;

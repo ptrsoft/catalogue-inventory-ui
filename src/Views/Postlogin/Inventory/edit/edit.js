@@ -104,8 +104,6 @@ setSubCategory(productDetail.subCategory || "")
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    // Prepare the product data object to be updated
     const productData = {
       name,
       description,
@@ -115,7 +113,6 @@ setSubCategory(productDetail.subCategory || "")
       expiry: addExpiry ? new Date(expiryDate).toISOString() : null, // Format expiry date
     };
 
-    // Dispatch the update action and handle response
     dispatch(updateProductDetails({ id, productData }))
       .unwrap() // Use unwrap to handle fulfilled/rejected cases
       .then((response) => {
@@ -123,7 +120,6 @@ setSubCategory(productDetail.subCategory || "")
         console.log("Product Data:", productData); // Log the product data
         console.log("Response:", response); // Log the response data
 
-        // Set success notification message
         setItems([
           {
             type: "success",
@@ -136,16 +132,11 @@ setSubCategory(productDetail.subCategory || "")
           },
         ]);
 
-        // Clear the message after 3 seconds
         setTimeout(() => {
           setItems([]); // Clear the message after 3 seconds
           navigate("/app/inventory"); // Redirect to /app/inventory
 
         }, 3000);
-
-        // Optionally refresh the products or perform other actions
-        // dispatch(fetchProducts());
-        // window.location.reload(); // Uncomment if you want to force a page reload
       })
       .catch((error) => {
         console.error("Error during update:", error); // Log the error for debugging

@@ -59,7 +59,6 @@ const Edit = () => {
   const [items, setItems] = React.useState([]);
   const [invalidFields, setInvalidFields] = useState({}); // State to track invalid fields
 
-
   useEffect(() => {
     if (id) {
       dispatch(fetchProductById(id));
@@ -106,7 +105,7 @@ const Edit = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-  
+
     // Check for empty fields and mark them as invalid
     const validationFlags = {
       name: !name,
@@ -116,16 +115,16 @@ const Edit = () => {
       description: !description,
       expiryDate: !expiryDate, // Always check for expiryDate
     };
-  
+
     // If any field is invalid, return early and set invalid fields
     if (Object.values(validationFlags).some((isInvalid) => isInvalid)) {
       setInvalidFields(validationFlags);
       return;
     }
-  
+
     // Reset invalid fields if all fields are valid
     setInvalidFields({});
-  
+
     // Prepare the product data object to be updated
     const productData = {
       name,
@@ -135,7 +134,7 @@ const Edit = () => {
       units,
       expiry: new Date(expiryDate).toISOString(),
     };
-  
+
     // Dispatch the update action and handle response
     dispatch(updateProductDetails({ id, productData }))
       .unwrap()
@@ -143,7 +142,7 @@ const Edit = () => {
         console.log("Payload (ID):", id);
         console.log("Product Data:", productData);
         console.log("Response:", response);
-  
+
         setItems([
           {
             type: "success",
@@ -153,7 +152,7 @@ const Edit = () => {
             id: "message_success",
           },
         ]);
-  
+
         setTimeout(() => {
           setItems([]);
           navigate("/app/inventory");
@@ -164,14 +163,16 @@ const Edit = () => {
         setItems([
           {
             type: "error",
-            content: `Failed to update item: ${error.message || "Unknown error"}`,
+            content: `Failed to update item: ${
+              error.message || "Unknown error"
+            }`,
             dismissible: true,
             id: "message_error",
           },
         ]);
       });
   };
-    
+
   return (
     <SpaceBetween size="xs">
       <BreadcrumbGroup
@@ -205,23 +206,21 @@ const Edit = () => {
                 <SpaceBetween size="s">
                   <FormField label="Item Name">
                     <Input
-                        invalid={invalidFields.name}
-
+                      invalid={invalidFields.name}
                       value={name}
                       onChange={({ detail }) => setName(detail.value)}
                     />
                   </FormField>
                   <FormField label="Category">
                     <Input
-    invalid={invalidFields.category}
-    value={category}
+                      invalid={invalidFields.category}
+                      value={category}
                       onChange={({ detail }) => setCategory(detail.value)}
                     />
                   </FormField>
                   <FormField label="Sub Category">
                     <Input
-                        invalid={invalidFields.subCategory}
-
+                      invalid={invalidFields.subCategory}
                       value={subCategory}
                       onChange={({ detail }) => setSubCategory(detail.value)}
                     />
@@ -236,7 +235,6 @@ const Edit = () => {
                       ]}
                       value={units} // Set the value from productDetail
                       invalid={invalidFields.units}
-
                       selectedOption={{
                         label: units.charAt(0).toUpperCase() + units.slice(1),
                         value: units,
@@ -311,20 +309,19 @@ const Edit = () => {
                     <Textarea
                       value={description}
                       invalid={invalidFields.description}
-
                       onChange={({ detail }) => setDescription(detail.value)}
                     />
                   </FormField>
                   <FormField label="Expiry Date">
-  <Input
-    type="date"
-    value={expiryDate}
-    invalid={invalidFields.expiryDate}
-    onChange={({ detail }) => setExpiryDate(detail.value)}
-    required
-  />
-</FormField>
-                                </SpaceBetween>
+                    <Input
+                      type="date"
+                      value={expiryDate}
+                      invalid={invalidFields.expiryDate}
+                      onChange={({ detail }) => setExpiryDate(detail.value)}
+                      required
+                    />
+                  </FormField>
+                </SpaceBetween>
               </ColumnLayout>
             </SpaceBetween>
           </Container>

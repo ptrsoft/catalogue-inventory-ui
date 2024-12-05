@@ -18,11 +18,9 @@ import {
   Container,
   Select,
   ColumnLayout,
-  Box,
   Button,
   Textarea,
 } from "@cloudscape-design/components"; // Adjust the import path if needed
-import Checkbox from "@cloudscape-design/components/checkbox";
 import Flashbar from "@cloudscape-design/components/flashbar";
 
 const Edit = () => {
@@ -65,7 +63,6 @@ const Edit = () => {
     }
   }, [id, dispatch]);
 
-  // Console log the productDetail when it changes
   useEffect(() => {
     if (productDetail) {
       console.log("Fetched Product Details:", productDetail);
@@ -73,7 +70,6 @@ const Edit = () => {
   }, [productDetail]);
 
   useEffect(() => {
-    // Set the default units from the fetched product details
     if (productDetail && productDetail.units) {
       setUnits(productDetail.units);
     }
@@ -122,10 +118,8 @@ const Edit = () => {
       return;
     }
 
-    // Reset invalid fields if all fields are valid
     setInvalidFields({});
 
-    // Prepare the product data object to be updated
     const productData = {
       name,
       description,
@@ -135,7 +129,6 @@ const Edit = () => {
       expiry: new Date(expiryDate).toISOString(),
     };
 
-    // Dispatch the update action and handle response
     dispatch(updateProductDetails({ id, productData }))
       .unwrap()
       .then((response) => {

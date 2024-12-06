@@ -27,12 +27,12 @@ const CashCollectionTable = () => {
   const navigate = useNavigate();
 
   const statusOptions = [
-    { label: 'Closed', value: 'closed' },
-    { label: 'Pending', value: 'pending' },
-    { label: 'Active', value: 'active' },
+    { label: 'Cash Received', value: 'closed' },
+    // { label: 'Pending', value: 'pending' },
+    { label: 'Cash Pending', value: 'active' },
   ];
 
-  const [statusCategory, setStatusCategory] = useState(statusOptions[1]);
+  const [statusCategory, setStatusCategory] = useState(statusOptions[2]);
   const [filteringText, setFilteringText] = useState('');
   const [successMessage, setSuccessMessage] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false); // State to control calendar visibility
@@ -85,7 +85,7 @@ const CashCollectionTable = () => {
     status: item.status === 'pending' 
     ? 'Rider not Accept Runsheet Yet' 
     : item.status === 'active' 
-    ? 'Rider Accepted Runsheet' 
+    ? 'Cash Pending' 
     : 'Cash Received',
   
     date: new Date(item.createdAt).toLocaleDateString(),
@@ -200,6 +200,7 @@ const CashCollectionTable = () => {
           { id: 'date', header: 'Date', cell: (item) => item.date },
           { id: 'runsheetId', header: 'Runsheet ID', cell: (item) => item.runsheetId },
           { id: 'riderName', header: 'Rider Name', cell: (item) => item.riderName },
+          { id: 'riderId', header: 'Rider ID', cell: (item) => item.riderId },
           { id: 'contactNo', header: 'Contact No', cell: (item) => item.contactNo },
           { id: 'deliveries', header: 'Deliveries', cell: (item) => item.deliveries },
           { id: 'amount', header: 'Total Amount', cell: (item) => item.amount },

@@ -96,7 +96,9 @@ useEffect(() => {
       header: "Runsheet ID",
       cell: (item) => item.id, // Assuming the runsheet ID is the same as item.id
     },
-    { id: "name", header: "Rider Name", cell: (item) => item?.rider?.name }, // Adjust according to your API response
+    { id: "id", header: "Rider ID", cell: (item) => item?.rider?.id }, 
+    { id: "name", header: "Rider Name", cell: (item) => item?.rider?.name }, 
+
     { id: "contactNo", header: "Contact No", cell: (item) => item?.rider?.number },
    
     {

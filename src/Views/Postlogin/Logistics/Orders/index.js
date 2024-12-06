@@ -320,7 +320,7 @@ const showFlashbar = ({ type, message }) => {
       header: "Reason",
       cell: (item) => {
         if (item.orderStatus === "cancelled" || item.orderStatus === "undelivered") {
-          return item?.cancelReason || item?.cancellationData?.cancelReason;
+          return item?.statusDetails?.reason;
         }
         return "-"; // or return null if you don't want to show anything
       },

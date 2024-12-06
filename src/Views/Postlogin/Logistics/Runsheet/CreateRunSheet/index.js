@@ -128,6 +128,8 @@ const CreateRunsheet = () => {
                     value: item.id,   // Assuming 'id' contains the rider's ID
                   }))}
                   placeholder="Select Rider Name"
+                  filteringType="auto"
+                  filteringPlaceholder="Search Rider Name" // Placeholder for the search bar
                 />
               </FormField>
               <Box textAlign="center" float="right" margin={{ top: "l" }}>

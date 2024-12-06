@@ -78,8 +78,12 @@ const ViewDetailsPage = () => {
                 <span className="label">Rider Name:</span>
                 <b>{selectedRunsheet?.rider.name}</b>
               </div>
+              <div className="info-row">
+                <span className="label">Rider ID:</span>
+                <b>{selectedRunsheet?.rider?.id}</b>
+              </div>
             </div>
-            {status === "Rider Accepted Runsheet"&& (
+            {status === "Cash Pending"&& (
               <div className="status-container" style={{ width: "155px" }}>
                 <Button
                   variant="primary"

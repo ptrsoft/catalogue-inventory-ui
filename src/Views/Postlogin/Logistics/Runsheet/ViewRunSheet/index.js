@@ -69,6 +69,12 @@ const ViewRunsheet = () => {
                           {selectedRunsheet?.rider.name}
                           </b>
                         </div>
+                        <div className="info-row">
+                          <span className="label">Rider ID:</span>
+                          <b>
+                          {selectedRunsheet?.rider?.id}
+                          </b>
+                        </div>
                         </div>
 
            

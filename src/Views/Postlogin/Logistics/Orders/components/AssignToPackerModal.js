@@ -79,7 +79,7 @@ console.log(selectedPacker,"selected packer and order" ,selectedOrders);
       visible={isOpen}
       header="Assign To Packers"
       footer={
-        <SpaceBetween direction="horizontal" size="s">
+        <Box float="right">
           <Button
             variant="primary"
             disabled={!selectedPacker} // Disable button if no packer is selected
@@ -87,7 +87,7 @@ console.log(selectedPacker,"selected packer and order" ,selectedOrders);
           >
             Assign Orders
           </Button>
-        </SpaceBetween>
+        </Box>
       }
     >
       <SpaceBetween direction="vertical" size="m">
@@ -101,7 +101,8 @@ console.log(selectedPacker,"selected packer and order" ,selectedOrders);
           />
             <div
               style={{
-                display:'flex',
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
                 maxHeight: "215px", // Limit height to show only 3 items (50px each as an example)
                 overflowY: "auto", // Enable vertical scrolling
               }}

@@ -12,6 +12,8 @@ import {
   ContentLayout,
   BreadcrumbGroup,
   SpaceBetween,
+  Icon,
+  Input
 } from "@cloudscape-design/components";
 import { useNavigate } from 'react-router-dom';
 
@@ -57,6 +59,7 @@ const Orders = () => {
       value: "7",
     },
     shifts: null,
+    pincode:null,
   });
   console.log(filters?.category?.value);
   console.log(filters, "filter from order compo");
@@ -65,8 +68,9 @@ const Orders = () => {
     const statuscategory = filters?.statuscategory?.value || "";
     const ageFilter = filters?.ageFilter?.value || "";
     const shifts = filters?.shifts?.value || "";
+    const pincode = filters?.pincode?.value || "";
 
-    return `${category}-${statuscategory}-${ageFilter}-${shifts}-${
+    return `${category}-${statuscategory}-${ageFilter}-${shifts}-${pincode}-${
       filteringText || ""
     }-${currentPage}`;
   }, [
@@ -74,8 +78,10 @@ const Orders = () => {
     filters?.statuscategory?.value,
     filters?.ageFilter?.value,
     filters?.shifts?.value,
+    filters?.pincode?.value,
     currentPage,
     filteringText,
+
   ]);
  
 
@@ -92,6 +98,7 @@ const Orders = () => {
           status: filters.statuscategory?.value || "",
           date: filters.ageFilter?.value || "",
           shift: filters.shifts?.value || "",
+          pincode: filters.pincode?.value || "",
           search: filteringText || "",
           pageKey,
           pageSize: 50,
@@ -362,6 +369,11 @@ const showFlashbar = ({ type, message }) => {
   const NavigateToRunsheet = () => {
     navigate('/app/Logistics/runsheet/CreateRunSheet', { state: { selectedItems } });
   };
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleFilter = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
     <ContentLayout
@@ -416,14 +428,16 @@ const showFlashbar = ({ type, message }) => {
         </Header>
       }
     >
-      <SpaceBetween direction="vertical" size="xl">
+      <SpaceBetween direction="vertical" size="xl" >
         <Stats />
         <div>
           <Grid
             gridDefinition={[
               { colspan: { default: 12, xxs: 4 } },
-              { colspan: { default: 12, xxs: 8 } },
+              { colspan: { default: 12, xxs: 2 } },
+              
             ]}
+            
           >
             {/* Search bar */}
             <TextFilter
@@ -432,16 +446,44 @@ const showFlashbar = ({ type, message }) => {
               filteringAriaLabel="Filter instances"
               onChange={handleSearchChange}
             />
+        {/* Filter Toggle */}
+        <span
+          onClick={toggleFilter}
+          style={{
+            display: 'flex',
+            justifyContent:'space-between',
+            alignItems: 'center',
+            cursor: 'pointer',
+            border: '3px solid #9BA7B6',
+            padding: '4px 8px',
+            borderRadius: '8px',
+            backgroundColor: 'white',
+            gap: '5px',
+          }}
+        >
+          {/* Filter Icon */}
+          <div style={{display:"flex",gap:"5px"}}>
+          <Icon variant="link" name="filter" />
+          
+          {/* Filter Text */}
+          <span style={{  fontWeight: 'normal',color:'#9BA7B6',fontStyle:'italic' }}>Filters</span>
+          </div>
+          
+          {/* Caret Icon */}
+          <Icon variant="link" name={isOpen ? 'caret-up-filled' : 'caret-down-filled'} />
+        </span>
 
             {/* Sort dropdown */}
+            {isOpen && (
             <FilterComponent
               statuscategory={filters.statuscategory}
               ageFilter={filters.ageFilter}
               shifts={filters.shifts}
               category={filters.category}
+              pincode={filters.pincode}
               currentPage={currentPage}
               onFilterChange={handleFilterChange} // Corrected prop name
-            />
+            />)}
           </Grid>
           {/* Orders table */}
           <div

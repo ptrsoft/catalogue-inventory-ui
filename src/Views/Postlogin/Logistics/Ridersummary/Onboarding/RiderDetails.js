@@ -293,7 +293,7 @@ const RiderDetails = () => {
                   label: "Rider Document",
                   id: 1,
                   content: (
-                    <SpaceBetween direction="vertical" size="s">
+                    <SpaceBetween direction="vertical" size="xs">
                       {riderDetails?.documents.map((doc) =>
                         selectedDoc && selectedDoc.name === doc.name ? (
                           <Container
@@ -307,9 +307,9 @@ const RiderDetails = () => {
                                 <img
                                   src={doc.image}
                                   alt={getDocumentLabel(doc?.name)}
-                                  style={{ maxWidth: "100%" }}
+                                  style={{ width: "300px",height:"300px" }}
                                 />
-                                <p>{getDocumentLabel(doc?.name)}</p>
+                                {/* <p>{getDocumentLabel(doc?.name)}</p> */}
                               </Box>
                           
                             <Box float="right">

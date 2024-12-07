@@ -91,7 +91,7 @@ const ViewRunsheet = () => {
             <SpaceBetween direction="vertical">
               {orderIds.map((orderId, index) => (
                 <div style={{ width: "280px" }} key={index}>
-                  <Input value={orderId} readOnly />
+                  <Input value={orderId?.id} readOnly />
                 </div>
               ))}
             </SpaceBetween>

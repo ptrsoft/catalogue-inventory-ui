@@ -110,15 +110,19 @@ const handleStatusToggle = async (item) => {
       {
         id: 'statusToggle',
         header: 'Status',
+        width: '400px', // Adjust the width as needed
         cell: (item) => (
+          <div style={{ display: 'flex', alignItems: 'center',width:"100px" }}>
           <Toggle 
             checked={item.reviewStatus === 'active'}
             onChange={(e) => handleStatusToggle(item)}
           >
             {item.reviewStatus === 'active' ? 'Active' : 'Inactive'}
           </Toggle>
+          </div>
         ),
       },
+      
       { id: 'action', header: 'Action', cell: (item) => (
         <div style={{ width: '100px', cursor: 'pointer' }} onClick={() => handleAproveRiderDetails(item)}>
           View Details

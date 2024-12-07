@@ -11,7 +11,7 @@ const getToken = () => {
 // Thunk to fetch all orders with optional parameters for search, category, and pageKey
 export const fetchOrderInventory = createAsyncThunk(
   'orderInventory/fetchOrderInventory',
-  async ({ search = '', type = '', status = '', pageKey = '', date = '',shift='' } = {}, { rejectWithValue }) => {
+  async ({ search = '', type = '', status = '', pageKey = '', date = '',shift='',pincode='' } = {}, { rejectWithValue }) => {
     try {
       const token = getToken();
 
@@ -30,6 +30,8 @@ export const fetchOrderInventory = createAsyncThunk(
       if (pageKey) params.push(`pageKey=${encodeURIComponent(pageKey)}`);
       if (date) params.push(`date=${encodeURIComponent(date)}`);
       if (shift) params.push(`shift=${encodeURIComponent(shift)}`);
+      if (pincode) params.push(`pincode=${encodeURIComponent(pincode)}`);
+
 
       // If there are any parameters, append them to the URL
       if (params.length > 0) {

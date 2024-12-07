@@ -7,6 +7,7 @@ const FilterComponent = ({
   shifts,
   category,
   currentPage,
+  pincode,
   onFilterChange,
 }) => {
   // Reusable function to notify parent of filter updates
@@ -54,6 +55,13 @@ const categoryOptions = [
     { label: "Evening", value: "evening" },
     // Add other statuses if needed
   ];
+    //shifts options
+    const pincodeOptions = [
+      { label: "500064", value: "500064" },
+      { label: "500065", value: "500065" },
+      { label: "500066", value: "500066" },
+      // Add other statuses if needed
+    ];
 
 
   return (
@@ -62,8 +70,9 @@ const categoryOptions = [
     
       { colspan: { default: 12, xxs: 3 } },
       { colspan: { default: 12, xxs: 3 } },
-      { colspan: { default: 12, xxs: 3 } },
-      { colspan: { default: 12, xxs: 3 } },
+      { colspan: { default: 12, xxs: 2 } },
+      { colspan: { default: 12, xxs: 2 } },
+      { colspan: { default: 12, xxs: 2 } },
     ]}
   >
       {/* Status Filter */}
@@ -109,6 +118,18 @@ const categoryOptions = [
         options={shiftOptions}
         placeholder="Filter By Shifts"
         selectedAriaLabel="Selected shift"
+      />
+         <Select
+        selectedOption={pincode}
+        onChange={({ detail }) =>
+          updateFilterState("pincode", detail.selectedOption)
+        }
+        options={pincodeOptions}
+        placeholder="Select Pincode"
+    
+        filteringType="auto"
+        filteringPlaceholder="Search Pincode" // Placeholder for the search bar
+
       />
 
    

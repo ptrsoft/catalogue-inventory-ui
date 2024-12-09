@@ -47,6 +47,11 @@ import {
     };
   
     // Function to handle API request
+    // Helper function to get the token from localStorage
+const getToken = () => {
+  const token = localStorage.getItem("user");
+  return token ? JSON.parse(token).accessToken : null;
+};
     const sendAdjustmentData = async () => {
       if (!dataToSave) return;
   
@@ -70,12 +75,14 @@ import {
       console.log("Request Body:", requestBody);
   
       try {
+        const token = getToken();
         const response = await fetch(
-          "https://lou294nkli.execute-api.us-east-1.amazonaws.com/inventory/adjust",
+          "https://api.admin.promodeagro.com/inventory/adjust",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // Add token here
             },
             body: JSON.stringify(requestBody),
           }

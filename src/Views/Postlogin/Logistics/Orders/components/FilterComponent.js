@@ -34,9 +34,9 @@ const statusOptions = [
 ];
 const ageOptions = [
   { label: "7 days old delivered", value: "7" },
-  { label: "14 days old delivered", value: "14" },
-  { label: "1 month old delivered", value: "1m" },
-  { label: "2 months old delivered", value: "2m" },
+  { label: "last 14 days old delivered", value: "14" },
+  { label: " last 1 month old delivered", value: "1m" },
+  { label: " last 2 months old delivered", value: "2m" },
   { label: "Older", value: "older" },
 ];
 
@@ -97,8 +97,8 @@ const categoryOptions = [
       />
 
       {/* Age Filter */}
-         {/* {statuscategory?.value === "delivered" && ( */}
-            {/* Conditionally render age filter */}
+         {statuscategory?.value === "delivered" && (
+        
       <Select
         selectedOption={ageFilter}
         onChange={({ detail }) =>
@@ -107,6 +107,19 @@ const categoryOptions = [
         options={ageOptions}
         placeholder="Filter By Date"
         selectedAriaLabel="Selected age"
+      />
+      )}
+          <Select
+        selectedOption={pincode}
+        onChange={({ detail }) =>
+          updateFilterState("pincode", detail.selectedOption)
+        }
+        options={pincodeOptions}
+        placeholder="Select Pincode"
+    
+        filteringType="auto"
+        filteringPlaceholder="Search Pincode" // Placeholder for the search bar
+
       />
 
       {/* Shifts Filter */}
@@ -119,18 +132,7 @@ const categoryOptions = [
         placeholder="Filter By Shifts"
         selectedAriaLabel="Selected shift"
       />
-         <Select
-        selectedOption={pincode}
-        onChange={({ detail }) =>
-          updateFilterState("pincode", detail.selectedOption)
-        }
-        options={pincodeOptions}
-        placeholder="Select Pincode"
-    
-        filteringType="auto"
-        filteringPlaceholder="Search Pincode" // Placeholder for the search bar
-
-      />
+     
 
    
 

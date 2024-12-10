@@ -149,9 +149,11 @@ const Edit = () => {
         setTimeout(() => {
           setItems([]);
           navigate("/app/inventory");
+
           window.location.reload(); // Force reload after navigation.
           
         }, 2000);
+
       })
       .catch((error) => {
         console.error("Error during update:", error);
@@ -255,6 +257,7 @@ const Edit = () => {
                       onChange={({ detail }) => setName(detail.value)}
                     />
                   </FormField>
+
               {/* Category Dropdown */}
               <FormField label="Category">
                     <Select
@@ -265,11 +268,14 @@ const Edit = () => {
                       }}
                       options={categoryOptions}
                       placeholder="Select a category"
+
+         
                     />
                   </FormField>
 
                   {/* Subcategory Dropdown */}
                   <FormField label="Sub Category">
+
                     <Select
                       selectedOption={{ label: subCategory, value: subCategory }} // Set subCategory as object
                       onChange={({ detail }) => setSubCategory(detail.selectedOption.value)}

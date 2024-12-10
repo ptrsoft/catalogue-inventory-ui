@@ -13,9 +13,8 @@ import {
   BreadcrumbGroup,
   SpaceBetween,
   Icon,
-  Input
 } from "@cloudscape-design/components";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -41,16 +40,14 @@ const Orders = () => {
   const [fetchedPages, setFetchedPages] = useState({}); // Store fetched data per page
   const [pagesCount, setPagesCount] = useState(1); // Keep track of total pages
   const [nextKeys, setNextKeys] = useState({}); // Store nextKey per page
-
+  const [isModalOpenForPacker, setIsModalOpenForPacker] = useState(false);
   // getting redux states using useselector
   const { selectedOrder } = useSelector((state) => state.orderInventory);
 
   const { orders, loading, error } = useSelector(
     (state) => state.orderInventory.orders.data[currentPage] || []
   );
-  console.log(orders, "orderssss");
   const { usersbyid } = useSelector((state) => state.orderInventory);
-  console.log(usersbyid, "user from order");
   const [filters, setFilters] = useState({
     category: null,
     statuscategory: { label: "order placed", value: "order placed" },
@@ -59,10 +56,8 @@ const Orders = () => {
       value: "7",
     },
     shifts: null,
-    pincode:null,
+    pincode: null,
   });
-  console.log(filters?.category?.value);
-  console.log(filters, "filter from order compo");
   const getFilterKey = useCallback(() => {
     const category = filters?.category?.value || "";
     const statuscategory = filters?.statuscategory?.value || "";
@@ -81,9 +76,7 @@ const Orders = () => {
     filters?.pincode?.value,
     currentPage,
     filteringText,
-
   ]);
- 
 
   //using dispatch hitting apis
   const dispatch = useDispatch();
@@ -136,78 +129,80 @@ const Orders = () => {
   ]);
 
   console.log("Next Keys:", nextKeys);
-// flashbar for assign order to packer
-const showFlashbar = ({ type, message }) => {
-  setFlashbarItems((prev) => [
-    ...prev,
-    {
-      type,
-      content: message,
-      dismissible: true,
-      onDismiss: () =>
-        setFlashbarItems((items) =>
-          items.filter((item) => item.content !== message)
-        ),
-    },
-  ]);
+  // flashbar for assign order to packer
+  const showFlashbar = ({ type, message }) => {
+    setFlashbarItems((prev) => [
+      ...prev,
+      {
+        type,
+        content: message,
+        dismissible: true,
+        onDismiss: () =>
+          setFlashbarItems((items) =>
+            items.filter((item) => item.content !== message)
+          ),
+      },
+    ]);
 
-  // Automatically dismiss the flashbar after 3 seconds
-  setTimeout(() => {
-    setFlashbarItems((items) =>
-      items.filter((item) => item.content !== message)
-    );
-  }, 3000);
-};
+    // Automatically dismiss the flashbar after 3 seconds
+    setTimeout(() => {
+      setFlashbarItems((items) =>
+        items.filter((item) => item.content !== message)
+      );
+    }, 3000);
+  };
 
-  // function for imidiates changes in Ui after Cancelling order
+  // function for imidiate changes in Ui after Cancelling order
   const handleCancelOrder = (orderId) => {
     const orderIdsArray = Array.isArray(orderId) ? orderId : [orderId];
-    const isMultipleOrders = orderIdsArray.length > 1;  // Check if it's multiple orders
-  
+    const isMultipleOrders = orderIdsArray.length > 1; // Check if it's multiple orders
+
     // Update the fetchedPages state after canceling an order
     setFetchedPages((prev) => {
       const filterKey = getFilterKey(); // Get the current filter key (e.g., filter by status)
-      
+
       const updatedPage = prev[filterKey]?.map((order) =>
         // Apply dynamic orderStatus based on whether it's a single order or multiple orders
         orderIdsArray.includes(order.id)
-          ? { ...order, orderStatus: isMultipleOrders ? "order processing" : "cancelled" }
+          ? {
+              ...order,
+              orderStatus: isMultipleOrders ? "order processing" : "cancelled",
+            }
           : order
       );
-  
+
       return {
         ...prev,
         [filterKey]: updatedPage,
       };
     });
-  
+
     // Optional: If needed, trigger other actions (e.g., API call, flash messages)
   };
   //function for immidiate changes in UI after assigning order
   const handleAssignOrdersStatus = (orderId) => {
     const orderIdsArray = Array.isArray(orderId) ? orderId : [orderId];
 
-  
     // Update the fetchedPages state after canceling an order
     setFetchedPages((prev) => {
       const filterKey = getFilterKey(); // Get the current filter key (e.g., filter by status)
-      
+
       const updatedPage = prev[filterKey]?.map((order) =>
         // Apply dynamic orderStatus based on whether it's a single order or multiple orders
         orderIdsArray.includes(order.id)
-          ? { ...order, orderStatus: "order processing"  }
+          ? { ...order, orderStatus: "order processing" }
           : order
       );
-  
+
       return {
         ...prev,
         [filterKey]: updatedPage,
       };
     });
-  
+
     // Optional: If needed, trigger other actions (e.g., API call, flash messages)
   };
-  
+
   // dispatching order by id
   useEffect(() => {
     if (selectedProduct) {
@@ -320,22 +315,27 @@ const showFlashbar = ({ type, message }) => {
         );
       },
     },
-   
-  // Conditionally add "Reason" column if filters.statuscategory is "cancelled" and order status is "cancelled" or "undelivered"
-  ...(filters?.statuscategory?.value === 'cancelled' || filters?.statuscategory?.value === 'undelivered' ? [
-    {
-      header: "Reason",
-      cell: (item) => {
-        if (item.orderStatus === "cancelled" || item.orderStatus === "undelivered") {
-          return item?.statusDetails?.reason;
-        }
-        return "-"; // or return null if you don't want to show anything
-      },
-      width: 250,
-      minWidth: 180,
-    }
-  ] : []),
 
+    // Conditionally add "Reason" column if filters.statuscategory is "cancelled" and order status is "cancelled" or "undelivered"
+    ...(filters?.statuscategory?.value === "cancelled" ||
+    filters?.statuscategory?.value === "undelivered"
+      ? [
+          {
+            header: "Reason",
+            cell: (item) => {
+              if (
+                item.orderStatus === "cancelled" ||
+                item.orderStatus === "undelivered"
+              ) {
+                return item?.statusDetails?.reason;
+              }
+              return "-"; // or return null if you don't want to show anything
+            },
+            width: 250,
+            minWidth: 180,
+          },
+        ]
+      : []),
 
     { header: "Total Amount", cell: (item) => item.totalAmount },
     {
@@ -344,11 +344,9 @@ const showFlashbar = ({ type, message }) => {
         `${item?.deliverySlot.startTime} To ${item?.deliverySlot.endTime}`,
     },
     { header: "Deliver Area", cell: (item) => item.area },
-
   ];
 
-  const [isModalOpenForPacker, setIsModalOpenForPacker] = useState(false);
-
+  //function for assigning order to packer
   const handleAssignOrders = () => {
     console.log("Selected orders:", selectedItems);
     setIsModalOpenForPacker(false);
@@ -367,7 +365,9 @@ const showFlashbar = ({ type, message }) => {
   };
   const navigate = useNavigate();
   const NavigateToRunsheet = () => {
-    navigate('/app/Logistics/runsheet/CreateRunSheet', { state: { selectedItems } });
+    navigate("/app/Logistics/runsheet/CreateRunSheet", {
+      state: { selectedItems },
+    });
   };
   const [isOpen, setIsOpen] = useState(false);
 
@@ -393,23 +393,24 @@ const showFlashbar = ({ type, message }) => {
         <Header
           actions={
             <>
-          {filters?.statuscategory?.value === 'order placed' ? (
-  <Button
-    variant="primary"
-    onClick={() => setIsModalOpenForPacker(true)}
-    disabled={selectedItems.length === 0} // Disable when no items are selected
-  >
-    Assign To Packer
-  </Button>
-) : filters?.statuscategory?.value === 'undelivered'|| filters?.statuscategory?.value === 'packed' ? (
-  <Button
-    variant="primary"
-    onClick={NavigateToRunsheet}
-    disabled={selectedItems.length === 0} // Disable when no items are selected
-  >
-    Create Runsheet
-  </Button>
-) : null}
+              {filters?.statuscategory?.value === "order placed" ? (
+                <Button
+                  variant="primary"
+                  onClick={() => setIsModalOpenForPacker(true)}
+                  disabled={selectedItems.length === 0} // Disable when no items are selected
+                >
+                  Assign To Packer
+                </Button>
+              ) : filters?.statuscategory?.value === "undelivered" ||
+                filters?.statuscategory?.value === "packed" ? (
+                <Button
+                  variant="primary"
+                  onClick={NavigateToRunsheet}
+                  disabled={selectedItems.length === 0} // Disable when no items are selected
+                >
+                  Create Runsheet
+                </Button>
+              ) : null}
 
               <AssignToPackersModal
                 isOpen={isModalOpenForPacker}
@@ -417,8 +418,7 @@ const showFlashbar = ({ type, message }) => {
                 onAssign={handleAssignOrders}
                 selectedOrders={selectedItems}
                 showFlashbar={showFlashbar}
-                 // Correctly passed here
-                 onAssignOrderStatusChange={handleAssignOrdersStatus}
+                onAssignOrderStatusChange={handleAssignOrdersStatus}
               />
             </>
           }
@@ -428,16 +428,14 @@ const showFlashbar = ({ type, message }) => {
         </Header>
       }
     >
-      <SpaceBetween direction="vertical" size="xl" >
+      <SpaceBetween direction="vertical" size="xl">
         <Stats />
         <div>
           <Grid
             gridDefinition={[
               { colspan: { default: 12, xxs: 4 } },
               { colspan: { default: 12, xxs: 2 } },
-              
             ]}
-            
           >
             {/* Search bar */}
             <TextFilter
@@ -446,35 +444,46 @@ const showFlashbar = ({ type, message }) => {
               filteringAriaLabel="Filter instances"
               onChange={handleSearchChange}
             />
-        {/* Filter Toggle */}
-        <span
-          onClick={toggleFilter}
-          style={{
-            display: 'flex',
-            justifyContent:'space-between',
-            alignItems: 'center',
-            cursor: 'pointer',
-            border: '3px solid #9BA7B6',
-            padding: '4px 8px',
-            borderRadius: '8px',
-            backgroundColor: 'white',
-            gap: '5px',
-          }}
-        >
-          {/* Filter Icon */}
-          <div style={{display:"flex",gap:"5px"}}>
-          <Icon variant="link" name="filter" />
-          
-          {/* Filter Text */}
-          <span style={{  fontWeight: 'normal',color:'#9BA7B6',fontStyle:'italic' }}>Filters</span>
-          </div>
-          
-          {/* Caret Icon */}
-          <Icon variant="link" name={isOpen ? 'caret-up-filled' : 'caret-down-filled'} />
-        </span>
+            {/* Filter Toggle */}
+            <span
+              onClick={toggleFilter}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                cursor: "pointer",
+                border: "3px solid #9BA7B6",
+                padding: "4px 8px",
+                borderRadius: "8px",
+                backgroundColor: "white",
+                gap: "5px",
+              }}
+            >
+              {/* Filter Icon */}
+              <div style={{ display: "flex", gap: "5px" }}>
+                <Icon variant="link" name="filter" />
 
-            {/* Sort dropdown */}
-            {isOpen && (
+                {/* Filter Text */}
+                <span
+                  style={{
+                    fontWeight: "normal",
+                    color: "#9BA7B6",
+                    fontStyle: "italic",
+                  }}
+                >
+                  Filters
+                </span>
+              </div>
+
+              {/* Caret Icon */}
+              <Icon
+                variant="link"
+                name={isOpen ? "caret-up-filled" : "caret-down-filled"}
+              />
+            </span>
+          </Grid>
+          {/* Sort dropdown */}
+          {isOpen && (
             <FilterComponent
               statuscategory={filters.statuscategory}
               ageFilter={filters.ageFilter}
@@ -483,8 +492,8 @@ const showFlashbar = ({ type, message }) => {
               pincode={filters.pincode}
               currentPage={currentPage}
               onFilterChange={handleFilterChange} // Corrected prop name
-            />)}
-          </Grid>
+            />
+          )}
           {/* Orders table */}
           <div
             className={`orders-container ${
@@ -543,7 +552,6 @@ const showFlashbar = ({ type, message }) => {
           usersbyid={usersbyid}
           fetchpages={fetchedPages}
           onCancelOrder={handleCancelOrder} // Pass handler to child
-        
         />
       </SpaceBetween>
       <Invoice printRef={printRef} selectedOrder={selectedOrder} />

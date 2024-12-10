@@ -20,7 +20,6 @@ import {
 } from "@cloudscape-design/components";
 import { useNavigate } from "react-router-dom";
 import { ErrorMessages, ValidationEngine } from "Utils/helperFunctions";
-
 import { fetchProducts } from "Redux-Store/Products/ProductThunk";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -43,7 +42,6 @@ const useFormState = (initialState) => {
 const CreateNewAdjustments = () => {
   // modal table data from redux
   const dispatch = useDispatch();
-  
 
   const products = useSelector((state) => state.products.products);
   console.log(products, "prod");
@@ -56,18 +54,18 @@ const CreateNewAdjustments = () => {
   };
   const [selectedCategory, setSelectedCategory] = React.useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = React.useState(null);
-    // Prepare items for the table
-    const handleCategoryChange = ({ detail }) => {
-      setSelectedCategory(detail.selectedOption);
-      setCurrentPage(1); // Reset page to 1 when filters change
-    };
-    const handleSubCategoryChange = ({ detail }) => {
-      setSelectedSubCategory(detail.selectedOption);
-      setCurrentPage(1); // Reset page to 1 when filters change
-    };
-  
+  // Prepare items for the table
+  const handleCategoryChange = ({ detail }) => {
+    setSelectedCategory(detail.selectedOption);
+    setCurrentPage(1); // Reset page to 1 when filters change
+  };
+  const handleSubCategoryChange = ({ detail }) => {
+    setSelectedSubCategory(detail.selectedOption);
+    setCurrentPage(1); // Reset page to 1 when filters change
+  };
+
   const [filteringText, setFilteringText] = React.useState("");
-  const [currentPageIndex, setCurrentPageIndex] = React.useState(1);
+
 
   const [fetchedPages, setFetchedPages] = useState({}); // Store fetched data per page
   const [pagesCount, setPagesCount] = useState(1); // Keep track of total pages
@@ -78,7 +76,6 @@ const CreateNewAdjustments = () => {
     // Define the pageKey for pagination (undefined for page 1)
     const pageKey = currentPage === 1 ? undefined : nextKeys[currentPage - 1];
 
-    // Create a key to represent the current filters and page
     // Create a key to represent the current filters and page
     const filterKey = `${selectedCategory?.value || ""}-${
       selectedSubCategory?.value || ""
@@ -145,9 +142,7 @@ const CreateNewAdjustments = () => {
     value: "all",
   });
 
-  const [modalItems] = useState([
-
-  ]);
+  const [modalItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
 
   const navigate = useNavigate();
@@ -170,17 +165,19 @@ const CreateNewAdjustments = () => {
         message: "Location is required.",
       },
     ],
-    
+
     reason: [
       { type: ValidationEngine.type.MANDATORY, message: "Reason is required." },
-    
     ],
     description: [
       {
         type: ValidationEngine.type.MANDATORY,
         message: "Description is required.",
       },
-      { type: ValidationEngine.type.CHARACTERCOUNT, message: "Cannot exceed 200 character" },
+      {
+        type: ValidationEngine.type.CHARACTERCOUNT,
+        message: "Cannot exceed 200 character",
+      },
     ],
   };
 
@@ -190,11 +187,10 @@ const CreateNewAdjustments = () => {
       formState
     );
 
-  
     // Additional validation for items
     const itemErrors = items.reduce((errors, item, index) => {
       // const missingFields = [];
-      
+
       // if (!item.adjustQuantity) {
       //   missingFields.push("Adjustment Quantity");
       // }
@@ -204,14 +200,14 @@ const CreateNewAdjustments = () => {
       // if (!item.adjustSellingPrice) {
       //   missingFields.push("Adjust Selling Price");
       // }
-      
+
       // if (missingFields.length > 0) {
       //   errors[index] = `Please fill out: ${missingFields.join(", ")}`;
       // }
-      
+
       return errors;
     }, {});
-  
+
     if (items.length === 0) {
       setFormErrors({
         ...validationResult,
@@ -222,14 +218,14 @@ const CreateNewAdjustments = () => {
     } else if (Object.keys(itemErrors).length > 0) {
       setFormErrors({
         ...validationResult,
-        itemErrors,  // Ensure itemErrors are added to formErrors
+        itemErrors, // Ensure itemErrors are added to formErrors
       });
       ErrorMessages.error(
         "Please fix the errors in the item details before submitting."
       );
       return false;
     }
-   
+
     setFormErrors(validationResult);
     return validationResult.isValid;
   };
@@ -245,8 +241,8 @@ const CreateNewAdjustments = () => {
           id: item.id,
           code: item.itemCode,
           name: item.name,
-          images:item.images[0],
-          sellingprice:item.msp,
+          images: item.images[0],
+          sellingprice: item.msp,
           stockOnHold: item.stockQuantity,
           purchasingPrice: item.purchasingPrice,
           adjustQuantity: item.adjustQuantity,
@@ -328,8 +324,6 @@ const CreateNewAdjustments = () => {
     ],
   };
 
-
-
   return (
     <>
       <BreadcrumbGroup
@@ -402,22 +396,22 @@ const CreateNewAdjustments = () => {
                 />
               </FormField>
               <FormField
-  label="Description"
-  errorText={formErrors.description?.message}
->
-  <Textarea
-    placeholder="Enter description (max 200 characters)"
-    value={formState.description}
-    onChange={(event) => {
-      // Always update formState, but enforce a validation if over 200 characters
-      handleFormChange("description")(event);
-    }}
-    resizable={false}
-  />
-  <Box margin={{ top: "xxs" }}>
-    {formState.description?.length} / 200 characters
-  </Box>
-</FormField>
+                label="Description"
+                errorText={formErrors.description?.message}
+              >
+                <Textarea
+                  placeholder="Enter description (max 200 characters)"
+                  value={formState.description}
+                  onChange={(event) => {
+                    // Always update formState, but enforce a validation if over 200 characters
+                    handleFormChange("description")(event);
+                  }}
+                  resizable={false}
+                />
+                <Box margin={{ top: "xxs" }}>
+                  {formState.description?.length} / 200 characters
+                </Box>
+              </FormField>
             </Grid>
           </Container>
           <div style={{ marginTop: 22 }}>
@@ -565,7 +559,6 @@ const CreateNewAdjustments = () => {
                       </span>
                     ),
                     cell: (item) => (
-                
                       <Input
                         value={item.adjustQuantity || ""}
                         onChange={({ detail }) =>
@@ -575,10 +568,7 @@ const CreateNewAdjustments = () => {
                             detail.value
                           )
                         }
-                
                       />
-           
-       
                     ),
                   },
                   {
@@ -599,11 +589,12 @@ const CreateNewAdjustments = () => {
                           triggerType="custom"
                           content={
                             <SpaceBetween>
-                            <strong>Adjust Purchase Price</strong>
-                            <span>
-                            Adjust Purchase Price: Adjust the cost for purchasing items.
-                            </span>
-                          </SpaceBetween>
+                              <strong>Adjust Purchase Price</strong>
+                              <span>
+                                Adjust Purchase Price: Adjust the cost for
+                                purchasing items.
+                              </span>
+                            </SpaceBetween>
                           }
                         >
                           <Icon name="status-info" />
@@ -613,7 +604,7 @@ const CreateNewAdjustments = () => {
                     cell: (item) => (
                       <Input
                         ariaRequired
-                        value={item.adjustPurchasePrice ||""}
+                        value={item.adjustPurchasePrice || ""}
                         onChange={({ detail }) =>
                           handleInputChange(
                             item.id,
@@ -642,11 +633,12 @@ const CreateNewAdjustments = () => {
                           triggerType="custom"
                           content={
                             <SpaceBetween>
-                            <strong>Adjust Selling Price</strong>
-                            <span>
-                            Adjust Selling Price: Adjust the price for selling items.
-                            </span>
-                          </SpaceBetween>
+                              <strong>Adjust Selling Price</strong>
+                              <span>
+                                Adjust Selling Price: Adjust the price for
+                                selling items.
+                              </span>
+                            </SpaceBetween>
                           }
                         >
                           <Icon name="status-info" />
@@ -655,17 +647,20 @@ const CreateNewAdjustments = () => {
                     ),
                     cell: (item) => (
                       <Input
-                      value={item.adjustSellingPrice || ""}
-                      onChange={({ detail }) =>
-                        handleInputChange(item.id, "adjustSellingPrice", detail.value)
-                      }
-                      errorText={
-                        item.adjustSellingPrice < 0
-                          ? "Selling price cannot be negative"
-                          : ""
-                      }
-                    />
-                    
+                        value={item.adjustSellingPrice || ""}
+                        onChange={({ detail }) =>
+                          handleInputChange(
+                            item.id,
+                            "adjustSellingPrice",
+                            detail.value
+                          )
+                        }
+                        errorText={
+                          item.adjustSellingPrice < 0
+                            ? "Selling price cannot be negative"
+                            : ""
+                        }
+                      />
                     ),
                   },
 
@@ -683,7 +678,6 @@ const CreateNewAdjustments = () => {
                   },
                 ]}
                 items={items}
-             
                 loadingText="Loading Items"
                 trackBy="id"
                 empty={
@@ -727,70 +721,63 @@ const CreateNewAdjustments = () => {
         }
       >
         <Table
-        pagination={
-          <Pagination
-          currentPageIndex={currentPage}
-          onChange={({ detail }) =>
-            setCurrentPage(detail.currentPageIndex)
+          pagination={
+            <Pagination
+              currentPageIndex={currentPage}
+              onChange={({ detail }) => setCurrentPage(detail.currentPageIndex)}
+              pagesCount={pagesCount}
+            />
           }
-          pagesCount={pagesCount}
-        />
-
-        }
           header={
-            <Header
-           
-            >
+            <Header>
               <SpaceBetween direction="horizontal" size="xs">
                 <div style={{ width: "400px" }}>
-            
-                    <TextFilter
-            filteringText={filteringText}
-            filteringPlaceholder="Search"
-            filteringAriaLabel="Filter instances"
-            onChange={handleSearchChange}
-          />
+                  <TextFilter
+                    filteringText={filteringText}
+                    filteringPlaceholder="Search"
+                    filteringAriaLabel="Filter instances"
+                    onChange={handleSearchChange}
+                  />
                 </div>
                 <Select
-            required
-            selectedOption={selectedCategory}
-            onChange={handleCategoryChange}
-            options={[
-              { label: "All", value: "" },
-              {
-                label: "Fresh Vegetables",
-                value: "Fresh Vegetables",
-              },
-              {
-                label: "Fresh Fruits",
-                value: "Fresh Fruits",
-              },
-              {
-                label: "Dairy",
-                value: "Dairy",
-              },
-              {
-                label: "Groceries",
-                value: "Groceries",
-              },
-              { label: "Bengali Special", value: "Bengali Special" },
-              { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" },
-            ]}
-            placeholder="Select Category"
-          />
-          <Select
-  disabled={!selectedCategory || selectedCategory.value === ""} // Disable if no category or "All" is selected
-
-            required
-            selectedOption={selectedSubCategory}
-            onChange={handleSubCategoryChange}
-            placeholder="Select Sub Category"
-            options={
-              selectedCategory
-                ? subcategoryOptions[selectedCategory.value] || []
-                : []
-            }
-          />
+                  required
+                  selectedOption={selectedCategory}
+                  onChange={handleCategoryChange}
+                  options={[
+                    { label: "All", value: "" },
+                    {
+                      label: "Fresh Vegetables",
+                      value: "Fresh Vegetables",
+                    },
+                    {
+                      label: "Fresh Fruits",
+                      value: "Fresh Fruits",
+                    },
+                    {
+                      label: "Dairy",
+                      value: "Dairy",
+                    },
+                    {
+                      label: "Groceries",
+                      value: "Groceries",
+                    },
+                    { label: "Bengali Special", value: "Bengali Special" },
+                    { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" },
+                  ]}
+                  placeholder="Select Category"
+                />
+                <Select
+                  disabled={!selectedCategory || selectedCategory.value === ""} // Disable if no category or "All" is selected
+                  required
+                  selectedOption={selectedSubCategory}
+                  onChange={handleSubCategoryChange}
+                  placeholder="Select Sub Category"
+                  options={
+                    selectedCategory
+                      ? subcategoryOptions[selectedCategory.value] || []
+                      : []
+                  }
+                />
               </SpaceBetween>
             </Header>
           }
@@ -832,9 +819,9 @@ const CreateNewAdjustments = () => {
             },
             {
               header: "Purchasing Price",
-              cell: (item) =>  item.purchasingPrice,
+              cell: (item) => item.purchasingPrice,
             },
-            { header: "MSP", cell: (item) =>  item.msp },
+            { header: "MSP", cell: (item) => item.msp },
           ]}
           // items={data.items}
           items={
@@ -844,7 +831,6 @@ const CreateNewAdjustments = () => {
               }-${filteringText || ""}-${currentPage}`
             ] || []
           }
-    
           selectionType="multi"
           selectedItems={selectedItems}
           onSelectionChange={({ detail }) =>

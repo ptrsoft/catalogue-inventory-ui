@@ -21,7 +21,7 @@ const Drawer = ({
   handlePrint,
   error,
   usersbyid,
-  onCancelOrder
+  onCancelOrder,
 }) => {
   const [cancellationReason, setCancellationReason] = useState(""); // State for cancellation reason
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,11 +41,13 @@ const Drawer = ({
   const dispatch = useDispatch();
   const handleCancelOrder = () => {
     if (!cancelOrderId) return; // Ensure there's an order ID to cancel
-  
+
     console.log(cancelOrderId, "id");
-  
+
     // Dispatch the cancel order thunk with order ID and reason
-    dispatch(cancelOrder({ orderId: cancelOrderId, reason: cancellationReason }))
+    dispatch(
+      cancelOrder({ orderId: cancelOrderId, reason: cancellationReason })
+    )
       .unwrap() // Handle the response using Redux Thunk's `unwrap`
       .then(() => {
         // Show a success flash message when the order is successfully canceled
@@ -58,17 +60,17 @@ const Drawer = ({
             onDismiss: () => setFlashMessages([]),
           },
         ]);
-  
+
         // Automatically dismiss the flash message after 3 seconds
         setTimeout(() => {
           setFlashMessages([]);
         }, 3000);
-  
+
         // Call the parent handler if provided
         if (onCancelOrder) {
           onCancelOrder(cancelOrderId);
         }
-  
+
         // Close the modal
         handleCloseModal();
       })
@@ -85,7 +87,6 @@ const Drawer = ({
         ]);
       });
   };
-  
 
   console.log(selectedOrder);
   return (
@@ -97,12 +98,12 @@ const Drawer = ({
             top: 0,
             right: 0,
             height: "100%",
-            width: "380px",
+            width: "450px",
             backgroundColor: "white",
             boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.5)",
             zIndex: 1000,
             overflowY: "auto",
-            color: "red",
+            // color: "red",
           }}
         >
           {" "}
@@ -179,6 +180,15 @@ const Drawer = ({
                         <span className="label">Order Status:</span>
                         <span className="value">{selectedOrder?.status}</span>
                       </div>
+                      <div className="info-row">
+                        <span className="label">Total Price:</span>
+                        <span className="value">
+                          {selectedOrder?.items?.reduce(
+                            (sum, item) => sum + (item.price || 0),
+                            0
+                          ) || 0}
+                        </span>
+                      </div>
 
                       {usersbyid.map((user) => (
                         <div className="info-row" key={user.id}>
@@ -206,9 +216,10 @@ const Drawer = ({
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                marginBottom: "20px",
               }}
             >
-              <Box variant="h4">Items List </Box>
+              <Box variant="h5">Items List </Box>
               <div class="button-container">
                 <button
                   class="cancel-btn"
@@ -222,44 +233,47 @@ const Drawer = ({
                 </button>
               </div>
             </div>
-
-            <Table
-              empty={
-                <Box
-                  margin={{ vertical: "xs" }}
-                  textAlign="center"
-                  color="inherit"
-                >
-                  <SpaceBetween size="m">
-                    {error ? (
-                      <b>{error} No orders</b>
-                    ) : (
-                      <>
-                        <b>No Orders available</b> {/* Show no data message */}
-                      </>
-                    )}
-                  </SpaceBetween>
-                </Box>
-              }
-              columnDefinitions={[
-                {
-                  header: "Product Name",
-                  cell: (item) => (
-                    <Box display="flex" alignItems="center">
-                      <span style={{ fontSize: "20px", marginRight: "8px" }}>
-                        {item.productImage}
-                      </span>
-                      {item.productName}
-                    </Box>
-                  ),
-                },
-                { header: "Quantity", cell: (item) => item.quantity },
-                { header: "Price", cell: (item) => item.price },
-              ]}
-              items={selectedOrder?.items}
-              variant="embedded"
-              stickyHeader
-            />
+            <Container>
+              <Table
+                empty={
+                  <Box
+                    margin={{ vertical: "xs" }}
+                    textAlign="center"
+                    color="inherit"
+                  >
+                    <SpaceBetween size="m">
+                      {error ? (
+                        <b>{error} No orders</b>
+                      ) : (
+                        <>
+                          <b>No Orders available</b>{" "}
+                          {/* Show no data message */}
+                        </>
+                      )}
+                    </SpaceBetween>
+                  </Box>
+                }
+                columnDefinitions={[
+                  {
+                    header: "Product Name",
+                    cell: (item) => (
+                      <Box display="flex" alignItems="center">
+                        <span style={{ fontSize: "20px", marginRight: "8px" }}>
+                          {item.productImage}
+                        </span>
+                        {item.productName}
+                      </Box>
+                    ),
+                  },
+                  { header: "Quantity", cell: (item) => item.quantity },
+                  { header: "Price", cell: (item) => item.price },
+                ]}
+                items={selectedOrder?.items}
+                // variant="embedded"
+                variant="borderless"
+                stickyHeader
+              />
+            </Container>
           </Box>
         </div>
       )}

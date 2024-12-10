@@ -52,8 +52,8 @@ const Orders = () => {
     category: null,
     statuscategory: { label: "order placed", value: "order placed" },
     ageFilter: {
-      label: "7 Days Old",
-      value: "7",
+      label: "Today's Delivered Orders",
+      value: "today",
     },
     shifts: null,
     pincode: null,

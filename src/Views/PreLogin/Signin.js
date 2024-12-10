@@ -69,7 +69,7 @@ const Signin = () => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: "375px",
-          height: "320px",
+          height: "360px",
           borderRadius: "10px",
           backgroundColor: "white",
           boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",

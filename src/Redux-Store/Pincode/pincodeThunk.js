@@ -86,7 +86,7 @@ export const updatePincode = createAsyncThunk(
   
         const response = await postLoginService.get(url); // Use .get() for GET requests
       console.log(url,"pincode url");
-        console.log(response.data);
+        console.log(response.data,"pincodes");
         return response.data; // Axios automatically returns data inside the 'data' property
       } catch (error) {
         console.error("Error in getPincodes thunk:", error);

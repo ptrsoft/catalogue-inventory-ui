@@ -48,7 +48,7 @@ function PincodeList() {
     loading,
     error,
   } = useSelector((state) => state.pincode);
-  console.log(pincodes);
+  console.log(pincodes,'pincodes from pincode');
 
   // Fetch pincodes on component mount
   useEffect(() => {

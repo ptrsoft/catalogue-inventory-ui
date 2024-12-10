@@ -149,7 +149,11 @@ const Edit = () => {
         setTimeout(() => {
           setItems([]);
           navigate("/app/inventory");
-        }, 3000);
+
+          window.location.reload(); // Force reload after navigation.
+          
+        }, 2000);
+
       })
       .catch((error) => {
         console.error("Error during update:", error);
@@ -163,8 +167,57 @@ const Edit = () => {
             id: "message_error",
           },
         ]);
+        setTimeout(() => {
+          setItems([]);
+          // navigate("/app/inventory");
+        }, 3000);
       });
   };
+  const subcategoryOptions = {
+    "Fresh Vegetables": [
+      { label: "Daily Vegetables", value: "Daily Vegetables" },
+      { label: "Leafy Vegetables", value: "Leafy Vegetables" },
+      { label: "Exotic Vegetables", value: "Exotic Vegetables" },
+    ],
+    "Fresh Fruits": [
+      { label: "Daily Fruits", value: "Daily Fruits" },
+      { label: "Exotic Fruits", value: "Exotic Fruits" },
+      { label: "Dry Fruits", value: "Dry Fruits" },
+    ],
+    Dairy: [
+      { label: "Milk", value: "Milk" },
+      { label: "Butter & Ghee", value: "Butter & Ghee" },
+      { label: "Paneer & Khowa", value: "Paneer & Khowa" },
+    ],
+    Groceries: [
+      { label: "Cooking Oil", value: "Cooking Oil" },
+      { label: "Rice", value: "Rice" },
+      { label: "Daal", value: "Daal" },
+      { label: "Spices", value: "Spices" },
+      { label: "Snacks", value: "Snacks" },
+    ],
+    "Bengali Special": [
+      { label: "Bengali Vegetables", value: "Bengali Vegetables" },
+      { label: "Bengali Groceries", value: "Bengali Groceries" },
+      { label: "Bengali Home Needs", value: "Bengali Home Needs" },
+    ],
+    "Eggs Meat & Fish": [
+      { label: "Eggs", value: "Eggs" },
+      { label: "Fish", value: "Fish" },
+      { label: "Chicken", value: "Chicken" },
+      { label: "Mutton", value: "Mutton" },
+    ],
+  };
+
+  const categoryOptions = [
+    { label: "All", value: "" },
+    { label: "Fresh Vegetables", value: "Fresh Vegetables" },
+    { label: "Fresh Fruits", value: "Fresh Fruits" },
+    { label: "Dairy", value: "Dairy" },
+    { label: "Groceries", value: "Groceries" },
+    { label: "Bengali Special", value: "Bengali Special" },
+    { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" },
+  ];
 
   return (
     <SpaceBetween size="xs">
@@ -204,18 +257,34 @@ const Edit = () => {
                       onChange={({ detail }) => setName(detail.value)}
                     />
                   </FormField>
-                  <FormField label="Category">
-                    <Input
-                      invalid={invalidFields.category}
-                      value={category}
-                      onChange={({ detail }) => setCategory(detail.value)}
+
+              {/* Category Dropdown */}
+              <FormField label="Category">
+                    <Select
+                      selectedOption={{ label: category, value: category }} // Set category as object
+                      onChange={({ detail }) => {
+                        setCategory(detail.selectedOption.value);
+                        setSubCategory(null); // Reset subcategory when category changes
+                      }}
+                      options={categoryOptions}
+                      placeholder="Select a category"
+
+         
                     />
                   </FormField>
+
+                  {/* Subcategory Dropdown */}
                   <FormField label="Sub Category">
-                    <Input
-                      invalid={invalidFields.subCategory}
-                      value={subCategory}
-                      onChange={({ detail }) => setSubCategory(detail.value)}
+
+                    <Select
+                      selectedOption={{ label: subCategory, value: subCategory }} // Set subCategory as object
+                      onChange={({ detail }) => setSubCategory(detail.selectedOption.value)}
+                      options={
+                        category
+                          ? subcategoryOptions[category] || []
+                          : []
+                      }
+                      placeholder="Select a subcategory"
                     />
                   </FormField>
                   <FormField label="Unit">

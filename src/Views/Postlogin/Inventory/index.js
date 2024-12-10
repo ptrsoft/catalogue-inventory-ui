@@ -609,7 +609,7 @@ const Inventory = () => {
                     />
                     <span
                       style={{
-                        textDecoration: "underline",
+                        // textDecoration: "underline",
                         color: hoveredProductId === e.id ? "blue" : "black", // Change color based on hovered product ID
                       }}
                     >

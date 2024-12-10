@@ -10,7 +10,6 @@ import {
   Input,
   SpaceBetween,
   Tabs,
-  ColumnLayout,
   StatusIndicator,
   Icon,
 } from "@cloudscape-design/components";
@@ -22,7 +21,7 @@ import {
   verifyOrRejectDocument,
   updateRiderStatus,
 } from "Redux-Store/RiderSummary/RiderSummaryThunk";
-
+//importing  Custom Components
 import AddressTab from "./RiderDetailsComponents/AddressTab";
 import PersonalDetails from "./RiderDetailsComponents/PersonalDetails.js";
 
@@ -33,15 +32,14 @@ const RiderDetails = () => {
 
   const [activeTab, setActiveTab] = useState(0);
   const [selectedDoc, setSelectedDoc] = useState(null);
-
   const riderDetails = useSelector((state) => state.riders.rider);
-
+//fetching particular rider details
   useEffect(() => {
     if (riderId) {
       dispatch(fetchRiderById(riderId));
     }
   }, [riderId, dispatch]);
-
+// when rejected rider details fetched active tab  changing
   useEffect(() => {
     if (location.state && location.state.activeTab !== undefined) {
       setActiveTab(location.state.activeTab);
@@ -164,7 +162,6 @@ const RiderDetails = () => {
         return "Pan Card";
       case "VehicleImage":
         return "Vehicle  Image";
-
       case "rcFront":
         return "RC Book Front";
         case "rcBack":

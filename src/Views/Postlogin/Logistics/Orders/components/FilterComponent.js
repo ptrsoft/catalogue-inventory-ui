@@ -1,6 +1,9 @@
 import React from "react";
+import { useEffect } from "react";
 import { Select,Grid } from "@cloudscape-design/components"; // Assuming you're using Cloudscape Design components
-
+import { getPincodes } from "Redux-Store/Pincode/pincodeThunk";
+import { useSelector,useDispatch } from "react-redux";
+import { Search } from "@mui/icons-material";
 const FilterComponent = ({
   statuscategory,
   ageFilter,
@@ -15,7 +18,18 @@ const FilterComponent = ({
     console.log(filterName, value, "values from compo");
     onFilterChange({ [filterName]: value });
   };
-
+  const {
+    data: pincodes,
+    loading,
+    error,
+  } = useSelector((state) => state.pincode);
+  console.log(pincodes,"pincode from filter");
+  const dispatch =useDispatch()
+// Fetch pincodes on component mount
+useEffect(() => {
+  // console.log(statusFilter?.value,"status");
+  dispatch(getPincodes({search:"",status:"",type:""})); // Fetch pincodes from the API
+}, [dispatch]);
 
 
 
@@ -33,7 +47,9 @@ const statusOptions = [
   // Add other statuses if needed
 ];
 const ageOptions = [
-  { label: "7 days old delivered", value: "7" },
+  { label: "Today's Delivered Orders", value: "today" },
+  { label: "Yesterday's Delivered Orders", value: "yesterday" },
+  // { label: "7 days old delivered", value: "7" },
   { label: "last 14 days old delivered", value: "14" },
   { label: " last 1 month old delivered", value: "1m" },
   { label: " last 2 months old delivered", value: "2m" },
@@ -55,21 +71,20 @@ const categoryOptions = [
     { label: "Evening", value: "evening" },
     // Add other statuses if needed
   ];
-    //shifts options
-    const pincodeOptions = [
-      { label: "500064", value: "500064" },
-      { label: "500065", value: "500065" },
-      { label: "500066", value: "500066" },
-      // Add other statuses if needed
-    ];
+  
+   // Dynamically create pincode options
+   const pincodeOptions = pincodes?.items?.map((pincode) => ({
+    label: pincode?.pincode,
+    value: pincode?.pincode,
+  }));
 
 
   return (
     <Grid
     gridDefinition={[
     
-      { colspan: { default: 12, xxs: 3 } },
-      { colspan: { default: 12, xxs: 3 } },
+      { colspan: { default: 12, xxs: 2 } },
+      { colspan: { default: 12, xxs: 2 } },
       { colspan: { default: 12, xxs: 2 } },
       { colspan: { default: 12, xxs: 2 } },
       { colspan: { default: 12, xxs: 2 } },
@@ -82,20 +97,10 @@ const categoryOptions = [
           updateFilterState("statuscategory", detail.selectedOption)
         }
         options={statusOptions}
-        placeholder="Sort By Status"
+        placeholder="Status"
         selectedAriaLabel="Selected status"
       />
-         {/* Payment Filter */}
-         <Select
-        selectedOption={category}
-        onChange={({ detail }) =>
-          updateFilterState("category", detail.selectedOption)
-        }
-        options={categoryOptions}
-        placeholder="Filter By Payment"
-        selectedAriaLabel="Selected payment"
-      />
-
+   
       {/* Age Filter */}
          {statuscategory?.value === "delivered" && (
         
@@ -105,7 +110,7 @@ const categoryOptions = [
           updateFilterState("ageFilter", detail.selectedOption)
         }
         options={ageOptions}
-        placeholder="Filter By Date"
+        placeholder="Date"
         selectedAriaLabel="Selected age"
       />
       )}
@@ -115,7 +120,7 @@ const categoryOptions = [
           updateFilterState("pincode", detail.selectedOption)
         }
         options={pincodeOptions}
-        placeholder="Select Pincode"
+        placeholder="Pincode"
     
         filteringType="auto"
         filteringPlaceholder="Search Pincode" // Placeholder for the search bar
@@ -129,9 +134,20 @@ const categoryOptions = [
           updateFilterState("shifts", detail.selectedOption)
         }
         options={shiftOptions}
-        placeholder="Filter By Shifts"
+        placeholder="Shifts"
         selectedAriaLabel="Selected shift"
       />
+            {/* Payment Filter */}
+            <Select
+        selectedOption={category}
+        onChange={({ detail }) =>
+          updateFilterState("category", detail.selectedOption)
+        }
+        options={categoryOptions}
+        placeholder="Payment"
+        selectedAriaLabel="Selected payment"
+      />
+
      
 
    

@@ -1,6 +1,7 @@
 import React from "react";
 
 import logo from "../../../../../assets/images/image.png";
+import Barcode from "./BarCode";
 
 const Invoice = ({ selectedOrder, printRef }) => {
   
@@ -91,9 +92,11 @@ const Invoice = ({ selectedOrder, printRef }) => {
           <p>
             <strong>Name:</strong> {selectedOrder?.userInfo?.name}
           </p>
-          <p>
+
+          {/* <p>
             <strong>Order ID:</strong> {selectedOrder?.orderId}
-          </p>
+          </p> */}
+      
           <p>
           Date:{" "}
             {new Date(selectedOrder?.createdAt).toLocaleDateString()} (
@@ -105,7 +108,7 @@ const Invoice = ({ selectedOrder, printRef }) => {
           </p>
           </div>
           <div>
-           
+           <div>
             <div style={{
                padding: "2px",
                border: "0.1px solid",
@@ -114,9 +117,12 @@ const Invoice = ({ selectedOrder, printRef }) => {
                width:'95px',
                fontFamily: "'Arial', sans-serif",
                backgroundColor: "#fff",
+             
             }}> {selectedOrder?.paymentDetails?.method === "cash"
               ? "COD"
               : "Prepaid"}</div>
+                  <Barcode orderId={selectedOrder?.orderId}/>
+                  </div>
             
           
           </div>

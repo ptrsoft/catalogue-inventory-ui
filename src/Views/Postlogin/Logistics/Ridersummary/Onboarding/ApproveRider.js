@@ -83,14 +83,15 @@ const ApproveRider = () => {
 
   // Function to download PDF
   const downloadPDF = async () => {
+ 
     if (!selectedDocument || !base64) return;  // Ensure base64 is available
 
     try {
       const { name } = selectedDocument;
       const tempElement = document.createElement('div');
       tempElement.innerHTML = `
-        <h3>${getDocumentLabel(name)}</h3>
-        <img src="${base64}" alt="${name}" style="width: 500px; height: 500px;" />
+        <h4>${getDocumentLabel(name)}</h4>
+        <img src="${base64}" alt="${name}" style="width: 300px; height: 300px; margin= 0 auto;" />
       `;
       document.body.appendChild(tempElement);
 
@@ -196,7 +197,7 @@ const ApproveRider = () => {
                   <div className="section-header">KYC Documents Details ( <i>Uploaded Documents </i> )</div>
                   <hr />
                   <SpaceBetween direction='vertical' size="s">
-                    {riderDetails?.documents?.map((doc) => (
+                  {riderDetails?.documents?.slice(1).map((doc) => (
                       selectedDocument && selectedDocument.name === doc.name ? (
                         <Container
                           key={doc.name}
@@ -206,7 +207,7 @@ const ApproveRider = () => {
                           <ColumnLayout columns={2}>
                             <Box>
                               <img src={doc.image} alt={getDocumentLabel(doc?.name)} style={{ maxWidth: '100%' }} />
-                              <p>{getDocumentLabel(doc?.name)}</p>
+                              {/* <p>{getDocumentLabel(doc?.name)}</p> */}
                             </Box>
                        
                           </ColumnLayout>

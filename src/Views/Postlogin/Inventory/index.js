@@ -217,20 +217,12 @@ const Inventory = () => {
     );
   }
 
-  const filteredProducts = Array.isArray(data?.items)
-    ? data.items.filter((product) =>
-        product.name.toLowerCase().includes(filteringText.toLowerCase())
-      )
-    : [];
+
   const getStockAlertColor = (stockAlert) => {
     return stockAlert.toLowerCase().includes("low") ? "red" : "#0492C2";
   };
-  const ITEMS_PER_PAGE = 50;
-  const startIndex = (currentPageIndex - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
 
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+
   const handleProductClick = (product) => {
     setSelectedProduct(product);
     setIsDrawerOpen(true);

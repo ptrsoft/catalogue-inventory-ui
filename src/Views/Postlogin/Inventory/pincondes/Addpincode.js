@@ -22,11 +22,12 @@ const AddPincode = () => {
   const { loading, error } = useSelector((state) => state.pincode);
 
   const location = useLocation();
-  const { payload } = location.state || {};  // Check if payload is passed
+  const { pay } = location.state || {};  // Check if payload is passed
+  
  
-  const [pincode, setPincode] = useState(payload ? payload.pincode : "");
-  const [deliveryMethod, setDeliveryMethod] = useState(payload ? payload.deliveryType : "same-day");
-  const [shifts, setShifts] = useState(payload ? payload.shifts : [{ name: "", slots: [{ start: "", end: "" }] }]);
+  const [pincode, setPincode] = useState(pay ? pay.pincode : "");
+  const [deliveryMethod, setDeliveryMethod] = useState(pay ? pay.deliveryType : "same-day");
+  const [shifts, setShifts] = useState(pay ? pay.shifts : [{ name: "", slots: [{ start: "", end: "" }] }]);
 
   const handleAddShift = () => {
     setShifts([...shifts, { name: "", slots: [{ start: "", end: "" }] }]);
@@ -68,9 +69,10 @@ const AddPincode = () => {
       shifts: formattedShifts,
       active:true
     };
+    console.log(payload,"payloadd jfhdjhfdj");
 
     // If there's a payload, update the existing pincode, otherwise, save as a new pincode
-    if (payload.pincode) {
+    if (pay) {
       // If payload exists, dispatch the update action
       dispatch(updatePincode(payload))  // Assuming updatePincode is the correct API call for PUT
         .unwrap()
@@ -111,7 +113,7 @@ const AddPincode = () => {
           { text: "Dashboard", href: "/app/dashboard" },
           { text: "Inventory", href: "/app/dashboard" },
           { text: "Pincodes", href: "/app/inventory/pincodes" },
-          { text: payload ? "Edit Pincode" : "Add Pincode", href: "#" },  // Update breadcrumb text
+          { text: pay ? "Edit Pincode" : "Add Pincode", href: "#" },  // Update breadcrumb text
         ]}
       />
       <Header
@@ -121,12 +123,12 @@ const AddPincode = () => {
           <SpaceBetween direction="horizontal" size="s">
             <Button variant="normal" onClick={backtopincodes}>Cancel</Button>
             <Button variant="primary" onClick={handleSavePincode}   disabled={loading || !isFormValid()}>
-              {loading ? (payload ? "Updating..." : "Saving...") : (payload ? "Update" : "Save")}
+              {loading ? (pay ? "Updating..." : "Saving...") : (pay? "Update" : "Save")}
             </Button>
           </SpaceBetween>
         }
       >
-      {payload ? <span style={{ fontWeight: "bolder" }}>Edit Pincode</span> : <span style={{fontWeight:"bolder"}}>Add Pincode</span>}
+      {pay ? <span style={{ fontWeight: "bolder" }}>Edit Pincode</span> : <span style={{fontWeight:"bolder"}}>Add Pincode</span>}
       {/* Change header text based on payload existence */}
       </Header>
 

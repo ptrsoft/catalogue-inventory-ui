@@ -67,7 +67,7 @@ const PincodeView = () => {
   // Function to navigate to the Add Pincode page
   const editbynavigating = (data) => {
     navigate("/app/inventory/pincodes/addpincode", {
-      state: { payload: data },
+      state: { pay: data },
     });
   };
 

@@ -291,7 +291,8 @@ const RiderDetails = () => {
                   id: 1,
                   content: (
                     <SpaceBetween direction="vertical" size="xs">
-                      {riderDetails?.documents.map((doc) =>
+                      {riderDetails?.documents?.slice(1).map((doc) => 
+                      
                         selectedDoc && selectedDoc.name === doc.name ? (
                           <Container
                             key={doc.name}

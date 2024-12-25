@@ -4,7 +4,7 @@ import config from 'Views/Config';
 import { postLoginService } from 'Services'; // Assuming postLoginService uses Axios
 
 export const checkPincode = createAsyncThunk(
-  'pincode/checkPincode',
+  'pincode/addpincode',
   async ({ pincode, deliveryType, shifts,active }, { rejectWithValue }) => {
     console.log(pincode, deliveryType, shifts,active, "all values");
     try {

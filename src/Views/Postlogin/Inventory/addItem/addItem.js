@@ -15,6 +15,8 @@ import {
   BreadcrumbGroup,
   FormField,
   Flashbar,
+  Table,
+  Grid
 } from "@cloudscape-design/components";
 import { uploadImage } from "Redux-Store/uploadImage/uploadThunk";
 import { addProduct } from "Redux-Store/Products/ProductThunk";
@@ -224,6 +226,74 @@ const AddItem = () => {
       else if (index === 2) handleImageUpload(file, setImageUrl3);
     });
   };
+  //add varient code 
+  const [attribute, setAttribute] = useState('Weight');
+  const [values, setValues] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter' && inputValue.trim() !== '') {
+      setValues([...values, inputValue.trim()]);
+      setInputValue('');
+    }
+  };
+
+  const removeToken = (index) => {
+    setValues((prevValues) => {
+      const updatedValues = [...prevValues];
+      updatedValues.splice(index, 1);
+      return updatedValues;
+    });
+  };
+  const columns = [
+    {
+      id: 'itemName',
+      header: 'Item Name',
+      cell: (item) => item.itemName,
+    },
+    {
+      id: 'unit',
+      header: 'Unit',
+      cell: () => (
+        <Select
+          placeholder="Select unit"
+          options={[
+            { label: 'kg', value: 'kg' },
+            { label: 'g', value: 'g' },
+            { label: 'mg', value: 'mg' },
+          ]}
+        />
+      ),
+    },
+    {
+      id: 'quantity',
+      header: 'Quantity in stock',
+      cell: () => <Input placeholder="Enter Quantity" />,
+    },
+    {
+      id: 'purchasingPrice',
+      header: 'Purchasing Price',
+      cell: () => <Input placeholder="Enter Purchasing Price" />,
+    },
+    {
+      id: 'sellingPrice',
+      header: 'Selling Price',
+      cell: () => <Input placeholder="Enter Selling Price" />,
+    },
+    {
+      id: 'importImage',
+      header: '',
+      cell: () =><div style={{width:"120px"}}><Button variant='inline-link' iconName='download'>Import Image</Button></div> ,
+    },
+  ];
+
+  const tableData = values.map((value) => ({
+    itemName: `${name}-${value}`,
+  }));
+  const [showAttribute, setShowAttribute] = useState(false);
+  const toggleAttributeSection = () => {
+    setShowAttribute((prevShow) => !prevShow);
+  };
 
   return (
   <SpaceBetween size="s">
@@ -261,6 +331,7 @@ const AddItem = () => {
                 onChange={({ detail }) => setName(detail.value)}
               />
             </FormField>
+            {/* <Button variant='inline-link'onClick={toggleAttributeSection}> {showAttribute ? 'Add Only Item' : 'Add Variant'}</Button> */}
             <FormField label="Item Description">
               <Textarea
                 rows={5}
@@ -442,7 +513,8 @@ const AddItem = () => {
         </Form>
 
         <Container variant="borderless">
-<FileUpload
+        {showAttribute===false && (
+      <FileUpload
       onChange={({ detail }) => {
         setFileUploadValue(detail.value);
         handleFileChange(detail.value); 
@@ -464,8 +536,79 @@ const AddItem = () => {
         "At least one image is required"
       ) : ""} 
             />
+    )}
         </Container>
       </Container>
+      {showAttribute && (
+        <>
+      <Grid
+    gridDefinition={[
+    
+      { colspan: { default: 12, xxs: 4} },
+      { colspan: { default: 12, xxs: 8 } },
+    
+    ]}
+  >
+      <FormField label="Attribute">
+        <Select
+          selectedOption={{ label: attribute, value: attribute }}
+          options={[{ label: 'Weight', value: 'Weight' }]}
+         
+        />
+      </FormField>
+
+      <div>
+        <strong>Value</strong>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center', border: '2px solid #ccc', padding: '5px', borderRadius: '8px' }}>
+          {values.map((value, index) => (
+            <div
+              key={index}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                background: '#f3f3f3',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                margin: '4px',
+              }}
+            >
+              {value}
+              <button
+                onClick={() => removeToken(index)}
+                style={{
+                  marginLeft: '8px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#0073e6',
+                }}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+          <input
+            placeholder="Enter value"
+            value={inputValue}
+            onChange={(event) => setInputValue(event.target.value)}
+            onKeyPress={handleKeyPress}
+            style={{ flex: 1, padding: '8px', border: 'none', outline: 'none' }}
+          />
+        </div>
+      </div>
+
+        
+      </Grid>
+      {values.length>0&&
+      (<Table
+       variant='borderless'
+        columnDefinitions={columns}
+        items={tableData}
+        header={<h3>Values</h3>}
+      />)}
+      </>
+      )}
+  
       </SpaceBetween>  );
 };
 

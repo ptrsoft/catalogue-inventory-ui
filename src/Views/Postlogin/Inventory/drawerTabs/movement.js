@@ -6,7 +6,7 @@ import SpaceBetween from "@cloudscape-design/components/space-between";
 import Button from "@cloudscape-design/components/button";
 
 const Movement = () => {
-  const orders = useSelector((state) => state.ordersInInventory.orders.data);
+  const orders = useSelector((state) => state.ordersInInventory?.orders?.data);
 
 
   return (

@@ -9,6 +9,7 @@ import {
   SpaceBetween,
   Container,
   BreadcrumbGroup,
+  Flashbar
 } from "@cloudscape-design/components";
 import { useNavigate } from "react-router-dom";
 import { AiTwotoneDelete } from "react-icons/ai";
@@ -28,8 +29,7 @@ const AddPincode = () => {
   const [pincode, setPincode] = useState(pay ? pay.pincode : "");
   const [deliveryMethod, setDeliveryMethod] = useState(pay ? pay.deliveryType : "same-day");
   const [shifts, setShifts] = useState(pay ? pay.shifts : [{ name: "", slots: [{ start: "", end: "" }] }]);
-
-  const handleAddShift = () => {
+  const [flashMessages, setFlashMessages] = useState([]);  const handleAddShift = () => {
     setShifts([...shifts, { name: "", slots: [{ start: "", end: "" }] }]);
   };
  const backtopincodes=()=>{
@@ -69,28 +69,42 @@ const AddPincode = () => {
       shifts: formattedShifts,
       active:true
     };
-    console.log(payload,"payloadd jfhdjhfdj");
+    console.log(payload,"payloadd of add or update pincode");
+    const showErrorFlash = (err) => {
+      setFlashMessages([
+        {
+          content: err,
+          type: "error",
+          dismissible: true,
+          onDismiss: () => setFlashMessages([]),
+        },
+      ]);
+  
+      // Close flashbar automatically after 3 seconds
+      setTimeout(() => setFlashMessages([]), 3000);
+    };
 
-    // If there's a payload, update the existing pincode, otherwise, save as a new pincode
     if (pay) {
-      // If payload exists, dispatch the update action
-      dispatch(updatePincode(payload))  // Assuming updatePincode is the correct API call for PUT
+      // Update existing pincode
+      dispatch(updatePincode(payload))
         .unwrap()
         .then(() => {
           navigate("/app/inventory/pincodes/viewpincode", { state: { payload } });
         })
         .catch((err) => {
           console.error("Error updating pincode:", err);
+          showErrorFlash(err);
         });
     } else {
-      // For new pincode, dispatch the save action
-      dispatch(checkPincode(payload))  // Assuming checkPincode is the API call for POST
+      // Save new pincode
+      dispatch(checkPincode(payload))
         .unwrap()
         .then(() => {
           navigate("/app/inventory/pincodes/viewpincode", { state: { payload } });
         })
         .catch((err) => {
           console.error("Error saving pincode:", err);
+          showErrorFlash(err);
         });
     }
   };
@@ -105,7 +119,7 @@ const AddPincode = () => {
     }
     return true;
   };
-
+console.log(flashMessages,"flash");
   return (
     <SpaceBetween size="m">
       <BreadcrumbGroup
@@ -116,11 +130,15 @@ const AddPincode = () => {
           { text: pay ? "Edit Pincode" : "Add Pincode", href: "#" },  // Update breadcrumb text
         ]}
       />
+                  {flashMessages.length > 0 && <Flashbar items={flashMessages} />}
+
+
       <Header
         variant="h1"
         
         actions={
           <SpaceBetween direction="horizontal" size="s">
+
             <Button variant="normal" onClick={backtopincodes}>Cancel</Button>
             <Button variant="primary" onClick={handleSavePincode}   disabled={loading || !isFormValid()}>
               {loading ? (pay ? "Updating..." : "Saving...") : (pay? "Update" : "Save")}

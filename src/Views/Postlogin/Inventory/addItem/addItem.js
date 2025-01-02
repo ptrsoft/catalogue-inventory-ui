@@ -331,7 +331,7 @@ const AddItem = () => {
                 onChange={({ detail }) => setName(detail.value)}
               />
             </FormField>
-            {/* <Button variant='inline-link'onClick={toggleAttributeSection}> {showAttribute ? 'Add Only Item' : 'Add Variant'}</Button> */}
+            <Button variant='inline-link'onClick={toggleAttributeSection}> {showAttribute ? 'Add Only Item' : 'Add Variant'}</Button>
             <FormField label="Item Description">
               <Textarea
                 rows={5}

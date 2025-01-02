@@ -7,7 +7,8 @@ import Button from "@cloudscape-design/components/button";
 import Badge from "@cloudscape-design/components/badge"; // Import Badge component
 
 const OrderHistory = () => {
-  const orders = useSelector((state) => state.ordersInInventory.orders.data);
+  const orders = useSelector((state) => state.ordersInInventory?.orders?.data);
+  
 
   // Function to determine badge color based on status
   const getBadgeColor = (status) => {

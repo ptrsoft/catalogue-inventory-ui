@@ -7,11 +7,14 @@ import { AppLayout } from "@cloudscape-design/components";
 import PTRLogo from "../src/assets/img/PTRLogo.png";
 import Signin from "Views/PreLogin/Signin";
 import { Navigate } from "react-router-dom";
+import { AuthProvider } from "context/Authcontext";
 function App() {
   return (
-    <Router>
-      <MainLayout />
-    </Router>
+    <AuthProvider> {/* Wrap the app with AuthProvider */}
+      <Router>
+        <MainLayout />
+      </Router>
+    </AuthProvider>
   );
 }
 

@@ -11,7 +11,7 @@ import {
   Input,
   FormField,
   StatusIndicator,
-  Alert,
+  Flashbar,
   BreadcrumbGroup,
   Modal,
 } from "@cloudscape-design/components";
@@ -23,6 +23,7 @@ const PincodeView = () => {
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const [localActive, setLocalActive] = useState(null); // Local active state to reflect immediate changes
+  const [showFlashbar, setShowFlashbar] = useState(false); // State to control visibility of Flashbar
 
   // Get the payload passed via navigation or fallback to first pincode
   const location = useLocation();
@@ -71,14 +72,36 @@ const PincodeView = () => {
     });
   };
 
+  // for flashbar
+   // Trigger Flashbar to show when payload is set
+   useEffect(() => {
+    if (payload) {
+      setShowFlashbar(true); // Show Flashbar when payload is not null
+
+      // Set a timeout to automatically close the Flashbar after 3 seconds
+      const timer = setTimeout(() => {
+        setShowFlashbar(false); // Hide Flashbar after 3 seconds
+      }, 3000);
+
+      // Cleanup the timer if the component unmounts or payload changes
+      return () => clearTimeout(timer);
+    }
+  }, [payload]); // Run the effect whenever payload changes
+
   return (
     <SpaceBetween size="m">
       {/* Success Alert */}
-      {payload && (
-        <Alert
-          dismissible
-          type="info"
-          header="Pincode has been added successfully"
+      {showFlashbar && (
+        <Flashbar
+          items={[
+            {
+              id: "success-message",
+              type: "info", // Set type to 'info' or 'success', etc.
+              header: "Pincode has been added successfully", // Header text
+              dismissible: true, // Optionally, you can allow dismissing the Flashbar
+              onDismiss: () => setShowFlashbar(false), // Hide Flashbar when dismissed
+            },
+          ]}
         />
       )}
       {/* Breadcrumb */}

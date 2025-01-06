@@ -1,46 +1,44 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useContext } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { PREFIX_APP_PATH, PREFIX_AUTH_PATH } from "./../Config/Config";
-import Inventory from "./Postlogin/Inventory";
-import AddItem from "./Postlogin/Inventory/addItem/addItem";
-import InventoryAdjustments from "./Postlogin/Inventory/InventoryAdjustments";
-import Edit from "./Postlogin/Inventory/edit/edit";
-import CreateAdjustment from "./Postlogin/Inventory/InventoryAdjustments/CreateAdjustment";
-import NewAdjustment from "./Postlogin/Inventory/InventoryAdjustments/NewAdjustment";
-import Runsheet from "./Postlogin/Logistics/Runsheet";
-import ViewRunsheet from "./Postlogin/Logistics/Runsheet/ViewRunSheet";
-import Createuser from "./Postlogin/Settingmenu/Rbac/createuser";
-import UsersContent from "./Postlogin/Settingmenu/Rbac/UserContent";
-import Creategroup from "./Postlogin/Settingmenu/Rbac/creategroup";
-import PoliciesContent from "./Postlogin/Settingmenu/Rbac/PoliciesContent";
-import PermissionsContent from "./Postlogin/Settingmenu/Rbac/PermissionsContent";
-import GroupsContent from "./Postlogin/Settingmenu/Rbac/GroupsContent";
-import RolesContent from "./Postlogin/Settingmenu/Rbac/RolesContent";
-import Viewgroupdetail from "./Postlogin/Settingmenu/Rbac/viewgroupdetail";
-import Alloptions from "./Postlogin/Settingmenu/Rbac/alloptions";
-import CreateRunsheet from "./Postlogin/Logistics/Runsheet/CreateRunSheet";
-import Settings from "./Postlogin/Settingmenu";
-import RiderSummary from "./Postlogin/Logistics/Ridersummary";
-import Onboarding from "./Postlogin/Logistics/Ridersummary/Onboarding";
-import RiderDetails from "./Postlogin/Logistics/Ridersummary/Onboarding/RiderDetails";
-import ApproveRider from "./Postlogin/Logistics/Ridersummary/Onboarding/ApproveRider";
-import CollectionPayment from "./Postlogin/Logistics/CollectionPayment";
-import ViewDetailsPage from "./Postlogin/Logistics/CollectionPayment/ViewCollection";
-import Createpolicy from "./Postlogin/Settingmenu/Rbac/createpolicy";
-import Viewpolicy from "./Postlogin/Settingmenu/Rbac/viewpolicy";
-import Pincodes from "./Postlogin/Inventory/pincondes";
-import Addpincode from "./Postlogin/Inventory/pincondes/Addpincode";
-import Viewpincode from "./Postlogin/Inventory/pincondes/Viewpincode";
+import { AuthContext } from "context/Authcontext";
 
+// Lazy imports for all components
 const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
-
+const Inventory = lazy(() => import("./Postlogin/Inventory"));
+const AddItem = lazy(() => import("./Postlogin/Inventory/addItem/addItem"));
+const InventoryAdjustments = lazy(() => import("./Postlogin/Inventory/InventoryAdjustments"));
+const Edit = lazy(() => import("./Postlogin/Inventory/edit/edit"));
+const CreateAdjustment = lazy(() => import("./Postlogin/Inventory/InventoryAdjustments/CreateAdjustment"));
+const NewAdjustment = lazy(() => import("./Postlogin/Inventory/InventoryAdjustments/NewAdjustment"));
+const Runsheet = lazy(() => import("./Postlogin/Logistics/Runsheet"));
+const ViewRunsheet = lazy(() => import("./Postlogin/Logistics/Runsheet/ViewRunSheet"));
+const Createuser = lazy(() => import("./Postlogin/Settingmenu/Rbac/createuser"));
+const UsersContent = lazy(() => import("./Postlogin/Settingmenu/Rbac/UserContent"));
+const Creategroup = lazy(() => import("./Postlogin/Settingmenu/Rbac/creategroup"));
+const PoliciesContent = lazy(() => import("./Postlogin/Settingmenu/Rbac/PoliciesContent"));
+const PermissionsContent = lazy(() => import("./Postlogin/Settingmenu/Rbac/PermissionsContent"));
+const GroupsContent = lazy(() => import("./Postlogin/Settingmenu/Rbac/GroupsContent"));
+const RolesContent = lazy(() => import("./Postlogin/Settingmenu/Rbac/RolesContent"));
+const Viewgroupdetail = lazy(() => import("./Postlogin/Settingmenu/Rbac/viewgroupdetail"));
+const Alloptions = lazy(() => import("./Postlogin/Settingmenu/Rbac/alloptions"));
+const CreateRunsheet = lazy(() => import("./Postlogin/Logistics/Runsheet/CreateRunSheet"));
+const Settings = lazy(() => import("./Postlogin/Settingmenu"));
+const RiderSummary = lazy(() => import("./Postlogin/Logistics/Ridersummary"));
+const Onboarding = lazy(() => import("./Postlogin/Logistics/Ridersummary/Onboarding"));
+const RiderDetails = lazy(() => import("./Postlogin/Logistics/Ridersummary/Onboarding/RiderDetails"));
+const ApproveRider = lazy(() => import("./Postlogin/Logistics/Ridersummary/Onboarding/ApproveRider"));
+const CollectionPayment = lazy(() => import("./Postlogin/Logistics/CollectionPayment"));
+const ViewDetailsPage = lazy(() => import("./Postlogin/Logistics/CollectionPayment/ViewCollection"));
+const Createpolicy = lazy(() => import("./Postlogin/Settingmenu/Rbac/createpolicy"));
+const Viewpolicy = lazy(() => import("./Postlogin/Settingmenu/Rbac/viewpolicy"));
+const Pincodes = lazy(() => import("./Postlogin/Inventory/pincondes"));
+const Addpincode = lazy(() => import("./Postlogin/Inventory/pincondes/Addpincode"));
+const Viewpincode = lazy(() => import("./Postlogin/Inventory/pincondes/Viewpincode"));
 const Customers = lazy(() => import("./Postlogin/Customers"));
-const AddNewCustomer = lazy(() =>
-  import("./Postlogin/Customers/AddNewCustomer")
-);
+const AddNewCustomer = lazy(() => import("./Postlogin/Customers/AddNewCustomer"));
 const Products = lazy(() => import("./Postlogin/Products"));
 const Orders = lazy(() => import("./Postlogin/Logistics/Orders"));
-
 const PurchaseOrders = lazy(() => import("./Postlogin/PurchaseOrders"));
 const PathNotFOund = lazy(() => import("./PathNotFound"));
 const Signin = lazy(() => import("./PreLogin/Signin"));
@@ -50,234 +48,65 @@ const OtpVerification = lazy(() => import("./PreLogin/otpVerification"));
 const NewPassword = lazy(() => import("./PreLogin/newPassword"));
 
 const Views = () => {
+  // Accessing authentication state
+  const { isAuthenticated } = useContext(AuthContext);
+
+  // Protected Route Wrapper: Ensures user is authenticated
+  const ProtectedRoute = ({ element }) => {
+    return isAuthenticated ? element : <Navigate to={`${PREFIX_AUTH_PATH}/signin`} />;
+  };
+
   return (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Routes>
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/dashboard`}
-            element={<Dashboards />}
-          />
-          {/* <Route
-            exact
-            path={`${PREFIX_APP_PATH}/inventory`}
-            element={<Inventory />}
-          /> */}
-          {/* <Route
-            exact
-            path={`${PREFIX_AUTH_PATH}/edit`}
-            element={<Edit />}
-          /> */}
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        {/* Protected Routes */}
+        <Route exact path={`${PREFIX_APP_PATH}/dashboard`} element={<ProtectedRoute element={<Dashboards />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/inventory`} element={<ProtectedRoute element={<Inventory />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/inventory/addItem`} element={<ProtectedRoute element={<AddItem />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/inventory/adjustments`} element={<ProtectedRoute element={<InventoryAdjustments />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/inventory/create-adjustment`} element={<ProtectedRoute element={<CreateAdjustment />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/inventory/new-adjustment`} element={<ProtectedRoute element={<NewAdjustment />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/inventory/edit`} element={<ProtectedRoute element={<Edit />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/inventory/pincodes`} element={<ProtectedRoute element={<Pincodes />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/inventory/pincodes/addpincode`} element={<ProtectedRoute element={<Addpincode />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/inventory/pincodes/viewpincode`} element={<ProtectedRoute element={<Viewpincode />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/customers`} element={<ProtectedRoute element={<Customers />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/add-new-customer`} element={<ProtectedRoute element={<AddNewCustomer />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/products`} element={<ProtectedRoute element={<Products />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/logistics/orders`} element={<ProtectedRoute element={<Orders />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/logistics/runsheet`} element={<ProtectedRoute element={<Runsheet />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/logistics/runsheet/viewRunSheet/:id`} element={<ProtectedRoute element={<ViewRunsheet />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/logistics/runsheet/createRunSheet`} element={<ProtectedRoute element={<CreateRunsheet />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/logistics/riderSummary`} element={<ProtectedRoute element={<RiderSummary />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/logistics/riderSummary/onboarding`} element={<ProtectedRoute element={<Onboarding />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/logistics/riderSummary/onboarding/riderDetails/:id`} element={<ProtectedRoute element={<RiderDetails />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/logistics/riderSummary/onboarding/approveRider/:id`} element={<ProtectedRoute element={<ApproveRider />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/logistics/collectionPayment`} element={<ProtectedRoute element={<CollectionPayment />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/logistics/collectionPayment/view-details/:id`} element={<ProtectedRoute element={<ViewDetailsPage />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/purchaseOrders`} element={<ProtectedRoute element={<PurchaseOrders />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/settings`} element={<ProtectedRoute element={<Settings />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/settings/rbac`} element={<ProtectedRoute element={<Alloptions />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/settings/rbac/creategroup`} element={<ProtectedRoute element={<Creategroup />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/settings/rbac/createpolicy`} element={<ProtectedRoute element={<Createpolicy />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/settings/rbac/viewpolicy`} element={<ProtectedRoute element={<Viewpolicy />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/settings/rbac/users`} element={<ProtectedRoute element={<UsersContent />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/settings/rbac/roles`} element={<ProtectedRoute element={<RolesContent />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/settings/rbac/createuser`} element={<ProtectedRoute element={<Createuser />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/settings/rbac/groups`} element={<ProtectedRoute element={<GroupsContent />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/settings/rbac/groups/viewgroupdetail`} element={<ProtectedRoute element={<Viewgroupdetail />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/settings/rbac/policies`} element={<ProtectedRoute element={<PoliciesContent />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/settings/rbac/permissions`} element={<ProtectedRoute element={<PermissionsContent />} />} />
 
-          <Route exact path="/app/inventory/edit" element={<Edit />} />
-
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/customers`}
-            element={<Customers />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/settings`}
-            element={<Settings />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/settings/rbac`}
-            element={<Alloptions />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/settings/rbac/creategroup`}
-            element={<Creategroup />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/settings/rbac/createpolicy`}
-            element={<Createpolicy />}
-          />
-
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/settings/rbac/viewpolicy`}
-            element={<Viewpolicy />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/settings/rbac/users`}
-            element={<UsersContent />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/settings/rbac/roles`}
-            element={<RolesContent />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/settings/rbac/createuser`}
-            element={<Createuser />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/settings/rbac/groups`}
-            element={<GroupsContent />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/settings/rbac/groups/viewgroupdetail`}
-            element={<Viewgroupdetail />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/settings/rbac/policies`}
-            element={<PoliciesContent />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/settings/rbac/permissions`}
-            element={<PermissionsContent />}
-          />
-
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/add-new-customer`}
-            element={<AddNewCustomer />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/products`}
-            element={<Products />}
-          />
-
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/Logistics/orders`}
-            element={<Orders />}
-          />
-
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/Logistics/runsheet/ViewRunSheet/:id`} // Notice the added slash before ':id'
-            element={<ViewRunsheet />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/Logistics/runsheet/ViewRunSheet/:id`} // Notice the added slash before ':id'
-            element={<ViewRunsheet />}
-          />
-
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/Logistics/CashCollection/View-details/:id`} // Notice the added slash before ':id'
-            element={<ViewDetailsPage />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/Logistics/runsheet`}
-            element={<Runsheet />}
-          />
-
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary`}
-            element={<RiderSummary />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/Logistics/CollectionPayment`}
-            element={<CollectionPayment />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding`}
-            element={<Onboarding></Onboarding>}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/ApproveRider/:id`}
-            element={<ApproveRider />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/Logistics/RiderSummary/onboarding/riderDetails/:id`}
-            element={<RiderDetails />}
-          />
-
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/Logistics/runsheet/CreateRunSheet`}
-            element={<CreateRunsheet />}
-          />
-
-          <Route
-            exact
-            path={`${PREFIX_APP_PATH}/purchaseOrders`}
-            element={<PurchaseOrders />}
-          />
-
-          <Route
-            exact
-            path={`${PREFIX_AUTH_PATH}/signin`}
-            element={<Signin />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_AUTH_PATH}/signup`}
-            element={<Signup />}
-          />
-
-          <Route
-            exact
-            path={`${PREFIX_AUTH_PATH}/forgot-password`}
-            element={<ForgotPassword />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_AUTH_PATH}/otpverification`}
-            element={<OtpVerification />}
-          />
-          <Route
-            exact
-            path={`${PREFIX_AUTH_PATH}/newpassword`}
-            element={<NewPassword />}
-          />
-          <Route exact path="/app/inventory" element={<Inventory />} />
-          <Route
-            exact
-            path="/app/inventory/adjustments"
-            element={<InventoryAdjustments />}
-          />
-          <Route exact path="/app/inventory/pincodes" element={<Pincodes />} />
-          <Route
-            exact
-            path="/app/inventory/pincodes/viewpincode"
-            element={<Viewpincode />}
-          />
-          <Route
-            exact
-            path="/app/inventory/pincodes/addpincode"
-            element={<Addpincode />}
-          />
-          <Route
-            exact
-            path="/app/inventory/create-adjustment"
-            element={<CreateAdjustment />}
-          />
-          <Route
-            exact
-            path="/app/inventory/new-adjustment"
-            element={<NewAdjustment />}
-          />
-          <Route exact path="/app/inventory/addItem" element={<AddItem />} />
-          <Route exact path="/" element={<Navigate to="/app/dashboard" />} />
-
-          <Route path="*" element={<PathNotFOund />} />
-        </Routes>
-      </Suspense>
-    </>
+        {/* Public Routes */}
+        <Route exact path={`${PREFIX_AUTH_PATH}/signin`} element={<Signin />} />
+        <Route exact path={`${PREFIX_AUTH_PATH}/signup`} element={<Signup />} />
+        <Route exact path={`${PREFIX_AUTH_PATH}/forgotPassword`} element={<ForgotPassword />} />
+        <Route exact path={`${PREFIX_AUTH_PATH}/otpVerification`} element={<OtpVerification />} />
+        <Route exact path={`${PREFIX_AUTH_PATH}/newPassword`} element={<NewPassword />} />
+        <Route path="*" element={<PathNotFOund />} />
+      </Routes>
+    </Suspense>
   );
 };
 
 export default Views;
-

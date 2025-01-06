@@ -52,14 +52,15 @@ const AddPincode = () => {
     updatedShifts[shiftIndex].slots.splice(slotIndex, 1);
     setShifts(updatedShifts);
   };
-
+console.log(shifts,"shiftsss");
   const handleSavePincode = () => {
     // Prepare the payload, formatting time values to include seconds
     const formattedShifts = shifts.map((shift) => ({
       ...shift,
       slots: shift.slots.map((slot) => ({
         start: slot.start.length === 5 ? `${slot.start}:00` : slot.start, // add seconds if missing
-        end: slot.end.length === 5 ? `${slot.end}:00` : slot.end,         // add seconds if missing
+        end: slot.end.length === 5 ? `${slot.end}:00` : slot.end, 
+        id:slot.id        // add seconds if missing
       })),
     }));
 
@@ -129,8 +130,7 @@ console.log(flashMessages,"flash");
           { text: "Pincodes", href: "/app/inventory/pincodes" },
           { text: pay ? "Edit Pincode" : "Add Pincode", href: "#" },  // Update breadcrumb text
         ]}
-      />
-                  {flashMessages.length > 0 && <Flashbar items={flashMessages} />}
+      />{flashMessages.length > 0 && <Flashbar items={flashMessages} />}
 
 
       <Header

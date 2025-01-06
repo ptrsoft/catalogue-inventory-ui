@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import CustomersReducer from "Redux-Store/Customers/CustomersSlice";
-import authReducer from "Redux-Store/authenticate/signin/signinSlice"
+// import authReducer from "Redux-Store/authenticate/signin/signinSlice"
 
 import ProductsSlice from "./Products/ProductsSlice";
 import orderInventoryReducer from './Orders/OrdersSlice';
@@ -15,6 +15,7 @@ import runsheetReducer from "./Runsheet/RunsheetSlice";
 import ridersReducer from './RiderSummary/RiderSummarySlice';
 import cashCollectionReducer from './cashCollection/cashCollectionSlice';
 import pincodeReducer from "./Pincode/pincodeSlice"
+import authReducer from "Redux-Store/authenticate/auth/authSlice"
 const store = configureStore({
   reducer: {
     cashCollection: cashCollectionReducer,
@@ -25,13 +26,15 @@ const store = configureStore({
     products: ProductsSlice,
     pincode: pincodeReducer,
     InvertorAdjustments: InventoryAdjustmentsSlice,
-    auth:authReducer,
+    // auth:authReducer,
     forgotPwd : forgotPwdReducer,
     resetPwd:resetPwdSlice,
     otp:otpSlice,
     signup:signupReducer,
     upload:uploadSlice,
-    signOut:signoutReducer
+    signOut:signoutReducer,
+    auth: authReducer,
+
   },
 });
 

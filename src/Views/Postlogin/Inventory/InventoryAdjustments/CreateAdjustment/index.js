@@ -395,9 +395,19 @@ const CreateNewAdjustments = () => {
                   ]}
                 />
               </FormField>
+
               <FormField
                 label="Description"
-                errorText={formErrors.description?.message}
+                errorText={formErrors.description?.message||(formState.description?.length>200 && 'Description Exceeding characters')}
+                
+                constraintText={
+                  <>
+                    Description must be 1 to 200 characters. Character
+                    count: {formState.description?.length}/200
+                  </>
+                }
+          
+
               >
                 <Textarea
                   placeholder="Enter description (max 200 characters)"
@@ -408,9 +418,9 @@ const CreateNewAdjustments = () => {
                   }}
                   resizable={false}
                 />
-                <Box margin={{ top: "xxs" }}>
+                {/* <Box margin={{ top: "xxs" }}>
                   {formState.description?.length} / 200 characters
-                </Box>
+                </Box> */}
               </FormField>
             </Grid>
           </Container>

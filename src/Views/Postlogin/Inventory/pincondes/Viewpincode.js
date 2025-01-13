@@ -15,7 +15,7 @@ import {
   BreadcrumbGroup,
   Modal,
 } from "@cloudscape-design/components";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch} from "react-redux";
 import { updateStatus } from "Redux-Store/Pincode/pincodeThunk";
 
 const PincodeView = () => {
@@ -27,10 +27,10 @@ const PincodeView = () => {
 
   // Get the payload passed via navigation or fallback to first pincode
   const location = useLocation();
-  const { payload, pincodes } = location.state || {};
+  const { payload, pincodes,flash,update } = location.state || {};
   const currentData = payload || pincodes || {};
   const { pincode, deliveryType, shifts, active } = currentData;
-
+console.log(flash,"value of flashh");
   // Sync localActive state with Redux active status on initial load or update
   useEffect(() => {
     setLocalActive(active);
@@ -67,37 +67,47 @@ const PincodeView = () => {
 
   // Function to navigate to the Add Pincode page
   const editbynavigating = (data) => {
-    navigate("/app/inventory/pincodes/addpincode", {
+    navigate("/app/inventory/pincodes/Editpincode", {
       state: { pay: data },
     });
   };
+  
 
-  // for flashbar
-   // Trigger Flashbar to show when payload is set
-   useEffect(() => {
-    if (payload) {
-      setShowFlashbar(true); // Show Flashbar when payload is not null
-
-      // Set a timeout to automatically close the Flashbar after 3 seconds
-      const timer = setTimeout(() => {
-        setShowFlashbar(false); // Hide Flashbar after 3 seconds
+  useEffect(() => {
+    let timer;
+  
+    // Only show Flashbar when flash and update have specific values
+    if (flash === 'save' || update === 'update') {
+      console.log(flash,update,"values of these 2 ");
+      setShowFlashbar(true);
+  
+      // Clear any previous timer to prevent overlapping
+      clearTimeout(timer);
+  
+      // Set a timeout to hide the Flashbar after 3 seconds
+      timer = setTimeout(() => {
+        setShowFlashbar(false);
       }, 3000);
-
-      // Cleanup the timer if the component unmounts or payload changes
-      return () => clearTimeout(timer);
     }
-  }, [payload]); // Run the effect whenever payload changes
+  
+    // Cleanup timer on unmount or dependency change
+    return () => clearTimeout(timer);
+  }, [flash, update]); // Only depend on flash and update
+  
+  
 
   return (
     <SpaceBetween size="m">
       {/* Success Alert */}
-      {showFlashbar && (
+      {showFlashbar&&(flash==='save' || update==='update')&&(
         <Flashbar
           items={[
             {
               id: "success-message",
               type: "info", // Set type to 'info' or 'success', etc.
-              header: "Pincode has been added successfully", // Header text
+              header: `Pincode has been ${
+    flash === "save" ? "added" : "updated"
+  } successfully`, // Header text
               dismissible: true, // Optionally, you can allow dismissing the Flashbar
               onDismiss: () => setShowFlashbar(false), // Hide Flashbar when dismissed
             },

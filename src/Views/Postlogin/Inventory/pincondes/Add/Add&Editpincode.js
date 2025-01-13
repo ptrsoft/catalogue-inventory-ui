@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPincode, updatePincode } from "Redux-Store/Pincode/pincodeThunk";
 import { useLocation } from "react-router-dom";
 
-const AddPincode = () => {
+const AddEditPincode = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.pincode);
@@ -33,7 +33,7 @@ const AddPincode = () => {
     setShifts([...shifts, { name: "", slots: [{ start: "", end: "" }] }]);
   };
  const backtopincodes=()=>{
-  navigate(-1)
+  navigate(-1);
  }
 
   const handleRemoveShift = (index) => {
@@ -52,17 +52,28 @@ const AddPincode = () => {
     updatedShifts[shiftIndex].slots.splice(slotIndex, 1);
     setShifts(updatedShifts);
   };
-console.log(shifts,"shiftsss");
+// console.log(shifts,"shiftsss");
   const handleSavePincode = () => {
     // Prepare the payload, formatting time values to include seconds
     const formattedShifts = shifts.map((shift) => ({
       ...shift,
       slots: shift.slots.map((slot) => ({
-        start: slot.start.length === 5 ? `${slot.start}:00` : slot.start, // add seconds if missing
-        end: slot.end.length === 5 ? `${slot.end}:00` : slot.end, 
-        id:slot.id        // add seconds if missing
+        start: slot.start, // Original start time
+        end: slot.end,     // Original end time
+        id: slot.id,       // Slot ID
+        startAmPm: (() => {
+          const [startHour] = slot.start.split(':').map(Number); // Extract the hour from start time
+          return startHour >= 1 && startHour <= 12 ? 'AM' : 'PM'; // Determine AM/PM
+        })(),
+        endAmPm: (() => {
+          const [endHour] = slot.end.split(':').map(Number); // Extract the hour from end time
+          return endHour >= 1 && endHour <= 12 ? 'AM' : 'PM'; // Determine AM/PM
+        })(),
       })),
     }));
+    
+    console.log(formattedShifts,"format");
+    
 
     const payload = {
       pincode,
@@ -90,7 +101,7 @@ console.log(shifts,"shiftsss");
       dispatch(updatePincode(payload))
         .unwrap()
         .then(() => {
-          navigate("/app/inventory/pincodes/viewpincode", { state: { payload } });
+          navigate("/app/inventory/pincodes/viewpincode", { state: { payload,update:"update" },replace:'true' });
         })
         .catch((err) => {
           console.error("Error updating pincode:", err);
@@ -101,7 +112,7 @@ console.log(shifts,"shiftsss");
       dispatch(checkPincode(payload))
         .unwrap()
         .then(() => {
-          navigate("/app/inventory/pincodes/viewpincode", { state: { payload } });
+          navigate("/app/inventory/pincodes/viewpincode", { state: { payload,flash:"save" },replace:'true' });
         })
         .catch((err) => {
           console.error("Error saving pincode:", err);
@@ -120,7 +131,8 @@ console.log(shifts,"shiftsss");
     }
     return true;
   };
-console.log(flashMessages,"flash");
+
+// console.log(flashMessages,"flash");
   return (
     <SpaceBetween size="m">
       <BreadcrumbGroup
@@ -284,4 +296,4 @@ console.log(flashMessages,"flash");
   );
 };
 
-export default AddPincode;
+export default AddEditPincode;

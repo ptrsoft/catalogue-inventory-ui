@@ -33,7 +33,7 @@ const ViewDetailsPage = lazy(() => import("./Postlogin/Logistics/CollectionPayme
 const Createpolicy = lazy(() => import("./Postlogin/Settingmenu/Rbac/createpolicy"));
 const Viewpolicy = lazy(() => import("./Postlogin/Settingmenu/Rbac/viewpolicy"));
 const Pincodes = lazy(() => import("./Postlogin/Inventory/pincondes"));
-const Addpincode = lazy(() => import("./Postlogin/Inventory/pincondes/Addpincode"));
+const AddEditpincode = lazy(() => import("./Postlogin/Inventory/pincondes/Add/Add&Editpincode"));
 const Viewpincode = lazy(() => import("./Postlogin/Inventory/pincondes/Viewpincode"));
 const Customers = lazy(() => import("./Postlogin/Customers"));
 const AddNewCustomer = lazy(() => import("./Postlogin/Customers/AddNewCustomer"));
@@ -68,7 +68,9 @@ const Views = () => {
         <Route exact path={`${PREFIX_APP_PATH}/inventory/new-adjustment`} element={<ProtectedRoute element={<NewAdjustment />} />} />
         <Route exact path={`${PREFIX_APP_PATH}/inventory/edit`} element={<ProtectedRoute element={<Edit />} />} />
         <Route exact path={`${PREFIX_APP_PATH}/inventory/pincodes`} element={<ProtectedRoute element={<Pincodes />} />} />
-        <Route exact path={`${PREFIX_APP_PATH}/inventory/pincodes/addpincode`} element={<ProtectedRoute element={<Addpincode />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/inventory/pincodes/addpincode`} element={<ProtectedRoute element={<AddEditpincode />} />} />
+        <Route exact path={`${PREFIX_APP_PATH}/inventory/pincodes/Editpincode`} element={<ProtectedRoute element={<AddEditpincode />} />} />
+
         <Route exact path={`${PREFIX_APP_PATH}/inventory/pincodes/viewpincode`} element={<ProtectedRoute element={<Viewpincode />} />} />
         <Route exact path={`${PREFIX_APP_PATH}/customers`} element={<ProtectedRoute element={<Customers />} />} />
         <Route exact path={`${PREFIX_APP_PATH}/add-new-customer`} element={<ProtectedRoute element={<AddNewCustomer />} />} />

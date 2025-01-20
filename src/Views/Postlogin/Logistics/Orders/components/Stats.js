@@ -24,7 +24,7 @@ const Stats = () => {
 
   return (
     <Container className="top-container" style={{ marginBottom: "1rem" }}>
-      <ColumnLayout columns={5} variant="default" minColumnWidth={150}>
+      <ColumnLayout columns={6} variant="default" minColumnWidth={150}>
         <div>
           <Box variant="awsui-key-label">
             <p style={{ fontSize: 12, fontWeight: "bold" }}>Total Orders</p>
@@ -83,6 +83,21 @@ const Stats = () => {
             }}
           >
             {orderStats?.cancelledOrderCount || "N/A"}
+          </span>
+        </div>
+        <div>
+          <Box variant="awsui-key-label">
+            <p style={{ fontSize: 12, fontWeight: "bold" }}> Request To Cancel Orders</p>
+          </Box>
+          <span
+            style={{
+              fontSize: 34,
+              fontWeight: "900",
+              lineHeight: 1.3,
+              color: "#D91515",
+            }}
+          >
+            {orderStats?.requestForCancellationOrderCount || "N/A"}
           </span>
         </div>
         <div>

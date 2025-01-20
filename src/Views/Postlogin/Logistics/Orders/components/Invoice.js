@@ -1,6 +1,6 @@
 import React from "react";
 
-import logo from "../../../../../assets/images/image.png";
+import logo from "../../../../../assets/img/Favicon Icon Promode (1).svg";
 import Barcode from "./BarCode";
 
 const Invoice = ({ selectedOrder, printRef }) => {
@@ -102,7 +102,7 @@ const Invoice = ({ selectedOrder, printRef }) => {
             {new Date(selectedOrder?.createdAt).toLocaleDateString()} (
             {new Date(selectedOrder?.createdAt).toLocaleTimeString()})
           </p>
-          <p>
+          <p style={{width:'180px'}}>
             Slot Time:{selectedOrder?.deliverySlot?.startTime}{" "}
             To {selectedOrder?.deliverySlot?.endTime}
           </p>
@@ -118,10 +118,14 @@ const Invoice = ({ selectedOrder, printRef }) => {
                fontFamily: "'Arial', sans-serif",
                backgroundColor: "#fff",
              
+             
             }}> {selectedOrder?.paymentDetails?.method === "cash"
               ? "COD"
-              : "Prepaid"}</div>
+              : "Prepaid"}
+              </div>
+              <span>
                   <Barcode orderId={selectedOrder?.orderId}/>
+                  </span>
                   </div>
             
           
@@ -137,22 +141,22 @@ const Invoice = ({ selectedOrder, printRef }) => {
           borderCollapse: "collapse",
           // margin: "10px 0",
           fontSize: "12px",
-          textAlign:"center",
+          textAlign:"left",
         //  borderBottom: "1px dashed #000", paddingBottom:"2px"
         }}
       >
         <thead style={{ borderBottom: "1px dashed #000", padding:"10px" }}>
-          <tr  >
-            <th>ITEM NAME</th>
-            <th>QTY</th>
-            <th>RATE</th>
-            <th>AMOUNT</th>
+          <tr style={{padding:'5px',margin:'5px'}}  >
+            <th style={{marginBottom:'5px',padding:'5px',margin:'5px'}}>ITEM NAME</th>
+            <th style={{marginBottom:'5px',padding:'5px',margin:'5px'}}>QTY</th>
+            <th style={{marginBottom:'5px',padding:'5px',margin:'5px'}}>RATE</th>
+            <th style={{marginBottom:'5px',padding:'5px',margin:'5px'}}>AMOUNT</th>
           </tr>
         </thead>
         
         
         {/* <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} /> */}
-        <tbody style={{padding:'10px'}}>
+        <tbody style={{padding:'10px',margin:'5px'}}>
           {selectedOrder?.items.map((item, index) => (
             <tr key={index}>
               <td>{item.productName}</td>

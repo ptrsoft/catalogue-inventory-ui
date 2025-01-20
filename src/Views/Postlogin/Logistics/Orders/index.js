@@ -302,6 +302,7 @@ const Orders = () => {
           delivered: { type: "success", text: "Delivered" },
           undelivered: { type: "warning", text: "undelivered" },
           cancelled: { type: "error", text: "Cancelled" },
+          "Request for Cancellation": { type: "error", text: "Request For Cancellation" },
           "order placed": { type: "in-progress", text: "Order Placed" },
         };
 

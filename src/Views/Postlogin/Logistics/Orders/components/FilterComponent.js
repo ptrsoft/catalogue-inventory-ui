@@ -38,6 +38,8 @@ const statusOptions = [
    
   { label: "Order Placed", value: "order placed" },
   { label: "Cancel Orders", value: "cancelled" },
+  { label: "Request for Cancellation", value: "Request for Cancellation" },
+
   { label: "Packed", value: "packed" },
   { label: "Order Processing", value: "order processing" },
   { label: "On The Way", value: "on the way" },

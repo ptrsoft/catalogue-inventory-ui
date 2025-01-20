@@ -257,12 +257,12 @@ const Drawer = ({
                   {
                     header: "Product Name",
                     cell: (item) => (
-                      <Box display="flex" alignItems="center">
-                        <span style={{ fontSize: "20px", marginRight: "8px" }}>
-                          {item.productImage}
-                        </span>
-                        {item.productName}
-                      </Box>
+                      <div style={{display:'flex',alignItems:'center',gap:'5px'}}>
+                        <img src={item.productImage} style={{ height: "30px",width:'30px', marginLeft:'5px' }}alt="products"></img>
+                         
+                      
+                       <p> {item.productName}</p>
+                      </div>
                     ),
                   },
                   { header: "Quantity", cell: (item) => item.quantity },

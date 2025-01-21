@@ -13,14 +13,16 @@ import {
   BreadcrumbGroup,
   SpaceBetween,
   Icon,
+  Input
 } from "@cloudscape-design/components";
 import { useNavigate } from "react-router-dom";
+import { cancelOrder, fetchUsersbyid } from "Redux-Store/Orders/OrdersThunk";
+
 
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchOrderInventory,
   fetchOrderById,
-  fetchUsersbyid,
 } from "Redux-Store/Orders/OrdersThunk";
 //components import
 import Stats from "./components/Stats";
@@ -28,6 +30,7 @@ import AssignToPackersModal from "./components/AssignToPackerModal";
 import Drawer from "./components/Drawer";
 import Invoice from "./components/Invoice";
 import FilterComponent from "./components/FilterComponent";
+import MultipleOrdersCancellation from "./components/MultipleOrderCancellation";
 
 const Orders = () => {
   //declaring states
@@ -43,6 +46,7 @@ const Orders = () => {
   const [isModalOpenForPacker, setIsModalOpenForPacker] = useState(false);
   // getting redux states using useselector
   const { selectedOrder } = useSelector((state) => state.orderInventory);
+  const [flashMessages, setFlashMessages] = useState([]); // Flash messages for notifications
 
   const { orders, loading, error } = useSelector(
     (state) => state.orderInventory.orders.data[currentPage] || []
@@ -152,7 +156,7 @@ const Orders = () => {
     }, 3000);
   };
 
-  // function for imidiate changes in Ui after Cancelling order
+  // function for immidiate changes in Ui after Cancelling order
   const handleCancelOrder = (orderId) => {
     const orderIdsArray = Array.isArray(orderId) ? orderId : [orderId];
     const isMultipleOrders = orderIdsArray.length > 1; // Check if it's multiple orders
@@ -222,6 +226,13 @@ const Orders = () => {
       dispatch(fetchUsersbyid({ id: riderId }));
     }
   }, [selectedOrder, dispatch]);
+  const handleReasonChange = (orderId, reason) => {
+    setSelectedItems((prev) =>
+      prev.map((item) =>
+        item.id === orderId ? { ...item, reason } : item // Update the reason for the selected order
+      )
+    );
+  };
 
   // for drawer
   const handleOrderClick = (orderId) => {
@@ -319,7 +330,9 @@ const Orders = () => {
 
     // Conditionally add "Reason" column if filters.statuscategory is "cancelled" and order status is "cancelled" or "undelivered"
     ...(filters?.statuscategory?.value === "cancelled" ||
-    filters?.statuscategory?.value === "undelivered"
+    filters?.statuscategory?.value === "undelivered" ||
+    filters?.statuscategory?.value === "Request for Cancellation" 
+
       ? [
           {
             header: "Reason",
@@ -328,16 +341,32 @@ const Orders = () => {
                 item.orderStatus === "cancelled" ||
                 item.orderStatus === "undelivered"
               ) {
-                return item?.statusDetails?.reason;
+                return item?.cancellationData?.cancelReason
+                || "-";
               }
-              return "-"; // or return null if you don't want to show anything
+              else if (item.orderStatus === "Request for Cancellation") {
+                // Input field for "Request for Cancellation"
+                return (
+                
+                    <Input
+                      value={selectedItems.find((order) => order.id === item.id)?.reason || ""}
+                      onChange={(e) => handleReasonChange(item.id, e.detail.value)}
+                      placeholder="Enter reason"
+                      ariaLabel="Reason input"
+                      style={{
+                        width: "100%",
+                      }}
+                    />
+                  
+                );
+              }
+              return "-"; // Default fallback
             },
             width: 250,
             minWidth: 180,
           },
         ]
       : []),
-
     { header: "Total Amount", cell: (item) => item.totalAmount },
     {
       header: "Delivery Slot Time",
@@ -380,7 +409,22 @@ const Orders = () => {
     <ContentLayout
       headerVariant="high-contrast"
       notifications={<Flashbar items={flashbarItems} />}
+      
       breadcrumbs={
+        <>
+          {flashMessages.map((msg) => (
+        <div
+          key={msg.id}
+          style={{
+            padding: "10px",
+            margin: "10px 0",
+            border: `1px solid ${msg.type === "info" ? "green" : "red"}`,
+            color: msg.type === "info" ? "green" : "red",
+          }}
+        >
+          {msg.content}
+        </div>
+      ))}
         <BreadcrumbGroup
           items={[
             { text: "Dashboard", href: "/app/Dashboard" },
@@ -389,6 +433,7 @@ const Orders = () => {
           ]}
           ariaLabel="Breadcrumbs"
         />
+        </>
       }
       header={
         <Header
@@ -411,7 +456,13 @@ const Orders = () => {
                 >
                   Create Runsheet
                 </Button>
-              ) : null}
+              ) :filters?.statuscategory?.value === "Request for Cancellation"?(
+               <MultipleOrdersCancellation
+               selectedItems={selectedItems}
+               cancelOrdersThunk={cancelOrder} // Pass the thunk for order cancellation
+               dispatch={dispatch}
+               setFlashMessages={setFlashMessages}/>
+              ):null }
 
               <AssignToPackersModal
                 isOpen={isModalOpenForPacker}
@@ -421,12 +472,15 @@ const Orders = () => {
                 showFlashbar={showFlashbar}
                 onAssignOrderStatusChange={handleAssignOrdersStatus}
               />
+               {/* Flash messages */}
+    
             </>
           }
           variant="h1"
         >
           Orders
         </Header>
+
       }
     >
       <SpaceBetween direction="vertical" size="xl">

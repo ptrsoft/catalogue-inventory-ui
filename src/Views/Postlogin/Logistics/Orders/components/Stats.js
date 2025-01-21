@@ -87,7 +87,7 @@ const Stats = () => {
         </div>
         <div>
           <Box variant="awsui-key-label">
-            <p style={{ fontSize: 12, fontWeight: "bold" }}> Request To Cancel Orders</p>
+            <p style={{ fontSize: 12, fontWeight: "bold" }}> Request To Cancel</p>
           </Box>
           <span
             style={{

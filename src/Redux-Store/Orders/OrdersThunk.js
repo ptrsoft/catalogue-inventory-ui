@@ -104,6 +104,7 @@ export const cancelOrder = createAsyncThunk(
       // dispatch(fetchOrderInventory());
       dispatch(fetchOrderById(orderId))
       dispatch(fetchOrderStats())
+      console.log(response.data,"cancel order");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to cancel the order');

@@ -226,6 +226,24 @@ const AddItem = () => {
       else if (index === 2) handleImageUpload(file, setImageUrl3);
     });
   };
+  //add Tag code
+  const [tags, setTags] = useState([]);
+  const [inputTag, setInputTag] = useState('');
+  const handleKeyPressForTag = (event) => {
+    if (event.key === 'Enter' && inputTag.trim() !== '') {
+      setTags([...tags, inputTag.trim()]);
+      console.log(tags,"tag");
+      setInputTag('');
+    }
+  };
+
+  const removeTokenForTag = (index) => {
+    setValues((prevValues) => {
+      const updatedValues = [...prevValues];
+      updatedValues.splice(index, 1);
+      return updatedValues;
+    });
+  };
   //add varient code 
   const [attribute, setAttribute] = useState('Weight');
   const [values, setValues] = useState([]);
@@ -234,6 +252,7 @@ const AddItem = () => {
   const handleKeyPress = (event) => {
     if (event.key === 'Enter' && inputValue.trim() !== '') {
       setValues([...values, inputValue.trim()]);
+      console.log(values,'val');
       setInputValue('');
     }
   };
@@ -320,17 +339,77 @@ const AddItem = () => {
       <Container>
         <Form>
           <SpaceBetween direction="vertical" size="l">
-            <FormField
-              label="Item Name"
-              errorText={isFormSubmitted && !name && "Required"}
-            >
-              <Input
-                size="xs"
-                placeholder="Input Item Name"
-                value={name}
-                onChange={({ detail }) => setName(detail.value)}
-              />
-            </FormField>
+          <div style={{ display: 'flex',gap:'20px', alignItems: 'flex-start', width: '100%' }}>
+  {/* Item Name Field - 80% width */}
+  <div style={{ flex: '0 0 330px' }}>
+    <FormField
+      label="Item Name"
+      errorText={isFormSubmitted && !name && "Required"}
+    >
+      <Input
+        size="xs"
+        placeholder="Input Item Name"
+        value={name}
+        onChange={({ detail }) => setName(detail.value)}
+        style={{ width: '100%' }}
+      />
+    </FormField>
+  </div>
+
+  {/* Tag Section - 20% width */}
+  <div style={{ flex: '0 0 330px' }}>
+    <strong>Tags</strong>
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '5px',
+        alignItems: 'center',
+        border: '2px solid #ccc',
+        padding: '5px',
+        borderRadius: '8px',
+        marginTop:'5px'
+      }}
+    >
+      {tags.map((tag, index) => (
+        <div
+          key={index}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            background: '#f3f3f3',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            margin: '4px',
+          }}
+        >
+          {tag}
+          <button
+            onClick={() => removeTokenForTag(index)}
+            style={{
+              marginLeft: '8px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: '#0073e6',
+            }}
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <input
+        placeholder="Enter Tag"
+        value={inputTag}
+        onChange={(event) => setInputTag(event.target.value)}
+        onKeyPress={handleKeyPressForTag}
+        style={{ flex: 1, padding: '8px', border: 'none', outline: 'none', width: '100%' }}
+      />
+    </div>
+  </div>
+</div>
+
+
             <Button variant='inline-link'onClick={toggleAttributeSection}> {showAttribute ? 'Add Only Item' : 'Add Variant'}</Button>
             <FormField label="Item Description">
               <Textarea

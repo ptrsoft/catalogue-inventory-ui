@@ -221,12 +221,29 @@ const Drawer = ({
             >
               <Box variant="h5">Items List </Box>
               <div class="button-container">
-                <button
+                {(selectedOrder?.status==='cancelled')?
+                (  <button
                   class="cancel-btn"
+                  style={{
+                    border:'2px solid #0972D3',
+                    borderColor:'#0972D3',
+                    color:'#0972D3'
+                  }}
+                  // onClick={() => handleOpenModal(selectedOrder?.userInfo?.id)}
+                >
+                  Re Attempt
+                </button>):
+                (
+                  <button
+                  class="cancel-btn"
+                 
                   onClick={() => handleOpenModal(selectedOrder?.userInfo?.id)}
                 >
                   Cancel Order
                 </button>
+
+                )}
+               
 
                 <button onClick={handlePrint} class="print-btn">
                   Print Bill

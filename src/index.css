@@ -199,7 +199,7 @@ a.awsui_anchor_1kosq_101th_109{
 }
 
 .cancel-btn:hover {
-  background-color: #f8d7da;
+  background-color: rgb(247, 246, 246);
 }
 
 .print-btn {
@@ -343,7 +343,7 @@ a.awsui_anchor_1kosq_101th_109{
 /* Make it visible only during printing */
 @media print {
   @page {
-    size: 90mm 180mm; /* Custom receipt size */
+    size: 85mm ; /* Custom receipt size */
     margin: 10mm; /* Custom margin for printing */
   }
   img {
@@ -352,8 +352,6 @@ a.awsui_anchor_1kosq_101th_109{
   }
   .print-content {
     display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
+   
   }
 }

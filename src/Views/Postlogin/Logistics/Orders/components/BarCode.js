@@ -10,7 +10,8 @@ const Barcode = ({ orderId }) => {
         lineColor: "#000", // Barcode line color
         width: 1,          // Width of barcode lines
         height: 30,        // Height of barcode
-        // displayValue: true,
+        displayValue: false, // Do not display the order ID below the barcode
+        
          // Display the value (order ID) below the barcode
       });
     }

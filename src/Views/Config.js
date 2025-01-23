@@ -21,6 +21,7 @@ const Config = {
   FINISH_PRODUCT_VIEW_ATACHMENTS: `${BASE_URL}/users`,
   FINISH_PRODUCT_DETAILS: `${BASE_URL}/users`,
   CANCEL_ORDER: `${BASE_URL}/order`,
+  REATTEMPT_ORDER: `${BASE_URL}/order`,
   FETCH_ORDERS: `${BASE_URL}/order-inventory`,
   FETCH_ORDERBYID: `${BASE_URL}/order`,
   ORDERS_DETAILS:`${BASE_URL}/users`,

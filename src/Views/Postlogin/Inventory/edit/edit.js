@@ -56,7 +56,24 @@ const Edit = () => {
   const [subCategory, setSubCategory] = useState(""); // Add this line
   const [items, setItems] = React.useState([]);
   const [invalidFields, setInvalidFields] = useState({}); // State to track invalid fields
+    //add Tag code
+    const [tags, setTags] = useState([]);
+    const [inputTag, setInputTag] = useState('');
+    const handleKeyPressForTag = (event) => {
+      if (event.key === 'Enter' && inputTag.trim() !== '') {
+        setTags([...tags, inputTag.trim()]);
+        setInputTag('');
+      }
+    };
+    console.log(tags,"tag");
 
+    const removeTokenForTag = (index) => {
+      setTags((prevValues) => {
+        const updatedValues = [...prevValues];
+        updatedValues.splice(index, 1);
+        return updatedValues;
+      });
+    };
   useEffect(() => {
     if (id) {
       dispatch(fetchProductById(id));
@@ -78,6 +95,7 @@ const Edit = () => {
   useEffect(() => {
     if (productDetail) {
       setName(productDetail.name || "");
+      setTags(Array.isArray(productDetail.tags) ? productDetail.tags : []); // Ensure it's always an array  
       setCategory(productDetail.category || "");
       setUnits(productDetail.units || "");
       setStockQuantity(productDetail.stockQuantity || "");
@@ -122,6 +140,7 @@ const Edit = () => {
 
     const productData = {
       name,
+      tags,
       description,
       category,
       subCategory,
@@ -239,7 +258,7 @@ const Edit = () => {
       >
         Edit Item
       </Header>
-      <form onSubmit={handleSubmit}>
+    
         <Grid
           gridDefinition={[
             { colspan: { default: 16, xxs: 8 } },
@@ -384,6 +403,56 @@ const Edit = () => {
                     />
                   </FormField>
                 </SpaceBetween>
+                <div style={{ flex: '0 0 330px' }}>
+    <strong>Tags</strong>
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '5px',
+        alignItems: 'center',
+        border: '2px solid #ccc',
+        padding: '5px',
+        borderRadius: '8px',
+        marginTop:'5px'
+      }}
+    >
+      {tags.map((tag, index) => (
+        <div
+          key={index}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            background: '#f3f3f3',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            margin: '4px',
+          }}
+        >
+          {tag}
+          <button
+            onClick={() => removeTokenForTag(index)}
+            style={{
+              marginLeft: '8px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: '#0073e6',
+            }}
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <input
+        placeholder="Enter Tag"
+        value={inputTag}
+        onChange={(event) => setInputTag(event.target.value)}
+        onKeyPress={handleKeyPressForTag}
+        style={{ flex: 1, padding: '8px', border: 'none', outline: 'none', width: '100%' }}
+      />
+    </div>
+  </div>
               </ColumnLayout>
             </SpaceBetween>
           </Container>
@@ -406,9 +475,10 @@ const Edit = () => {
                 />{" "}
               </div>{" "}
             </div>
+
           </Container>
         </Grid>
-      </form>
+     
     </SpaceBetween>
   );
 };

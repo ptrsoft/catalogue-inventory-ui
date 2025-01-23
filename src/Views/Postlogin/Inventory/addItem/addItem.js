@@ -113,7 +113,24 @@ const AddItem = () => {
       setDescription(detail.value);
     }
   };
-  
+    //add Tag code
+    const [tags, setTags] = useState([]);
+    const [inputTag, setInputTag] = useState('');
+    const handleKeyPressForTag = (event) => {
+      if (event.key === 'Enter' && inputTag.trim() !== '') {
+        setTags([...tags, inputTag.trim()]);
+        setInputTag('');
+      }
+    };
+    console.log(tags,"tag");
+
+    const removeTokenForTag = (index) => {
+      setTags((prevValues) => {
+        const updatedValues = [...prevValues];
+        updatedValues.splice(index, 1);
+        return updatedValues;
+      });
+    };
   const handleSave = () => {
     setIsFormSubmitted(true);
     if (!imageUrl1) {
@@ -130,6 +147,7 @@ const AddItem = () => {
 
     const formData = {
       name,
+      tags:tags,
       description: description,
       category: selectedCategory ? selectedCategory.value : null,
       units: selectedUnits ? selectedUnits.value : null,
@@ -158,6 +176,7 @@ const AddItem = () => {
           },
         ]);
         setName("");
+        setTags([]);
         setSelectedCategory(null);
         setSelectedSubCategory(null);
         setSelectedUnits(null);
@@ -226,24 +245,7 @@ const AddItem = () => {
       else if (index === 2) handleImageUpload(file, setImageUrl3);
     });
   };
-  //add Tag code
-  const [tags, setTags] = useState([]);
-  const [inputTag, setInputTag] = useState('');
-  const handleKeyPressForTag = (event) => {
-    if (event.key === 'Enter' && inputTag.trim() !== '') {
-      setTags([...tags, inputTag.trim()]);
-      console.log(tags,"tag");
-      setInputTag('');
-    }
-  };
 
-  const removeTokenForTag = (index) => {
-    setValues((prevValues) => {
-      const updatedValues = [...prevValues];
-      updatedValues.splice(index, 1);
-      return updatedValues;
-    });
-  };
   //add varient code 
   const [attribute, setAttribute] = useState('Weight');
   const [values, setValues] = useState([]);
@@ -371,7 +373,7 @@ const AddItem = () => {
         marginTop:'5px'
       }}
     >
-      {tags.map((tag, index) => (
+      {tags?.map((tag, index) => (
         <div
           key={index}
           style={{

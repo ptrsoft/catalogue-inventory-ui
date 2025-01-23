@@ -6,7 +6,8 @@ import {
     fetchOrderStats, 
     fetchUsers, 
     packOrders, 
-    fetchUsersbyid 
+    fetchUsersbyid,
+    reattempt
 } from './OrdersThunk'; 
 import status from 'Redux-Store/Constants';
 
@@ -14,10 +15,10 @@ import status from 'Redux-Store/Constants';
 // Initial state
 const initialState = {
     orders: {
-        nextKey: null,
-        data: {}, // Object for paginated data
-        status: 'idle',
-        error: null,
+      nextKey: null,
+      data: {}, // Object for paginated data
+      status: 'idle',
+      error: null,
     },
     count: 0,
     loading: false,
@@ -25,6 +26,8 @@ const initialState = {
     selectedOrder: null,
     cancelStatus: 'idle',
     cancelError: null,
+    reattemptStatus: 'idle', // Added specific status for reattempt
+    reattemptError: null, // Added specific error for reattempt
     orderStats: null,
     statsLoading: false,
     statsError: null,
@@ -34,7 +37,7 @@ const initialState = {
     cancelUserStatus: 'idle',
     cancelUserError: null,
     packStatus: null,
-};
+  };
 
 const orderInventorySlice = createSlice({
     name: 'orderInventory',
@@ -106,7 +109,30 @@ const orderInventorySlice = createSlice({
                 state.cancelStatus = 'failed';
                 state.cancelError = action.payload || action.error.message;
             })
+          // Handle reattempt actions
+      .addCase(reattempt.pending, (state) => {
+        state.reattemptStatus = 'loading';
+        state.reattemptError = null;
+      })
+      .addCase(reattempt.fulfilled, (state, action) => {
+        const reattemptOrderId = action.payload.id;
 
+        // Update the order's status to "Order Placed"
+        state.orders.data = Object.keys(state.orders.data).reduce((acc, pageKey) => {
+          acc[pageKey] = state.orders.data[pageKey].map((order) =>
+            order.id === reattemptOrderId
+              ? { ...order, orderStatus: 'Order Placed' }
+              : order
+          );
+          return acc;
+        }, {});
+
+        state.reattemptStatus = status.SUCCESS;
+      })
+      .addCase(reattempt.rejected, (state, action) => {
+        state.reattemptStatus = 'failed';
+        state.reattemptError = action.payload || action.error.message;
+      })
             // Handle fetchOrderStats actions
             .addCase(fetchOrderStats.pending, (state) => {
                 state.statsLoading = true;

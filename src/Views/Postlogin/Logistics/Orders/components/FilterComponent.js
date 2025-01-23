@@ -96,7 +96,7 @@ const FilterComponent = ({
       />
 
       {/* Age Filter */}
-      {statuscategory?.value === "delivered" && (
+    
         <Select
           selectedOption={ageFilter}
           onChange={({ detail }) =>
@@ -106,7 +106,7 @@ const FilterComponent = ({
           placeholder="Date"
           selectedAriaLabel="Selected age"
         />
-      )}
+    
       <Select
         selectedOption={pincode}
         onChange={({ detail }) =>

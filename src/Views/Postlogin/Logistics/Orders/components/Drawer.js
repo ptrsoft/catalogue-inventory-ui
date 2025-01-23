@@ -10,7 +10,7 @@ import {
   Modal,
   Textarea,
 } from "@cloudscape-design/components";
-import { cancelOrder, fetchUsersbyid } from "Redux-Store/Orders/OrdersThunk";
+import { cancelOrder, fetchUsersbyid,reattempt } from "Redux-Store/Orders/OrdersThunk";
 
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch and useSelector
 const Drawer = ({
@@ -87,6 +87,22 @@ const Drawer = ({
         ]);
       });
   };
+  //reattempt logic
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const openConfirmationModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const closeConfirmationModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleConfirmAction = () => {
+
+    dispatch(reattempt({orderId:selectedOrder.orderId}));
+    console.log(selectedOrder.orderId,"reattempt");
+    setIsModalVisible(false); // Close modal after dispatching the action
+  };
 
   console.log(selectedOrder);
   return (
@@ -145,9 +161,8 @@ const Drawer = ({
                               marginLeft: "5px",
                             }}
                           >
-                            {selectedOrder?.paymentDetails?.method === "cash"
-                              ? "COD"
-                              : "Prepaid"}
+                            {selectedOrder?.paymentDetails?.method
+                             }
                           </span>
                         </span>
                       </div>
@@ -229,7 +244,7 @@ const Drawer = ({
                     borderColor:'#0972D3',
                     color:'#0972D3'
                   }}
-                  // onClick={() => handleOpenModal(selectedOrder?.userInfo?.id)}
+                  onClick={openConfirmationModal}
                 >
                   Re Attempt
                 </button>):
@@ -294,6 +309,27 @@ const Drawer = ({
           </Box>
         </div>
       )}
+       {isModalVisible && (
+        <Modal
+          onDismiss={closeConfirmationModal}
+          visible={isModalVisible}
+          header="Confirm Action"
+          footer={
+            <Box float="right">
+              <SpaceBetween direction="horizontal" size="xs">
+                <Button onClick={closeConfirmationModal} variant="link">
+                  Cancel
+                </Button>
+                <Button onClick={handleConfirmAction} variant="primary">
+                  Confirm
+                </Button>
+              </SpaceBetween>
+            </Box>
+          }
+        >
+          Are you sure you want to Reattempt This Order?
+        </Modal>
+      )}
       {isModalOpen && (
         <Modal
           size="medium"
@@ -322,9 +358,8 @@ const Drawer = ({
                     marginLeft: "5px",
                   }}
                 >
-                  {selectedOrder?.paymentDetails?.method === "cash"
-                    ? "COD"
-                    : "Prepaid"}
+                  {selectedOrder?.paymentDetails?.method 
+                   }
                 </span>
               </p>
               <p>

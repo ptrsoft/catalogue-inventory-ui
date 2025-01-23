@@ -6,6 +6,7 @@ const MultipleOrdersCancellation = ({
   cancelOrdersThunk,
   dispatch,
   setFlashMessages,
+  onOrdersCancelled, // Callback to notify the parent about the reset
 }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [flashMessages, setLocalFlashMessages] = useState([]);
@@ -40,6 +41,10 @@ const MultipleOrdersCancellation = ({
         setTimeout(() => setFlashMessages([]), 3000); // Dismiss the flash message after 3 seconds
 
         handleCloseModal();
+       // Notify the parent to reset selectedItems
+       if (onOrdersCancelled) {
+        onOrdersCancelled();
+      }
       })
       .catch((error) => {
         // Handle cancellation errors

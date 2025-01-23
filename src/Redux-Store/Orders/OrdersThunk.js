@@ -111,6 +111,42 @@ export const cancelOrder = createAsyncThunk(
     }
   }
 );
+// Thunk to reattempt a specific order by ID
+export const reattempt = createAsyncThunk(
+  'orderInventory/reattemptOrder',
+  async ({ orderId }, { rejectWithValue, dispatch }) => {
+    try {
+      const token = getToken();
+
+      if (!token) {
+        return rejectWithValue('Authorization token is missing.');
+      }
+   console.log(orderId,"from thunk");
+      // Construct the URL for the API request
+      const url = `${config.REATTEMPT_ORDER}/${orderId}/reattempt`;
+
+      // Make the PUT request to reattempt the order
+      const response = await postLoginService.put(url, null, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token in the header
+        },
+      });
+
+      // Optional: Dispatch other actions based on your application needs
+      dispatch(fetchOrderById(orderId)); // Fetch the updated order details
+      dispatch(fetchOrderStats()); // Update order stats after reattempt
+      
+      console.log('Reattempted order:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error in reattempt thunk:', error);
+      return rejectWithValue(
+        error.response?.data || error.message || 'Failed to reattempt the order'
+      );
+    }
+  }
+);
+
 
 // Thunk to fetch order stats (new)
 export const fetchOrderStats = createAsyncThunk(

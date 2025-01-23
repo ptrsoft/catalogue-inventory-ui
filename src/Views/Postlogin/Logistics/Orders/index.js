@@ -245,18 +245,69 @@ const Orders = () => {
     setSelectedProduct(null);
   };
   // for printing bill
-  const printRef = useRef();
+  const printRef = useRef([]);
+
+  // const handlePrint = () => {
+  //   // Trigger the print
+  //   const printContent = printRef.current;
+  //   const WinPrint = window.open("", "", "width=900,height=650");
+  //   WinPrint.document.write(printContent.outerHTML);
+  //   WinPrint.document.close();
+  //   WinPrint.focus();
+  //   WinPrint.print();
+  //   WinPrint.close();
+  // };
 
   const handlePrint = () => {
-    // Trigger the print
-    const printContent = printRef.current;
-    const WinPrint = window.open("", "", "width=900,height=650");
-    WinPrint.document.write(printContent.outerHTML);
-    WinPrint.document.close();
-    WinPrint.focus();
-    WinPrint.print();
-    WinPrint.close();
+    if (Array.isArray(printRef.current)) {
+      // Combine all the refs' content into one printable layout
+      const printableContent = printRef.current
+        .filter((el) => el) // Ensure refs are not null
+        .map((el) => el.outerHTML) // Extract HTML of each ref
+        .join(""); // Join all the content
+      triggerPrint(printableContent);
+    } else if (printRef.current) {
+      // Handle single ref
+      const printableContent = printRef.current.outerHTML;
+      triggerPrint(printableContent);
+    } else {
+      console.error("No content to print!");
+    }
   };
+  
+  // Helper function to trigger print
+  const triggerPrint = (printableContent) => {
+    if (printableContent) {
+      const WinPrint = window.open("", "", "width=300,height=650"); // Set size close to receipt width
+      WinPrint.document.write(`
+        <html>
+          <head>
+            <title>Invoice</title>
+            <style>
+              
+              .invoice {
+                width: 100%;
+                text-align: left;
+              }
+              
+            </style>
+          </head>
+          <body>
+            <div class="invoice">
+              ${printableContent}
+            </div>
+          </body>
+        </html>
+      `);
+      WinPrint.document.close();
+      WinPrint.focus();
+      WinPrint.print();
+      WinPrint.close();
+    } else {
+      console.error("Printable content is empty!");
+    }
+  };
+  
 
   const handleSearchChange = ({ detail }) => {
     setFilteringText(detail.filteringText);
@@ -293,13 +344,10 @@ const Orders = () => {
     {
       header: "Payment Type",
       cell: (item) => (
-        <strong>
-          {item.paymentType === "cash" ? (
-            "COD"
-          ) : (
-            <strong style={{ color: "#1D4ED8" }}>Prepaid</strong>
-          )}
-        </strong>
+      
+         
+            <strong style={{ color: "#1D4ED8" }}> {item.paymentType}</strong>
+        
       ),
     },
     {
@@ -367,11 +415,20 @@ const Orders = () => {
           },
         ]
       : []),
-    { header: "Total Amount", cell: (item) => item.totalAmount },
+      {
+        header: "Total Amount",
+        cell: (item) => `₹${item.finalTotal
+    
+        }`
+      },
+      
     {
       header: "Delivery Slot Time",
       cell: (item) =>
-        `${item?.deliverySlot.startTime} To ${item?.deliverySlot.endTime}`,
+        `${item?.deliverySlot.startTime}${
+      item?.deliverySlot.startAmPm
+} To ${item?.deliverySlot.endTime}${
+      item?.deliverySlot.endAmPm}`,
     },
     { header: "Deliver Area", cell: (item) => item.area },
   ];
@@ -381,6 +438,10 @@ const Orders = () => {
     console.log("Selected orders:", selectedItems);
     setIsModalOpenForPacker(false);
     setSelectedItems([]);
+  };
+  //its for deseleting the selected items after cancelling multiple
+  const handleResetSelectedItems = () => {
+    setSelectedItems([]); // Reset selected items
   };
   const handleFilterChange = (newFilters) => {
     console.log("Received filters:", newFilters);
@@ -416,10 +477,11 @@ const Orders = () => {
         <div
           key={msg.id}
           style={{
-            padding: "10px",
+            padding: "20px",
             margin: "10px 0",
-            border: `1px solid ${msg.type === "info" ? "green" : "red"}`,
-            color: msg.type === "info" ? "green" : "red",
+            borderRadius:'8px',
+            backgroundColor: `${msg.type === "info" ? "green" : "red"}`,
+            color: msg.type === "info" ? "white" : "white",
           }}
         >
           {msg.content}
@@ -458,11 +520,12 @@ const Orders = () => {
                 </Button>
               ) :filters?.statuscategory?.value === "Request for Cancellation"?(
                <MultipleOrdersCancellation
+               onOrdersCancelled={handleResetSelectedItems} // Pass the callback
                selectedItems={selectedItems}
                cancelOrdersThunk={cancelOrder} // Pass the thunk for order cancellation
                dispatch={dispatch}
                setFlashMessages={setFlashMessages}/>
-              ):null }
+              ):null}
 
               <AssignToPackersModal
                 isOpen={isModalOpenForPacker}
@@ -472,6 +535,15 @@ const Orders = () => {
                 showFlashbar={showFlashbar}
                 onAssignOrderStatusChange={handleAssignOrdersStatus}
               />
+              <div style={{marginLeft:'10px'}}>
+                 <Button
+                  variant="primary"
+                  onClick={handlePrint}
+                  disabled={selectedItems.length === 0} // Disable when no items are selected
+                >
+                  Multiple Print Bill
+                </Button>
+                </div>
                {/* Flash messages */}
     
             </>
@@ -609,7 +681,7 @@ const Orders = () => {
           onCancelOrder={handleCancelOrder} // Pass handler to child
         />
       </SpaceBetween>
-      <Invoice printRef={printRef} selectedOrder={selectedOrder} />
+      <Invoice printRef={printRef} selectedOrder={selectedItems} />
     </ContentLayout>
   );
 };

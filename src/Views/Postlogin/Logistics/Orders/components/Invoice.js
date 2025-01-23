@@ -1,14 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import logo from "../../../../../assets/img/Favicon Icon Promode (1).svg";
 import Barcode from "./BarCode";
-
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchOrderById,
+} from "Redux-Store/Orders/OrdersThunk";
 const Invoice = ({ selectedOrder, printRef }) => {
+  console.log(selectedOrder,"order from invoice");
+  const dispatch = useDispatch();
+  const [fetchedOrders, setFetchedOrders] = useState([]);
+
+
+  useEffect(() => {
+    if (selectedOrder && selectedOrder.length > 0) {
+      const orderIds = selectedOrder.map((order) => order.id); // Extract order IDs
+      console.log("Order IDs:", orderIds);
+
+      // Fetch all orders simultaneously
+      Promise.all(orderIds.map((id) => dispatch(fetchOrderById(id))))
+        .then((responses) => {
+          setFetchedOrders(responses.map((res) => res.payload)); // Assuming payload contains order data
+        })
+        .catch((error) => {
+          console.error("Error fetching orders:", error);
+        });
+    }
+  }, [selectedOrder, dispatch]);
+  console.log(fetchedOrders,"order by idss data");
   return (
+    <>
+    {fetchedOrders.map((selectedOrder, index) => (
+
     <div
-      ref={printRef}
+    key={selectedOrder?.id || index}
+    ref={(el) => {
+      if (printRef?.current) {
+        // Dynamically assign ref if needed for printing
+        printRef.current[index] = el;
+      }
+    }}
+     
       style={{
-        width: "85mm",
+        width: "80mm",
         margin: "0 auto",
         padding: "10px",
         border: "0.1px dotted black",
@@ -100,9 +134,8 @@ const Invoice = ({ selectedOrder, printRef }) => {
             }}
           >
             {" "}
-            {selectedOrder?.paymentDetails?.method === "cash"
-              ? "COD"
-              : "Prepaid"}
+            {selectedOrder?.paymentDetails?.method 
+             }
           </span>
         </div>
 
@@ -133,7 +166,7 @@ const Invoice = ({ selectedOrder, printRef }) => {
             Slot Time:{selectedOrder?.deliverySlot?.startTime} To{" "}
             {selectedOrder?.deliverySlot?.endTime}
           </p>
-          <p>Items:{selectedOrder?.items.length}</p>
+          <p>Items:{selectedOrder?.items?.length}</p>
         </div>
       </>
       
@@ -178,7 +211,7 @@ const Invoice = ({ selectedOrder, printRef }) => {
 
         {/* <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} /> */}
         <tbody style={{ padding: "10px", margin: "10px" }}>
-          {selectedOrder?.items.map((item, index) => (
+          {selectedOrder?.items?.map((item, index) => (
             <tr style={{ padding: "10px", margin: "10px" }} key={index}>
               <td
                 style={{
@@ -238,6 +271,8 @@ const Invoice = ({ selectedOrder, printRef }) => {
         <hr style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }} />
       </div>
     </div>
+    ))}
+    </>
   );
 };
 

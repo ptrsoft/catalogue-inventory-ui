@@ -84,6 +84,20 @@ const Orders = () => {
 
   //using dispatch hitting apis
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && event.key === 'p') {
+        handlePrint(); 
+        
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []); 
+  
   useEffect(() => {
     const pageKey = currentPage === 1 ? undefined : nextKeys[currentPage - 1];
     const filterKey = getFilterKey();

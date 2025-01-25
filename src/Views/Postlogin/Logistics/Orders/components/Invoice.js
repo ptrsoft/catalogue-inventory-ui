@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import logo from "../../../../../assets/img/Favicon Icon Promode (1).svg";
 import Barcode from "./BarCode";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   fetchOrderById,
 } from "Redux-Store/Orders/OrdersThunk";
@@ -42,7 +42,7 @@ const Invoice = ({ selectedOrder, printRef }) => {
     }}
      
       style={{
-        width: "80mm",
+        width: "100mm",
         margin: "0 auto",
         padding: "10px",
         border: "0.1px dotted black",

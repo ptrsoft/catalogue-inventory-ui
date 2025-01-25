@@ -294,6 +294,7 @@ const Orders = () => {
           </head>
           <body>
             <div class="invoice">
+            
               ${printableContent}
             </div>
           </body>

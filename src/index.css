@@ -343,7 +343,7 @@ a.awsui_anchor_1kosq_101th_109{
 /* Make it visible only during printing */
 @media print {
   @page {
-    size: 85mm ; /* Custom receipt size */
+    size: 100mm ; /* Custom receipt size */
     margin: 10mm; /* Custom margin for printing */
   }
   img {

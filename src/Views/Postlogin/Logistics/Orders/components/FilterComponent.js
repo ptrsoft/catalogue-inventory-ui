@@ -45,12 +45,12 @@ const FilterComponent = ({
     // Add other statuses if needed
   ];
   const ageOptions = [
-    { label: "Today's Delivered Orders", value: "today" },
-    { label: "Yesterday's Delivered Orders", value: "yesterday" },
-    // { label: "7 days old delivered", value: "7" },
-    { label: "last 14 days old delivered", value: "14" },
-    { label: " last 1 month old delivered", value: "1m" },
-    { label: " last 2 months old delivered", value: "2m" },
+    { label: "Today's Orders", value: "today" },
+    { label: "Yesterday's  Orders", value: "yesterday" },
+    // { label: "7 days old ", value: "7" },
+    { label: "last 14 days old ", value: "14" },
+    { label: " last 1 month old ", value: "1m" },
+    { label: " last 2 months old ", value: "2m" },
     { label: "Older", value: "older" },
   ];
 

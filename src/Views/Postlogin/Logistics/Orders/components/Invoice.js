@@ -9,18 +9,17 @@ const Invoice = ({ selectedOrder, flag }) => {
   // For printing bill
   const printRef = useRef([]);
   const [fetchedOrders, setFetchedOrders] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false); // Track loading state
   const dispatch = useDispatch();
 
   const handlePrint = () => {
-    if (isLoaded && Array.isArray(printRef.current)) {
+    if (Array.isArray(printRef.current)) {
       // Combine all the refs' content into one printable layout
       const printableContent = printRef.current
         .filter((el) => el) // Ensure refs are not null
         .map((el) => el.outerHTML) // Extract HTML of each ref
         .join(""); // Join all the content
       triggerPrint(printableContent);
-    } else if (isLoaded && printRef.current) {
+    } else if (printRef.current) {
       // Handle single ref
       const printableContent = printRef.current.outerHTML;
       triggerPrint(printableContent);
@@ -70,7 +69,6 @@ const Invoice = ({ selectedOrder, flag }) => {
       Promise.all(orderIds.map((id) => dispatch(fetchOrderById(id))))
         .then((responses) => {
           setFetchedOrders(responses.map((res) => res.payload)); // Assuming payload contains order data
-          setIsLoaded(true); // Mark as loaded
         })
         .catch((error) => {
           console.error("Error fetching orders:", error);
@@ -78,7 +76,6 @@ const Invoice = ({ selectedOrder, flag }) => {
     } else {
       // If selectedOrder is not an array, store it in fetchedOrders directly
       setFetchedOrders([selectedOrder]);
-      setIsLoaded(true); // Mark as loaded
     }
   }, [selectedOrder, dispatch]);
 
@@ -100,7 +97,6 @@ const Invoice = ({ selectedOrder, flag }) => {
     const handleKeyDown = (event) => {
       if (event.ctrlKey && event.key === "p") {
         event.preventDefault(); // Prevent the default print action
-
         handlePrint();
       }
     };

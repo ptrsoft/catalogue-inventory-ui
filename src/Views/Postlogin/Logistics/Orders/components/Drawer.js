@@ -10,15 +10,19 @@ import {
   Modal,
   Textarea,
 } from "@cloudscape-design/components";
-import { cancelOrder, fetchUsersbyid,reattempt } from "Redux-Store/Orders/OrdersThunk";
+import {
+  cancelOrder,
+  fetchUsersbyid,
+  reattempt,
+} from "Redux-Store/Orders/OrdersThunk";
 
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch and useSelector
+import Invoice from "./Invoice";
 const Drawer = ({
   isDrawerOpen,
   selectedProduct,
   handleCloseDrawer,
   selectedOrder,
-  handlePrint,
   error,
   usersbyid,
   onCancelOrder,
@@ -98,9 +102,8 @@ const Drawer = ({
   };
 
   const handleConfirmAction = () => {
-
-    dispatch(reattempt({orderId:selectedOrder.orderId}));
-    console.log(selectedOrder.orderId,"reattempt");
+    dispatch(reattempt({ orderId: selectedOrder.orderId }));
+    console.log(selectedOrder.orderId, "reattempt");
     setIsModalVisible(false); // Close modal after dispatching the action
   };
 
@@ -161,8 +164,7 @@ const Drawer = ({
                               marginLeft: "5px",
                             }}
                           >
-                            {selectedOrder?.paymentDetails?.method
-                             }
+                            {selectedOrder?.paymentDetails?.method}
                           </span>
                         </span>
                       </div>
@@ -236,33 +238,28 @@ const Drawer = ({
             >
               <Box variant="h5">Items List </Box>
               <div class="button-container">
-                {(selectedOrder?.status==='cancelled')?
-                (  <button
-                  class="cancel-btn"
-                  style={{
-                    border:'2px solid #0972D3',
-                    borderColor:'#0972D3',
-                    color:'#0972D3'
-                  }}
-                  onClick={openConfirmationModal}
-                >
-                  Re Attempt
-                </button>):
-                (
+                {selectedOrder?.status === "cancelled" ? (
                   <button
-                  class="cancel-btn"
-                 
-                  onClick={() => handleOpenModal(selectedOrder?.userInfo?.id)}
-                >
-                  Cancel Order
-                </button>
-
+                    class="cancel-btn"
+                    style={{
+                      border: "2px solid #0972D3",
+                      borderColor: "#0972D3",
+                      color: "#0972D3",
+                    }}
+                    onClick={openConfirmationModal}
+                  >
+                    Re Attempt
+                  </button>
+                ) : (
+                  <button
+                    class="cancel-btn"
+                    onClick={() => handleOpenModal(selectedOrder?.userInfo?.id)}
+                  >
+                    Cancel Order
+                  </button>
                 )}
-               
-
-                <button onClick={handlePrint} class="print-btn">
-                  Print Bill
-                </button>
+                <Invoice selectedOrder={selectedOrder} flag={"single"} />
+              
               </div>
             </div>
             <Container>
@@ -289,11 +286,24 @@ const Drawer = ({
                   {
                     header: "Product Name",
                     cell: (item) => (
-                      <div style={{display:'flex',alignItems:'center',gap:'5px'}}>
-                        <img src={item.productImage} style={{ height: "30px",width:'30px', marginLeft:'5px' }}alt="products"></img>
-                         
-                      
-                       <p> {item.productName}</p>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "5px",
+                        }}
+                      >
+                        <img
+                          src={item.productImage}
+                          style={{
+                            height: "30px",
+                            width: "30px",
+                            marginLeft: "5px",
+                          }}
+                          alt="products"
+                        ></img>
+
+                        <p> {item.productName}</p>
                       </div>
                     ),
                   },
@@ -309,7 +319,7 @@ const Drawer = ({
           </Box>
         </div>
       )}
-       {isModalVisible && (
+      {isModalVisible && (
         <Modal
           onDismiss={closeConfirmationModal}
           visible={isModalVisible}
@@ -358,8 +368,7 @@ const Drawer = ({
                     marginLeft: "5px",
                   }}
                 >
-                  {selectedOrder?.paymentDetails?.method 
-                   }
+                  {selectedOrder?.paymentDetails?.method}
                 </span>
               </p>
               <p>

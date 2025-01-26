@@ -84,18 +84,7 @@ const Orders = () => {
   //using dispatch hitting apis
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.ctrlKey && event.key === 'p') {
-        handlePrint(); 
-        
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []); 
+
   
   useEffect(() => {
     const pageKey = currentPage === 1 ? undefined : nextKeys[currentPage - 1];
@@ -259,68 +248,6 @@ const Orders = () => {
   };
   // for printing bill
   const printRef = useRef([]);
-
-  // const handlePrint = () => {
-  //   // Trigger the print
-  //   const printContent = printRef.current;
-  //   const WinPrint = window.open("", "", "width=900,height=650");
-  //   WinPrint.document.write(printContent.outerHTML);
-  //   WinPrint.document.close();
-  //   WinPrint.focus();
-  //   WinPrint.print();
-  //   WinPrint.close();
-  // };
-
-  const handlePrint = () => {
-    if (Array.isArray(printRef.current)) {
-      // Combine all the refs' content into one printable layout
-      const printableContent = printRef.current
-        .filter((el) => el) // Ensure refs are not null
-        .map((el) => el.outerHTML) // Extract HTML of each ref
-        .join(""); // Join all the content
-      triggerPrint(printableContent);
-    } else if (printRef.current) {
-      // Handle single ref
-      const printableContent = printRef.current.outerHTML;
-      triggerPrint(printableContent);
-    } else {
-      console.error("No content to print!");
-    }
-  };
-
-  // Helper function to trigger print
-  const triggerPrint = (printableContent) => {
-    if (printableContent) {
-      const WinPrint = window.open("", "", "width=300,height=650"); // Set size close to receipt width
-      WinPrint.document.write(`
-        <html>
-          <head>
-            <title>Invoice</title>
-            <style>
-              
-              .invoice {
-                width: 100%;
-                text-align: left;
-              }
-              
-            </style>
-          </head>
-          <body>
-            <div class="invoice">
-              ${printableContent}
-            </div>
-          </body>
-        </html>
-      `);
-      WinPrint.document.close();
-      WinPrint.focus();
-      WinPrint.print();
-      WinPrint.close();
-    } else {
-      console.error("Printable content is empty!");
-    }
-  };
-
   const handleSearchChange = ({ detail }) => {
     setFilteringText(detail.filteringText);
     // setCurrentPage(1); // Reset page to 1 when filters change
@@ -563,13 +490,8 @@ const Orders = () => {
                 onAssignOrderStatusChange={handleAssignOrdersStatus}
               />
               <div style={{ marginLeft: "10px" }}>
-                <Button
-                  variant="primary"
-                  onClick={handlePrint}
-                  disabled={selectedItems.length === 0} // Disable when no items are selected
-                >
-                  Multiple Print Bill
-                </Button>
+              <Invoice printRef={printRef} flag={'multiple'} selectedOrder={selectedItems.length > 0 ? selectedItems : selectedOrder} />
+
               </div>
               {/* Flash messages */}
             </>
@@ -699,14 +621,13 @@ const Orders = () => {
           selectedProduct={selectedProduct}
           handleCloseDrawer={handleCloseDrawer}
           selectedOrder={selectedOrder}
-          handlePrint={handlePrint}
+         
           error={error}
           usersbyid={usersbyid}
           fetchpages={fetchedPages}
           onCancelOrder={handleCancelOrder} // Pass handler to child
         />
       </SpaceBetween>
-      <Invoice printRef={printRef} selectedOrder={selectedItems} />
     </ContentLayout>
   );
 };

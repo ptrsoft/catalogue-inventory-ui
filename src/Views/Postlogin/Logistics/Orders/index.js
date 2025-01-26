@@ -13,11 +13,10 @@ import {
   BreadcrumbGroup,
   SpaceBetween,
   Icon,
-  Input
+  Input,
 } from "@cloudscape-design/components";
 import { useNavigate } from "react-router-dom";
 import { cancelOrder, fetchUsersbyid } from "Redux-Store/Orders/OrdersThunk";
-
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -56,7 +55,7 @@ const Orders = () => {
     category: null,
     statuscategory: { label: "order placed", value: "order placed" },
     ageFilter: {
-      label: "Today's Delivered Orders",
+      label: "Today's Orders",
       value: "today",
     },
     shifts: null,
@@ -84,6 +83,9 @@ const Orders = () => {
 
   //using dispatch hitting apis
   const dispatch = useDispatch();
+
+
+  
   useEffect(() => {
     const pageKey = currentPage === 1 ? undefined : nextKeys[currentPage - 1];
     const filterKey = getFilterKey();
@@ -228,8 +230,8 @@ const Orders = () => {
   }, [selectedOrder, dispatch]);
   const handleReasonChange = (orderId, reason) => {
     setSelectedItems((prev) =>
-      prev.map((item) =>
-        item.id === orderId ? { ...item, reason } : item // Update the reason for the selected order
+      prev.map(
+        (item) => (item.id === orderId ? { ...item, reason } : item) // Update the reason for the selected order
       )
     );
   };
@@ -246,70 +248,6 @@ const Orders = () => {
   };
   // for printing bill
   const printRef = useRef([]);
-
-  // const handlePrint = () => {
-  //   // Trigger the print
-  //   const printContent = printRef.current;
-  //   const WinPrint = window.open("", "", "width=900,height=650");
-  //   WinPrint.document.write(printContent.outerHTML);
-  //   WinPrint.document.close();
-  //   WinPrint.focus();
-  //   WinPrint.print();
-  //   WinPrint.close();
-  // };
-
-  const handlePrint = () => {
-    if (Array.isArray(printRef.current)) {
-      // Combine all the refs' content into one printable layout
-      const printableContent = printRef.current
-        .filter((el) => el) // Ensure refs are not null
-        .map((el) => el.outerHTML) // Extract HTML of each ref
-        .join(""); // Join all the content
-      triggerPrint(printableContent);
-    } else if (printRef.current) {
-      // Handle single ref
-      const printableContent = printRef.current.outerHTML;
-      triggerPrint(printableContent);
-    } else {
-      console.error("No content to print!");
-    }
-  };
-  
-  // Helper function to trigger print
-  const triggerPrint = (printableContent) => {
-    if (printableContent) {
-      const WinPrint = window.open("", "", "width=300,height=650"); // Set size close to receipt width
-      WinPrint.document.write(`
-        <html>
-          <head>
-            <title>Invoice</title>
-            <style>
-              
-              .invoice {
-                width: 100%;
-                text-align: left;
-              }
-              
-            </style>
-          </head>
-          <body>
-            <div class="invoice">
-            
-              ${printableContent}
-            </div>
-          </body>
-        </html>
-      `);
-      WinPrint.document.close();
-      WinPrint.focus();
-      WinPrint.print();
-      WinPrint.close();
-    } else {
-      console.error("Printable content is empty!");
-    }
-  };
-  
-
   const handleSearchChange = ({ detail }) => {
     setFilteringText(detail.filteringText);
     // setCurrentPage(1); // Reset page to 1 when filters change
@@ -345,12 +283,28 @@ const Orders = () => {
     {
       header: "Payment Type",
       cell: (item) => (
-      
-         
-            <strong style={{ color: "#1D4ED8" }}> {item.paymentType}</strong>
-        
+        <strong
+          style={{
+            color: item.paymentType === "COD" ? "#414D5C" : item.paymentType === "Prepaid" ? "#1D4ED8" : "black", // Default to black if neither
+          }}
+        >
+          {item.paymentType}
+        </strong>
       ),
     },
+    {
+      header: "Payment Status",
+      cell: (item) => (
+        <strong
+          style={{
+            color: item.paymentStatus === "PENDING" ? "red" : item.paymentStatus === "Paid" ? "#00B207 " : "black", // Default to black if neither
+          }}
+        >
+          {item.paymentStatus}
+        </strong>
+      ),
+    },
+
     {
       header: "Order Status",
       cell: (item) => {
@@ -362,7 +316,10 @@ const Orders = () => {
           delivered: { type: "success", text: "Delivered" },
           undelivered: { type: "warning", text: "undelivered" },
           cancelled: { type: "error", text: "Cancelled" },
-          "Request for Cancellation": { type: "error", text: "Request For Cancellation" },
+          "Request for Cancellation": {
+            type: "error",
+            text: "Request For Cancellation",
+          },
           "order placed": { type: "in-progress", text: "Order Placed" },
         };
 
@@ -380,8 +337,7 @@ const Orders = () => {
     // Conditionally add "Reason" column if filters.statuscategory is "cancelled" and order status is "cancelled" or "undelivered"
     ...(filters?.statuscategory?.value === "cancelled" ||
     filters?.statuscategory?.value === "undelivered" ||
-    filters?.statuscategory?.value === "Request for Cancellation" 
-
+    filters?.statuscategory?.value === "Request for Cancellation"
       ? [
           {
             header: "Reason",
@@ -390,23 +346,24 @@ const Orders = () => {
                 item.orderStatus === "cancelled" ||
                 item.orderStatus === "undelivered"
               ) {
-                return item?.cancellationData?.cancelReason
-                || "-";
-              }
-              else if (item.orderStatus === "Request for Cancellation") {
+                return item?.cancellationData?.cancelReason || "-";
+              } else if (item.orderStatus === "Request for Cancellation") {
                 // Input field for "Request for Cancellation"
                 return (
-                
-                    <Input
-                      value={selectedItems.find((order) => order.id === item.id)?.reason || ""}
-                      onChange={(e) => handleReasonChange(item.id, e.detail.value)}
-                      placeholder="Enter reason"
-                      ariaLabel="Reason input"
-                      style={{
-                        width: "100%",
-                      }}
-                    />
-                  
+                  <Input
+                    value={
+                      selectedItems.find((order) => order.id === item.id)
+                        ?.reason || ""
+                    }
+                    onChange={(e) =>
+                      handleReasonChange(item.id, e.detail.value)
+                    }
+                    placeholder="Enter reason"
+                    ariaLabel="Reason input"
+                    style={{
+                      width: "100%",
+                    }}
+                  />
                 );
               }
               return "-"; // Default fallback
@@ -416,20 +373,15 @@ const Orders = () => {
           },
         ]
       : []),
-      {
-        header: "Total Amount",
-        cell: (item) => `₹${item.finalTotal
-    
-        }`
-      },
-      
+    {
+      header: "Total Amount",
+      cell: (item) => `₹${item.finalTotal}`,
+    },
+
     {
       header: "Delivery Slot Time",
       cell: (item) =>
-        `${item?.deliverySlot.startTime}${
-      item?.deliverySlot.startAmPm
-} To ${item?.deliverySlot.endTime}${
-      item?.deliverySlot.endAmPm}`,
+        `${item?.deliverySlot.startTime}${item?.deliverySlot.startAmPm} To ${item?.deliverySlot.endTime}${item?.deliverySlot.endAmPm}`,
     },
     { header: "Deliver Area", cell: (item) => item.area },
   ];
@@ -471,31 +423,30 @@ const Orders = () => {
     <ContentLayout
       headerVariant="high-contrast"
       notifications={<Flashbar items={flashbarItems} />}
-      
       breadcrumbs={
         <>
           {flashMessages.map((msg) => (
-        <div
-          key={msg.id}
-          style={{
-            padding: "20px",
-            margin: "10px 0",
-            borderRadius:'8px',
-            backgroundColor: `${msg.type === "info" ? "green" : "red"}`,
-            color: msg.type === "info" ? "white" : "white",
-          }}
-        >
-          {msg.content}
-        </div>
-      ))}
-        <BreadcrumbGroup
-          items={[
-            { text: "Dashboard", href: "/app/Dashboard" },
-            { text: "Logistics", href: "/app/Dashboard" },
-            { text: "Orders", href: "#" },
-          ]}
-          ariaLabel="Breadcrumbs"
-        />
+            <div
+              key={msg.id}
+              style={{
+                padding: "20px",
+                margin: "10px 0",
+                borderRadius: "8px",
+                backgroundColor: `${msg.type === "info" ? "green" : "red"}`,
+                color: msg.type === "info" ? "white" : "white",
+              }}
+            >
+              {msg.content}
+            </div>
+          ))}
+          <BreadcrumbGroup
+            items={[
+              { text: "Dashboard", href: "/app/Dashboard" },
+              { text: "Logistics", href: "/app/Dashboard" },
+              { text: "Orders", href: "#" },
+            ]}
+            ariaLabel="Breadcrumbs"
+          />
         </>
       }
       header={
@@ -519,14 +470,16 @@ const Orders = () => {
                 >
                   Create Runsheet
                 </Button>
-              ) :filters?.statuscategory?.value === "Request for Cancellation"?(
-               <MultipleOrdersCancellation
-               onOrdersCancelled={handleResetSelectedItems} // Pass the callback
-               selectedItems={selectedItems}
-               cancelOrdersThunk={cancelOrder} // Pass the thunk for order cancellation
-               dispatch={dispatch}
-               setFlashMessages={setFlashMessages}/>
-              ):null}
+              ) : filters?.statuscategory?.value ===
+                "Request for Cancellation" ? (
+                <MultipleOrdersCancellation
+                  onOrdersCancelled={handleResetSelectedItems} // Pass the callback
+                  selectedItems={selectedItems}
+                  cancelOrdersThunk={cancelOrder} // Pass the thunk for order cancellation
+                  dispatch={dispatch}
+                  setFlashMessages={setFlashMessages}
+                />
+              ) : null}
 
               <AssignToPackersModal
                 isOpen={isModalOpenForPacker}
@@ -536,24 +489,17 @@ const Orders = () => {
                 showFlashbar={showFlashbar}
                 onAssignOrderStatusChange={handleAssignOrdersStatus}
               />
-              <div style={{marginLeft:'10px'}}>
-                 <Button
-                  variant="primary"
-                  onClick={handlePrint}
-                  disabled={selectedItems.length === 0} // Disable when no items are selected
-                >
-                  Multiple Print Bill
-                </Button>
-                </div>
-               {/* Flash messages */}
-    
+              <div style={{ marginLeft: "10px" }}>
+              <Invoice printRef={printRef} flag={'multiple'} selectedOrder={selectedItems.length > 0 ? selectedItems : selectedOrder} />
+
+              </div>
+              {/* Flash messages */}
             </>
           }
           variant="h1"
         >
           Orders
         </Header>
-
       }
     >
       <SpaceBetween direction="vertical" size="xl">
@@ -675,17 +621,15 @@ const Orders = () => {
           selectedProduct={selectedProduct}
           handleCloseDrawer={handleCloseDrawer}
           selectedOrder={selectedOrder}
-          handlePrint={handlePrint}
+         
           error={error}
           usersbyid={usersbyid}
           fetchpages={fetchedPages}
           onCancelOrder={handleCancelOrder} // Pass handler to child
         />
       </SpaceBetween>
-      <Invoice printRef={printRef} selectedOrder={selectedItems} />
     </ContentLayout>
   );
 };
 
 export default Orders;
-

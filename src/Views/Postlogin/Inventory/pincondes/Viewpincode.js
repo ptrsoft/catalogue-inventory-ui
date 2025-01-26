@@ -15,7 +15,7 @@ import {
   BreadcrumbGroup,
   Modal,
 } from "@cloudscape-design/components";
-import { useDispatch} from "react-redux";
+import { useDispatch } from "react-redux";
 import { updateStatus } from "Redux-Store/Pincode/pincodeThunk";
 
 const PincodeView = () => {
@@ -27,10 +27,10 @@ const PincodeView = () => {
 
   // Get the payload passed via navigation or fallback to first pincode
   const location = useLocation();
-  const { payload, pincodes,flash,update } = location.state || {};
+  const { payload, pincodes, flash, update } = location.state || {};
   const currentData = payload || pincodes || {};
   const { pincode, deliveryType, shifts, active } = currentData;
-console.log(flash,"value of flashh");
+  console.log(flash, "value of flashh");
   // Sync localActive state with Redux active status on initial load or update
   useEffect(() => {
     setLocalActive(active);
@@ -49,10 +49,8 @@ console.log(flash,"value of flashh");
   // Confirm status update
   const confirmUpdateStatus = () => {
     const newStatus = !localActive;
-
     // Update the local active state immediately
     setLocalActive(newStatus);
-
     // Dispatch the Redux action to update status in the backend
     dispatch(
       updateStatus({
@@ -71,43 +69,37 @@ console.log(flash,"value of flashh");
       state: { pay: data },
     });
   };
-  
 
   useEffect(() => {
     let timer;
-  
     // Only show Flashbar when flash and update have specific values
-    if (flash === 'save' || update === 'update') {
-      console.log(flash,update,"values of these 2 ");
+    if (flash === "save" || update === "update") {
+      console.log(flash, update, "values of these 2 ");
       setShowFlashbar(true);
-  
       // Clear any previous timer to prevent overlapping
       clearTimeout(timer);
-  
       // Set a timeout to hide the Flashbar after 3 seconds
       timer = setTimeout(() => {
         setShowFlashbar(false);
       }, 3000);
     }
-  
+
     // Cleanup timer on unmount or dependency change
     return () => clearTimeout(timer);
   }, [flash, update]); // Only depend on flash and update
-  
-  
 
   return (
     <SpaceBetween size="m">
       {/* Success Alert */}
-      {showFlashbar&&(flash==='save' || update==='update')&&(
+      {showFlashbar && (flash === "save" || update === "update") && (
         <Flashbar
           items={[
             {
               id: "success-message",
               type: "info", // Set type to 'info' or 'success', etc.
               header: `Pincode has been ${
-    flash === "save" ? "added" : "updated"
-  } successfully`, // Header text
+                flash === "save" ? "added" : "updated"
+              } successfully`, // Header text
               dismissible: true, // Optionally, you can allow dismissing the Flashbar
               onDismiss: () => setShowFlashbar(false), // Hide Flashbar when dismissed
             },
@@ -211,10 +203,13 @@ console.log(flash,"value of flashh");
                       key={slotIndex}
                     >
                       <FormField label="Start Time">
-                        <Input value={slot.start} disabled />
+                        <Input
+                          value={`${slot.start} ${slot.startAmPm}`}
+                          disabled
+                        />
                       </FormField>
                       <FormField label="End Time">
-                        <Input value={slot.end} disabled />
+                        <Input value={`${slot.end} ${slot.endAmPm}`} disabled />
                       </FormField>
                     </SpaceBetween>
                   ))}
@@ -241,8 +236,8 @@ console.log(flash,"value of flashh");
           >
             <TextContent>
               <p>
-                Are you sure you want to change the status of pincode {pincode} to{" "}
-                {localActive ? "Inactive" : "Active"}?
+                Are you sure you want to change the status of pincode {pincode}{" "}
+                to {localActive ? "Inactive" : "Active"}?
               </p>
             </TextContent>
           </Modal>

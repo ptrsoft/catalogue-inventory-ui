@@ -211,6 +211,9 @@ const PincodeView = () => {
                       <FormField label="End Time">
                         <Input value={`${slot.end} ${slot.endAmPm}`} disabled />
                       </FormField>
+                      <FormField label="Date">
+                        <Input value={`${slot.date}`} disabled />
+                      </FormField>
                     </SpaceBetween>
                   ))}
                 </Container>

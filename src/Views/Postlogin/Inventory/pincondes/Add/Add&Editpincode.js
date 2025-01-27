@@ -258,6 +258,9 @@ const AddEditPincode = () => {
                       }}
                     />
                   </FormField>
+                  <FormField label="Date">
+  <Input value={slot.date ? slot.date : "Auto Generated"} disabled />
+</FormField>
                   <div
                     style={{
                       display: "flex",

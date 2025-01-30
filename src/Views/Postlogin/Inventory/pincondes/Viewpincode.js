@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
+  Checkbox,
   Box,
   Button,
   Container,
@@ -29,7 +30,8 @@ const PincodeView = () => {
   const location = useLocation();
   const { payload, pincodes, flash, update } = location.state || {};
   const currentData = payload || pincodes || {};
-  const { pincode, deliveryType, shifts, active } = currentData;
+  const { pincode, deliveryTypes,deliveryType, shifts, active } = currentData;
+  console.log(deliveryTypes,"from view");
   console.log(flash, "value of flashh");
   // Sync localActive state with Redux active status on initial load or update
   useEffect(() => {
@@ -160,28 +162,56 @@ const PincodeView = () => {
         }
       >
         {/* Delivery Type */}
-        <SpaceBetween direction="vertical" size="m">
-          <h3>Delivery Type</h3>
-          <Container>
-            <Tiles
-              value={deliveryType}
-              onChange={({ detail }) => console.log(detail.value)}
-              items={[
-                {
-                  label:
-                    deliveryType === "same day"
-                      ? "Same Day Delivery"
-                      : "Next Day Delivery",
-                  value: deliveryType,
-                  description: `Item is delivered on the ${
-                    deliveryType === "same day" ? "same day" : "next day"
-                  } the order is placed.`,
-                },
-              ]}
-              columns={1}
+        <Container header={<Header variant="h3">Selected Delivery Type</Header>}>
+  <SpaceBetween direction="vertical" size="s">
+    {[
+      { label: "Same Day Delivery", value: "same day", description: "Item is delivered on the same day the order is placed." },
+      { label: "Next Day Delivery", value: "next day", description: "Item is delivered the following day or according to a booked delivery slot." },
+    ].map((method) => (
+      // Check if the value exists in the deliveryTypes array
+      deliveryTypes.includes(method.value) && (
+        <div
+          key={method.value}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: "8px", // space between checkbox label and description
+            border: "2px solid #0073e6",
+            padding: "12px",
+            borderRadius: "8px",
+            width: "100%",
+            backgroundColor: "#f0f8ff",
+          }}
+        >
+          <div style={{ display: 'flex', gap: '5px' }}>
+            <Checkbox
+              checked={true} // Assuming this is always checked for now
+              onChange={() => {}}
+              label={method.label}
+              ariaLabel={method.label}
+              style={{
+                fontWeight: "bold",
+                margin: 0,
+              }}
             />
-          </Container>
-        </SpaceBetween>
+            <strong>{method.label}</strong>
+          </div>
+          <div
+            style={{
+              fontSize: "14px",
+              color: "#666",
+              marginLeft: "10px", // indent description slightly for better alignment
+            }}
+          >
+            {method.description}
+          </div>
+        </div>
+      )
+    ))}
+  </SpaceBetween>
+</Container>
+
 
         {/* Shifts & Slots */}
         <Box margin={{ top: "m" }}>
@@ -211,9 +241,9 @@ const PincodeView = () => {
                       <FormField label="End Time">
                         <Input value={`${slot.end} ${slot.endAmPm}`} disabled />
                       </FormField>
-                      <FormField label="Date">
+                      {/* <FormField label="Date">
                         <Input value={`${slot.date}`} disabled />
-                      </FormField>
+                      </FormField> */}
                     </SpaceBetween>
                   ))}
                 </Container>

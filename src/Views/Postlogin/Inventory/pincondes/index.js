@@ -263,8 +263,17 @@ function PincodeList() {
                   </div>
                 </Box>
                 <Box>
-                  <strong>Delivery Type</strong>
-                  <p>{pincode.deliveryType}</p>
+                  <strong>Delivery Types</strong>
+                  <p>
+  {pincode.deliveryTypes?.map((method, index) => (
+    <span key={index}>
+      {method}
+      {index < pincode.deliveryTypes.length - 1 && ", "}
+    </span>
+  ))}
+</p>
+
+   
                 </Box>
 
                 <Box>

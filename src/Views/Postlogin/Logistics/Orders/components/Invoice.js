@@ -7,6 +7,7 @@ import { fetchOrderById } from "Redux-Store/Orders/OrdersThunk";
 
 const Invoice = ({ selectedOrder, flag }) => {
   // For printing bill
+  
   const printRef = useRef([]);
   const [fetchedOrders, setFetchedOrders] = useState([]);
   const dispatch = useDispatch();
@@ -105,6 +106,7 @@ const Invoice = ({ selectedOrder, flag }) => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+   console.log(fetchOrderById,"from invoice")
 
   return (
     <>
@@ -174,7 +176,7 @@ const Invoice = ({ selectedOrder, flag }) => {
             style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }}
           />
           <div style={{ textAlign: "center" }}>
-            <p style={{ margin: "5px 0",fontWeight: "bold" }}>Dargah Khaleej Khan</p>
+            <p style={{ margin: "5px 0",fontWeight: "bold" }}>6-100,Dargah Khaleej Khan</p>
             <p style={{ margin: "5px 0" }}>
               Kismatpur, Hyderabad, Telangana, 500028
             </p>
@@ -189,7 +191,7 @@ const Invoice = ({ selectedOrder, flag }) => {
               <hr
                 style={{ flex: 1, border: "none", borderTop: "1px solid #000" }}
               />
-              <p style={{ margin: 0 }}>Phone: 9701610033</p>
+              <p style={{ margin: 0 }}>Phone : 9701610033</p>
               <hr
                 style={{ flex: 1, border: "none", borderTop: "1px solid #000" }}
               />
@@ -202,12 +204,12 @@ const Invoice = ({ selectedOrder, flag }) => {
             <p
               style={{ fontSize: "12px", margin: "5px 0", textAlign: "center" }}
             >
-              GSTIN NO: 36ABCFP1254A1ZS
+              GSTIN NO : 36ABCFP1254A1ZS
             </p>
             <p
               style={{ fontSize: "12px", margin: "5px 0", textAlign: "center" }}
             >
-              FSSAI NO: 13624010000109
+              FSSAI NO : 13624010000109
             </p>
           </div>
 
@@ -245,7 +247,7 @@ const Invoice = ({ selectedOrder, flag }) => {
               </span>
             </div>
 
-            <strong>Order ID:{selectedOrder?.orderId}</strong>
+            <strong>Order ID : {selectedOrder?.orderId}</strong>
               <div style={{ marginLeft: "-10px" }}>
             <Barcode
               // style={{ marginLeft: "-10px" }}
@@ -256,32 +258,32 @@ const Invoice = ({ selectedOrder, flag }) => {
               style={{ display: "flex", flexDirection: "column", gap: "7px" }}
             >
               <span style={{ fontWeight: "600" }}>
-                Name:{selectedOrder?.userInfo?.name}
+                Name : {selectedOrder?.userInfo?.name}
               </span>
 
               <span>
-                Address:
+                Address :
                 {selectedOrder?.shippingDetails?.address},
                 {selectedOrder?.shippingDetails?.zipcode}
               </span>
 
               <span>
-                Contact Number:
+                Contact Number : 
                 {selectedOrder?.userInfo?.number}
               </span>
 
               <span>
-                Date: {new Date(selectedOrder?.createdAt).toLocaleDateString()}{" "}
+                Date :  {new Date(selectedOrder?.createdAt).toLocaleDateString()}{" "}
                 ({new Date(selectedOrder?.createdAt).toLocaleTimeString()})
               </span>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span>
-                  Slot Time:{selectedOrder?.deliverySlot?.startTime}
-                  {selectedOrder?.deliverySlot?.startAmPM} To{" "}
+                  Slot Time : {selectedOrder?.deliverySlot?.startTime}
+                  {selectedOrder?.deliverySlot?.startAmPm} To{" "}
                   {selectedOrder?.deliverySlot?.endTime}
                   {selectedOrder?.deliverySlot?.endAmPm}
                 </span>
-                <span>Items:{selectedOrder?.items?.length}</span>
+                <span>Items : {selectedOrder?.items?.length}</span>
               </div>
             </div>
           </>
@@ -338,7 +340,7 @@ const Invoice = ({ selectedOrder, flag }) => {
                   </td>
                   <td>
                     {item.quantity}
-                    {item.unit === "pieces" ? "pcs" : item.unit}
+                    {/* {item.unit === "pieces" ? "pcs" : item.unit} */}
                   </td>
                   <td>{item.price.toFixed(2)}</td>
                   <td>{item.subtotal.toFixed(2)}</td>
@@ -361,10 +363,19 @@ const Invoice = ({ selectedOrder, flag }) => {
           >
             <p></p>
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "7px" }}
+              style={{ display: "flex", flexDirection: "column", gap: "7px",widt:'250px' }}
             >
-              <span>Sub Total:Rs. {selectedOrder?.subTotal}</span>
-              <span>Shipping Charges: Rs. {selectedOrder?.deliveryCharges}</span>
+                <div
+              style={{ display: "flex", justifyContent:'space-between',gap:'10px'  }}
+            >
+
+              <span>Sub Total : </span> <span style={{width:'80px'}}>Rs.{selectedOrder?.subTotal}</span>
+              </div>
+              <div
+              style={{ display: "flex", justifyContent:'space-between',gap:'10px' }}
+            >
+              <span>Shipping Charges :</span> <span  style={{width:'80px'}}>Rs.{selectedOrder?.deliveryCharges}</span>
+            </div>
             </div>
           </div>
 
@@ -373,7 +384,7 @@ const Invoice = ({ selectedOrder, flag }) => {
           />
 
           <h3 style={{ textAlign: "right" }}>
-            <strong>Grand Total:</strong> Rs. {selectedOrder?.totalPrice}
+            <strong>Grand Total : </strong> Rs. {selectedOrder?.finalTotal}
           </h3>
 
           {/* Footer */}
@@ -385,7 +396,7 @@ const Invoice = ({ selectedOrder, flag }) => {
               marginTop: "20px",
             }}
           >
-            <hr
+           <hr
               style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }}
             />
             <p style={{ margin: 0, fontWeight: "bold", fontSize: "14px" }}>

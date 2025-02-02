@@ -62,9 +62,7 @@ const AddEditPincode = () => {
     updatedShifts[shiftIndex].slots.splice(slotIndex, 1);
     setShifts(updatedShifts);
   };
-  const handleSelectionChange = ({ detail }) => {
-    setdeliveryTypes(detail.selectedItems);
-  };
+
 
   // console.log(shifts,"shiftsss");
   const handleSavePincode = () => {
@@ -236,14 +234,14 @@ const formatTime = (time) => {
                 flexDirection: "column",
                 alignItems: "flex-start",
                 gap: "8px", // space between checkbox label and description
-                border: deliveryTypes.includes(method.value)
+                border: deliveryTypes?.includes(method.value)
                   ? "2px solid #0073e6"
                   : "1px solid #ccc",
                 padding: "12px",
                 borderRadius: "8px",
                 width: "100%",
                 cursor: "pointer",
-                backgroundColor: deliveryTypes.includes(method.value)
+                backgroundColor: deliveryTypes?.includes(method.value)
                   ? "#f0f8ff"
                   : "#fff",
                 transition: "all 0.2s ease-in-out",

@@ -822,18 +822,6 @@ const AddItemForm = ({ onToggle, isMultipleVariant }) => {
                     </FormField>
                   </Grid>
 
-                  {/* <FormField>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="discount"
-                        checked={discount}
-                        onChange={({ detail }) => setDiscount(!discount)}
-                      />
-                      Show discount tag on B2C
-                    </label>
-                  </FormField> */}
-
                   <FormField label="Discount (%)">
                     <Input
                       type="number"

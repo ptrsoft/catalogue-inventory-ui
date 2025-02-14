@@ -822,7 +822,7 @@ const AddItemForm = ({ onToggle, isMultipleVariant }) => {
                     </FormField>
                   </Grid>
 
-                  <FormField>
+                  {/* <FormField>
                     <label>
                       <input
                         type="checkbox"
@@ -832,7 +832,7 @@ const AddItemForm = ({ onToggle, isMultipleVariant }) => {
                       />
                       Show discount tag on B2C
                     </label>
-                  </FormField>
+                  </FormField> */}
 
                   <FormField label="Discount (%)">
                     <Input

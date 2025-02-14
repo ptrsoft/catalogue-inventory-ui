@@ -7,6 +7,8 @@ import { AuthContext } from "context/Authcontext";
 const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
 const Inventory = lazy(() => import("./Postlogin/Inventory"));
 const AddItem = lazy(() => import("./Postlogin/Inventory/addItem/addItem"));
+const AddItemForm = lazy(() => import("./Postlogin/Inventory/myadd"));
+
 const InventoryAdjustments = lazy(() => import("./Postlogin/Inventory/InventoryAdjustments"));
 const Edit = lazy(() => import("./Postlogin/Inventory/edit/edit"));
 const CreateAdjustment = lazy(() => import("./Postlogin/Inventory/InventoryAdjustments/CreateAdjustment"));
@@ -62,7 +64,9 @@ const Views = () => {
         {/* Protected Routes */}
         <Route exact path={`${PREFIX_APP_PATH}/dashboard`} element={<ProtectedRoute element={<Dashboards />} />} />
         <Route exact path={`${PREFIX_APP_PATH}/inventory`} element={<ProtectedRoute element={<Inventory />} />} />
-        <Route exact path={`${PREFIX_APP_PATH}/inventory/addItem`} element={<ProtectedRoute element={<AddItem />} />} />
+        {/* <Route exact path={`${PREFIX_APP_PATH}/inventory/addItem`} element={<ProtectedRoute element={<AddItem />} />} /> */}
+        <Route exact path={`${PREFIX_APP_PATH}/inventory/addItem`} element={<ProtectedRoute element={<AddItemForm/>} />} />
+
         <Route exact path={`${PREFIX_APP_PATH}/inventory/adjustments`} element={<ProtectedRoute element={<InventoryAdjustments />} />} />
         <Route exact path={`${PREFIX_APP_PATH}/inventory/create-adjustment`} element={<ProtectedRoute element={<CreateAdjustment />} />} />
         <Route exact path={`${PREFIX_APP_PATH}/inventory/new-adjustment`} element={<ProtectedRoute element={<NewAdjustment />} />} />

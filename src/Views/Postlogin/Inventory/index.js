@@ -443,7 +443,9 @@ const Inventory = () => {
           /> */}
           <Box float="right">
             <SpaceBetween size="xs" direction="horizontal">
+              {/* <Button href="/app/Inventory/addItem">Add Item</Button> */}
               <Button href="/app/Inventory/addItem">Add Item</Button>
+
             </SpaceBetween>
           </Box>
         </Grid>

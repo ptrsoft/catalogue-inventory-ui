@@ -131,6 +131,7 @@ const AddItem = () => {
         return updatedValues;
       });
     };
+    
   const handleSave = () => {
     setIsFormSubmitted(true);
     if (!imageUrl1) {

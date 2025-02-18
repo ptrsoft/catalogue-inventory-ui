@@ -33,7 +33,7 @@ const Invoice = ({ selectedOrder, flag }) => {
   const triggerPrint = (printableContent) => {
     if (printableContent) {
       setTimeout(() => {
-        const WinPrint = window.open("", "", "width=300,height=650"); // Set size close to receipt width
+        const WinPrint = window.open("", "", "width=900,height=650"); // Set size close to receipt width
         WinPrint.document.write(`
           <html>
             <head>
@@ -106,7 +106,6 @@ const Invoice = ({ selectedOrder, flag }) => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-   console.log(fetchOrderById,"from invoice")
 
   return (
     <>
@@ -336,10 +335,12 @@ const Invoice = ({ selectedOrder, flag }) => {
                       textAlign: "left",
                     }}
                   >
-                    {item.productName}
+                   {item.productName.split('-')[0]}
+
                   </td>
                   <td>
                     {item.quantity}
+                    {item.unit === "pieces" ? "pcs" : item.unit}
                     {/* {item.unit === "pieces" ? "pcs" : item.unit} */}
                   </td>
                   <td>{item.price.toFixed(2)}</td>

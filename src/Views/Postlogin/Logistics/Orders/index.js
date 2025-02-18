@@ -383,7 +383,7 @@ const Orders = () => {
       cell: (item) =>
         `${item?.deliverySlot.startTime}${item?.deliverySlot.startAmPm} To ${item?.deliverySlot.endTime}${item?.deliverySlot.endAmPm}`,
     },
-    { header: "Deliver Area", cell: (item) => item.area },
+    { header: "Deliver Area", cell: (item) => item.address.address },
   ];
 
   //function for assigning order to packer

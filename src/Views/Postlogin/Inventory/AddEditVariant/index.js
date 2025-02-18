@@ -221,7 +221,7 @@ const AddEditVariant = () => {
       MaximumSellingWeightUnit: "",
       MinimumSellingWeightUnit: "",
       totalQuantityInB2c: 0,
-      TotalquantityB2cUnit: "",
+      totalquantityB2cUnit: "",
       stockQuantity: 0,
       msp: 0,
       buyerLimit: 0,

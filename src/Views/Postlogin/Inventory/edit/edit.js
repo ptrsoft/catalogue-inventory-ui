@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import { uploadImage } from "Redux-Store/uploadImage/uploadThunk";
+
 import {
   fetchProductById,
   updateProductDetails,
@@ -10,6 +12,9 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
 import Grid from "@cloudscape-design/components/grid";
 import {
+  Modal,
+  Icon,
+  Table,
   SpaceBetween,
   FormField,
   Input,
@@ -20,6 +25,7 @@ import {
   ColumnLayout,
   Button,
   Textarea,
+  Box,
 } from "@cloudscape-design/components"; // Adjust the import path if needed
 import Flashbar from "@cloudscape-design/components/flashbar";
 
@@ -37,43 +43,144 @@ const Edit = () => {
   const productDetailError = useSelector(
     (state) => state.products.productDetailError
   );
+  const [isShowIntable, setShowIntable] = useState(false);
 
   // Local states for form input fields
   const [name, setName] = useState("");
-  const [category, setCategory] = useState("");
-  const [units, setUnits] = useState("");
-  const [stockQuantity, setStockQuantity] = useState("");
-  const [purchasingPrice, setPurchasingPrice] = useState("");
-  const [msp, setMsp] = useState("");
-  const [description, setDescription] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
-  const [addExpiry, setAddExpiry] = useState(false);
-  const [keepInformed, setKeepInformed] = useState(false);
-  const [store, setStore] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [showQuantityFields, setShowQuantityFields] = useState(false);
-  const [selectedUnits, setSelectedUnits] = React.useState(null);
+  const [description, setDescription] = useState("");
+  const [units, setUnits] = useState(null);
+  const [imageUrl1, setImageUrl1] = React.useState("");
+  const [imageUrl2, setImageUrl2] = React.useState("");
+  const [imageUrl3, setImageUrl3] = React.useState("");
+
+  const [purchasingPrice, setPurchasingPrice] = useState("");
+
+  const [totalQuantityInB2C, setTotalQuantityInB2C] = useState("");
+  const [buyerLimit, setBuyerLimit] = useState("");
+  const [lowStockAlert, setLowStockAlert] = useState("");
+  const [sellingPrice, setSellingPrice] = useState("");
+  const [comparePrice, setComparePrice] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [category, setCategory] = useState("");
+  const pPrice = parseFloat(purchasingPrice) || 0;
+  const sPrice = parseFloat(sellingPrice) || 0;
+  const cPrice = parseFloat(comparePrice) || 0;
+
+  // Calculate Discount Percentage
+  const discountPercentage =
+    cPrice > 0 ? ((cPrice - sPrice) / cPrice) * 100 : 0;
+
+  // Calculate Profit
+  const profit = sPrice - pPrice;
+
+  // Calculate Gross Margin Percentage
+  const grossMargin = sPrice > 0 ? (profit / sPrice) * 100 : 0;
+  const [stockQuantity, setStockQuantity] = useState("");
+
+
   const [subCategory, setSubCategory] = useState(""); // Add this line
   const [items, setItems] = React.useState([]);
   const [invalidFields, setInvalidFields] = useState({}); // State to track invalid fields
-    //add Tag code
-    const [tags, setTags] = useState([]);
-    const [inputTag, setInputTag] = useState('');
-    const handleKeyPressForTag = (event) => {
-      if (event.key === 'Enter' && inputTag.trim() !== '') {
-        setTags([...tags, inputTag.trim()]);
-        setInputTag('');
-      }
-    };
-    console.log(tags,"tag");
+  const [tags, setTags] = useState([]);
 
-    const removeTokenForTag = (index) => {
-      setTags((prevValues) => {
-        const updatedValues = [...prevValues];
-        updatedValues.splice(index, 1);
-        return updatedValues;
-      });
-    };
+  //variant code
+  const [tableData, setTableData] = useState([]);
+  const [values, setValues] = useState([]);
+
+  // Add these new state declarations
+  const [availability, setAvailability] = useState(null);
+  const [MinimumSellingWeightUnit, setMinimumSellingWeightUnit] = useState("");
+  const [MaximumSellingWeightUnit, setMaximumSellingWeightUnit] = useState("");
+  const [stockQuantityAlert, setStockQuantityAlert] = useState("");
+  const [isVariant, setIsVariant] = useState(false);
+  const [parentProductId, setParentProductId] = useState("");
+  const [search_name, setSearchName] = useState("");
+  const [TotalquantityB2cUnit, setTotalQuantityB2CUnit] = useState("");
+  // Add or update state declarations
+  const [maximumSellingWeight, setMaximumSellingWeight] = useState("");
+  const [minimumSellingWeight, setMinimumSellingWeight] = useState("");
+  const [images, setImages] = useState([]);
+  const [createdAt, setCreatedAt] = useState("");
+  const [updatedAt, setUpdatedAt] = useState("");
+
+  useEffect(() => {
+    if (values.length > 0) {
+      setTableData(
+        values.map((name, index) => ({
+          id: index + 1,
+          attribute: name,
+          quantity: "",
+          purchasingPrice: "",
+          sellingPrice: "",
+          comparePrice: "",
+          buyerLimit: "",
+          lowStockAlert: "",
+          stockQuantity: 0,
+          availability: false,
+          unit: null, // Default value only
+          // fileUploadValue: [],
+          // imageUrls: [],
+        }))
+      );
+    }
+  }, [values]);
+
+  console.log(tableData, "tablee");
+  const handleInputChange = useCallback((id, field, value) => {
+    setTableData((prevData) =>
+      prevData.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              [field]: isNaN(value) || value === "" ? value : Number(value), // Convert only if it's a valid number
+            }
+          : item
+      )
+    );
+  }, []);
+  const handleToggleChange = (id, checked) => {
+    setTableData((prevData) =>
+      prevData.map((item) =>
+        item.id === id
+          ? { ...item, availability: checked } // Update the `status` field for the item with the given id
+          : item
+      )
+    );
+  };
+  const unitOptions = [
+    { label: "Piece", value: "pieces" },
+    { label: "Grams", value: "grams" },
+    { label: "Kgs", value: "kgs" },
+    { label: "Litres", value: "litres" },
+  ];
+  const handleImageUpload = async (file, setImageUrl) => {
+    if (file) {
+      try {
+        const result = await dispatch(uploadImage(file)).unwrap();
+        setImageUrl(result);
+      } catch (error) {
+        console.error(`Failed to upload image:`, error);
+      }
+    }
+  };
+  //add Tag code
+  const [inputTag, setInputTag] = useState("");
+  const handleKeyPressForTag = (event) => {
+    if (event.key === "Enter" && inputTag.trim() !== "") {
+      setTags([...tags, inputTag.trim()]);
+      setInputTag("");
+    }
+  };
+  console.log(tags, "tag");
+
+  const removeTokenForTag = (index) => {
+    setTags((prevValues) => {
+      const updatedValues = [...prevValues];
+      updatedValues.splice(index, 1);
+      return updatedValues;
+    });
+  };
   useEffect(() => {
     if (id) {
       dispatch(fetchProductById(id));
@@ -95,17 +202,69 @@ const Edit = () => {
   useEffect(() => {
     if (productDetail) {
       setName(productDetail.name || "");
-      setTags(Array.isArray(productDetail.tags) ? productDetail.tags : []); // Ensure it's always an array  
+      setTags(Array.isArray(productDetail.tags) ? productDetail.tags : []);
       setCategory(productDetail.category || "");
       setUnits(productDetail.units || "");
       setStockQuantity(productDetail.stockQuantity || "");
       setPurchasingPrice(productDetail.purchasingPrice || "");
-      setMsp(productDetail.msp || "");
       setDescription(productDetail.description || "");
       setSubCategory(productDetail.subCategory || "");
-      setExpiryDate(productDetail.expiryDate || "");
+      setExpiryDate(productDetail.expiry || "");
+      setAvailability(productDetail.availability || "");
+      setTotalQuantityInB2C(productDetail.totalQuantityInB2c|| "");
+      setTotalQuantityB2CUnit(productDetail.totalquantityB2cUnit || "");
+      setMinimumSellingWeightUnit(productDetail.MinimumSellingWeightUnit || "");
+      setMaximumSellingWeightUnit(productDetail.MaximumSellingWeightUnit || "");
+      setStockQuantityAlert(productDetail.stockQuantityAlert || "");
+      setIsVariant(productDetail.isVariant || false);
+      setParentProductId(productDetail.parentProductId || "");
+      setSearchName(productDetail.search_name || "");
+      setLowStockAlert(productDetail.stockQuantityAlert || "");
+      setBuyerLimit(productDetail.buyerLimit || "");
+      setSellingPrice(productDetail.sellingPrice || "");
+      setComparePrice(productDetail.comparePrice || "");
+      setImageUrl1(productDetail.image || "");
+      setMaximumSellingWeight(productDetail.maximumSellingWeight || "");
+      setMinimumSellingWeight(productDetail.minimumSellingWeight || "");
+      setDiscount(productDetail.discount || 0);
+      setImages(productDetail.images || []);
+      setCreatedAt(productDetail.createdAt || "");
+      setUpdatedAt(productDetail.updatedAt || "");
+      setTotalQuantityB2CUnit(productDetail.TotalquantityB2cUnit || "");
     }
   }, [productDetail]);
+   //add varient code
+    const [attribute, setAttribute] = useState({
+      label: "Weight",
+      value: "Weight",
+    });
+    // const [values, setValues] = useState([]);
+    const [inputValue, setInputValue] = useState("");
+  
+    const handleKeyPress = (event) => {
+      if (event.key === "Enter" && inputValue.trim() !== "") {
+        setValues([...values, inputValue.trim()]);
+        console.log(values, "val");
+        setInputValue("");
+      }
+    };
+  
+    const removeToken = (index) => {
+      setValues((prevValues) => {
+        const updatedValues = [...prevValues];
+        updatedValues.splice(index, 1);
+        return updatedValues;
+      });
+    };
+    const handledelete = () => {
+    setAttribute(null);
+    setValues([]);
+  };
+  // Open modal for editing
+  const handleEdit = () => {
+    setIsOpen(true);
+  };
+ const [isOpen, setIsOpen] = useState(false);
 
   if (productDetailStatus === "in_progress") {
     return <div>Loading...</div>;
@@ -116,7 +275,7 @@ const Edit = () => {
   if (!productDetail) {
     return <div>No product details available.</div>;
   }
-
+console.log(images,"array of images");
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -139,15 +298,34 @@ const Edit = () => {
     setInvalidFields({});
 
     const productData = {
+      id: id,
       name,
       tags,
       description,
       category,
       subCategory,
       units,
-      expiry: new Date(expiryDate).toISOString(),
+      expiry: expiryDate === "No Expiry" ? expiryDate : new Date(expiryDate).toISOString(),
+      availability,
+      // totalquantityB2cUnit,
+      TotalquantityB2cUnit,
+      MinimumSellingWeightUnit,
+      MaximumSellingWeightUnit,
+      stockQuantityAlert,
+      sellingPrice: Number(sellingPrice),
+      comparePrice: Number(comparePrice),
+      purchasingPrice: Number(purchasingPrice),
+      buyerLimit: Number(buyerLimit),
+      stockQuantity: Number(stockQuantity),
+      image: imageUrl1,
+      images: [imageUrl1,imageUrl2,imageUrl3], // Include all images
+      totalQuantityInB2c: Number(totalQuantityInB2C),
+      minimumSellingWeight: Number(minimumSellingWeight),
+      maximumSellingWeight: Number(maximumSellingWeight),
+      variant:tableData,
+    
     };
-
+ console.log(productData,"product");
     dispatch(updateProductDetails({ id, productData }))
       .unwrap()
       .then((response) => {
@@ -165,16 +343,17 @@ const Edit = () => {
           },
         ]);
 
-        setTimeout(() => {
-          setItems([]);
-          navigate("/app/inventory");
+        // setTimeout(() => {
+        //   setItems([]);
+        //   navigate("/app/inventory");
 
-          window.location.reload(); // Force reload after navigation.
-          
-        }, 2000);
-
+        //   window.location.reload(); // Force reload after navigation.
+        // }, 2000);
       })
       .catch((error) => {
+        console.log("Product Data:", productData);
+        console.log("Product Data:", productData);
+
         console.error("Error during update:", error);
         setItems([
           {
@@ -189,9 +368,32 @@ const Edit = () => {
         setTimeout(() => {
           setItems([]);
           // navigate("/app/inventory");
-        }, 3000);
+        }, 5000);
       });
   };
+
+    const handleReplaceImage = (setImageUrl) => {
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/*";
+      fileInput.onchange = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          try {
+            const result = await dispatch(uploadImage(file)).unwrap();
+            setImageUrl(result);
+          } catch (error) {
+            console.error(`Failed to replace image:`, error);
+          }
+        }
+      };
+      fileInput.click();
+    };
+  
+    const handleRemoveImage = (setImageUrl) => {
+      setImageUrl("");
+    };
+  
   const subcategoryOptions = {
     "Fresh Vegetables": [
       { label: "Daily Vegetables", value: "Daily Vegetables" },
@@ -258,229 +460,793 @@ const Edit = () => {
       >
         Edit Item
       </Header>
-    
-        <Grid
-          gridDefinition={[
-            { colspan: { default: 16, xxs: 8 } },
-            { colspan: { default: 8, xxs: 4 } },
-          ]}
-        >
-          <Container>
-            <SpaceBetween direction="vertical" size="xs">
-              <ColumnLayout columns={2} minColumnWidth={170}>
-                <SpaceBetween size="s">
-                  <FormField label="Item Name">
-                    <Input
-                      invalid={invalidFields.name}
-                      value={name}
-                      onChange={({ detail }) => setName(detail.value)}
-                    />
-                  </FormField>
+      <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+        <Container header={<Header>Category</Header>}>
+          <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
 
-              {/* Category Dropdown */}
-              <FormField label="Category">
-                    <Select
-                      selectedOption={{ label: category, value: category }} // Set category as object
-                      onChange={({ detail }) => {
-                        setCategory(detail.selectedOption.value);
-                        setSubCategory(null); // Reset subcategory when category changes
+          <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+            <FormField label="Category">
+              <Select
+                selectedOption={
+                  category ? { label: category, value: category } : null
+                }
+                onChange={({ detail }) => {
+                  setCategory(detail.selectedOption.value);
+                  setSubCategory(null);
+                }}
+                options={categoryOptions}
+                placeholder="Select a category"
+              />
+            </FormField>
+            {/* Subcategory Dropdown */}
+            <FormField label="Sub Category">
+              <Select
+                selectedOption={
+                  subCategory ? { label: subCategory, value: subCategory } : null
+                }
+                onChange={({ detail }) => setSubCategory(detail.selectedOption.value)}
+                options={category ? subcategoryOptions[category] || [] : []}
+                placeholder="Select a subcategory"
+              />
+            </FormField>
+          </Grid>
+        </Container>
+        <Container header={<Header>Status</Header>}>
+        <FormField label="Status *">
+  <Select
+    name="statusofItem"
+    selectedOption={
+      availability 
+        ? { label: "Active", value: true }
+        : { label: "Inactive", value: false }
+    }
+    onChange={({ detail }) => setAvailability(detail.selectedOption.value)}
+    options={[
+      { label: "Active", value: true },
+      { label: "Inactive", value: false },
+    ]}
+    placeholder="Select Status"
+  />
+</FormField>
+        </Container>
+      </Grid>
+      <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+        <Container fitHeight header={<Header>Item Information</Header>}>
+          <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
+          <SpaceBetween size="m">
+            <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+              <FormField label="Item Name">
+                <Input
+                  invalid={invalidFields.name}
+                  value={name}
+                  onChange={({ detail }) => setName(detail.value)}
+                />
+              </FormField>
+              <FormField label="Expiry Date">
+                <Input
+                  type="date"
+                  value={expiryDate}
+                  invalid={invalidFields.expiryDate}
+                  onChange={({ detail }) => setExpiryDate(detail.value)}
+                  required
+                />
+              </FormField>
+            </Grid>
+            <div>
+              <strong>Tags</strong>
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "5px",
+                  alignItems: "center",
+                  border: "2px solid #ccc",
+                  padding: "5px",
+                  borderRadius: "8px",
+                  marginTop: "5px",
+                }}
+              >
+                {tags.map((tag, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      background: "#f3f3f3",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                      margin: "4px",
+                    }}
+                  >
+                    {tag}
+                    <button
+                      onClick={() => removeTokenForTag(index)}
+                      style={{
+                        marginLeft: "8px",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "#0073e6",
                       }}
-                      options={categoryOptions}
-                      placeholder="Select a category"
-
-         
-                    />
-                  </FormField>
-
-                  {/* Subcategory Dropdown */}
-                  <FormField label="Sub Category">
-
-                    <Select
-                      selectedOption={{ label: subCategory, value: subCategory }} // Set subCategory as object
-                      onChange={({ detail }) => setSubCategory(detail.selectedOption.value)}
-                      options={
-                        category
-                          ? subcategoryOptions[category] || []
-                          : []
-                      }
-                      placeholder="Select a subcategory"
-                    />
-                  </FormField>
-                  <FormField label="Unit">
-                    <Select
-                      options={[
-                        { label: "Piece", value: "pieces" },
-                        { label: "Grams", value: "grams" },
-                        { label: "Kgs", value: "kgs" },
-                        { label: "Litres", value: "litres" },
-                      ]}
-                      value={units} // Set the value from productDetail
-                      invalid={invalidFields.units}
-                      selectedOption={{
-                        label: units.charAt(0).toUpperCase() + units.slice(1),
-                        value: units,
-                      }} // Ensure the label is capitalized
-                      onChange={({ detail }) => {
-                        setUnits(detail.selectedOption.value);
-                        setSelectedUnits(detail.selectedOption); // Update selectedUnits state
-                      }}
-                    />
-                  </FormField>
-
-                  <FormField label="Quantity in Stock">
-                    <Input
-                      value={stockQuantity}
-                      onChange={({ detail }) => setStockQuantity(detail.value)}
-                    />
-                  </FormField>
-
-                  <FormField label="Purchasing Price">
-                    <Input
-                      value={purchasingPrice}
-                      onChange={({ detail }) =>
-                        setPurchasingPrice(detail.value)
-                      }
-                    />
-                  </FormField>
-                  <FormField label="Minimum Selling Price">
-                    <Input
-                      value={msp}
-                      onChange={({ detail }) => setMsp(detail.value)}
-                    />
-                  </FormField>
-                  <FormField>
-                    <Toggle
-                      onChange={({ detail }) =>
-                        setShowQuantityFields(detail.checked)
-                      }
-                      checked={showQuantityFields}
                     >
-                      Quantity on hand
-                    </Toggle>
-                  </FormField>
-
-                  {showQuantityFields && (
-                    <>
-                      <FormField label="Select Store">
-                        <Select
-                          onChange={({ detail }) =>
-                            setStore(detail.selectedOption.value)
-                          }
-                          options={[
-                            { label: "GIRDHARI", value: "girdhari" },
-                            { label: "SAIDABAD", value: "saidabad" },
-                          ]}
-                          placeholder="Select store"
-                        />
-                      </FormField>
-                      <FormField label="Quantity">
-                        <Input
-                          size="3xs"
-                          placeholder="Enter Quantity"
-                          value={quantity}
-                          onChange={({ detail }) => setQuantity(detail.value)}
-                        />
-                      </FormField>
-                    </>
-                  )}
-                </SpaceBetween>
-
-                <SpaceBetween size="m">
-                  <FormField label="Item Description">
-                    <Textarea
-                      value={description}
-                      invalid={invalidFields.description}
-                      onChange={({ detail }) => setDescription(detail.value)}
-                    />
-                  </FormField>
-                  <FormField label="Expiry Date">
-                    <Input
-                      type="date"
-                      value={expiryDate}
-                      invalid={invalidFields.expiryDate}
-                      onChange={({ detail }) => setExpiryDate(detail.value)}
-                      required
-                    />
-                  </FormField>
-                </SpaceBetween>
-                <div style={{ flex: '0 0 330px' }}>
-    <strong>Tags</strong>
-    <div
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '5px',
-        alignItems: 'center',
-        border: '2px solid #ccc',
-        padding: '5px',
-        borderRadius: '8px',
-        marginTop:'5px'
-      }}
-    >
-      {tags.map((tag, index) => (
-        <div
-          key={index}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            background: '#f3f3f3',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            margin: '4px',
-          }}
-        >
-          {tag}
-          <button
-            onClick={() => removeTokenForTag(index)}
-            style={{
-              marginLeft: '8px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: '#0073e6',
-            }}
-          >
-            ×
-          </button>
-        </div>
-      ))}
-      <input
-        placeholder="Enter Tag"
-        value={inputTag}
-        onChange={(event) => setInputTag(event.target.value)}
-        onKeyPress={handleKeyPressForTag}
-        style={{ flex: 1, padding: '8px', border: 'none', outline: 'none', width: '100%' }}
-      />
-    </div>
-  </div>
-              </ColumnLayout>
-            </SpaceBetween>
-          </Container>
-          <Container>
-            <div
-              style={{
-                borderRadius: "10px",
-                backgroundColor: "#E9EBED",
-                height: "47vh",
-                padding: "15px",
-                marginTop: "5px",
-                marginBottom: "10px",
-              }}
-            >
-              <div>
-                <img
-                  src={productDetail.image}
-                  alt={productDetail.name}
-                  style={{ width: "100%", height: "16rem" }}
-                />{" "}
-              </div>{" "}
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <input
+                  placeholder="Enter Tag"
+                  value={inputTag}
+                  onChange={(event) => setInputTag(event.target.value)}
+                  onKeyPress={handleKeyPressForTag}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    border: "none",
+                    outline: "none",
+                    width: "100%",
+                  }}
+                />
+              </div>
             </div>
 
-          </Container>
-        </Grid>
-     
+            <FormField
+              label="Item Description"
+              stretch // This ensures the FormField takes full width
+            >
+              <div style={{ width: "100%" }}>
+                <Textarea
+                  value={description}
+                  invalid={invalidFields.description}
+                  onChange={({ detail }) => setDescription(detail.value)}
+                />
+              </div>
+            </FormField>
+            {/* <Container>
+              <div
+                style={{
+                  borderRadius: "10px",
+                  backgroundColor: "#E9EBED",
+                  height: "47vh",
+                  padding: "15px",
+                  marginTop: "5px",
+                  marginBottom: "10px",
+                }}
+              >
+                <div>
+                  <img
+                    src={productDetail.image}
+                    alt={productDetail.name}
+                    style={{ width: "100%", height: "16rem" }}
+                  />{" "}
+                </div>{" "}
+              </div>
+            </Container> */}
+             <FormField
+                             label="Add Item Image"
+                             stretch // This ensures the FormField takes full width
+                           >
+            
+            <div style={{ border: "2px dashed #4A90E2", padding: "16px", borderRadius: "8px", width: "100%", textAlign: "left", marginTop: "3px" }}>
+             
+              <div style={{ display: "flex", gap: "12px", marginTop: "12px" }}>
+                {[imageUrl1, imageUrl2, imageUrl3].map((image, index) => (
+                  (index === 0 || (index === 1 && imageUrl1) || (index === 2 && imageUrl2)) && ( // Show conditionally
+                    <div key={index} style={{ position: "relative", width: "80px", height: "80px" }}>
+                      {image ? (
+                        <>
+                          <img src={image} alt="Uploaded" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px", border: "1px solid #ddd" }} />
+                          <div
+                            style={{
+                              position: "absolute",
+                              inset: "0",
+                              backgroundColor: "rgba(0, 0, 0, 0.6)",
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              borderRadius: "8px",
+                              opacity: "0",
+                              transition: "opacity 0.3s ease",
+                            }}
+                            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
+                          >
+                            <button
+                              style={{
+                                background: "#fff",
+                                border: "none",
+                                padding: "4px 8px",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                fontSize: "12px",
+                                marginBottom: "4px",
+                              }}
+                              onClick={() => handleReplaceImage(index === 0 ? setImageUrl1 : index === 1 ? setImageUrl2 : setImageUrl3)}
+                            >
+                              Replace
+                            </button>
+                            <button
+                              style={{
+                                background: "red",
+                                color: "#fff",
+                                border: "none",
+                                padding: "4px 8px",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                fontSize: "12px",
+                              }}
+                              onClick={() => handleRemoveImage(index === 0 ? setImageUrl1 : index === 1 ? setImageUrl2 : setImageUrl3)}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <label
+                          style={{
+                            width: "120px",
+                            height: "80px",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            border: "1px dashed #aaa",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                            fontSize: "12px",
+                            color: "#4A90E2",
+                          }}
+                        >
+                          <div><Icon name='upload'></Icon></div>
+                          <div style={{ fontSize: "12px", marginTop: "4px", textAlign: "center" }}>Upload Image</div>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            onChange={(e) => handleImageUpload(e.target.files[0], index === 0 ? setImageUrl1 : index === 1 ? setImageUrl2 : setImageUrl3)}
+                          />
+                        </label>
+                      )}
+                    </div>
+                  )
+                ))}
+              </div>
+              <p style={{ fontSize: "12px", color: "#777", marginTop: "8px" }}>
+                Upload a cover image for your item. File format: <b>jpeg, png</b>. Recommended size: <b>300×200</b>.
+              </p>
+            </div>
+            </FormField>
+          </SpaceBetween>
+        </Container>
+        <Box>
+          <SpaceBetween size="m">
+            <Container header={<Header>Inventory</Header>}>
+              <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                <FormField
+                  label="Overall Quantity In Stock"
+                  errorText={!stockQuantity && "Required"}
+                >
+                  <Input
+                    required
+                    size="xs"
+                    placeholder="Add Quantity"
+                    value={stockQuantity}
+                    onChange={({ detail }) => setStockQuantity(detail.value)}
+                  />
+                </FormField>
+                <FormField label="Units">
+                  <Select
+                    selectedOption={
+                      units ? { label: units, value: units } : null
+                    }
+                    onChange={({ detail }) => setUnits(detail.selectedOption.value)}
+                    options={unitOptions}
+                    placeholder="Select Unit"
+                  />
+                </FormField>
+              </Grid>
+              <FormField label="Set limit for Low Stock Alert">
+                <Input
+                  type="number"
+                  name="lowStockAlert"
+                  value={lowStockAlert}
+                  onChange={({ detail }) => setLowStockAlert(detail.value)}
+                />
+              </FormField>
+            </Container>
+
+            <Container header={<Header>Sale in B2C</Header>}>
+              <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
+
+              <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                <FormField
+                  label="Total Items Quantity *"
+                  errorText={!totalQuantityInB2C && "Required"}
+                >
+                  <Input
+                    type="number"
+                    name="quantityInStock"
+                    value={totalQuantityInB2C}
+                    onChange={({ detail }) =>
+                      setTotalQuantityInB2C(detail.value)
+                    }
+                  />
+                </FormField>
+                <FormField label="Unit">
+                  <Select
+                    selectedOption={
+                    TotalquantityB2cUnit
+                        ? { label: TotalquantityB2cUnit, value: TotalquantityB2cUnit }
+                        : null
+                    }
+                    onChange={({ detail }) => setTotalQuantityB2CUnit(detail.selectedOption.value)}
+                    options={unitOptions}
+                    placeholder="Select Unit"
+                  />
+                </FormField>
+              </Grid>
+              <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                <FormField label="Minimum Weight">
+                  <Input
+                    type="number"
+                    name="min weight"
+                    value={minimumSellingWeight}
+                    onChange={({ detail }) => setMinimumSellingWeight(detail.value)}
+                  />
+                </FormField>
+                <FormField label="Unit">
+                  <Select
+                    selectedOption={
+                      MinimumSellingWeightUnit 
+                        ? { label: MinimumSellingWeightUnit, value: MinimumSellingWeightUnit }
+                        : null
+                    }
+                    onChange={({ detail }) => setMinimumSellingWeightUnit(detail.selectedOption.value)}
+                    options={unitOptions}
+                    placeholder="Select Unit"
+                  />
+                </FormField>
+              </Grid>
+              <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                <FormField label="Maximum Weight ">
+                  <Input
+                    type="maximum"
+                    name="maximum"
+                    value={maximumSellingWeight}
+                    onChange={({ detail }) => setMaximumSellingWeight(detail.value)}
+                  />
+                </FormField>
+                <FormField label="Unit">
+                  <Select
+                    selectedOption={
+                      MaximumSellingWeightUnit 
+                        ? { label: MaximumSellingWeightUnit, value: MaximumSellingWeightUnit }
+                        : null
+                    }
+                    onChange={({ detail }) => setMaximumSellingWeightUnit(detail.selectedOption.value)}
+                    options={unitOptions}
+                    placeholder="Select Unit"
+                  />
+                </FormField>
+              </Grid>
+              <FormField
+                label="Set Limit For Buying Per Customer"
+                errorText={!buyerLimit && "Required"}
+              >
+                <Input
+                  type="number"
+                  name="buyer limit"
+                  value={buyerLimit}
+                  onChange={({ detail }) => setBuyerLimit(detail.value)}
+                />
+              </FormField>
+            </Container>
+          </SpaceBetween>
+        </Box>
+      </Grid>
+      <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+        <Container header={<Header headingTagOverride="h3">Pricing</Header>}>
+          <hr style={{ marginLeft: "-15px", marginRight: "-15px" }} />
+
+          <FormField
+            label="Purchasing Price"
+            errorText={!purchasingPrice && "Required"}
+          >
+            <Input
+              required
+              size="3xs"
+              placeholder="Rs."
+              value={purchasingPrice}
+              onChange={({ detail }) => setPurchasingPrice(detail.value)}
+            />
+          </FormField>
+
+          <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+            <FormField
+              label=" Selling Price"
+              errorText={!sellingPrice && "Required"}
+            >
+              <Input
+                required
+                size="3xs"
+                placeholder="Rs."
+                value={sellingPrice}
+                onChange={({ detail }) => setSellingPrice(detail.value)}
+              />
+            </FormField>
+            <FormField label="Compare Price">
+              <Input
+                type="number"
+                name="comparePrice"
+                value={comparePrice}
+                onChange={({ detail }) => setComparePrice(detail.value)}
+              />
+            </FormField>
+          </Grid>
+
+          <FormField label="Discount (%)">
+            <Input
+              type="number"
+              name="discount"
+              value={discountPercentage.toFixed(2)}
+              readOnly
+            />
+          </FormField>
+
+          <FormField label="Gross Margin (%)">
+            <Input
+              type="number"
+              name="grossMargin"
+              value={grossMargin.toFixed(2)}
+              readOnly
+            />
+          </FormField>
+
+          <FormField label="Profit">
+            <Input
+              type="number"
+              name="profit"
+              value={profit.toFixed(2)}
+              readOnly
+            />
+          </FormField>
+        </Container>
+      </Grid>
+              {values.length === 1 ? (
+                <Container fitHeight header={<Header>Add Variant</Header>}>
+                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <Button
+                      iconName="add-plus"
+                      variant="normal"
+                      onClick={() => setIsOpen(true)}
+                    />
+                    <p>Add variants like weight, size, color, etc.</p>
+                  </div>
+                </Container>
+              ) : (
+                isShowIntable && (
+                <Container header={<Header>Added Variants</Header>}>
+                  <Table
+                    variant="borderless"
+                    columnDefinitions={[
+                      {
+                        id: "attributeName",
+                        header: "Attribute Name",
+                        cell: () => attribute.value,
+                      },
+                      {
+                        id: "value",
+                        header: "Value",
+                        cell: () =>
+                          values.map((value, index) => (
+                            <span key={index}>
+                              {value}
+                              {index !== values.length - 1 && ", "}
+                            </span>
+                          )),
+                      },
+                      {
+                        id: "action",
+                        header: "Action",
+                        cell: () => (
+                          <div style={{ display: "flex", gap: "10px" }}>
+                            <Button
+                              onClick={handleEdit}
+                              iconName="edit"
+                              variant="icon"
+                            />
+                            <Button
+                              onClick={handledelete}
+                              iconName="remove"
+                              variant="icon"
+                            />
+                          </div>
+                        ),
+                      },
+                    ]}
+                    items={[{}]} // Single row, since attribute is a single object
+                  />
+                </Container>
+                )
+              )}
+      
+              {/* Modal Component */}
+              <Modal
+                visible={isOpen}
+                onDismiss={() => setIsOpen(false)}
+                header="Add Variants"
+                footer={
+                  <SpaceBetween direction="horizontal" size="xs">
+                    <Button variant="link" onClick={() => setIsOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        setIsOpen(false);
+                        setShowIntable(true);
+                      }}
+                      
+                      disabled={values.length === 0}
+                    >
+                      Add Variant
+                    </Button>
+                  </SpaceBetween>
+                }
+              >
+                <p>
+                  You'll be able to manage pricing and inventory for this product
+                  option later on.
+                </p>
+                <SpaceBetween size="s">
+                  <FormField label="Attribute">
+                    <Select
+                      onChange={({ detail }) => setAttribute(detail.selectedOption)}
+                      selectedOption={attribute} // ✅ Directly use attribute
+                      options={[
+                        { label: "Weight", value: "Weight" },
+                        { label: "Size", value: "Size" },
+                      ]}
+                    />
+                  </FormField>
+                  <div>
+                    <strong>Value</strong>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "5px",
+                        alignItems: "center",
+                        border: "2px solid #ccc",
+                        padding: "5px",
+                        borderRadius: "8px",
+                      }}
+                    >
+                      {values.map((value, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            background: "#f3f3f3",
+                            padding: "4px 8px",
+                            borderRadius: "4px",
+                            margin: "4px",
+                          }}
+                        >
+                          {value}
+                          <button
+                            onClick={() => removeToken(index)}
+                            style={{
+                              marginLeft: "8px",
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                              color: "#0073e6",
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      <input
+                        placeholder="Enter value"
+                        value={inputValue}
+                        onChange={(event) => setInputValue(event.target.value)}
+                        onKeyPress={handleKeyPress}
+                        style={{
+                          flex: 1,
+                          padding: "8px",
+                          border: "none",
+                          outline: "none",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </SpaceBetween>
+              </Modal>
+      
+              {/* Variants Table */}
+      
+      {tableData.length > 0 && (
+        <Container header={<Header>Manage Variant</Header>}>
+          <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
+          <p>
+            Based on your item variant, these are the different versions of your
+            variants that customers can buy.
+          </p>
+          <Table
+            variant="borderless"
+            columnDefinitions={[
+              {
+                id: "name",
+                header: "Variant Name",
+                cell: (item) => item.attribute,
+              },
+              {
+                id: "quantity",
+                header: "Quantity in Stock",
+                cell: (item) => (
+                  <div style={{ width: "200px" }}>
+                    <Grid
+                      disableGutters
+                      gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}
+                    >
+                      <Input
+                        placeholder="Enter Quantity"
+                        type="text"
+                        value={item.quantity}
+                        onChange={
+                          ({ detail }) =>
+                            handleInputChange(item.id, "quantity", detail.value) // Use item.id here
+                        }
+                      />
+                      <Select
+                        key={item.id} // Ensures the select stays stable
+                        expandToViewport
+                        selectedOption={unitOptions.find(
+                          (opt) => opt.value === item.unit
+                        )}
+                        onChange={(event) => {
+                          event.stopPropagation(); // Prevent parent handlers from closing the dropdown
+                          handleInputChange(
+                            item.id,
+                            "unit",
+                            event.detail.selectedOption.value
+                          );
+                        }}
+                        options={unitOptions}
+                        placeholder="Select Unit"
+                      />
+                    </Grid>
+                  </div>
+                ),
+              },
+              {
+                id: "purchasePrice",
+                header: "Purchasing Price",
+                cell: (item) => (
+                  <FormField errorText={!item.purchasingPrice && "Required"}>
+                    <Input
+                      required
+                      size="3xs"
+                      placeholder="Rs."
+                      value={item.purchasingPrice}
+                      onChange={
+                        ({ detail }) =>
+                          handleInputChange(
+                            item.id,
+                            "purchasingPrice",
+                            detail.value
+                          ) // Use item.id here
+                      }
+                    />
+                  </FormField>
+                ),
+              },
+              {
+                id: "sellingPrice",
+                header: "Selling Price",
+                cell: (item) => (
+                  <FormField errorText={!item.sellingPrice && "Required"}>
+                    <Input
+                      required
+                      size="3xs"
+                      placeholder="Rs."
+                      value={item.sellingPrice}
+                      onChange={
+                        ({ detail }) =>
+                          handleInputChange(
+                            item.id,
+                            "sellingPrice",
+                            detail.value
+                          ) // Use item.id here
+                      }
+                    />
+                  </FormField>
+                ),
+              },
+              {
+                id: "comparePrice",
+                header: "Compare Price",
+                cell: (item) => (
+                  <FormField>
+                    <Input
+                      placeholder="Rs."
+                      type="number"
+                      value={item.comparePrice}
+                      onChange={
+                        ({ detail }) =>
+                          handleInputChange(
+                            item.id,
+                            "comparePrice",
+                            detail.value
+                          ) // Use item.id here
+                      }
+                    />
+                  </FormField>
+                ),
+              },
+              {
+                id: "saleLimit",
+                header: "Sale Limit",
+                cell: (item) => (
+                  <FormField>
+                    <Input
+                      placeholder="Enter Limit"
+                      type="number"
+                      value={item.buyerLimit}
+                      onChange={
+                        ({ detail }) =>
+                          handleInputChange(item.id, "buyerLimit", detail.value) // Use item.id here
+                      }
+                    />
+                  </FormField>
+                ),
+              },
+              {
+                id: "lowStock",
+                header: "Low Stock Alert",
+                cell: (item) => (
+                  <FormField>
+                    <Input
+                      placeholder="Enter Stock Alert"
+                      type="number"
+                      value={item.lowStockAlert}
+                      onChange={
+                        ({ detail }) =>
+                          handleInputChange(
+                            item.id,
+                            "lowStockAlert",
+                            detail.value
+                          ) // Use item.id here
+                      }
+                    />
+                  </FormField>
+                ),
+              },
+              {
+                id: "status",
+                header: "Status",
+                cell: (item) => (
+                  <Toggle
+                    checked={item.availability}
+                    onChange={
+                      ({ detail }) =>
+                        handleToggleChange(item.id, detail.checked) // Use item.id here
+                    }
+                  />
+                ),
+              },
+            ]}
+            items={tableData}
+            empty={<p>No variants added yet.</p>}
+          />
+        </Container>
+      )}
     </SpaceBetween>
   );
 };
 
 export default Edit;
+

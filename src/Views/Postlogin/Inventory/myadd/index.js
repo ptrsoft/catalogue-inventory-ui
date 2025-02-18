@@ -115,16 +115,16 @@ const AddItemForm = ({ onToggle, isMultipleVariant }) => {
       MaximumSellingWeightUnit: minimumWeightUnit.value,
       MinimumSellingWeightUnit: minimumWeightUnit.value,
       totalQuantityInB2c: Number(totalQuantityInB2C),
-      TotalquantityB2cUnit: totalQuantityInB2CUnit.value,
+      totalquantityB2cUnit: totalQuantityInB2CUnit.value,
       stockQuantity: Number(stockQuantity),
-      msp: 0,
+      // msp: 0,
       availability: status.value,
       buyerLimit: Number(buyerLimit),
       stockQuantityAlert: Number(lowStockAlert),
       purchasingPrice: Number(purchasingPrice),
       sellingPrice: Number(sellingPrice),
       comparePrice: Number(comparePrice),
-      discount: discount,
+      // discount: discount,
     };
     console.log(formData, "formdata");
     console.log("Form Data:", JSON.stringify(formData, null, 2));
@@ -168,7 +168,7 @@ const AddItemForm = ({ onToggle, isMultipleVariant }) => {
         setPurchasingPrice("");
         setSellingPrice("");
         setComparePrice("");
-        setDiscount(false);
+        // setDiscount(false);
         setStockQuantity("");
         setFileUploadValue([]); // Clear the file upload
         setIsFormSubmitted(false);

@@ -7,6 +7,7 @@ import Button from "@cloudscape-design/components/button";
 import TextFilter from "@cloudscape-design/components/text-filter";
 import Header from "@cloudscape-design/components/header";
 import Container from "@cloudscape-design/components/container";
+
 import {
   fetchProducts,
   PutToggle,
@@ -26,6 +27,7 @@ import {
   Pagination,
   Flashbar,
   Grid,
+  Toggle
 } from "@cloudscape-design/components";
 import { Link } from "react-router-dom";
 
@@ -645,21 +647,21 @@ const Inventory = () => {
               cell: (e) => `Rs. ${e.purchasingPrice}`,
             },
             {
-              id: "msp",
-              header: "MSP",
-              cell: (e) => `Rs. ${e.msp}`,
+              id: "Selling Price",
+              header: "Selling Price",
+              cell: (e) => `Rs. ${e.sellingPrice}`,
             },
             // {
             //   id: "status",
             //   header: "Status",
             //   cell: (e) => (
             //     <div style={{ display: "flex", width: "100px" }}>
-            //       <Toggle
+            //       {/* <Toggle
             //         onChange={() => handleToggleClick(e)}
             //         checked={e.active}
             //       >
             //         {e.active ? "Active" : "Inactive"}
-            //       </Toggle>
+            //       </Toggle> */}
             //       <span
             //         style={{
             //           marginLeft: "10px",

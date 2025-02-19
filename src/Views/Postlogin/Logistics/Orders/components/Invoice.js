@@ -289,8 +289,18 @@ const Invoice = ({ selectedOrder, flag }) => {
               <span>Contact Number :{selectedOrder?.userInfo?.number}</span>
 
               <span>
-                Date : {new Date(selectedOrder?.createdAt).toLocaleDateString()}{" "}
-                ({new Date(selectedOrder?.createdAt).toLocaleTimeString()})
+                Date : .createdAt
+  ? new Date(selectedOrder?.createdAt).toLocaleString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+      timeZone: "UTC", // Ensures UTC time is used
+    })
+  : "N/A"}
               </span>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span>

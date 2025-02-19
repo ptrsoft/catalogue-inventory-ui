@@ -358,8 +358,9 @@ const Invoice = ({ selectedOrder, flag }) => {
                   <td   style={{
                       textAlign: "left",
                     }}>
-                  {item.productName.split("-")[1]}
-
+     {item.productName.includes("pieces") 
+  ? item.productName.replace("pieces", "pcs") 
+  : item.productName.split("-")[1]}
                     </td>
 
                   <td>

@@ -343,7 +343,7 @@ const Invoice = ({ selectedOrder, flag }) => {
                 <th style={{ margin: "7px" }}>AMOUNT</th>
               </tr>
               <tr>
-                <td colSpan="4">
+                <td colSpan="5">
                   <hr
                     style={{
                       flex: 1,

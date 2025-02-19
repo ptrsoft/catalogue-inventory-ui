@@ -7,7 +7,7 @@ import { fetchOrderById } from "Redux-Store/Orders/OrdersThunk";
 
 const Invoice = ({ selectedOrder, flag }) => {
   // For printing bill
-  
+
   const printRef = useRef([]);
   const [fetchedOrders, setFetchedOrders] = useState([]);
   const dispatch = useDispatch();
@@ -146,12 +146,18 @@ const Invoice = ({ selectedOrder, flag }) => {
         >
           {/* Header Section */}
 
-          <div style={{ display: "flex",justifyContent:'center', alignItems: "center", gap: "10px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
             <img
               src={logo}
               alt="Logo"
               style={{
-              
                 width: "45px",
                 height: "45px",
                 marginBottom: "10px",
@@ -175,7 +181,9 @@ const Invoice = ({ selectedOrder, flag }) => {
             style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }}
           />
           <div style={{ textAlign: "center" }}>
-            <p style={{ margin: "5px 0",fontWeight: "bold" }}>6-100,Dargah Khaleej Khan</p>
+            <p style={{ margin: "5px 0", fontWeight: "bold" }}>
+              6-100,Dargah Khaleej Khan
+            </p>
             <p style={{ margin: "5px 0" }}>
               Kismatpur, Hyderabad, Telangana, 500028
             </p>
@@ -247,11 +255,11 @@ const Invoice = ({ selectedOrder, flag }) => {
             </div>
 
             <strong>Order ID : {selectedOrder?.orderId}</strong>
-              <div style={{ marginLeft: "-10px" }}>
-            <Barcode
-              // style={{ marginLeft: "-10px" }}
-              orderId={selectedOrder?.orderId}
-            />
+            <div style={{ marginLeft: "-10px" }}>
+              <Barcode
+                // style={{ marginLeft: "-10px" }}
+                orderId={selectedOrder?.orderId}
+              />
             </div>
             <div
               style={{ display: "flex", flexDirection: "column", gap: "7px" }}
@@ -260,19 +268,28 @@ const Invoice = ({ selectedOrder, flag }) => {
                 Name : {selectedOrder?.userInfo?.name}
               </span>
 
-              <span>
-                Address :
-                {selectedOrder?.shippingDetails?.address},
-                {selectedOrder?.shippingDetails?.zipcode}
-              </span>
+              <div className="info-row" style={{ display: "flex" }}>
+                <span
+                  className="label"
+                  style={{ fontWeight: "bold", marginRight: "8px" }}
+                >
+                  Address:
+                </span>
+                <span
+                  className="value"
+                  style={{ width: "200px", wordBreak: "break-word" }}
+                >
+                  {selectedOrder?.address?.house_number},<br />
+                  {selectedOrder?.address?.address},<br />
+                  {selectedOrder?.address?.landmark_area},<br />
+                  {selectedOrder?.address?.zipCode}
+                </span>
+              </div>
+
+              <span>Contact Number :{selectedOrder?.userInfo?.number}</span>
 
               <span>
-                Contact Number : 
-                {selectedOrder?.userInfo?.number}
-              </span>
-
-              <span>
-                Date :  {new Date(selectedOrder?.createdAt).toLocaleDateString()}{" "}
+                Date : {new Date(selectedOrder?.createdAt).toLocaleDateString()}{" "}
                 ({new Date(selectedOrder?.createdAt).toLocaleTimeString()})
               </span>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -310,6 +327,7 @@ const Invoice = ({ selectedOrder, flag }) => {
                 >
                   ITEM NAME
                 </th>
+                <th style={{ margin: "7px", textAlign: "left" }}>UNIT</th>
                 <th style={{ margin: "7px" }}>QTY</th>
                 <th style={{ margin: "7px" }}>RATE</th>
                 <th style={{ margin: "7px" }}>AMOUNT</th>
@@ -335,12 +353,18 @@ const Invoice = ({ selectedOrder, flag }) => {
                       textAlign: "left",
                     }}
                   >
-                   {item.productName.split('-')[0]}
-
+                    {item.productName.split("-")[0]}
                   </td>
+                  <td   style={{
+                      textAlign: "left",
+                    }}>
+                  {item.productName.split("-")[1]}
+
+                    </td>
+
                   <td>
                     {item.quantity}
-                    {item.unit === "pieces" ? "pcs" : item.unit}
+
                     {/* {item.unit === "pieces" ? "pcs" : item.unit} */}
                   </td>
                   <td>{item.price.toFixed(2)}</td>
@@ -364,19 +388,37 @@ const Invoice = ({ selectedOrder, flag }) => {
           >
             <p></p>
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "7px",widt:'250px' }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "7px",
+                widt: "250px",
+              }}
             >
-                <div
-              style={{ display: "flex", justifyContent:'space-between',gap:'10px'  }}
-            >
-
-              <span>Sub Total : </span> <span style={{width:'80px'}}>Rs.{selectedOrder?.subTotal}</span>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: "10px",
+                }}
+              >
+                <span>Sub Total : </span>{" "}
+                <span style={{ width: "80px" }}>
+                  Rs.{selectedOrder?.subTotal}
+                </span>
               </div>
               <div
-              style={{ display: "flex", justifyContent:'space-between',gap:'10px' }}
-            >
-              <span>Shipping Charges :</span> <span  style={{width:'80px'}}>Rs.{selectedOrder?.deliveryCharges}</span>
-            </div>
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: "10px",
+                }}
+              >
+                <span>Shipping Charges :</span>{" "}
+                <span style={{ width: "80px" }}>
+                  Rs.{selectedOrder?.deliveryCharges}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -397,7 +439,7 @@ const Invoice = ({ selectedOrder, flag }) => {
               marginTop: "20px",
             }}
           >
-           <hr
+            <hr
               style={{ flex: 1, border: "none", borderTop: "1px dashed #000" }}
             />
             <p style={{ margin: 0, fontWeight: "bold", fontSize: "14px" }}>

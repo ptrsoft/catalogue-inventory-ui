@@ -171,8 +171,8 @@ const Drawer = ({
                       <div className="info-row">
                         <span className="label">Address:</span>
                         <span className="value">
-                          {selectedOrder?.shippingDetails?.address}{" "}
-                          {selectedOrder?.shippingDetails?.zipcode}
+                        {selectedOrder?.address?.house_number}, {selectedOrder?.address?.address}, {selectedOrder?.address?.landmark_area}, {selectedOrder?.address?.zipCode}
+
                         </span>
                       </div>
                       <div className="info-row">

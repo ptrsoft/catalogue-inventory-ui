@@ -277,11 +277,11 @@ const Invoice = ({ selectedOrder, flag }) => {
                 </span>
                 <span
                   className="value"
-                  style={{ width: "200px", wordBreak: "break-word" }}
+                  style={{ width: "400px", wordBreak: "break-word" }}
                 >
-                  {selectedOrder?.address?.house_number},<br />
-                  {selectedOrder?.address?.address},<br />
-                  {selectedOrder?.address?.landmark_area},<br />
+                  {selectedOrder?.address?.house_number},
+                  {selectedOrder?.address?.address},
+                  {selectedOrder?.address?.landmark_area},
                   {selectedOrder?.address?.zipCode}
                 </span>
               </div>

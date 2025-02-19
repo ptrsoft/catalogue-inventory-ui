@@ -289,7 +289,7 @@ const Invoice = ({ selectedOrder, flag }) => {
               <span>Contact Number :{selectedOrder?.userInfo?.number}</span>
 
               <span>
-                Date : .createdAt
+                Date : { selectedOrder?.createdAt
   ? new Date(selectedOrder?.createdAt).toLocaleString("en-US", {
       year: "numeric",
       month: "2-digit",
@@ -369,7 +369,7 @@ const Invoice = ({ selectedOrder, flag }) => {
                       textAlign: "left",
                     }}>
      {item.productName.includes("pieces") 
-  ? item.productName.replace("pieces", "pcs") 
+  ? item.productName.replace("pieces", "pcs").split("-")[1]
   : item.productName.split("-")[1]}
                     </td>
 

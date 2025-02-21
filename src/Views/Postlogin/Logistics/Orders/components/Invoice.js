@@ -358,20 +358,22 @@ const Invoice = ({ selectedOrder, flag }) => {
             <tbody style={{ padding: "10px", margin: "10px" }}>
               {selectedOrder?.items?.map((item, index) => (
                 <tr style={{ padding: "10px", margin: "10px" }} key={index}>
-                  <td
-                    style={{
-                      textAlign: "left",
-                    }}
-                  >
-                    {item.productName.split("-")[0]}
-                  </td>
-                  <td   style={{
-                      textAlign: "left",
-                    }}>
-     {item.productName.includes("pieces") 
-  ? item.productName.replace("pieces", "pcs").split("-")[1]
-  : item.productName.split("-")[1]}
-                    </td>
+               <td style={{ textAlign: "left", width: "140px" }}>
+  {(() => {
+    const parts = item.productName.split("-");
+    return parts.length > 2 ? parts.slice(0, -1).join("-") : parts[0];
+  })()}
+</td>
+
+<td style={{ textAlign: "left" }}>
+  {item.productName.includes("-") 
+    ? (item.productName.includes("pieces") 
+        ? item.productName.replace("pieces", "pcs").split("-").pop()
+        : item.productName.split("-").pop()
+      )
+    : "no unit"}
+</td>
+
 
                   <td>
                     {item.quantity}

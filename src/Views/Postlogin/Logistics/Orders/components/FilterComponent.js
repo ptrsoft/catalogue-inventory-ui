@@ -46,7 +46,7 @@ const FilterComponent = ({
   ];
   const ageOptions = [
     { label: "Today's Orders", value: "today" },
-    { label: "Yesterday's  Orders", value: "yesterday" },
+    { label: "Yesterday's Orders", value: "yesterday" },
     // { label: "7 days old ", value: "7" },
     { label: "last 14 days old ", value: "14" },
     { label: " last 1 month old ", value: "1m" },
@@ -56,8 +56,8 @@ const FilterComponent = ({
 
   const categoryOptions = [
     { label: "All", value: "" },
-    { label: "Cash On Delivery", value: "cash" },
-    { label: "Prepaid", value: "online" },
+    { label: "Cash On Delivery", value: "COD" },
+    { label: "Prepaid", value: "Prepaid" },
     // Add other statuses if needed
   ];
   //shifts options

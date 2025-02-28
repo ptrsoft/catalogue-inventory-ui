@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
 import Table from "@cloudscape-design/components/table";
@@ -27,11 +27,81 @@ import {
   Pagination,
   Flashbar,
   Grid,
-  Toggle
+  Toggle,
+  Popover
 } from "@cloudscape-design/components";
 import { Link } from "react-router-dom";
 
 const Inventory = () => {
+
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const fileInputRef = useRef(null); // Create a reference for the file input
+  // Handle Import button click to show the file dialog
+  const handleImport = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // Open file dialog
+    }
+  };
+  const [flashMessages, setFlashMessages] = useState([]);
+  // Show flash messages
+  const showFlashMessage = (type, content) => {
+    setFlashMessages([{ type, content, dismissible: true, onDismiss: () => setFlashMessages([]) }]);
+  };
+  // Import API handler
+  const handleFileImport = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file, file.name);
+
+      const requestOptions = {
+        method: "POST",
+        body: formData,
+        redirect: "follow",
+      };
+
+      fetch("https://api.admin.promodeagro.com/inventory/import", requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+      
+          showFlashMessage("success", "Products File Imported Successfully");
+        
+      })
+        .catch((error) => {
+           console.error("Error during import:", error);
+         showFlashMessage("error", "Failed to import the file");
+        })
+
+    }
+  };
+
+
+// Export API handler
+const handleExport = () => {
+  fetch("https://api.admin.promodeagro.com/inventory/exportProducts")
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.fileUrl) {
+        console.log(data,"export data ");
+        // Create a temporary link element to trigger file download
+        const link = document.createElement('a');
+        link.href = data.fileUrl;
+        link.download = data.fileUrl.split('/').pop();  // Extract filename from URL
+        link.click();
+      } else {
+        console.error("Failed to export products.");
+      }
+    })
+    .catch((error) => console.error("Error during export:", error));
+};
+  // Toggles the visibility of the popover
+  const handleButtonClick = () => {
+    setIsPopoverOpen(prevState => !prevState);
+  };
+
+ 
+
   const [filteringText, setFilteringText] = React.useState("");
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
@@ -363,9 +433,12 @@ const Inventory = () => {
     ],
   };
 
+
   return (
     <SpaceBetween size="s">
       <Flashbar items={items} />
+       {/* Flash Message Notifications */}
+       {flashMessages.length > 0 && <Flashbar items={flashMessages} />}
       <BreadcrumbGroup
         items={[
           { text: "Dashboard", href: "/app/dashboard" },
@@ -447,6 +520,38 @@ const Inventory = () => {
             <SpaceBetween size="xs" direction="horizontal">
               {/* <Button href="/app/Inventory/addItem">Add Item</Button> */}
               <Button href="/app/Inventory/addItem">Add Item</Button>
+              <div>
+    
+     
+        <Popover
+          onDismiss={() => setIsPopoverOpen(false)}
+          position="left"
+          align="start"
+          size="small"
+            wrapTriggerText={false}
+              triggerType='custom'
+              content={  
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <input type="file" ref={fileInputRef} onChange={handleFileImport} accept=".xlsx" style={{ display: "none" }} />
+                <Button variant="inline-link"  iconName="upload" onClick={handleImport}>Import</Button>
+                <Button variant="inline-link" iconName="download" onClick={handleExport}>Export</Button>
+              </div>
+              }
+           
+
+        
+        >
+             <Button
+        iconName="ellipsis"
+        onClick={handleButtonClick}
+        ariaLabel="Options menu"
+        variant="icon"
+      />
+        
+        </Popover>
+    
+    </div>
+ 
 
             </SpaceBetween>
           </Box>
@@ -576,7 +681,7 @@ const Inventory = () => {
             {
               id: "itemCode",
               header: "Item Code",
-              cell: (e) => `#${e.itemCode}`,
+              cell: (e) => `#${e.id}`,
               isRowHeader: true,
             },
             {
@@ -675,7 +780,7 @@ const Inventory = () => {
               id: "action",
               header: "Action",
               cell: (e) => (
-                <div>
+                <div style={{ display: "flex", gap: "15px", alignContent: "center", justifyContent: "center", alignItems: "center"}}>
                   <Link to={`/app/inventory/edit?id=${e.id}`}>
                     <Button iconName="edit" variant="inline-link" />
                   </Link>
@@ -684,7 +789,7 @@ const Inventory = () => {
                     variant="icon"
                     onClick={() => openModal(e.id)}
                   >
-                    Delete
+                    
                   </Button>
                 </div>
               ),

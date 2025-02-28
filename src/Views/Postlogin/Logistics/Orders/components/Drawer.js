@@ -200,10 +200,7 @@ const Drawer = ({
                       <div className="info-row">
                         <span className="label">Total Price:</span>
                         <span className="value">
-                          {selectedOrder?.items?.reduce(
-                            (sum, item) => sum + (item.price || 0),
-                            0
-                          ) || 0}
+                          {selectedOrder?.totalPrice}
                         </span>
                       </div>
 

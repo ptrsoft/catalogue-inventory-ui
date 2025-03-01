@@ -70,7 +70,7 @@ const Views = () => {
         <Route  path={`${PREFIX_APP_PATH}/inventory/adjustments`} element={<ProtectedRoute element={<InventoryAdjustments />} isAuthenticated={isAuthenticated} />} />
         <Route  path={`${PREFIX_APP_PATH}/inventory/create-adjustment`} element={<ProtectedRoute element={<CreateAdjustment />} isAuthenticated={isAuthenticated}/>} />
         <Route  path={`${PREFIX_APP_PATH}/inventory/new-adjustment`} element={<ProtectedRoute element={<NewAdjustment />}isAuthenticated={isAuthenticated} />} />
-        <Route  path={`${PREFIX_APP_PATH}/inventory/edit`} element={<ProtectedRoute element={<Edit />} />}isAuthenticated={isAuthenticated} />
+        <Route  path={`${PREFIX_APP_PATH}/inventory/edit`} element={<ProtectedRoute element={<Edit />} isAuthenticated={isAuthenticated}/>} />
         <Route  path={`${PREFIX_APP_PATH}/inventory/pincodes`} element={<ProtectedRoute element={<Pincodes />}isAuthenticated={isAuthenticated} />} />
         <Route  path={`${PREFIX_APP_PATH}/inventory/pincodes/addpincode`} element={<ProtectedRoute element={<AddEditpincode />}isAuthenticated={isAuthenticated} />} />
         <Route  path={`${PREFIX_APP_PATH}/inventory/pincodes/Editpincode`} element={<ProtectedRoute element={<AddEditpincode />} isAuthenticated={isAuthenticated}/>} />

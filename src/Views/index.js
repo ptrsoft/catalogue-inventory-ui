@@ -65,7 +65,7 @@ const Views = () => {
         <Route path="/app/dashboard" element={isAuthenticated ? <Dashboards /> : <Navigate to="/auth/signin" />} />
         <Route  path={`${PREFIX_APP_PATH}/inventory`} element={<ProtectedRoute element={<Inventory />} isAuthenticated={isAuthenticated} />} />
         {/* <Route  path={`${PREFIX_APP_PATH}/inventory/addItem`} element={<ProtectedRoute element={<AddItem />} />} /> */}
-        <Route  path={`${PREFIX_APP_PATH}/inventory/addItem`}element={<ProtectedRoute element={<AddItemForm/>} isAuthenticated={isAuthenticated}/>} />
+        <Route  path={`${PREFIX_APP_PATH}/inventory/addItem`} element={<ProtectedRoute element={<AddItemForm/>} isAuthenticated={isAuthenticated}/>} />
 
         <Route  path={`${PREFIX_APP_PATH}/inventory/adjustments`} element={<ProtectedRoute element={<InventoryAdjustments />} isAuthenticated={isAuthenticated} />} />
         <Route  path={`${PREFIX_APP_PATH}/inventory/create-adjustment`} element={<ProtectedRoute element={<CreateAdjustment />} isAuthenticated={isAuthenticated}/>} />

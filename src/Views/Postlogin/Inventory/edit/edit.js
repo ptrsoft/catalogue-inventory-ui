@@ -460,6 +460,7 @@ console.log(images,"array of images");
       >
         Edit Item
       </Header>
+      <SpaceBetween direction="vertical" size="l">
       <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
         <Container header={<Header>Category</Header>}>
           <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
@@ -491,7 +492,7 @@ console.log(images,"array of images");
             </FormField>
           </Grid>
         </Container>
-        <Container header={<Header>Status</Header>}>
+        <Container fitHeight header={<Header>Status</Header>}>
         <FormField label="Status *">
   <Select
     name="statusofItem"
@@ -912,6 +913,7 @@ console.log(images,"array of images");
           </FormField>
         </Container>
       </Grid>
+      </SpaceBetween>
               {values.length === 1 ? (
                 <Container fitHeight header={<Header>Add Variant</Header>}>
                   <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>

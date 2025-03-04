@@ -146,7 +146,8 @@ const handleExport = () => {
     // Create a key to represent the current filters and page
     const filterKey = `${selectedCategory?.value || ""}-${
       selectedSubCategory?.value || ""
-    }-${filteringText || ""}-${selectedStatus?.value || ""}-${currentPage}`;
+    }-${filteringText || ""}-${selectedStatus?.value === true ? "true" : selectedStatus?.value === false ? "false" : ""}-${currentPage}`;
+    
 
     // Check if the current page with the current filter has already been fetched
     if (!fetchedPages[filterKey]) {
@@ -155,7 +156,7 @@ const handleExport = () => {
           category: selectedCategory?.value || "",
           subCategory: selectedSubCategory?.value || "",
           search: filteringText || "",
-          active: selectedStatus?.value || "",
+          active: selectedStatus?.value,
           pageKey, // Only pass the nextKey for pages beyond 1
           pageSize: 50, // Items per page
         })
@@ -221,7 +222,12 @@ const handleExport = () => {
   };
   const handleSelectChange = ({ detail }) => {
     setSelectedStatus(detail.selectedOption);
+    setCurrentPage(1); // Reset page to 1 when filters change
+
+    console.log(selectedStatus,"status");
   };
+  console.log(selectedStatus?.value,"status");
+
 
   if (status === "LOADING") {
     return (
@@ -256,12 +262,14 @@ const handleExport = () => {
         // setTimeout(() => {
         //   setItems([]);  // Clear the message after 3 seconds
         // }, 5000);
-        dispatch(fetchProducts()); // Fetch updated products
+
+    
+         // Fetch updated products
         window.location.reload(); // This will force a full page reload
       })
       .catch((error) => {
         console.error("Error during status change:", error); // Log the full error for debugging
-        dispatch(fetchProducts());
+        // dispatch(fetchProducts());
         setItems([
           {
             type: "error",
@@ -275,6 +283,8 @@ const handleExport = () => {
           },
         ]);
       });
+      setCurrentPage(1); // Reset page to 1 when filters change
+
   };
 
   const handleCancelToggle = () => {
@@ -305,32 +315,32 @@ const handleExport = () => {
     setSelectedProduct(null);
   };
 
-  // const renderModalButton = () => {
-  //   const isAnyProductSelected = selectedItems.length > 0;
+  const renderModalButton = () => {
+    const isAnyProductSelected = selectedItems.length > 0;
 
-  //   if (selectedStatus?.value === "true") {
-  //     return (
-  //       <Button
-  //         variant="primary"
-  //         onClick={() => setIsModalVisible(true)}
-  //         disabled={!isAnyProductSelected}
-  //       >
-  //         Move to Inactive
-  //       </Button>
-  //     );
-  //   } else if (selectedStatus?.value === "false") {
-  //     return (
-  //       <Button
-  //         variant="primary"
-  //         onClick={() => setIsModalVisible(true)}
-  //         disabled={!isAnyProductSelected} // Disable button if no product is selected
-  //       >
-  //         Move to Active
-  //       </Button>
-  //     );
-  //   }
-  //   return null;
-  // };
+    if (selectedStatus?.value === true) {
+      return (
+        <Button
+          variant="primary"
+          onClick={() => setIsModalVisible(true)}
+          disabled={!isAnyProductSelected}
+        >
+          Move to Inactive
+        </Button>
+      );
+    } else if (selectedStatus?.value === false) {
+      return (
+        <Button
+          variant="primary"
+          onClick={() => setIsModalVisible(true)}
+          disabled={!isAnyProductSelected} // Disable button if no product is selected
+        >
+          Move to Active
+        </Button>
+      );
+    }
+    return null;
+  };
 
   const openModal = (id) => {
     setProductIdToDelete(id); // Set the ID of the product to delete
@@ -456,7 +466,9 @@ const handleExport = () => {
             { colspan: { default: 12, xs: 4 } },
             { colspan: { default: 12, xs: 2 } },
             { colspan: { default: 12, xs: 2 } },
-            { colspan: { default: 12, xs: 4 } },
+            { colspan: { default: 12, xs: 2 } },
+            { colspan: { default: 12, xs: 2 } },
+
           ]}
         >
           <TextFilter
@@ -505,17 +517,17 @@ const handleExport = () => {
                 : []
             }
           />
-          {/* <Select
+          <Select
             required
             selectedOption={selectedStatus}
             onChange={handleSelectChange}
             options={[
-              { label: "All", value: "All" },
-              { label: "Active", value: "true" },
-              { label: "Inactive", value: "false" },
+              // { label: "All", value: "All" },
+              { label: "Active", value: true },
+              { label: "Inactive", value: false },
             ]}
             placeholder="Select Status"
-          /> */}
+          />
           <Box float="right">
             <SpaceBetween size="xs" direction="horizontal">
               {/* <Button href="/app/Inventory/addItem">Add Item</Button> */}
@@ -594,8 +606,8 @@ const handleExport = () => {
         </Grid>
         <Box float="right">
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            {/* {renderModalButton()} */}
-            {/* <Modal
+            {renderModalButton()}
+            <Modal
               onDismiss={() => setIsModalVisible(false)}
               visible={isModalVisible}
               footer={
@@ -616,7 +628,7 @@ const handleExport = () => {
               header="Modal title"
             >
               Are you sure you want to change the status of this products?
-            </Modal>{" "} */}
+            </Modal>{" "}
             <Pagination
               currentPageIndex={currentPage}
               onChange={({ detail }) =>
@@ -761,18 +773,18 @@ const handleExport = () => {
             //   header: "Status",
             //   cell: (e) => (
             //     <div style={{ display: "flex", width: "100px" }}>
-            //       {/* <Toggle
+            //       <Toggle
             //         onChange={() => handleToggleClick(e)}
             //         checked={e.active}
             //       >
             //         {e.active ? "Active" : "Inactive"}
-            //       </Toggle> */}
-            //       <span
+            //       </Toggle>
+            //       {/* <span
             //         style={{
             //           marginLeft: "10px",
             //           color: e.status === "Inactive" ? "gray" : "black",
             //         }}
-            //       ></span>
+            //       ></span> */}
             //     </div>
             //   ),
             // },

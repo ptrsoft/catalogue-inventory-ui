@@ -10,6 +10,7 @@ const getToken = () => {
 export const fetchProducts = createAsyncThunk(
   "products/fetch",
   async (params, { rejectWithValue }) => {
+    console.log(params,"paramss on inventory");
     try {
       const token = getToken();
 
@@ -24,13 +25,17 @@ export const fetchProducts = createAsyncThunk(
       if (params?.search) queryParams.push(`search=${encodeURIComponent(params.search)}`);
       if (params?.category) queryParams.push(`category=${encodeURIComponent(params.category)}`);
       if (params?.subCategory) queryParams.push(`subCategory=${encodeURIComponent(params.subCategory)}`);
+      if (params?.active !== undefined) {
+        queryParams.push(`active=${encodeURIComponent(params.active)}`);
+      }
+      
       
       // Add pageKey for pagination (use categoryNextKey if category is selected)
       if (params?.pageKey && !params.category) queryParams.push(`pageKey=${encodeURIComponent(params.pageKey)}`);
       if (params?.categoryNextKey && params.category) queryParams.push(`pageKey=${encodeURIComponent(params.categoryNextKey)}`);
 
       if (queryParams.length > 0) url += `?${queryParams.join("&")}`;
-
+console.log(url,queryParams,"uuurrls");
       const response = await postLoginService.get(url, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token here

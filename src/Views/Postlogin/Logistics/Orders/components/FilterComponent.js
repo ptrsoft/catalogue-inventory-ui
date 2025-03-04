@@ -12,6 +12,7 @@ const FilterComponent = ({
   currentPage,
   pincode,
   onFilterChange,
+  paymentstatus
 }) => {
   // Reusable function to notify parent of filter updates
   const updateFilterState = (filterName, value) => {
@@ -60,6 +61,12 @@ const FilterComponent = ({
     { label: "Prepaid", value: "Prepaid" },
     // Add other statuses if needed
   ];
+  const paymentstatusoptions = [
+    // { label: "All", value: "" },
+    { label: "Pending", value: "pending" },
+    { label: "paid", value: "paid" },
+    // Add other statuses if needed
+  ];
   //shifts options
   const shiftOptions = [
     { label: "All", value: "" },
@@ -82,6 +89,8 @@ const FilterComponent = ({
         { colspan: { default: 12, xxs: 2 } },
         { colspan: { default: 12, xxs: 2 } },
         { colspan: { default: 12, xxs: 2 } },
+        { colspan: { default: 12, xxs: 2 } },
+
       ]}
     >
       {/* Status Filter */}
@@ -135,7 +144,16 @@ const FilterComponent = ({
           updateFilterState("category", detail.selectedOption)
         }
         options={categoryOptions}
-        placeholder="Payment"
+        placeholder="Payment Type"
+        selectedAriaLabel="Selected payment"
+      />
+         <Select
+        selectedOption={paymentstatus}
+        onChange={({ detail }) =>
+          updateFilterState("paymentstatus", detail.selectedOption)
+        }
+        options={paymentstatusoptions}
+        placeholder="Payment Status"
         selectedAriaLabel="Selected payment"
       />
     </Grid>

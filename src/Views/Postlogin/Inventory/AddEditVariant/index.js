@@ -410,10 +410,15 @@ const AddEditVariant = () => {
 
   return (
     <Box>
+   
+
             <Flashbar items={items} />
       
       <SpaceBetween size="m">
-        <Container header={<Header>Category</Header>}>
+      <Box float="right" >
+              <Button onClick={handleSave}>Save Item</Button>
+              </Box>
+        <Container  header={<Header>Category</Header>}>
           <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
 
           <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
@@ -1040,7 +1045,6 @@ const AddEditVariant = () => {
             />
           </Container>
         )}
-        <Button onClick={handleSave}>Save Item</Button>
       </SpaceBetween>
     </Box>
   );

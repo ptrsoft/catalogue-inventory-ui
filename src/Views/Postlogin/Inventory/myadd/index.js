@@ -20,8 +20,9 @@ import { addProduct } from "Redux-Store/Products/ProductThunk";
 import { FileUpload } from "@cloudscape-design/components";
 import { useDispatch } from "react-redux";
 
-const AddItemForm = ({ onToggle, isMultipleVariant }) => {
+const AddItemForm = ({ onToggle }) => {
   const dispatch = useDispatch();
+  const [isMultipleVariant, setIsMultipleVariant] = useState(false);
 
   const [name, setName] = useState("");
   const [selectedCategory, setSelectedCategory] = React.useState(null);
@@ -325,12 +326,59 @@ const AddItemForm = ({ onToggle, isMultipleVariant }) => {
 
   return (
     <>
-      <Flashbar items={items} />
+     <SpaceBetween direction="vertical" size="s">
+     <Flashbar items={items} />
+
+        <h2>Add Item</h2>
+        <BreadcrumbGroup
+          items={[
+            { text: "Dashboard", href: "/app/dashboard" },
+
+            { text: "Inventory", href: "/app/inventory" },
+            { text: "Add Item", href: "/app/inventory/addItem" },
+          ]}
+          ariaLabel="Breadcrumbs"
+        />
+        {/* Radio buttons to toggle between forms */}
+        <div style={{ display: "flex", gap: "10px", marginBottom: "10px"}}>
+          <label>
+            <input
+              type="radio"
+              name="itemType"
+              value="single"
+              onChange={() => setIsMultipleVariant(false)}
+              defaultChecked
+            />
+            Add Single Item
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="itemType"
+              value="multiple"
+              onChange={() => setIsMultipleVariant(true)}
+            />
+            Add Multiple-Variant Item
+          </label>
+        </div>
+         
+      </SpaceBetween>
 
       <Box>
-        <SpaceBetween size="m">
+   
           {!isMultipleVariant && (
+            
+        <SpaceBetween size="xl">
+             <Box float="right">
+            <Button onClick={handleSave}>Save Item</Button>
+            <Button variant="link" onClick={onToggle}>
+              Cancel
+            </Button>
+          </Box>
+          
             <Box>
+                 
+              <SpaceBetween direction="vertical" size="l">
               <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
                 <Container header={<Header>Category</Header>}>
                   <hr
@@ -391,7 +439,7 @@ const AddItemForm = ({ onToggle, isMultipleVariant }) => {
                     </FormField>
                   </Grid>
                 </Container>
-                <Container header={<Header>Status</Header>}>
+                <Container fitHeight header={<Header>Status</Header>}>
                   <FormField
                     label="Status *"
                     errorText={isFormSubmitted && !status && "Required"}
@@ -417,7 +465,7 @@ const AddItemForm = ({ onToggle, isMultipleVariant }) => {
                   <hr
                     style={{ marginLeft: "-15px", marginRight: "-15px" }}
                   ></hr>
-        <SpaceBetween size="m">
+        <SpaceBetween size="l">
 
                   <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
                     <FormField
@@ -612,9 +660,12 @@ const AddItemForm = ({ onToggle, isMultipleVariant }) => {
 </SpaceBetween>
                 </Container>
                 <Box>
-                  <SpaceBetween size="m">
+                  <SpaceBetween size="l">
                     <Container header={<Header>Inventory</Header>}>
+                    <SpaceBetween size="l">
                       <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                     
+
                         <FormField
                           label="Overall Quantity In Stock"
                           errorText={
@@ -660,11 +711,14 @@ const AddItemForm = ({ onToggle, isMultipleVariant }) => {
                           }
                         />
                       </FormField>
+                      </SpaceBetween>
+
                     </Container>
                     <Container header={<Header>Sale in B2C</Header>}>
                       <hr
                         style={{ marginLeft: "-15px", marginRight: "-15px" }}
                       ></hr>
+                       <SpaceBetween size="l">
 
                       <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
                         <FormField
@@ -771,6 +825,7 @@ const AddItemForm = ({ onToggle, isMultipleVariant }) => {
                           onChange={({ detail }) => setBuyerLimit(detail.value)}
                         />
                       </FormField>
+                      </SpaceBetween>
                     </Container>
                   </SpaceBetween>
                 </Box>
@@ -850,73 +905,20 @@ const AddItemForm = ({ onToggle, isMultipleVariant }) => {
                   </FormField>
                 </Container>
               </Grid>
+              </SpaceBetween>
             </Box>
-          )}
-          {isMultipleVariant && <AddEditVariant />}
+           </SpaceBetween>
 
-          <SpaceBetween direction="horizontal" size="s">
-            <Button onClick={handleSave}>Save Item</Button>
-            <Button variant="link" onClick={onToggle}>
-              Cancel
-            </Button>
-          </SpaceBetween>
-        </SpaceBetween>
+          )}
+
+      
+        {isMultipleVariant && <AddEditVariant />}
+
       </Box>
     </>
   );
 };
 
-const AddItem = () => {
-  const [isMultipleVariant, setIsMultipleVariant] = useState(false);
 
-  return (
-    <>
-      <SpaceBetween direction="vertical" size="m">
-        <h2>Add Item</h2>
-        <BreadcrumbGroup
-          items={[
-            { text: "Dashboard", href: "/app/dashboard" },
 
-            { text: "Inventory", href: "/app/inventory" },
-            { text: "Add Item", href: "/app/inventory/addItem" },
-          ]}
-          ariaLabel="Breadcrumbs"
-        />
-        {/* Radio buttons to toggle between forms */}
-        <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
-          <label>
-            <input
-              type="radio"
-              name="itemType"
-              value="single"
-              onChange={() => setIsMultipleVariant(false)}
-              defaultChecked
-            />
-            Add Single Item
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="itemType"
-              value="multiple"
-              onChange={() => setIsMultipleVariant(true)}
-            />
-            Add Multiple-Variant Item
-          </label>
-        </div>
-      </SpaceBetween>
-
-      {/* Conditionally render the appropriate form */}
-      {isMultipleVariant ? (
-        <AddEditVariant />
-      ) : (
-        <AddItemForm
-          isMultipleVariant={isMultipleVariant}
-          onToggle={setIsMultipleVariant}
-        />
-      )}
-    </>
-  );
-};
-
-export default AddItem;
+export default AddItemForm;

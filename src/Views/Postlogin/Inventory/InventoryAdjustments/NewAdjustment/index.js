@@ -366,7 +366,8 @@ const getToken = () => {
                   items={dataToSave?.itemsData}
                   loadingText="Loading resources"
                   trackBy="name"
-                  variant="container"
+                  
+                  // variant="container"
                 />
               </Container>
             </div>

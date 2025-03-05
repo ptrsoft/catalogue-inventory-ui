@@ -575,6 +575,8 @@ const Orders = () => {
             }`}
           >
             <Table
+                  header={<Header>Total Selected Items: {selectedItems.length}
+            </Header>}
               selectedItems={selectedItems}
               ariaLabels={{
                 selectionGroupLabel: "Select orders",

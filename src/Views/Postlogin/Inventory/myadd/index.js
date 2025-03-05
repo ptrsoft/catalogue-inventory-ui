@@ -12,18 +12,21 @@ import {
   Grid,
   BreadcrumbGroup,
   Flashbar,
-  Icon
+  Icon,
+  Popover,
+  StatusIndicator
 } from "@cloudscape-design/components";
 import AddEditVariant from "../AddEditVariant";
 import { uploadImage } from "Redux-Store/uploadImage/uploadThunk";
 import { addProduct } from "Redux-Store/Products/ProductThunk";
 import { FileUpload } from "@cloudscape-design/components";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-const AddItemForm = ({ onToggle }) => {
+const AddItemForm = () => {
   const dispatch = useDispatch();
   const [isMultipleVariant, setIsMultipleVariant] = useState(false);
-
+ const navigate=useNavigate()
   const [name, setName] = useState("");
   const [selectedCategory, setSelectedCategory] = React.useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = React.useState(null);
@@ -326,11 +329,10 @@ const AddItemForm = ({ onToggle }) => {
 
   return (
     <>
-     <SpaceBetween direction="vertical" size="s">
-     <Flashbar items={items} />
+                 <Flashbar items={items} />
 
-        <h2>Add Item</h2>
-        <BreadcrumbGroup
+     <SpaceBetween direction="vertical" size="l">
+     <BreadcrumbGroup
           items={[
             { text: "Dashboard", href: "/app/dashboard" },
 
@@ -339,8 +341,25 @@ const AddItemForm = ({ onToggle }) => {
           ]}
           ariaLabel="Breadcrumbs"
         />
+
+<Header
+  variant="h1"
+  actions={
+    !isMultipleVariant && (
+      <Box float="right">
+        <Button onClick={handleSave} variant="primary">
+          Save
+        </Button>
+      </Box>
+    )
+  }
+>
+  Add Item
+</Header>
+
+     
         {/* Radio buttons to toggle between forms */}
-        <div style={{ display: "flex", gap: "10px", marginBottom: "10px"}}>
+        <div style={{ display: "flex", gap: "10px"}}>
           <label>
             <input
               type="radio"
@@ -369,17 +388,13 @@ const AddItemForm = ({ onToggle }) => {
           {!isMultipleVariant && (
             
         <SpaceBetween size="xl">
-             <Box float="right">
-            <Button onClick={handleSave}>Save Item</Button>
-            <Button variant="link" onClick={onToggle}>
-              Cancel
-            </Button>
-          </Box>
+           
           
             <Box>
                  
               <SpaceBetween direction="vertical" size="l">
               <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+              <div style={{marginTop:'30px'}}>
                 <Container header={<Header>Category</Header>}>
                   <hr
                     style={{ marginLeft: "-15px", marginRight: "-15px" }}
@@ -387,7 +402,12 @@ const AddItemForm = ({ onToggle }) => {
 
                   <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
                     <FormField
-                      label="Category"
+                      label={
+                        <span>
+                         Category{" "}
+                          <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                        </span>
+                      }
                       errorText={
                         isFormSubmitted && !selectedCategory && "Required"
                       }
@@ -419,7 +439,12 @@ const AddItemForm = ({ onToggle }) => {
                       />
                     </FormField>
                     <FormField
-                      label="Sub Category"
+                      label={
+                        <span>
+                         Sub Category{" "}
+                          <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                        </span>
+                      }
                       errorText={
                         isFormSubmitted && !selectedSubCategory && "Required"
                       }
@@ -439,9 +464,16 @@ const AddItemForm = ({ onToggle }) => {
                     </FormField>
                   </Grid>
                 </Container>
+                </div>
+                <div style={{marginTop:'30px'}}>
                 <Container fitHeight header={<Header>Status</Header>}>
                   <FormField
-                    label="Status *"
+                    label={
+                      <span>
+                       Status{" "}
+                        <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                      </span>
+                    }
                     errorText={isFormSubmitted && !status && "Required"}
                   >
                     <Select
@@ -458,6 +490,7 @@ const AddItemForm = ({ onToggle }) => {
                     />
                   </FormField>
                 </Container>
+                </div>
               </Grid>
 
               <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
@@ -469,7 +502,12 @@ const AddItemForm = ({ onToggle }) => {
 
                   <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
                     <FormField
-                      label="Item Name"
+                      label={
+                        <span>
+                         Item Name{" "}
+                          <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                        </span>
+                      }
                       errorText={isFormSubmitted && !name && "Required"}
                     >
                       <Input
@@ -547,7 +585,12 @@ const AddItemForm = ({ onToggle }) => {
                   </div>
 
                   <FormField
-                 label="Item Description"
+                 label={
+                  <span>
+                   Description{" "}
+                    <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                  </span>
+                }
                  errorText={isFormSubmitted && !description && "Required"}
                  stretch // This ensures the FormField takes full width
                >
@@ -557,12 +600,17 @@ const AddItemForm = ({ onToggle }) => {
                      onChange={handleChange}
                      placeholder="Add Item Description"
                      value={description}
-                     maxLength={247}
+                     maxLength={500}
                    />
                  </div>
                </FormField>
                <FormField
-                 label="Add Item Image"
+                label={
+                  <span>
+                   Add Item Image{" "}
+                    <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                  </span>
+                }
                  errorText={isFormSubmitted && !imageUrl1 && "Atleast Add one Image"}
                  stretch // This ensures the FormField takes full width
                >
@@ -666,22 +714,25 @@ const AddItemForm = ({ onToggle }) => {
                       <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
                      
 
-                        <FormField
-                          label="Overall Quantity In Stock"
-                          errorText={
-                            isFormSubmitted && !stockQuantity && "Required"
-                          }
-                        >
-                          <Input
-                            required
-                            size="xs"
-                            placeholder="Add Quantity"
-                            value={stockQuantity}
-                            onChange={({ detail }) =>
-                              setStockQuantity(detail.value)
-                            }
-                          />
-                        </FormField>
+                      <FormField
+  label={
+    <span>
+      Quantity In Stock{" "}
+      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+    </span>
+  }
+  errorText={isFormSubmitted && !stockQuantity && "Required"}
+
+>
+  <Input
+    required
+    size="xs"
+    placeholder="Add Quantity"
+    value={stockQuantity}
+    onChange={({ detail }) => setStockQuantity(detail.value)}
+  />
+</FormField>
+
                         <FormField
                           label="Units"
                           // errorText={isFormSubmitted && units && "Required"}
@@ -720,11 +771,34 @@ const AddItemForm = ({ onToggle }) => {
                       ></hr>
                        <SpaceBetween size="l">
 
-                      <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                      <Grid gridDefinition={[{ colspan: 9 }, { colspan: 3 }]}>
                         <FormField
-                          label="Total Items Quantity *"
+                         
+                          label={
+                            <span>
+                              Total Items Quantity{" "}
+                              <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                            </span>
+                          }
                           errorText={
                             isFormSubmitted && !totalQuantityInB2C && "Required"
+                          }
+                          info={
+                            <Popover
+                              dismissButton={false}
+                              position="top"
+                              size="small"
+                              triggerType="hover" // Show on hover
+                              content={
+                              
+                                  <span>
+                                  Enter the quantity in which you want to sell the item for B2C customers (e.g., 1 kg, 200g, 500ml).
+                                  </span>
+                               
+                              }
+                            >
+                              <StatusIndicator colorOverride="blue" type="info" />
+                            </Popover>
                           }
                         >
                           <Input
@@ -760,8 +834,27 @@ const AddItemForm = ({ onToggle }) => {
                           />
                         </FormField>
                       </Grid>
-                      <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
-                        <FormField label="Minimum Weight">
+                      <Grid gridDefinition={[{ colspan: 9 }, { colspan: 3 }]}>
+                        <FormField label="Minimum Weight"
+                          info={
+                            <Popover
+                              dismissButton={false}
+                              position="top"
+                              size="small"
+                              triggerType="hover" // Show on hover
+                              content={
+                              
+                                  <span>
+Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This is useful for items sold in pieces with varying weights,                                  </span>
+                               
+                              }
+                            >
+                              <StatusIndicator colorOverride="blue" type="info" />
+                            </Popover>
+                          }
+
+                          
+                          >
                           <Input
                             type="number"
                             name="min weight"
@@ -771,7 +864,8 @@ const AddItemForm = ({ onToggle }) => {
                             }
                           />
                         </FormField>
-                        <FormField name="minunit" label="Units">
+                        <FormField name="minunit" label="Units"
+                        >
                           <Select
                             selectedOption={minimumWeightUnit}
                             onChange={({ detail }) =>
@@ -786,8 +880,24 @@ const AddItemForm = ({ onToggle }) => {
                           />
                         </FormField>
                       </Grid>
-                      <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
-                        <FormField label="Maximum Weight ">
+                      <Grid gridDefinition={[{ colspan: 9 }, { colspan: 3 }]}>
+                        <FormField label="Maximum Weight "
+                          info={
+                            <Popover
+                              dismissButton={false}
+                              position="top"
+                              size="small"
+                              triggerType="hover" // Show on hover
+                              content={
+                              
+                                  <span>
+Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This is useful for items sold in pieces with varying weights,                            </span>
+                               
+                              }
+                            >
+                              <StatusIndicator colorOverride="blue" type="info" />
+                            </Popover>
+                          }>
                           <Input
                             type="maximum"
                             name="maximum"
@@ -815,8 +925,31 @@ const AddItemForm = ({ onToggle }) => {
                         </FormField>
                       </Grid>
                       <FormField
-                        label="Set Limit For Buying Per Customer"
+
+                        label={
+                          <span>
+                           Set Limit On Buying{" "}
+                            <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                          </span>
+                        }
+                        
                         errorText={isFormSubmitted && !buyerLimit && "Required"}
+                        info={
+                          <Popover
+                            dismissButton={false}
+                            position="top"
+                            size="small"
+                            triggerType="hover" // Show on hover
+                            content={
+                            
+                                <span>
+Set the maximum quantity a customer can order (e.g., 5 kg, 10 units). Customers cannot order beyond this limit.  
+</span>                           
+                            }
+                          >
+                            <StatusIndicator colorOverride="blue" type="info" />
+                          </Popover>
+                        }
                       >
                         <Input
                           type="number"
@@ -838,7 +971,13 @@ const AddItemForm = ({ onToggle }) => {
                   <hr style={{ marginLeft: "-15px", marginRight: "-15px" }} />
 
                   <FormField
-                    label="Purchasing Price"
+               
+                    label={
+                      <span>
+                      Purchasing Price {" "}
+                        <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                      </span>
+                    }
                     errorText={
                       isFormSubmitted && !purchasingPrice && "Required"
                     }
@@ -856,7 +995,12 @@ const AddItemForm = ({ onToggle }) => {
 
                   <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
                     <FormField
-                      label=" Selling Price"
+                      label={
+                        <span>
+                         Selling Price{" "}
+                          <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                        </span>
+                      }
                       errorText={isFormSubmitted && !sellingPrice && "Required"}
                     >
                       <Input
@@ -907,6 +1051,13 @@ const AddItemForm = ({ onToggle }) => {
               </Grid>
               </SpaceBetween>
             </Box>
+            <Box float="right">
+            <Button onClick={handleSave}>Save Item</Button>
+            <Button variant="link" onClick={() => navigate("/app/inventory")}>
+  Cancel
+</Button>
+
+          </Box>
            </SpaceBetween>
 
           )}

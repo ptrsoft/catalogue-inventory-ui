@@ -19,9 +19,12 @@ import { uploadImage } from "Redux-Store/uploadImage/uploadThunk";
 import { addProduct } from "Redux-Store/Products/ProductThunk";
 import { FileUpload } from "@cloudscape-design/components";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 
 const AddEditVariant = () => {
   const dispatch = useDispatch();
+ const navigate=useNavigate()
 
   const [name, setName] = useState("");
   const [selectedCategory, setSelectedCategory] = React.useState(null);
@@ -409,21 +412,27 @@ const AddEditVariant = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Box>
-   
-
+    <div style={{marginLeft:'50px',marginRight:'50px'}}>
+     
+  
+        
             <Flashbar items={items} />
       
-      <SpaceBetween size="m">
+      <SpaceBetween size="l">
       <Box float="right" >
-              <Button onClick={handleSave}>Save Item</Button>
+              <Button onClick={handleSave} variant="primary">Save</Button>
               </Box>
         <Container  header={<Header>Category</Header>}>
           <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
 
           <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
             <FormField
-              label="Category"
+               label={
+                <span>
+                 Category{" "}
+                  <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                </span>
+              }
               errorText={isFormSubmitted && !selectedCategory && "Required"}
             >
               <Select
@@ -450,7 +459,12 @@ const AddEditVariant = () => {
               />
             </FormField>
             <FormField
-              label="Sub Category"
+                label={
+                  <span>
+                   Sub Category{" "}
+                    <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                  </span>
+                }
               errorText={isFormSubmitted && !selectedSubCategory && "Required"}
             >
               <Select
@@ -474,8 +488,12 @@ const AddEditVariant = () => {
 
           <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
             <FormField
-              label="Item Name"
-              errorText={isFormSubmitted && !name && "Required"}
+  label={
+    <span>
+     Item Name{" "}
+      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+    </span>
+  }              errorText={isFormSubmitted && !name && "Required"}
             >
               <Input
                 size="xs"
@@ -552,8 +570,12 @@ const AddEditVariant = () => {
           </div>
 
           <FormField
-  label="Item Description"
-  errorText={isFormSubmitted && !description && "Required"}
+   label={
+    <span>
+     Description{" "}
+      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+    </span>
+  }  errorText={isFormSubmitted && !description && "Required"}
   stretch // This ensures the FormField takes full width
 >
   <div style={{ width: "100%"}}>
@@ -562,13 +584,17 @@ const AddEditVariant = () => {
       onChange={handleChange}
       placeholder="Add Item Description"
       value={description}
-      maxLength={247}
+      maxLength={500}
     />
   </div>
 </FormField>
    <FormField
-                 label="Add Item Image"
-                 errorText={isFormSubmitted && !imageUrl1 && "Atleast Add one Image"}
+   label={
+    <span>
+     Add Item Image{" "}
+      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+    </span>
+  }                 errorText={isFormSubmitted && !imageUrl1 && "Atleast Add one Image"}
                  stretch // This ensures the FormField takes full width
                >
 <div style={{ border: "2px dashed #4A90E2", padding: "16px", borderRadius: "8px", width: "100%", textAlign: "left", marginTop: "3px" }}>
@@ -837,7 +863,10 @@ const AddEditVariant = () => {
                 },
                 {
                   id: "quantity",
-                  header: "Quantity in Stock",
+                  header:  <span>
+                  Quantity In Stock{" "}
+                  <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                </span>,
                   cell: (item) => (
                     <div style={{width:'200px'}}>
                     <Grid
@@ -877,7 +906,10 @@ const AddEditVariant = () => {
                 },
                 {
                   id: "purchasePrice",
-                  header: "Purchasing Price",
+                  header:   <span>
+                  Purchasing Price {" "}
+                    <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                  </span>,
                   cell: (item) => (
                     <FormField
                       errorText={
@@ -903,7 +935,10 @@ const AddEditVariant = () => {
                 },
                 {
                   id: "sellingPrice",
-                  header: "Selling Price",
+                  header:    <span>
+                  Selling Price{" "}
+                   <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                 </span>,
                   cell: (item) => (
                     <FormField
                       errorText={
@@ -1045,8 +1080,16 @@ const AddEditVariant = () => {
             />
           </Container>
         )}
+
+     <Box float="right">
+            <Button onClick={handleSave}>Save Item</Button>
+            <Button variant="link" onClick={() => navigate("/app/inventory")}>
+  Cancel
+</Button>
+
+          </Box>
       </SpaceBetween>
-    </Box>
+    </div>
   );
 };
 

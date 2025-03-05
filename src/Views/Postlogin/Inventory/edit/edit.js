@@ -17,6 +17,8 @@ import {
   Table,
   SpaceBetween,
   FormField,
+  Popover,
+  StatusIndicator,
   Input,
   Toggle,
   Header,
@@ -466,7 +468,13 @@ console.log(images,"array of images");
           <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
 
           <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
-            <FormField label="Category">
+            <FormField 
+              label={
+                <span>
+                 Category{" "}
+                  <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                </span>
+              }>
               <Select
                 selectedOption={
                   category ? { label: category, value: category } : null
@@ -480,7 +488,13 @@ console.log(images,"array of images");
               />
             </FormField>
             {/* Subcategory Dropdown */}
-            <FormField label="Sub Category">
+            <FormField 
+              label={
+                <span>
+                 Sub Category{" "}
+                  <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                </span>
+              }>
               <Select
                 selectedOption={
                   subCategory ? { label: subCategory, value: subCategory } : null
@@ -493,7 +507,12 @@ console.log(images,"array of images");
           </Grid>
         </Container>
         <Container fitHeight header={<Header>Status</Header>}>
-        <FormField label="Status *">
+        <FormField   label={
+                      <span>
+                       Status{" "}
+                        <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                      </span>
+                    }>
   <Select
     name="statusofItem"
     selectedOption={
@@ -514,9 +533,14 @@ console.log(images,"array of images");
       <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
         <Container fitHeight header={<Header>Item Information</Header>}>
           <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
-          <SpaceBetween size="m">
+          <SpaceBetween size="l">
             <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
-              <FormField label="Item Name">
+              <FormField   label={
+    <span>
+     Item Name{" "}
+      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+    </span>
+  } >
                 <Input
                   invalid={invalidFields.name}
                   value={name}
@@ -591,7 +615,12 @@ console.log(images,"array of images");
             </div>
 
             <FormField
-              label="Item Description"
+            label={
+              <span>
+               Description{" "}
+                <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+              </span>
+            } 
               stretch // This ensures the FormField takes full width
             >
               <div style={{ width: "100%" }}>
@@ -623,7 +652,12 @@ console.log(images,"array of images");
               </div>
             </Container> */}
              <FormField
-                             label="Add Item Image"
+                         label={
+                          <span>
+                           Add Item Image{" "}
+                            <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                          </span>
+                        }                 
                              stretch // This ensures the FormField takes full width
                            >
             
@@ -720,12 +754,18 @@ console.log(images,"array of images");
           </SpaceBetween>
         </Container>
         <Box>
-          <SpaceBetween size="m">
+          <SpaceBetween size="l">
             <Container header={<Header>Inventory</Header>}>
+                                <SpaceBetween size="l">
+            
               <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
                 <FormField
-                  label="Overall Quantity In Stock"
-                  errorText={!stockQuantity && "Required"}
+  label={
+    <span>
+      Quantity In Stock{" "}
+      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+    </span>
+  }                  errorText={!stockQuantity && "Required"}
                 >
                   <Input
                     required
@@ -754,15 +794,39 @@ console.log(images,"array of images");
                   onChange={({ detail }) => setLowStockAlert(detail.value)}
                 />
               </FormField>
+                                    </SpaceBetween>
+              
             </Container>
 
             <Container header={<Header>Sale in B2C</Header>}>
               <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
+                       <SpaceBetween size="l">
 
               <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
                 <FormField
-                  label="Total Items Quantity *"
-                  errorText={!totalQuantityInB2C && "Required"}
+   label={
+    <span>
+      Total Items Quantity{" "}
+      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+    </span>
+  }                  errorText={!totalQuantityInB2C && "Required"}
+  info={
+    <Popover
+      dismissButton={false}
+      position="top"
+      size="small"
+      triggerType="hover" // Show on hover
+      content={
+      
+          <span>
+          Enter the quantity in which you want to sell the item for B2C customers (e.g., 1 kg, 200g, 500ml).
+          </span>
+       
+      }
+    >
+      <StatusIndicator colorOverride="blue" type="info" />
+    </Popover>
+  }
                 >
                   <Input
                     type="number"
@@ -787,7 +851,23 @@ console.log(images,"array of images");
                 </FormField>
               </Grid>
               <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
-                <FormField label="Minimum Weight">
+                <FormField label="Minimum Weight"
+                   info={
+                    <Popover
+                      dismissButton={false}
+                      position="top"
+                      size="small"
+                      triggerType="hover" // Show on hover
+                      content={
+                      
+                          <span>
+Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This is useful for items sold in pieces with varying weights,                                  </span>
+                       
+                      }
+                    >
+                      <StatusIndicator colorOverride="blue" type="info" />
+                    </Popover>
+                  }>
                   <Input
                     type="number"
                     name="min weight"
@@ -809,7 +889,23 @@ console.log(images,"array of images");
                 </FormField>
               </Grid>
               <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
-                <FormField label="Maximum Weight ">
+                <FormField label="Maximum Weight"
+                                          info={
+                                            <Popover
+                                              dismissButton={false}
+                                              position="top"
+                                              size="small"
+                                              triggerType="hover" // Show on hover
+                                              content={
+                                              
+                                                  <span>
+                Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This is useful for items sold in pieces with varying weights,                            </span>
+                                               
+                                              }
+                                            >
+                                              <StatusIndicator colorOverride="blue" type="info" />
+                                            </Popover>
+                                          }>
                   <Input
                     type="maximum"
                     name="maximum"
@@ -831,7 +927,30 @@ console.log(images,"array of images");
                 </FormField>
               </Grid>
               <FormField
-                label="Set Limit For Buying Per Customer"
+                
+                label={
+                  <span>
+                   Set Limit On Buying{" "}
+                    <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                  </span>
+                }
+                
+                info={
+                  <Popover
+                    dismissButton={false}
+                    position="top"
+                    size="small"
+                    triggerType="hover" // Show on hover
+                    content={
+                    
+                        <span>
+Set the maximum quantity a customer can order (e.g., 5 kg, 10 units). Customers cannot order beyond this limit.  
+</span>                           
+                    }
+                  >
+                    <StatusIndicator colorOverride="blue" type="info" />
+                  </Popover>
+                }
                 errorText={!buyerLimit && "Required"}
               >
                 <Input
@@ -841,6 +960,7 @@ console.log(images,"array of images");
                   onChange={({ detail }) => setBuyerLimit(detail.value)}
                 />
               </FormField>
+              </SpaceBetween>
             </Container>
           </SpaceBetween>
         </Box>
@@ -850,8 +970,13 @@ console.log(images,"array of images");
           <hr style={{ marginLeft: "-15px", marginRight: "-15px" }} />
 
           <FormField
-            label="Purchasing Price"
-            errorText={!purchasingPrice && "Required"}
+
+label={
+  <span>
+  Purchasing Price {" "}
+    <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+  </span>
+}            errorText={!purchasingPrice && "Required"}
           >
             <Input
               required
@@ -864,8 +989,12 @@ console.log(images,"array of images");
 
           <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
             <FormField
-              label=" Selling Price"
-              errorText={!sellingPrice && "Required"}
+   label={
+    <span>
+     Selling Price{" "}
+      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+    </span>
+  }              errorText={!sellingPrice && "Required"}
             >
               <Input
                 required

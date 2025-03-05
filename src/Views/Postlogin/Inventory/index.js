@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
 import Table from "@cloudscape-design/components/table";
@@ -28,12 +28,11 @@ import {
   Flashbar,
   Grid,
   Toggle,
-  Popover
+  Popover,
 } from "@cloudscape-design/components";
 import { Link } from "react-router-dom";
 
 const Inventory = () => {
-
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const fileInputRef = useRef(null); // Create a reference for the file input
   // Handle Import button click to show the file dialog
@@ -45,7 +44,14 @@ const Inventory = () => {
   const [flashMessages, setFlashMessages] = useState([]);
   // Show flash messages
   const showFlashMessage = (type, content) => {
-    setFlashMessages([{ type, content, dismissible: true, onDismiss: () => setFlashMessages([]) }]);
+    setFlashMessages([
+      {
+        type,
+        content,
+        dismissible: true,
+        onDismiss: () => setFlashMessages([]),
+      },
+    ]);
   };
   // Import API handler
   const handleFileImport = (event) => {
@@ -61,46 +67,43 @@ const Inventory = () => {
         redirect: "follow",
       };
 
-      fetch("https://api.admin.promodeagro.com/inventory/import", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-      
+      fetch(
+        "https://api.admin.promodeagro.com/inventory/import",
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((result) => {
           showFlashMessage("success", "Products File Imported Successfully");
-        
-      })
-        .catch((error) => {
-           console.error("Error during import:", error);
-         showFlashMessage("error", "Failed to import the file");
         })
-
+        .catch((error) => {
+          console.error("Error during import:", error);
+          showFlashMessage("error", "Failed to import the file");
+        });
     }
   };
 
-
-// Export API handler
-const handleExport = () => {
-  fetch("https://api.admin.promodeagro.com/inventory/exportProducts")
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.fileUrl) {
-        console.log(data,"export data ");
-        // Create a temporary link element to trigger file download
-        const link = document.createElement('a');
-        link.href = data.fileUrl;
-        link.download = data.fileUrl.split('/').pop();  // Extract filename from URL
-        link.click();
-      } else {
-        console.error("Failed to export products.");
-      }
-    })
-    .catch((error) => console.error("Error during export:", error));
-};
+  // Export API handler
+  const handleExport = () => {
+    fetch("https://api.admin.promodeagro.com/inventory/exportProducts")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.fileUrl) {
+          console.log(data, "export data ");
+          // Create a temporary link element to trigger file download
+          const link = document.createElement("a");
+          link.href = data.fileUrl;
+          link.download = data.fileUrl.split("/").pop(); // Extract filename from URL
+          link.click();
+        } else {
+          console.error("Failed to export products.");
+        }
+      })
+      .catch((error) => console.error("Error during export:", error));
+  };
   // Toggles the visibility of the popover
   const handleButtonClick = () => {
-    setIsPopoverOpen(prevState => !prevState);
+    setIsPopoverOpen((prevState) => !prevState);
   };
-
- 
 
   const [filteringText, setFilteringText] = React.useState("");
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
@@ -120,7 +123,6 @@ const handleExport = () => {
   const inventoryStats = useSelector((state) => state.products.inventoryStats);
   const [nextKeys, setNextKeys] = useState({}); // Store nextKey per page
   const [hoveredProductId, setHoveredProductId] = React.useState(null); // State to track hovered product ID
-
 
   const dispatch = useDispatch();
   const products = useSelector(
@@ -146,8 +148,13 @@ const handleExport = () => {
     // Create a key to represent the current filters and page
     const filterKey = `${selectedCategory?.value || ""}-${
       selectedSubCategory?.value || ""
-    }-${filteringText || ""}-${selectedStatus?.value === true ? "true" : selectedStatus?.value === false ? "false" : ""}-${currentPage}`;
-    
+    }-${filteringText || ""}-${
+      selectedStatus?.value === false
+        ? "false"
+        : selectedStatus?.value === true
+        ? "true"
+        : ""
+    }-${currentPage}`;
 
     // Check if the current page with the current filter has already been fetched
     if (!fetchedPages[filterKey]) {
@@ -156,9 +163,15 @@ const handleExport = () => {
           category: selectedCategory?.value || "",
           subCategory: selectedSubCategory?.value || "",
           search: filteringText || "",
-          active: selectedStatus?.value,
+          active:
+            selectedStatus?.value === true
+              ? "true"
+              : selectedStatus?.value === false
+              ? "false"
+              : "",
           pageKey, // Only pass the nextKey for pages beyond 1
-          pageSize: 50, // Items per page
+          // pageSize: 50,
+          // Items per page
         })
       )
         .unwrap()
@@ -224,10 +237,9 @@ const handleExport = () => {
     setSelectedStatus(detail.selectedOption);
     setCurrentPage(1); // Reset page to 1 when filters change
 
-    console.log(selectedStatus,"status");
+    console.log(selectedStatus, "status");
   };
-  console.log(selectedStatus?.value,"status");
-
+  console.log(selectedStatus?.value, "status");
 
   if (status === "LOADING") {
     return (
@@ -242,7 +254,8 @@ const handleExport = () => {
   };
 
   const handleConfirmToggle = () => {
-    const newStatus = selectedStatus?.value === "true"; // Determine the status based on selectedStatus
+    const newStatus = selectedStatus?.value==="true"; // Determine the status based on selectedStatus
+    console.log(newStatus,"new staussess");
     const ids = selectedItems.map((item) => item.id); // Get the IDs of the selected items
     dispatch(PutToggle({ ids, active: newStatus }))
       .unwrap()
@@ -263,9 +276,9 @@ const handleExport = () => {
         //   setItems([]);  // Clear the message after 3 seconds
         // }, 5000);
 
-    
-         // Fetch updated products
-        window.location.reload(); // This will force a full page reload
+        // Fetch updated products
+        // window.location.reload(); 
+        // This will force a full page reload
       })
       .catch((error) => {
         console.error("Error during status change:", error); // Log the full error for debugging
@@ -283,8 +296,7 @@ const handleExport = () => {
           },
         ]);
       });
-      setCurrentPage(1); // Reset page to 1 when filters change
-
+    setCurrentPage(1); // Reset page to 1 when filters change
   };
 
   const handleCancelToggle = () => {
@@ -299,11 +311,9 @@ const handleExport = () => {
     );
   }
 
-
   const getStockAlertColor = (stockAlert) => {
     return stockAlert.toLowerCase().includes("low") ? "red" : "#0492C2";
   };
-
 
   const handleProductClick = (product) => {
     setSelectedProduct(product);
@@ -443,12 +453,11 @@ const handleExport = () => {
     ],
   };
 
-
   return (
     <SpaceBetween size="s">
       <Flashbar items={items} />
-       {/* Flash Message Notifications */}
-       {flashMessages.length > 0 && <Flashbar items={flashMessages} />}
+      {/* Flash Message Notifications */}
+      {flashMessages.length > 0 && <Flashbar items={flashMessages} />}
       <BreadcrumbGroup
         items={[
           { text: "Dashboard", href: "/app/dashboard" },
@@ -468,7 +477,6 @@ const handleExport = () => {
             { colspan: { default: 12, xs: 2 } },
             { colspan: { default: 12, xs: 2 } },
             { colspan: { default: 12, xs: 2 } },
-
           ]}
         >
           <TextFilter
@@ -505,8 +513,7 @@ const handleExport = () => {
             placeholder="Select Category"
           />
           <Select
-  disabled={!selectedCategory || selectedCategory.value === ""} // Disable if no category or "All" is selected
-
+            disabled={!selectedCategory || selectedCategory.value === ""} // Disable if no category or "All" is selected
             required
             selectedOption={selectedSubCategory}
             onChange={handleSubCategoryChange}
@@ -522,7 +529,7 @@ const handleExport = () => {
             selectedOption={selectedStatus}
             onChange={handleSelectChange}
             options={[
-              // { label: "All", value: "All" },
+              { label: "All", value: "" },
               { label: "Active", value: true },
               { label: "Inactive", value: false },
             ]}
@@ -533,38 +540,53 @@ const handleExport = () => {
               {/* <Button href="/app/Inventory/addItem">Add Item</Button> */}
               <Button href="/app/Inventory/addItem">Add Item</Button>
               <div>
-    
-     
-        <Popover
-          onDismiss={() => setIsPopoverOpen(false)}
-          position="left"
-          align="start"
-          size="small"
-            wrapTriggerText={false}
-              triggerType='custom'
-              content={  
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <input type="file" ref={fileInputRef} onChange={handleFileImport} accept=".xlsx" style={{ display: "none" }} />
-                <Button variant="inline-link"  iconName="upload" onClick={handleImport}>Import</Button>
-                <Button variant="inline-link" iconName="download" onClick={handleExport}>Export</Button>
+                <Popover
+                  onDismiss={() => setIsPopoverOpen(false)}
+                  position="left"
+                  align="start"
+                  size="small"
+                  wrapTriggerText={false}
+                  triggerType="custom"
+                  content={
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "8px",
+                      }}
+                    >
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileImport}
+                        accept=".xlsx"
+                        style={{ display: "none" }}
+                      />
+                      <Button
+                        variant="inline-link"
+                        iconName="upload"
+                        onClick={handleImport}
+                      >
+                        Import
+                      </Button>
+                      <Button
+                        variant="inline-link"
+                        iconName="download"
+                        onClick={handleExport}
+                      >
+                        Export
+                      </Button>
+                    </div>
+                  }
+                >
+                  <Button
+                    iconName="ellipsis"
+                    onClick={handleButtonClick}
+                    ariaLabel="Options menu"
+                    variant="icon"
+                  />
+                </Popover>
               </div>
-              }
-           
-
-        
-        >
-             <Button
-        iconName="ellipsis"
-        onClick={handleButtonClick}
-        ariaLabel="Options menu"
-        variant="icon"
-      />
-        
-        </Popover>
-    
-    </div>
- 
-
             </SpaceBetween>
           </Box>
         </Grid>
@@ -688,6 +710,7 @@ const handleExport = () => {
             allItemsSelectionLabel: () => "select all",
             itemSelectionLabel: ({ selectedItems }, item) => item.name,
           }}
+          header={<Header>Total Selected Items: {selectedItems.length}</Header>}
           variant="borderless"
           columnDefinitions={[
             {
@@ -733,7 +756,8 @@ const handleExport = () => {
               },
               width: 250,
               minWidth: 180,
-            },                                    {
+            },
+            {
               id: "category",
               header: "Category",
               cell: (e) => e.category,
@@ -768,31 +792,48 @@ const handleExport = () => {
               header: "Selling Price",
               cell: (e) => `Rs. ${e.sellingPrice}`,
             },
-            // {
-            //   id: "status",
-            //   header: "Status",
-            //   cell: (e) => (
-            //     <div style={{ display: "flex", width: "100px" }}>
-            //       <Toggle
-            //         onChange={() => handleToggleClick(e)}
-            //         checked={e.active}
-            //       >
-            //         {e.active ? "Active" : "Inactive"}
-            //       </Toggle>
-            //       {/* <span
-            //         style={{
-            //           marginLeft: "10px",
-            //           color: e.status === "Inactive" ? "gray" : "black",
-            //         }}
-            //       ></span> */}
-            //     </div>
-            //   ),
-            // },
+            {
+              id: "status",
+              header: "Status",
+              cell: (e) => (
+                <div style={{ display: "flex", width: "100px" }}>
+                  {/* <Toggle
+                    onChange={() => handleToggleClick(e)}
+                    checked={e.active}
+                  > */}
+                  {e.availability === true
+                    ? "Active"
+                    : e.availability === false
+                    ? "Inactive"
+                    : ""}
+                      {e.active === true
+                    ? "Active"
+                    : e.active === false
+                    ? "Inactive"
+                    : ""}
+                  {/* </Toggle> */}
+                  {/* <span
+                    style={{
+                      marginLeft: "10px",
+                      color: e.status === "Inactive" ? "gray" : "black",
+                    }}
+                  ></span> */}
+                </div>
+              ),
+            },
             {
               id: "action",
               header: "Action",
               cell: (e) => (
-                <div style={{ display: "flex", gap: "15px", alignContent: "center", justifyContent: "center", alignItems: "center"}}>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "15px",
+                    alignContent: "center",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
                   <Link to={`/app/inventory/edit?id=${e.id}`}>
                     <Button iconName="edit" variant="inline-link" />
                   </Link>
@@ -800,9 +841,7 @@ const handleExport = () => {
                     iconName="remove"
                     variant="icon"
                     onClick={() => openModal(e.id)}
-                  >
-                    
-                  </Button>
+                  ></Button>
                 </div>
               ),
             },
@@ -813,12 +852,17 @@ const handleExport = () => {
               `${selectedCategory?.value || ""}-${
                 selectedSubCategory?.value || ""
               }-${filteringText || ""}-${
-                selectedStatus?.value || ""
+                selectedStatus?.value === false
+        ? "false"
+        : selectedStatus?.value === true
+        ? "true"
+        : ""
+                
               }-${currentPage}`
             ] || []
           }
           selectionType="multi"
-          trackBy="itemCode"
+          trackBy="id"
           empty={
             <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
               <SpaceBetween size="m">
@@ -857,32 +901,32 @@ const handleExport = () => {
                 onClick={handleCloseDrawer}
               />
             </div>
-              <h1 style={{ color: "#0972D3" }}>
-                {selectedProduct.name}
-                <br />
-                <p
-                  style={{
-                    color: "black",
-                    fontSize: "large",
-                    paddingTop: "15px",
-                  }}
-                >
-                  Stock : {selectedProduct.stockQuantity}{selectedProduct.units}
-
-                  <h7 style={{ fontSize: "10px" }}>
-                    {selectedProduct.stockAlert === "Low Stock" ? (
-                      <StatusIndicator type="warning" size="small">
-                        {selectedProduct.stockAlert}
-                      </StatusIndicator>
-                    ) : (
-                      <span style={{ fontSize: "medium", color: "#0972D3" }}>
-                        {selectedProduct.stockAlert}
-                      </span>
-                    )}
-                  </h7>{" "}
-                </p>
-              </h1>
-              {/* <div
+            <h1 style={{ color: "#0972D3" }}>
+              {selectedProduct.name}
+              <br />
+              <p
+                style={{
+                  color: "black",
+                  fontSize: "large",
+                  paddingTop: "15px",
+                }}
+              >
+                Stock : {selectedProduct.stockQuantity}
+                {selectedProduct.units}
+                <h7 style={{ fontSize: "10px" }}>
+                  {selectedProduct.stockAlert === "Low Stock" ? (
+                    <StatusIndicator type="warning" size="small">
+                      {selectedProduct.stockAlert}
+                    </StatusIndicator>
+                  ) : (
+                    <span style={{ fontSize: "medium", color: "#0972D3" }}>
+                      {selectedProduct.stockAlert}
+                    </span>
+                  )}
+                </h7>{" "}
+              </p>
+            </h1>
+            {/* <div
                 style={{ display: "flex", alignItems: "center"}}
               >
                 <Toggle
@@ -899,8 +943,7 @@ const handleExport = () => {
                 </Toggle>
                 </div> */}
 
-
-                {/* <ButtonDropdown
+            {/* <ButtonDropdown
                   items={[
                     {
                       text: "Reorder",
@@ -958,3 +1001,4 @@ const handleExport = () => {
 };
 
 export default Inventory;
+

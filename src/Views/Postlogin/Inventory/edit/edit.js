@@ -30,6 +30,7 @@ import {
   Box,
 } from "@cloudscape-design/components"; // Adjust the import path if needed
 import Flashbar from "@cloudscape-design/components/flashbar";
+import status from "Redux-Store/Constants";
 
 const Edit = () => {
   const [searchParams] = useSearchParams();
@@ -211,7 +212,7 @@ const Edit = () => {
       setPurchasingPrice(productDetail.purchasingPrice || "");
       setDescription(productDetail.description || "");
       setSubCategory(productDetail.subCategory || "");
-      setExpiryDate(productDetail.expiry || "");
+      setExpiryDate(productDetail.expiry);
       setAvailability(productDetail.availability || "");
       setTotalQuantityInB2C(productDetail.totalQuantityInB2c|| "");
       setTotalQuantityB2CUnit(productDetail.totalquantityB2cUnit || "");
@@ -233,6 +234,7 @@ const Edit = () => {
       setCreatedAt(productDetail.createdAt || "");
       setUpdatedAt(productDetail.updatedAt || "");
       setTotalQuantityB2CUnit(productDetail.TotalquantityB2cUnit || "");
+      setTableData(productDetail?.variants||[])
     }
   }, [productDetail]);
    //add varient code
@@ -288,7 +290,8 @@ console.log(images,"array of images");
       subCategory: !subCategory,
       units: !units,
       description: !description,
-      expiryDate: !expiryDate, // Always check for expiryDate
+      totalQuantityInB2C:!totalQuantityInB2C
+    
     };
 
     // If any field is invalid, return early and set invalid fields
@@ -324,7 +327,7 @@ console.log(images,"array of images");
       totalQuantityInB2c: Number(totalQuantityInB2C),
       minimumSellingWeight: Number(minimumSellingWeight),
       maximumSellingWeight: Number(maximumSellingWeight),
-      variant:tableData,
+      variants:tableData,
     
     };
  console.log(productData,"product");
@@ -802,7 +805,7 @@ console.log(images,"array of images");
               <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
                        <SpaceBetween size="l">
 
-              <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+              <Grid gridDefinition={[{ colspan: 9 }, { colspan: 3 }]}>
                 <FormField
    label={
     <span>
@@ -850,7 +853,7 @@ console.log(images,"array of images");
                   />
                 </FormField>
               </Grid>
-              <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+              <Grid gridDefinition={[{ colspan: 9 }, { colspan: 3 }]}>
                 <FormField label="Minimum Weight"
                    info={
                     <Popover
@@ -888,7 +891,7 @@ Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This 
                   />
                 </FormField>
               </Grid>
-              <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+              <Grid gridDefinition={[{ colspan: 9 }, { colspan: 3 }]}>
                 <FormField label="Maximum Weight"
                                           info={
                                             <Popover

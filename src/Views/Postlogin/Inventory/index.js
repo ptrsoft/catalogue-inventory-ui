@@ -106,6 +106,9 @@ const Inventory = () => {
   const handleButtonClick = () => {
     setIsPopoverOpen((prevState) => !prevState);
   };
+  const [isModalVisible1, setModalVisible1] = useState(false);
+  const [isBulkModifySuccess, setBulkModifySuccess] = useState(false);
+  const [isBulkModifySuccessflash, setBulkModifySuccessflash] = useState(false);
   const [editedProducts, setEditedProducts] = useState({});
   const [isFieldChanged, setIsFieldChanged] = useState(true);
   const [validationErrors, setValidationErrors] = useState({});
@@ -501,11 +504,127 @@ const Inventory = () => {
       ...prevErrors,
       [id]: errors,
     }));
+
   };
+  
+  const handleBulkModifyPrice = () => {
+    // if (validateInputs()) {
+      setModalVisible1(true);
+    // }
+  };
+  const handleModalConfirm = async () => {
+    const pricingDataArray = selectedItems.map((item) => ({
+      id: item.id,
+      sellingPrice: parseFloat(
+        editedProducts[item.id]?.sellingPrice || item.sellingPrice
+      ),
+      purchasingPrice: parseFloat(
+        editedProducts[item.id]?.purchasingPrice || item.purchasingPrice
+      ),
+    }));
+  
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+  
+    const requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      body: JSON.stringify(pricingDataArray),
+      redirect: "follow",
+    };
+  
+    try {
+      const response = await fetch(
+        "https://api.admin.promodeagro.com/inventory/price",
+        requestOptions
+      );
+      const result = await response.json();
+      console.log(result, "bulk resp");
+
+      if (response.ok || result.status === 200) {
+        console.log("Bulk modify successful", result);
+        setItems([
+          {
+            type: "success",
+            content: "Product pricing updated successfully!",
+            dismissible: true,
+            onDismiss: () => setItems([]),
+          },
+        ]);
+        setSelectedItems([]);
+        setModalVisible1(false);
+      } 
+    } catch (err) {
+      console.error("Failed to update product pricing:", err);
+      setItems([
+        {
+          type: "error",
+          content: "An error occurred while updating pricing.",
+          dismissible: true,
+          onDismiss: () => setItems([]),
+        },
+      ]);
+    }
+     // Automatically remove Flashbar after 3 seconds
+  setTimeout(() => {
+    setItems([]);
+  }, 3000);
+  };
+  
+
+  // validations before opening modal for api hitting
+  const validateInputs = () => {
+    let valid = true;
+    const errors = {};
+    selectedItems.forEach((item) => {
+      const editedProduct = editedProducts[item.id] || {};
+      const osp = editedProduct.onlineStorePrice || item.onlineStorePrice;
+      const cp = editedProduct.compareAt || item.compareAt;
+      let itemErrors = {};
+
+      if (!osp) {
+        valid = false;
+        itemErrors.onlineStorePrice = "Required!";
+      }
+      if (!cp) {
+        valid = false;
+        itemErrors.compareAt = "Required!";
+      } else if (parseFloat(cp) < parseFloat(osp)) {
+        valid = false;
+        itemErrors.compareAt = "CP must be greater than OSP";
+      }
+      if (Object.keys(itemErrors).length > 0) {
+        errors[item.id] = itemErrors;
+      }
+    });
+
+    setValidationErrors(errors);
+    return valid;
+  };
+  
+
 
 
   return (
     <SpaceBetween size="s">
+
+         <Modal
+        visible={isModalVisible1}
+        onDismiss={() => setModalVisible1(false)}
+        header="Confirm Bulk Modify"
+        footer={
+          <SpaceBetween direction="horizontal" size="xs">
+            <Button variant="link" onClick={() => setModalVisible1(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleModalConfirm}>
+              Confirm
+            </Button>
+          </SpaceBetween>
+        }
+      >
+        Are you sure you want to bulk modify the prices for the selected items?
+      </Modal>
       <Flashbar items={items} />
       {/* Flash Message Notifications */}
       {flashMessages.length > 0 && <Flashbar items={flashMessages} />}
@@ -761,7 +880,15 @@ const Inventory = () => {
             allItemsSelectionLabel: () => "select all",
             itemSelectionLabel: ({ selectedItems }, item) => item.name,
           }}
-          header={<Header>Total Selected Items: {selectedItems.length}</Header>}
+          header={<Header actions={
+            <Button
+            disabled={isFieldChanged}
+            variant="normal"
+            onClick={handleBulkModifyPrice}
+          >
+            Bulk Update Price
+          </Button>
+          }>Total Selected Items: {selectedItems.length}</Header>}
           variant="borderless"
           columnDefinitions={[
             {
@@ -898,16 +1025,16 @@ const Inventory = () => {
                 </span>
               ),
             },
-            {
-              id: "purchasingPrice",
-              header: "Purchasing Price",
-              cell: (e) => `Rs. ${e.purchasingPrice}`,
-            },
-            {
-              id: "Selling Price",
-              header: "Selling Price",
-              cell: (e) => `Rs. ${e.sellingPrice}`,
-            },
+            // {
+            //   id: "purchasingPrice",
+            //   header: "Purchasing Price",
+            //   cell: (e) => `Rs. ${e.purchasingPrice}`,
+            // },
+            // {
+            //   id: "Selling Price",
+            //   header: "Selling Price",
+            //   cell: (e) => `Rs. ${e.sellingPrice}`,
+            // },
             {
               id: "status",
               header: "Status",

@@ -128,6 +128,7 @@ const AddItemForm = () => {
       purchasingPrice: Number(purchasingPrice),
       sellingPrice: Number(sellingPrice),
       comparePrice: Number(comparePrice),
+      variants:[]
       // discount: discount,
     };
     console.log(formData, "formdata");
@@ -466,7 +467,7 @@ const AddItemForm = () => {
                 </Container>
                 </div>
                 <div style={{marginTop:'30px'}}>
-                <Container fitHeight header={<Header>Status</Header>}>
+                <Container  header={<Header>Status</Header>}>
                   <FormField
                     label={
                       <span>

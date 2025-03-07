@@ -28,6 +28,8 @@ import {
   Flashbar,
   Grid,
   Toggle,
+  FormField,
+  Input,
   Popover,
 } from "@cloudscape-design/components";
 import { Link } from "react-router-dom";
@@ -104,7 +106,9 @@ const Inventory = () => {
   const handleButtonClick = () => {
     setIsPopoverOpen((prevState) => !prevState);
   };
-
+  const [editedProducts, setEditedProducts] = useState({});
+  const [isFieldChanged, setIsFieldChanged] = useState(true);
+  const [validationErrors, setValidationErrors] = useState({});
   const [filteringText, setFilteringText] = React.useState("");
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
@@ -254,7 +258,7 @@ const Inventory = () => {
   };
 
   const handleConfirmToggle = () => {
-    const newStatus = selectedStatus?.value==="true"; // Determine the status based on selectedStatus
+    const newStatus = selectedStatus?.value ? false : true;
     console.log(newStatus,"new staussess");
     const ids = selectedItems.map((item) => item.id); // Get the IDs of the selected items
     dispatch(PutToggle({ ids, active: newStatus }))
@@ -272,17 +276,16 @@ const Inventory = () => {
           },
         ]);
         setIsModalVisible(false);
-        // setTimeout(() => {
-        //   setItems([]);  // Clear the message after 3 seconds
-        // }, 5000);
+        setTimeout(() => {
+          setItems([]);  // Clear the message after 3 seconds
+        }, 5000);
 
         // Fetch updated products
-        // window.location.reload(); 
+        window.location.reload(); 
         // This will force a full page reload
       })
       .catch((error) => {
         console.error("Error during status change:", error); // Log the full error for debugging
-        // dispatch(fetchProducts());
         setItems([
           {
             type: "error",
@@ -452,6 +455,54 @@ const Inventory = () => {
       { label: "Mutton", value: "Mutton" },
     ],
   };
+
+  //change price 
+  
+  const handleInputChange = (id, field, value) => {
+    setEditedProducts((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        [field]: value,
+      },
+    }));
+  
+    // Validate the field
+    validateField(id, field, value);
+  
+ // Update isFieldChanged based on the input value
+ if (value.trim() === "") {
+  setIsFieldChanged(true); // Reset to true if the field is empty
+} else {
+  setIsFieldChanged(false);
+}
+  };
+  
+
+  const validateField = (id, field, value) => {
+    const osp = value;
+    const cp =
+      field === "sellingPrice" ? value : editedProducts[id]?.compareAt || "";
+    let errors = {};
+
+    if (field === "purchasePrice" && !osp) {
+      errors.onlineStorePrice = "Required!";
+    }
+
+    if (field === "sellingPrice") {
+      if (!cp) {
+        errors.compareAt = "Required!";
+      } else if (parseFloat(cp) < parseFloat(osp)) {
+        errors.compareAt = "CP must be greater than OSP";
+      }
+    }
+
+    setValidationErrors((prevErrors) => ({
+      ...prevErrors,
+      [id]: errors,
+    }));
+  };
+
 
   return (
     <SpaceBetween size="s">
@@ -756,6 +807,71 @@ const Inventory = () => {
               },
               width: 250,
               minWidth: 180,
+            },
+            {
+              id: "purchasingPrice",
+              header: "Purchasing Price",
+              cell: (item) => (
+                <div style={{ width: "80px" }}>
+                  <FormField
+                    errorText={validationErrors[item.id]?.purchasingPrice
+                      }
+                  >
+                    <Input
+                      disabled={
+                        !selectedItems.some(
+                          (selectedItem) => selectedItem.id === item.id
+                        )
+                      }
+                      placeholder="Enter Price"
+                      type="number"
+                      value={
+                        editedProducts[item.id]?.purchasingPrice ??
+                        item.purchasingPrice
+                        
+                      }
+                      onChange={(e) =>
+                        handleInputChange(
+                          item.id,
+                          "purchasingPrice",
+                          e.detail.value
+                        )
+                      }
+                      ariaLabel="Purchasing Price"
+                    />
+                  </FormField>
+                </div>
+              ),
+            },
+            {
+              id: "sellingPrice",
+              header: "Selling Price",
+              cell: (item) => (
+                <div style={{ width: "80px" }}>
+                  <FormField errorText={validationErrors[item.id]?.sellingPrice}>
+                    <Input
+                      placeholder="Enter Price"
+                      type="number"
+                      value={
+                        editedProducts[item.id]?.sellingPrice ?? item.sellingPrice
+                      }
+                      onChange={(e) =>
+                        handleInputChange(
+                          item.id,
+                          "sellingPrice",
+                          e.detail.value
+                        )
+                      }
+                      ariaLabel="Selling Price"
+                      disabled={
+                        !selectedItems.some(
+                          (selectedItem) => selectedItem.id === item.id
+                        )
+                      }
+                    />
+                  </FormField>
+                </div>
+              ),
             },
             {
               id: "category",

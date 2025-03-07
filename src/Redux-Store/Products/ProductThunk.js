@@ -56,6 +56,7 @@ export const PutToggle = createAsyncThunk(
   async ({ ids, active }, { rejectWithValue }) => {
     try {
       const token = getToken();
+      console.log(active,"from thunk status");
 
       if (!token) {
         return rejectWithValue("Authorization token is missing.");
@@ -63,20 +64,17 @@ export const PutToggle = createAsyncThunk(
 
       const url = `${config.PUT_ACTIVE_INACTIVE}`;
       
-      let isActive;
-      if (typeof active === 'string') {
-        isActive = active === 'inactive'; 
-      } else {
-        isActive = !active;  
-      }
+      
+      
 
-      const items = ids.map(id => ({ id, active: isActive }));
+      const items = ids.map(id => ({ id, active: active }));
 
       const response = await postLoginService.put(url, items, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token here
         },
       });
+      console.log(active,"from thunk");
       return response.data;
     } catch (error) {
       console.error("API error:", error);

@@ -297,8 +297,14 @@ const Orders = () => {
       cell: (item) => (
         <strong
           style={{
-            color: item.paymentStatus === "PENDING" ? "red" : item.paymentStatus === "Paid" ? "#00B207 " : "black", // Default to black if neither
-          }}
+            color: item.paymentStatus === "PENDING" 
+            ? "#B2911C" 
+            : item.paymentStatus === "Paid" 
+            ? "#00B207" 
+            : item.paymentStatus === "Refunded" 
+            ? "red" 
+            : "black", // Default to black if none match
+                    }}
         >
           {item.paymentStatus}
         </strong>
@@ -419,6 +425,15 @@ const Orders = () => {
     setIsOpen(!isOpen);
   };
 
+  //function of changing payment status 
+  const handlePaymentStatusChange = () => {
+    // console.log("Item:", item);
+    // console.log("Status:", status);
+    console.log(selectedItems);
+  }
+
+
+
   return (
     <ContentLayout
       headerVariant="high-contrast"
@@ -509,6 +524,8 @@ const Orders = () => {
             gridDefinition={[
               { colspan: { default: 12, xxs: 4 } },
               { colspan: { default: 12, xxs: 2 } },
+              { colspan: { default: 12, xxs: 6 } },
+
             ]}
           >
             {/* Search bar */}
@@ -555,6 +572,14 @@ const Orders = () => {
                 name={isOpen ? "caret-up-filled" : "caret-down-filled"}
               />
             </span>
+            {filters?.category?.value === "COD" && (
+
+            <Box float="right">
+            <Button variant="primary" onClick={handleAssignOrdersStatus} disabled={selectedItems.length === 0} // Disable when no items are selected
+            >Update Status</Button>
+            </Box>
+            )}
+          
           </Grid>
           {/* Sort dropdown */}
           {isOpen && (

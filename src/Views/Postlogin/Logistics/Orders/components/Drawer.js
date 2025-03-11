@@ -372,6 +372,25 @@ const Drawer = ({
                         </span>
                       </div>
                       <div className="info-row">
+                      
+                      <span className="label">Date:</span>
+                
+                      <span className="value">
+                      { selectedOrder?.createdAt
+  ? new Date(selectedOrder?.createdAt).toLocaleString("en-GB", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+      timeZone: "UTC", // Ensures UTC time is used
+    })
+  : "N/A"}
+  </span>
+  </div>
+                      <div className="info-row">
                         <span className="label">Customer Name:</span>
                         <span className="value">
                           {selectedOrder?.userInfo?.name}
@@ -462,15 +481,16 @@ const Drawer = ({
             </div>
             {/* Modal for Selecting Items */}
       <Modal
+      size="max"
         onDismiss={() => setVisible(false)}
         visible={visible}
         closeAriaLabel="Close modal"
-        size="large"
+        
         // header={<Header>Add Items</Header>}
         header={
           <Header
             actions={
-              <div style={{marginLeft:'420px'}}>
+              <div style={{marginLeft:'800px'}}>
               <SpaceBetween direction="horizontal" size="xs">
                 <Button onClick={() => setVisible(false)}>Cancel</Button>
                 <Button
@@ -795,6 +815,8 @@ const Drawer = ({
               <p style={{ color: "#1D4ED8" }}>
                 <strong>Order ID:</strong> <b>{selectedOrder?.userInfo?.id}</b>
               </p>
+        
+        
               <p>
                 <strong>{selectedOrder?.userInfo?.name}</strong>{" "}
                 <span

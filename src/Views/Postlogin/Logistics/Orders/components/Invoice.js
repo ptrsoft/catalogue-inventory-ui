@@ -290,7 +290,7 @@ const Invoice = ({ selectedOrder, flag }) => {
 
               <span>
                 Date : { selectedOrder?.createdAt
-  ? new Date(selectedOrder?.createdAt).toLocaleString("en-US", {
+  ? new Date(selectedOrder?.createdAt).toLocaleString("en-GB", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",

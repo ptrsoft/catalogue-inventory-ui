@@ -16,7 +16,7 @@ import {
   Popover,
   StatusIndicator
 } from "@cloudscape-design/components";
-import AddEditVariant from "../AddEditVariant";
+import AddEditVariant from "../AddVariant";
 import { uploadImage } from "Redux-Store/uploadImage/uploadThunk";
 import { addProduct } from "Redux-Store/Products/ProductThunk";
 import { FileUpload } from "@cloudscape-design/components";

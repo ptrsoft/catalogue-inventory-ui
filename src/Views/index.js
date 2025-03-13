@@ -6,11 +6,10 @@ import { AuthContext } from "context/Authcontext";
 // Lazy imports for all components
 const Dashboards = lazy(() => import("./Postlogin/Dashboard"));
 const Inventory = lazy(() => import("./Postlogin/Inventory"));
-const AddItem = lazy(() => import("./Postlogin/Inventory/addItem/addItem"));
-const AddItemForm = lazy(() => import("./Postlogin/Inventory/myadd"));
+const AddItemForm = lazy(() => import("./Postlogin/Inventory/AddProduct"));
 
 const InventoryAdjustments = lazy(() => import("./Postlogin/Inventory/InventoryAdjustments"));
-const Edit = lazy(() => import("./Postlogin/Inventory/edit/edit"));
+const Edit = lazy(() => import("./Postlogin/Inventory/EditProduct/edit"));
 const CreateAdjustment = lazy(() => import("./Postlogin/Inventory/InventoryAdjustments/CreateAdjustment"));
 const NewAdjustment = lazy(() => import("./Postlogin/Inventory/InventoryAdjustments/NewAdjustment"));
 const Runsheet = lazy(() => import("./Postlogin/Logistics/Runsheet"));
@@ -37,9 +36,7 @@ const Viewpolicy = lazy(() => import("./Postlogin/Settingmenu/Rbac/viewpolicy"))
 const Pincodes = lazy(() => import("./Postlogin/Inventory/pincondes"));
 const AddEditpincode = lazy(() => import("./Postlogin/Inventory/pincondes/Add/Add&Editpincode"));
 const Viewpincode = lazy(() => import("./Postlogin/Inventory/pincondes/Viewpincode"));
-const Customers = lazy(() => import("./Postlogin/Customers"));
-const AddNewCustomer = lazy(() => import("./Postlogin/Customers/AddNewCustomer"));
-const Products = lazy(() => import("./Postlogin/Products"));
+// const Products = lazy(() => import("./Postlogin/Products"));
 const Orders = lazy(() => import("./Postlogin/Logistics/Orders"));
 const PurchaseOrders = lazy(() => import("./Postlogin/PurchaseOrders"));
 const PathNotFOund = lazy(() => import("./PathNotFound"));
@@ -76,9 +73,6 @@ const Views = () => {
         <Route  path={`${PREFIX_APP_PATH}/inventory/pincodes/Editpincode`} element={<ProtectedRoute element={<AddEditpincode />} isAuthenticated={isAuthenticated}/>} />
 
         <Route  path={`${PREFIX_APP_PATH}/inventory/pincodes/viewpincode`} element={<ProtectedRoute element={<Viewpincode />}isAuthenticated={isAuthenticated} />} />
-        <Route  path={`${PREFIX_APP_PATH}/customers`} element={<ProtectedRoute element={<Customers />}isAuthenticated={isAuthenticated} />} />
-        <Route  path={`${PREFIX_APP_PATH}/add-new-customer`} element={<ProtectedRoute element={<AddNewCustomer />} isAuthenticated={isAuthenticated}/>} />
-        <Route  path={`${PREFIX_APP_PATH}/products`} element={<ProtectedRoute element={<Products />} isAuthenticated={isAuthenticated} />} />
         <Route  path={`${PREFIX_APP_PATH}/logistics/orders`} element={<ProtectedRoute element={<Orders />}isAuthenticated={isAuthenticated} />} />
         <Route  path={`${PREFIX_APP_PATH}/logistics/runsheet`} element={<ProtectedRoute element={<Runsheet />}isAuthenticated={isAuthenticated} />} />
         <Route  path={`${PREFIX_APP_PATH}/logistics/runsheet/viewRunSheet/:id`} element={<ProtectedRoute element={<ViewRunsheet />}isAuthenticated={isAuthenticated} />} />

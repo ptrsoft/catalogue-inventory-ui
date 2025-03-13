@@ -13,6 +13,7 @@ import {
   PutToggle,
   deleteProduct,
   fetchInventoryStats,
+  putPricingById
 } from "Redux-Store/Products/ProductThunk";
 import Tabs from "@cloudscape-design/components/tabs";
 import Overview from "./drawerTabs/overview";
@@ -523,26 +524,18 @@ const Inventory = () => {
       ),
     }));
   
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+   
   
-    const requestOptions = {
-      method: "PUT",
-      headers: myHeaders,
-      body: JSON.stringify(pricingDataArray),
-      redirect: "follow",
-    };
+   
   
     try {
-      const response = await fetch(
-        "https://api.admin.promodeagro.com/inventory/price",
-        requestOptions
-      );
-      const result = await response.json();
-      console.log(result, "bulk resp");
+      const response = await dispatch(putPricingById(pricingDataArray));
+      console.log(response, "bulk resp");
+     
+     
 
-      if (response.ok || result.status === 200) {
-        console.log("Bulk modify successful", result);
+      if (response.payload?.message==='success' ) {
+        console.log("Bulk modify successful", response);
         setItems([
           {
             type: "success",
@@ -564,6 +557,7 @@ const Inventory = () => {
           onDismiss: () => setItems([]),
         },
       ]);
+      setModalVisible1(false);
     }
      // Automatically remove Flashbar after 3 seconds
   setTimeout(() => {
@@ -572,35 +566,7 @@ const Inventory = () => {
   };
   
 
-  // validations before opening modal for api hitting
-  const validateInputs = () => {
-    let valid = true;
-    const errors = {};
-    selectedItems.forEach((item) => {
-      const editedProduct = editedProducts[item.id] || {};
-      const osp = editedProduct.onlineStorePrice || item.onlineStorePrice;
-      const cp = editedProduct.compareAt || item.compareAt;
-      let itemErrors = {};
-
-      if (!osp) {
-        valid = false;
-        itemErrors.onlineStorePrice = "Required!";
-      }
-      if (!cp) {
-        valid = false;
-        itemErrors.compareAt = "Required!";
-      } else if (parseFloat(cp) < parseFloat(osp)) {
-        valid = false;
-        itemErrors.compareAt = "CP must be greater than OSP";
-      }
-      if (Object.keys(itemErrors).length > 0) {
-        errors[item.id] = itemErrors;
-      }
-    });
-
-    setValidationErrors(errors);
-    return valid;
-  };
+ 
   
 
 
@@ -760,6 +726,7 @@ const Inventory = () => {
             </SpaceBetween>
           </Box>
         </Grid>
+        {/* stats */}
         <Grid
           gridDefinition={[
             { colspan: { default: 12, xs: 3 } },
@@ -1025,16 +992,7 @@ const Inventory = () => {
                 </span>
               ),
             },
-            // {
-            //   id: "purchasingPrice",
-            //   header: "Purchasing Price",
-            //   cell: (e) => `Rs. ${e.purchasingPrice}`,
-            // },
-            // {
-            //   id: "Selling Price",
-            //   header: "Selling Price",
-            //   cell: (e) => `Rs. ${e.sellingPrice}`,
-            // },
+           
             {
               id: "status",
               header: "Status",

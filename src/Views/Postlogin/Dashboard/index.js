@@ -154,7 +154,7 @@ const DashboardCards = () => {
             </div>
           }
         >
-          DashBoard
+          Dashboard
         </Header>
       }
     >
@@ -170,7 +170,7 @@ const DashboardCards = () => {
       <SpaceBetween direction="vertical" size="l">
         <Container className="top-container" style={{ marginBottom: "1rem" }}>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <h2 style={{ marginBottom: "1rem" }}>Adam's Dashboard</h2>
+            <h2 style={{ marginBottom: "1rem" }}>Ecommerce's Dashboard</h2>
           </div>
 
           <ColumnLayout columns={4} variant="default" minColumnWidth={120}>

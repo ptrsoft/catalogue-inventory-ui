@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box,Spinner } from "@cloudscape-design/components";
 import { toast } from "react-toastify";
 export const ValidationEngine = {
   EMAIL_REGEX: /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/,
@@ -157,7 +157,7 @@ export const Loader = {
   commonLoader() {
     return (
       <Box className="d-flex align-items-center justify-content-center common-loader">
-        <CircularProgress />
+<Spinner/>
       </Box>
     );
   },

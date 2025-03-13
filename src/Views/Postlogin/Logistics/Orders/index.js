@@ -34,6 +34,8 @@ import MultipleOrdersCancellation from "./components/MultipleOrderCancellation";
 const Orders = () => {
   //declaring states
   const [flashbarItems, setFlashbarItems] = useState([]);
+  const [flashMessages, setFlashMessages] = useState([]); // Flash messages for notifications
+
   const [selectedItems, setSelectedItems] = useState([]); // Track selected orders
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
@@ -45,7 +47,6 @@ const Orders = () => {
   const [isModalOpenForPacker, setIsModalOpenForPacker] = useState(false);
   // getting redux states using useselector
   const { selectedOrder } = useSelector((state) => state.orderInventory);
-  const [flashMessages, setFlashMessages] = useState([]); // Flash messages for notifications
 
   const { orders, loading, error } = useSelector(
     (state) => state.orderInventory.orders.data[currentPage] || []
@@ -275,7 +276,18 @@ const Orders = () => {
       width: 250,
       minWidth: 180,
     },
-    { header: "Order Date", cell: (item) => item.orderDate.slice(0, 10) },
+    {
+      header: "Order Date",
+      cell: (item) => item.orderDate
+        ? item.orderDate.slice(0,10).toLocaleString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        : "N/A"
+    }
+,    
+    
 
     { header: "Customer Name", cell: (item) => item.customerName },
     { header: "Items", cell: (item) => item.items },
@@ -301,7 +313,7 @@ const Orders = () => {
             ? "#B2911C" 
             : item.paymentStatus === "Paid" 
             ? "#00B207" 
-            : item.paymentStatus === "Refunded" 
+            : item.paymentStatus === "REFUND" 
             ? "red" 
             : "black", // Default to black if none match
                     }}
@@ -440,7 +452,7 @@ const Orders = () => {
       notifications={<Flashbar items={flashbarItems} />}
       breadcrumbs={
         <>
-          {flashMessages.map((msg) => (
+          {/* {flashMessages.map((msg) => (
             <div
               key={msg.id}
               style={{
@@ -453,7 +465,7 @@ const Orders = () => {
             >
               {msg.content}
             </div>
-          ))}
+          ))} */}
           <BreadcrumbGroup
             items={[
               { text: "Dashboard", href: "/app/Dashboard" },
@@ -492,7 +504,7 @@ const Orders = () => {
                   selectedItems={selectedItems}
                   cancelOrdersThunk={cancelOrder} // Pass the thunk for order cancellation
                   dispatch={dispatch}
-                  setFlashMessages={setFlashMessages}
+                  setFlashMessages={setFlashbarItems}
                 />
               ) : null}
 
@@ -572,13 +584,13 @@ const Orders = () => {
                 name={isOpen ? "caret-up-filled" : "caret-down-filled"}
               />
             </span>
-            {filters?.category?.value === "COD" && (
+            {/* {filters?.category?.value === "COD" && ( */}
 
             <Box float="right">
             <Button variant="primary" onClick={handleAssignOrdersStatus} disabled={selectedItems.length === 0} // Disable when no items are selected
-            >Update Status</Button>
+            >Update Payment Status</Button>
             </Box>
-            )}
+            {/* )} */}
           
           </Grid>
           {/* Sort dropdown */}

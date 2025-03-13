@@ -51,6 +51,8 @@ const Config = {
     PUT_PRODUCTS_DETAIL:`${BASE_URL}/publish`,
     PUT_PRICING:`${BASE_URL}/inventory`,
     FETCH_RIDERS:`${BASE_URL}/rider`,
+    IMPORT_PRODUCTS:`${BASE_URL}/inventory/import`,
+    EXPORT_PRODUCTS:`${BASE_URL}/inventory/exportPrducts`
 
  
 };

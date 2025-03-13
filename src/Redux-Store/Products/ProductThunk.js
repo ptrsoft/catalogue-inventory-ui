@@ -7,6 +7,7 @@ const getToken = () => {
   return token ? JSON.parse(token).accessToken : null;
 };
 
+
 export const fetchProducts = createAsyncThunk(
   "products/fetch",
   async (params, { rejectWithValue }) => {
@@ -45,6 +46,29 @@ console.log(url,queryParams,"uuurrls");
         data: response.data.items,
         nextKey: response.data.nextKey, // nextKey for pagination
       };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+// Put pricing by ID
+export const putPricingById = createAsyncThunk(
+  "products/putPricingById",
+  async (pricingDataArray, { rejectWithValue }) => {
+    try {
+      const url = `${config.PUT_PRICING}/price`;
+      const token = getToken();  // Retrieve the access token
+      const configHeaders = {
+        headers: {
+          'Authorization': `Bearer ${token}`,  // Add the Bearer token here
+          'Content-Type': 'application/json',
+        },
+      };
+
+      const response = await postLoginService.put(url, pricingDataArray, configHeaders);  // Pass configHeaders for Authorization
+      console.log(response, "pricing array");
+      return response.data;
+     
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -225,6 +249,54 @@ export const fetchInventoryStats = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response ? error.response.data : error.message);
+    }
+  }
+);
+
+export const exportProducts = createAsyncThunk(
+  "inventory/export",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+
+      if (!token) {
+        return rejectWithValue("Authorization token is missing.");
+      }
+
+      const url = `${config.EXPORT_PRODUCTS}`;
+      const response = await postLoginService.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token here
+        },
+      });
+     console.log(response,"res");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response ? error.response.data : error.message);
+    }
+  }
+);
+
+export const ImportProducts = createAsyncThunk(
+  "products/import",
+  async ({ formdata }, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+
+      if (!token) {
+        return rejectWithValue("Authorization token is missing.");
+      }
+
+      const url = `${config.IMPORT_PRODUCTS}`;
+      const response = await postLoginService.post(url,formdata, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token here
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
     }
   }
 );

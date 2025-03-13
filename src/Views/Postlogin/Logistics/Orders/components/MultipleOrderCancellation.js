@@ -32,7 +32,7 @@ const MultipleOrdersCancellation = ({
         setFlashMessages([
           {
             type: "info",
-            content: "All selected orders have been successfully canceled.",
+            content: "All selected orders have been successfully cancelled.",
             dismissible: true,
             id: "successCancel",
           },

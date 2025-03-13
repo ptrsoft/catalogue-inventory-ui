@@ -509,7 +509,7 @@ console.log(images,"array of images");
             </FormField>
           </Grid>
         </Container>
-        <Container fitHeight header={<Header>Status</Header>}>
+        <Container  header={<Header>Status</Header>}>
         <FormField   label={
                       <span>
                        Status{" "}

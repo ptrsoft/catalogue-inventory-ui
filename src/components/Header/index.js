@@ -92,7 +92,7 @@ const Header = () => {
         search={<Input type="search" placeholder="Search" ariaLabel="Search" />}
         identity={{
           href: "/app/dashboard",
-          title: "Ecommerce",
+          title: "Inventory",
           logo: {
             src: logo,
             alt: "Service",

@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { Select, Grid } from "@cloudscape-design/components"; // Assuming you're using Cloudscape Design components
 import { getPincodes } from "Redux-Store/Pincode/pincodeThunk";
 import { useSelector, useDispatch } from "react-redux";
-import { Search } from "@mui/icons-material";
 const FilterComponent = ({
   statuscategory,
   ageFilter,

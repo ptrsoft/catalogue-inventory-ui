@@ -6,18 +6,11 @@ import {
   BreadcrumbGroup,
   Input,
   Header,
-  FormField,
-  Container,
   ColumnLayout,
   Modal,
 } from "@cloudscape-design/components";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  useParams,
-  useLocation,
-  Navigate,
-  useNavigate,
-} from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import {
   fetchRunsheetById,
   closeRunsheet,
@@ -204,11 +197,10 @@ const ViewDetailsPage = () => {
               >
                 <img src={PackIcon} alt="" width={20} height={20} />
                 <Box color="text-status-success" variant="h5">
-  {`${
-    selectedRunsheet?.orders?.length || 0
-  } ${selectedRunsheet?.orders?.length === 1 ? 'Order' : 'Orders'}`}
-</Box>
-
+                  {`${selectedRunsheet?.orders?.length || 0} ${
+                    selectedRunsheet?.orders?.length === 1 ? "Order" : "Orders"
+                  }`}
+                </Box>
               </SpaceBetween>
 
               <ColumnLayout minColumnWidth={20} columns={3} variant="default">
@@ -252,8 +244,7 @@ const ViewDetailsPage = () => {
               </ColumnLayout>
 
               {/* Amount Collection Section */}
-              <Box  color="text-status-info">
-               
+              <Box color="text-status-info">
                 <strong>Amount Collection</strong>
               </Box>
               <ColumnLayout minColumnWidth={20} columns={3} variant="default">
@@ -313,3 +304,4 @@ const ViewDetailsPage = () => {
 };
 
 export default ViewDetailsPage;
+

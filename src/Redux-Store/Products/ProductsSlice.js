@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'; 
-import { fetchProducts, PutToggle, updateProductsStatus, deleteProduct, fetchProductById, updateProductDetails, fetchInventoryStats  } from './ProductThunk'; // Ensure to import updateProductsStatus
+import { fetchProducts, PutToggle, updateProductsStatus, deleteProduct, fetchProductById, updateProductDetails, fetchInventoryStats,putPricingById,ImportProducts,exportProducts  } from './ProductThunk'; // Ensure to import updateProductsStatus
 import status from "Redux-Store/Constants";
 
 const productsSlice = createSlice({
@@ -11,7 +11,10 @@ const productsSlice = createSlice({
       error: null,
       nextKey: null
     },
-    productDetail: null, // To store fetched product details
+    
+    productDetail: { status: 'idle', data: null, error: null },
+    export: { status: 'idle', data: null, error: null },
+
     productDetailStatus: 'idle', // Status for fetching product details
     productDetailError: null, // Error for fetching product details
     inventoryStats: { // Initialize inventoryStats here
@@ -132,6 +135,33 @@ const productsSlice = createSlice({
       .addCase(fetchInventoryStats.rejected, (state, action) => {
         state.inventoryStats.status = 'failed'; // Mark as failed
         state.inventoryStats.error = action.payload || action.error.message; // Store the error message
+      })
+      //export
+      .addCase(exportProducts.pending, (state) => {
+        state.export.status = 'loading'; // Use a string to represent the status
+        state.export.error = null; // Reset error state when starting to load
+      })
+      .addCase(exportProducts.fulfilled, (state, action) => {
+        state.export.data = action.payload; // Store the data from the payload
+        state.export.status = 'succeeded'; // Mark as successful
+      })
+      .addCase(exportProducts.rejected, (state, action) => {
+        state.export.status = 'failed'; // Mark as failed
+        state.export.error = action.payload || action.error.message; // Store the error message
+      })
+      // Put Pricing by ID
+      .addCase(putPricingById.pending, (state) => {
+        state.productDetail.status = status.IN_PROGRESS;
+      })
+      .addCase(putPricingById.fulfilled, (state, { payload }) => {
+        state.productDetail.status = status.SUCCESS;
+        // state.products.data = state.products.data.map((product) =>
+        //   product.id === payload.id ? payload : product
+        // );
+        state.productDetail.data = payload;
+      })
+      .addCase(putPricingById.rejected, (state) => {
+        state.productDetail.status = status.FAILURE;
       })
       .addCase(updateProductDetails.pending, (state) => {
         state.productDetailStatus = status.IN_PROGRESS; // Set loading state

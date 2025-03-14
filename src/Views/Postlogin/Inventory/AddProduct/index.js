@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 
 const AddItemForm = () => {
   const dispatch = useDispatch();
-  const [isMultipleVariant, setIsMultipleVariant] = useState(false);
+  const [isMultipleVariant, setIsMultipleVariant] = useState(true);
  const navigate=useNavigate()
   const [name, setName] = useState("");
   const [selectedCategory, setSelectedCategory] = React.useState(null);
@@ -360,7 +360,7 @@ const AddItemForm = () => {
 
      
         {/* Radio buttons to toggle between forms */}
-        <div style={{ display: "flex", gap: "10px"}}>
+        {/* <div style={{ display: "flex", gap: "10px"}}>
           <label>
             <input
               type="radio"
@@ -380,7 +380,7 @@ const AddItemForm = () => {
             />
             Add Multiple-Variant Item
           </label>
-        </div>
+        </div> */}
          
       </SpaceBetween>
 

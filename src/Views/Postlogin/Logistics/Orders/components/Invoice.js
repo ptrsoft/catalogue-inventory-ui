@@ -271,7 +271,7 @@ const Invoice = ({ selectedOrder, flag }) => {
               <div className="info-row" style={{ display: "flex" }}>
                 <span
                   className="label"
-                  style={{ fontWeight: "bold", marginRight: "8px" }}
+                  style={{  marginRight: "8px" }}
                 >
                   Address:
                 </span>
@@ -289,18 +289,19 @@ const Invoice = ({ selectedOrder, flag }) => {
               <span>Contact Number :{selectedOrder?.userInfo?.number}</span>
 
               <span>
-                Date : { selectedOrder?.createdAt
-  ? new Date(selectedOrder?.createdAt).toLocaleString("en-GB", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-      timeZone: "UTC", // Ensures UTC time is used
-    })
-  : "N/A"}
+                Date :{" "}
+                {selectedOrder?.createdAt
+                  ? new Date(selectedOrder?.createdAt).toLocaleString("en-GB", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: true,
+                      timeZone: "UTC", // Ensures UTC time is used
+                    })
+                  : "N/A"}
               </span>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span>
@@ -358,22 +359,17 @@ const Invoice = ({ selectedOrder, flag }) => {
             <tbody style={{ padding: "10px", margin: "10px" }}>
               {selectedOrder?.items?.map((item, index) => (
                 <tr style={{ padding: "10px", margin: "10px" }} key={index}>
-               <td style={{ textAlign: "left", width: "140px" }}>
-  {(() => {
-    const parts = item.productName.split("-");
-    return parts.length > 2 ? parts.slice(0, -1).join("-") : parts[0];
-  })()}
-</td>
+                  <td style={{ textAlign: "left", width: "140px" }}>
+                    {(() => {
+                      const parts = item.productName;
+                      return parts;
+                    })()}
+                  </td>
 
-<td style={{ textAlign: "left" }}>
-  {item.productName.includes("-") 
-    ? (item.productName.includes("pieces") 
-        ? item.productName.replace("pieces", "pcs").split("-").pop()
-        : item.productName.split("-").pop()
-      )
-    : "no unit"}
-</td>
-
+                  <td style={{ textAlign: "left" }}>
+                    {item.quantityUnits}
+                    {item.unit}
+                  </td>
 
                   <td>
                     {item.quantity}
@@ -469,3 +465,4 @@ const Invoice = ({ selectedOrder, flag }) => {
 };
 
 export default Invoice;
+

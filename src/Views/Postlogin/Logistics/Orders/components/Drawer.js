@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux"; // Import useDispatch an
 import Invoice from "./Invoice";
 import OrderDetails from "./DrawerComponents/OrderDetails";
 import AddDiscount from "./DrawerComponents/AddDiscount";
-import AddItemInOrder from "./DrawerComponents/AddItemInOrder";
+import AddItemInOrder from "./DrawerComponents/Add&RemoveItemInOrder";
 const Drawer = ({
   isDrawerOpen,
   selectedProduct,
@@ -91,6 +91,10 @@ const Drawer = ({
         ]);
       });
   };
+  const handleFlashMessage = (content) => {
+    setFlashMessages(() => [content]);
+    console.log(content,"content");
+  };
 
   //reattempt logic
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -117,30 +121,7 @@ const Drawer = ({
   const { data = [] } = products;
   console.log("modal data", data.items);
 
-  const [outofstockItems, setOutofstockItems] = useState([]);
-  const [items, setItems] = useState([]);
-
-  // Function to remove an item and push it to out of stock items
-  const removeOutOfStockItem = (itemId) => {
-    console.log(itemId, "item id");
-    // Find the item to remove
-    console.log(selectedOrder?.items?.id);
-    const itemToRemove = selectedOrder?.items.find(
-      (item) => item.id === itemId
-    );
-
-    // Remove the item from the current items list
-    const updatedItems = selectedOrder?.items.filter(
-      (item) => item.id !== itemId
-    );
-    console.log(updatedItems, "updated");
-    console.log(itemToRemove, "remove");
-    setItems(updatedItems);
-
-    // Add the item to the outofstockitems array
-    setOutofstockItems((prev) => [...prev, itemToRemove]);
-  };
-  console.log(outofstockItems, "out of stock");
+ 
 
   return (
     <div>
@@ -199,179 +180,9 @@ const Drawer = ({
               <Invoice selectedOrder={selectedOrder} flag={"single"} />
             </div>
             <OrderDetails selectedOrder={selectedOrder} usersbyid={usersbyid} />
-            <AddItemInOrder />
+            <AddItemInOrder selectedOrder={selectedOrder} setFlashMessages={handleFlashMessage}/>
 
-            <Container>
-              <Table
-                empty={
-                  <Box
-                    margin={{ vertical: "xs" }}
-                    textAlign="center"
-                    color="inherit"
-                  >
-                    <SpaceBetween size="m">
-                      {error ? (
-                        <b>{error} No orders</b>
-                      ) : (
-                        <>
-                          <b>No Orders available</b>{" "}
-                          {/* Show no data message */}
-                        </>
-                      )}
-                    </SpaceBetween>
-                  </Box>
-                }
-                columnDefinitions={[
-                  {
-                    header: "Product Name",
-                    cell: (item) => (
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "5px",
-                        }}
-                      >
-                        <img
-                          src={item.productImage}
-                          style={{
-                            height: "30px",
-                            width: "30px",
-                            marginLeft: "5px",
-                          }}
-                          alt="products"
-                        ></img>
-
-                        <p> {item.productName}</p>
-                      </div>
-                    ),
-                  },
-                  {
-                    header: "Quantity",
-                    cell: (item) => (
-                      <div style={{ textAlign: "center" }}>{item.quantity}</div>
-                    ),
-                    maxWidth: 150,
-                  },
-                  {
-                    header: "Price",
-                    cell: (item) => (
-                      <div style={{ textAlign: "center" }}>{item.price}</div>
-                    ),
-                    maxWidth: 150,
-                  },
-
-                  {
-                    header: "Action",
-                    cell: (item) => (
-                      <Button
-                        iconName="remove"
-                        variant="icon"
-                        onClick={() => removeOutOfStockItem(item.orderId)}
-                      ></Button>
-                    ),
-                  },
-                ]}
-                items={selectedOrder?.items}
-                // variant="embedded"
-                variant="borderless"
-                stickyHeader
-              />
-            </Container>
-            {outofstockItems?.length > 0 && (
-              <>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "10px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <Box variant="h4">Out Of Stock</Box>
-                </div>
-                <Container>
-                  <Table
-                    empty={
-                      <Box
-                        margin={{ vertical: "xs" }}
-                        textAlign="center"
-                        color="inherit"
-                      >
-                        <SpaceBetween size="m">
-                          {error ? (
-                            <b>{error} No orders</b>
-                          ) : (
-                            <>
-                              <b>No Orders available</b>{" "}
-                              {/* Show no data message */}
-                            </>
-                          )}
-                        </SpaceBetween>
-                      </Box>
-                    }
-                    columnDefinitions={[
-                      {
-                        header: "Product Name",
-                        cell: (item) => (
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "5px",
-                            }}
-                          >
-                            <img
-                              src={item?.productImage}
-                              style={{
-                                height: "30px",
-                                width: "30px",
-                                marginLeft: "5px",
-                              }}
-                              alt="products"
-                            ></img>
-
-                            <p> {item?.productName}</p>
-                          </div>
-                        ),
-                      },
-                      {
-                        header: "Quantity",
-                        cell: (item) => (
-                          <div style={{ textAlign: "center" }}>
-                            {item?.quantity}
-                          </div>
-                        ),
-                        maxWidth: 150,
-                      },
-                      {
-                        header: "Price",
-                        cell: (item) => (
-                          <div style={{ textAlign: "center" }}>
-                            {item?.price}
-                          </div>
-                        ),
-                        maxWidth: 150,
-                      },
-                      {
-                        header: "Price",
-                        cell: (item) => (
-                          <b style={{ textAlign: "center", color: "red" }}>
-                            Out Of Stock
-                          </b>
-                        ),
-                        maxWidth: 150,
-                      },
-                    ]}
-                    items={outofstockItems}
-                    // variant="embedded"
-                    variant="borderless"
-                    stickyHeader
-                  />
-                </Container>
-              </>
-            )}
+            
             <AddDiscount selectedOrder={selectedOrder} />
           </Box>
         </div>

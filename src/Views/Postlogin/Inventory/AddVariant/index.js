@@ -184,7 +184,7 @@ const AddEditVariant = () => {
       setInputTag("");
     }
   };
-  console.log(tags, "tag");
+  // console.log(tags, "tag");
 
   const removeTokenForTag = (index) => {
     setTags((prevValues) => {
@@ -219,20 +219,6 @@ const AddEditVariant = () => {
       description: description,
       images: [imageUrl1, imageUrl2, imageUrl3].filter(Boolean),
       units: "",
-      minimumSellingWeight: 0,
-      maximumSellingWeight: 0,
-      MaximumSellingWeightUnit: "",
-      MinimumSellingWeightUnit: "",
-      totalQuantityInB2c: 0,
-      totalquantityB2cUnit: "",
-      stockQuantity: 0,
-      msp: 0,
-      buyerLimit: 0,
-      stockQuantityAlert: 0,
-      purchasingPrice: 0,
-      sellingPrice: 0,
-      comparePrice: 0,
-      availability: false,
       variants: tableData,
     };
     console.log(formData, "formdata with variant");
@@ -357,11 +343,12 @@ const AddEditVariant = () => {
           stockQuantity: 0,
           availability: false,
           unit: null, // Default value only
-          // fileUploadValue: [],
-          // imageUrls: [],
-
-
-          
+          minimumSellingWeight: "",  // Extra field
+          maximumSellingWeight: "",  // Extra field
+          MinimumSellingWeightUnit: "",  // Extra field
+          MaximumSellingWeightUnit: "",  // Extra field
+          totalQuantityInB2c: "",  // Extra field
+          totalquantityB2cUnit: "",  // Extra field
         }))
       );
     }
@@ -854,230 +841,317 @@ const AddEditVariant = () => {
               your variants that customers can buy.
             </p>
             <Table
-              variant="borderless"
-              columnDefinitions={[
-                {
-                  id: "name",
-                  header: "Variant Name",
-                  cell: (item) => item.attribute,
-                },
-                {
-                  id: "quantity",
-                  header:  <span>
-                  Quantity In Stock{" "}
-                  <span style={{ color: "red", fontWeight: "bold" }}>*</span>
-                </span>,
-                  cell: (item) => (
-                    <div style={{width:'200px'}}>
-                    <Grid
-                      disableGutters
-                      gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}
-                    >
-                      
-                      <Input
-                      placeholder="Enter Quantity"
-                        type="text"
-                        value={item.quantity}
-                        onChange={
-                          ({ detail }) =>
-                            handleInputChange(item.id, "quantity", detail.value) // Use item.id here
-                        }
-                      />
-                      <Select
-                        key={item.id} // Ensures the select stays stable
-                        expandToViewport
-                        selectedOption={unitOptions.find(
-                          (opt) => opt.value === item.unit
-                        )}
-                        onChange={(event) => {
-                          event.stopPropagation(); // Prevent parent handlers from closing the dropdown
-                          handleInputChange(
-                            item.id,
-                            "unit",
-                            event.detail.selectedOption.value
-                          );
-                        }}
-                        options={unitOptions}
-                        placeholder="Select Unit"
-                      />
-                    </Grid>
-                    </div>
-                  ),
-                },
-                {
-                  id: "purchasePrice",
-                  header:   <span>
-                  Purchasing Price {" "}
-                    <span style={{ color: "red", fontWeight: "bold" }}>*</span>
-                  </span>,
-                  cell: (item) => (
-                    <FormField
-                      errorText={
-                        isFormSubmitted && !item.purchasingPrice && "Required"
-                      }
-                    >
-                      <Input
-                        required
-                        size="3xs"
-                        placeholder="Rs."
-                        value={item.purchasingPrice}
-                        onChange={
-                          ({ detail }) =>
-                            handleInputChange(
-                              item.id,
-                              "purchasingPrice",
-                              detail.value
-                            ) // Use item.id here
-                        }
-                      />
-                    </FormField>
-                  ),
-                },
-                {
-                  id: "sellingPrice",
-                  header:    <span>
-                  Selling Price{" "}
-                   <span style={{ color: "red", fontWeight: "bold" }}>*</span>
-                 </span>,
-                  cell: (item) => (
-                    <FormField
-                      errorText={
-                        isFormSubmitted && !item.sellingPrice && "Required"
-                      }
-                    >
-                      <Input
-                        required
-                        size="3xs"
-                        placeholder="Rs."
-                        value={item.sellingPrice}
-                        onChange={
-                          ({ detail }) =>
-                            handleInputChange(
-                              item.id,
-                              "sellingPrice",
-                              detail.value
-                            ) // Use item.id here
-                        }
-                      />
-                    </FormField>
-                  ),
-                },
-                {
-                  id: "comparePrice",
-                  header: "Compare Price",
-                  cell: (item) => (
-                    <FormField>
-                      <Input
-                      placeholder="Rs."
-
-                        type="number"
-                        value={item.comparePrice}
-                        onChange={
-                          ({ detail }) =>
-                            handleInputChange(
-                              item.id,
-                              "comparePrice",
-                              detail.value
-                            ) // Use item.id here
-                        }
-                      />
-                    </FormField>
-                  ),
-                },
-                {
-                  id: "saleLimit",
-                  header: "Sale Limit",
-                  cell: (item) => (
-                    <FormField
-                   
-                    >
-                      <Input
-                      placeholder="Enter Limit"
-                        type="number"
-                        value={item.buyerLimit}
-                        onChange={
-                          ({ detail }) =>
-                            handleInputChange(
-                              item.id,
-                              "buyerLimit",
-                              detail.value
-                            ) // Use item.id here
-                        }
-                      />
-                    </FormField>
-                  ),
-                },
-                {
-                  id: "lowStock",
-                  header: "Low Stock Alert",
-                  cell: (item) => (
-                    <FormField>
-                      <Input
-                      placeholder="Enter Stock Alert"
-                        type="number"
-                        value={item.lowStockAlert}
-                        onChange={
-                          ({ detail }) =>
-                            handleInputChange(
-                              item.id,
-                              "lowStockAlert",
-                              detail.value
-                            ) // Use item.id here
-                        }
-                      />
-                    </FormField>
-                  ),
-                },
-                {
-                  id: "status",
-                  header: "Status",
-                  cell: (item) => (
-                    <Toggle
-                      checked={item.availability}
-                      onChange={
-                        ({ detail }) =>
-                          handleToggleChange(item.id, detail.checked) // Use item.id here
-                      }
-                    />
-                  ),
-                },
-                // {
-                //   id: "image",
-                //   header: "Add Image",
-                //   cell: (item) => (
-                //     <div style={{ width: "200px" }}>
-                //       <FileUpload
-                //         onChange={({ detail }) =>
-                //           handleFileChange2(item.id, detail.value)
-                //         } // Use item.id here
-                //         value={item.fileUploadValue}
-                //         i18nStrings={{
-                //           uploadButtonText: (e) =>
-                //             e ? "Choose files" : "Choose file",
-                //           dropzoneText: (e) =>
-                //             e ? "Drop files to upload" : "Drop file to upload",
-                //           removeFileAriaLabel: (e) => `Remove file ${e + 1}`,
-                //           limitShowFewer: "Show fewer files",
-                //           limitShowMore: "Show more files",
-                //           errorIconAriaLabel: "Error",
-                //         }}
-                //         multiple
-                //         showFileSize
-                //         showFileThumbnail
-                //         tokenLimit={3}
-                //         errorText={
-                //           item.fileUploadValue.length === 0 && isFormSubmitted
-                //             ? "At least one image is required"
-                //             : ""
-                //         }
-                //       />
-                //     </div>
-                //   ),
-                // },
-              ]}
-              items={tableData}
-              empty={<p>No variants added yet.</p>}
+  variant="borderless"
+  columnDefinitions={[
+    {
+      id: "name",
+      header: "Variant Name",
+      cell: (item) => item.attribute,
+    },
+    {
+      id: "quantity",
+      header: (
+        <span>
+          Quantity In Stock{" "}
+          <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+        </span>
+      ),
+      cell: (item) => (
+        <div style={{ width: "200px" }}>
+          <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+            <Input
+              placeholder="Enter Quantity"
+              type="text"
+              value={item.quantity}
+              onChange={({ detail }) =>
+                handleInputChange(item.id, "quantity", detail.value) // Use item.id here
+              }
             />
+            <Select
+              key={`quantity-${item.id}`} // Ensures the select stays stable and is unique
+              expandToViewport
+              selectedOption={unitOptions.find((opt) => opt.value === item.quantityUnit)}
+              onChange={(event) => {
+                event.stopPropagation(); // Prevent parent handlers from closing the dropdown
+                handleInputChange(
+                  item.id,
+                  "quantityUnit",
+                  event.detail.selectedOption.value
+                );
+              }}
+              options={unitOptions}
+              placeholder="Select Unit"
+            />
+          </Grid>
+        </div>
+      ),
+    },
+    {
+      id: "purchasePrice",
+      header:   <span>
+      Purchasing Price {" "}
+        <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+      </span>,
+      cell: (item) => (
+        <FormField
+          errorText={
+            isFormSubmitted && !item.purchasingPrice && "Required"
+          }
+        >
+          <Input
+            required
+            size="3xs"
+            placeholder="Rs."
+            value={item.purchasingPrice}
+            onChange={
+              ({ detail }) =>
+                handleInputChange(
+                  item.id,
+                  "purchasingPrice",
+                  detail.value
+                ) // Use item.id here
+            }
+          />
+        </FormField>
+      ),
+    },
+    {
+      id: "sellingPrice",
+      header:    <span>
+      Selling Price{" "}
+       <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+     </span>,
+      cell: (item) => (
+        <FormField
+          errorText={
+            isFormSubmitted && !item.sellingPrice && "Required"
+          }
+        >
+          <Input
+            required
+            size="3xs"
+            placeholder="Rs."
+            value={item.sellingPrice}
+            onChange={
+              ({ detail }) =>
+                handleInputChange(
+                  item.id,
+                  "sellingPrice",
+                  detail.value
+                ) // Use item.id here
+            }
+          />
+        </FormField>
+      ),
+    },
+    {
+      id: "comparePrice",
+      header: "Compare Price",
+      cell: (item) => (
+        <FormField>
+          <Input
+          placeholder="Rs."
+
+            type="number"
+            value={item.comparePrice}
+            onChange={
+              ({ detail }) =>
+                handleInputChange(
+                  item.id,
+                  "comparePrice",
+                  detail.value
+                ) // Use item.id here
+            }
+          />
+        </FormField>
+      ),
+    },
+    {
+      id: "minimumSellingWeight",
+      header: (
+        <span>
+          Minimum Selling Weight{" "}
+          <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+        </span>
+      ),
+      cell: (item) => (
+        <div style={{ width: "200px" }}>
+          <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+            <Input
+              placeholder="Enter Minimum Selling Weight"
+              type="text"
+              value={item.minimumSellingWeight}
+              onChange={({ detail }) =>
+                handleInputChange(item.id, "minimumSellingWeight", detail.value) // Use item.id here
+              }
+            />
+            <Select
+              key={`min-selling-weight-${item.id}`} // Unique key for each unit select
+              expandToViewport
+              selectedOption={unitOptions.find(
+                (opt) => opt.value === item.minimumSellingWeightUnit
+              )}
+              onChange={(event) => {
+                event.stopPropagation(); // Prevent parent handlers from closing the dropdown
+                handleInputChange(
+                  item.id,
+                  "minimumSellingWeightUnit",
+                  event.detail.selectedOption.value
+                );
+              }}
+              options={unitOptions}
+              placeholder="Select Unit"
+            />
+          </Grid>
+        </div>
+      ),
+    },
+    {
+      id: "maximumSellingWeight",
+      header: (
+        <span>
+          Maximum Selling Weight{" "}
+          <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+        </span>
+      ),
+      cell: (item) => (
+        <div style={{ width: "200px" }}>
+          <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+            <Input
+              placeholder="Enter Maximum Selling Weight"
+              type="text"
+              value={item.maximumSellingWeight}
+              onChange={({ detail }) =>
+                handleInputChange(item.id, "maximumSellingWeight", detail.value) // Use item.id here
+              }
+            />
+            <Select
+              key={`max-selling-weight-${item.id}`} // Unique key for each unit select
+              expandToViewport
+              selectedOption={unitOptions.find(
+                (opt) => opt.value === item.maximumSellingWeightUnit
+              )}
+              onChange={(event) => {
+                event.stopPropagation(); // Prevent parent handlers from closing the dropdown
+                handleInputChange(
+                  item.id,
+                  "maximumSellingWeightUnit",
+                  event.detail.selectedOption.value
+                );
+              }}
+              options={unitOptions}
+              placeholder="Select Unit"
+            />
+          </Grid>
+        </div>
+      ),
+    },
+    {
+      id: "totalQuantityInB2c",
+      header: (
+        <span>
+          Total Quantity In B2c{" "}
+          <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+        </span>
+      ),
+      cell: (item) => (
+        <div style={{ width: "200px" }}>
+          <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+            <Input
+              placeholder="Enter Quantity"
+              type="text"
+              value={item.totalQuantityInB2c}
+              onChange={({ detail }) =>
+                handleInputChange(item.id, "totalQuantityInB2c", detail.value) // Use item.id here
+              }
+            />
+            <Select
+              key={`total-quantity-b2c-${item.id}`} // Unique key for each unit select
+              expandToViewport
+              selectedOption={unitOptions.find(
+                (opt) => opt.value === item.totalQuantityInB2cUnit
+              )}
+              onChange={(event) => {
+                event.stopPropagation(); // Prevent parent handlers from closing the dropdown
+                handleInputChange(
+                  item.id,
+                  "totalQuantityInB2cUnit",
+                  event.detail.selectedOption.value
+                );
+              }}
+              options={unitOptions}
+              placeholder="Select Unit"
+            />
+          </Grid>
+        </div>
+      ),
+    },
+    {
+      id: "saleLimit",
+      header: "Sale Limit",
+      cell: (item) => (
+        <FormField>
+          <Input
+            placeholder="Enter Limit"
+            type="number"
+            value={item.saleLimit}
+            onChange={({ detail }) =>
+              handleInputChange(item.id, "saleLimit", detail.value) // Use item.id here
+            }
+          />
+        </FormField>
+      ),
+    },
+    
+    {
+      id: "buyerLimit",
+      header: "Buyer Limit",
+      cell: (item) => (
+        <FormField>
+          <Input
+            placeholder="Enter Limit"
+            type="number"
+            value={item.buyerLimit}
+            onChange={({ detail }) =>
+              handleInputChange(item.id, "buyerLimit", detail.value) // Use item.id here
+            }
+          />
+        </FormField>
+      ),
+    },
+    {
+      id: "lowStock",
+      header: "Low Stock Alert",
+      cell: (item) => (
+        <FormField>
+          <Input
+            placeholder="Enter Stock Alert"
+            type="number"
+            value={item.lowStockAlert}
+            onChange={({ detail }) =>
+              handleInputChange(item.id, "lowStockAlert", detail.value) // Use item.id here
+            }
+          />
+        </FormField>
+      ),
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: (item) => (
+        <Toggle
+          checked={item.availability}
+          onChange={({ detail }) =>
+            handleToggleChange(item.id, detail.checked) // Use item.id here
+          }
+        />
+      ),
+    },
+  ]}
+  items={tableData}
+  empty={<p>No variants added yet.</p>}
+/>
+
           </Container>
         )}
 

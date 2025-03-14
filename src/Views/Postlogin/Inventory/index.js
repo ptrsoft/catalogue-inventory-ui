@@ -13,7 +13,7 @@ import {
   PutToggle,
   deleteProduct,
   fetchInventoryStats,
-  putPricingById
+  putPricingById,
 } from "Redux-Store/Products/ProductThunk";
 import Tabs from "@cloudscape-design/components/tabs";
 import Overview from "./drawerTabs/overview";
@@ -263,7 +263,7 @@ const Inventory = () => {
 
   const handleConfirmToggle = () => {
     const newStatus = selectedStatus?.value ? false : true;
-    console.log(newStatus,"new staussess");
+    console.log(newStatus, "new staussess");
     const ids = selectedItems.map((item) => item.id); // Get the IDs of the selected items
     dispatch(PutToggle({ ids, active: newStatus }))
       .unwrap()
@@ -281,11 +281,11 @@ const Inventory = () => {
         ]);
         setIsModalVisible(false);
         setTimeout(() => {
-          setItems([]);  // Clear the message after 3 seconds
+          setItems([]); // Clear the message after 3 seconds
         }, 5000);
 
         // Fetch updated products
-        window.location.reload(); 
+        window.location.reload();
         // This will force a full page reload
       })
       .catch((error) => {
@@ -460,8 +460,8 @@ const Inventory = () => {
     ],
   };
 
-  //change price 
-  
+  //change price
+
   const handleInputChange = (id, field, value) => {
     setEditedProducts((prev) => ({
       ...prev,
@@ -470,18 +470,17 @@ const Inventory = () => {
         [field]: value,
       },
     }));
-  
+
     // Validate the field
     validateField(id, field, value);
-  
- // Update isFieldChanged based on the input value
- if (value.trim() === "") {
-  setIsFieldChanged(true); // Reset to true if the field is empty
-} else {
-  setIsFieldChanged(false);
-}
+
+    // Update isFieldChanged based on the input value
+    if (value.trim() === "") {
+      setIsFieldChanged(true); // Reset to true if the field is empty
+    } else {
+      setIsFieldChanged(false);
+    }
   };
-  
 
   const validateField = (id, field, value) => {
     const osp = value;
@@ -505,12 +504,11 @@ const Inventory = () => {
       ...prevErrors,
       [id]: errors,
     }));
-
   };
-  
+
   const handleBulkModifyPrice = () => {
     // if (validateInputs()) {
-      setModalVisible1(true);
+    setModalVisible1(true);
     // }
   };
   const handleModalConfirm = async () => {
@@ -523,18 +521,12 @@ const Inventory = () => {
         editedProducts[item.id]?.purchasingPrice || item.purchasingPrice
       ),
     }));
-  
-   
-  
-   
-  
+
     try {
       const response = await dispatch(putPricingById(pricingDataArray));
       console.log(response, "bulk resp");
-     
-     
 
-      if (response.payload?.message==='success' ) {
+      if (response.payload?.message === "success") {
         console.log("Bulk modify successful", response);
         setItems([
           {
@@ -546,7 +538,7 @@ const Inventory = () => {
         ]);
         setSelectedItems([]);
         setModalVisible1(false);
-      } 
+      }
     } catch (err) {
       console.error("Failed to update product pricing:", err);
       setItems([
@@ -559,22 +551,15 @@ const Inventory = () => {
       ]);
       setModalVisible1(false);
     }
-     // Automatically remove Flashbar after 3 seconds
-  setTimeout(() => {
-    setItems([]);
-  }, 3000);
+    // Automatically remove Flashbar after 3 seconds
+    setTimeout(() => {
+      setItems([]);
+    }, 3000);
   };
-  
-
- 
-  
-
-
 
   return (
     <SpaceBetween size="s">
-
-         <Modal
+      <Modal
         visible={isModalVisible1}
         onDismiss={() => setModalVisible1(false)}
         header="Confirm Bulk Modify"
@@ -847,15 +832,21 @@ const Inventory = () => {
             allItemsSelectionLabel: () => "select all",
             itemSelectionLabel: ({ selectedItems }, item) => item.name,
           }}
-          header={<Header actions={
-            <Button
-            disabled={isFieldChanged}
-            variant="normal"
-            onClick={handleBulkModifyPrice}
-          >
-            Bulk Update Price
-          </Button>
-          }>Total Selected Items: {selectedItems.length}</Header>}
+          header={
+            <Header
+              actions={
+                <Button
+                  disabled={isFieldChanged}
+                  variant="normal"
+                  onClick={handleBulkModifyPrice}
+                >
+                  Bulk Update Price
+                </Button>
+              }
+            >
+              Total Selected Items: {selectedItems.length}
+            </Header>
+          }
           variant="borderless"
           columnDefinitions={[
             {
@@ -894,7 +885,9 @@ const Inventory = () => {
                         color: hoveredProductId === e.id ? "blue" : "black", // Change color based on hovered product ID
                       }}
                     >
-                      {e.name}
+                      {e.name}-
+                      {e.totalQuantityInB2c}
+                      {e.totalquantityB2cUnit}
                     </span>
                   </div>
                 );
@@ -908,8 +901,7 @@ const Inventory = () => {
               cell: (item) => (
                 <div style={{ width: "80px" }}>
                   <FormField
-                    errorText={validationErrors[item.id]?.purchasingPrice
-                      }
+                    errorText={validationErrors[item.id]?.purchasingPrice}
                   >
                     <Input
                       disabled={
@@ -922,7 +914,6 @@ const Inventory = () => {
                       value={
                         editedProducts[item.id]?.purchasingPrice ??
                         item.purchasingPrice
-                        
                       }
                       onChange={(e) =>
                         handleInputChange(
@@ -942,12 +933,15 @@ const Inventory = () => {
               header: "Selling Price",
               cell: (item) => (
                 <div style={{ width: "80px" }}>
-                  <FormField errorText={validationErrors[item.id]?.sellingPrice}>
+                  <FormField
+                    errorText={validationErrors[item.id]?.sellingPrice}
+                  >
                     <Input
                       placeholder="Enter Price"
                       type="number"
                       value={
-                        editedProducts[item.id]?.sellingPrice ?? item.sellingPrice
+                        editedProducts[item.id]?.sellingPrice ??
+                        item.sellingPrice
                       }
                       onChange={(e) =>
                         handleInputChange(
@@ -992,25 +986,27 @@ const Inventory = () => {
                 </span>
               ),
             },
-           
+
             {
               id: "status",
               header: "Status",
               cell: (e) => (
-                <div style={{ display: "flex", width: "100px" }}>
+                <b style={{ display: "flex", width: "100px",
+                  color:e.availability === true | e.active === true?"green":"red"
+                 }}>
                   {/* <Toggle
                     onChange={() => handleToggleClick(e)}
                     checked={e.active}
                   > */}
                   {e.availability === true
-                    ? "Active"
+                    ? "In Stock"
                     : e.availability === false
-                    ? "Inactive"
+                    ? "Out Of Stock"
                     : ""}
-                      {e.active === true
-                    ? "Active"
+                  {e.active === true
+                    ? "In Stock"
                     : e.active === false
-                    ? "Inactive"
+                    ? "Out Of Stock"
                     : ""}
                   {/* </Toggle> */}
                   {/* <span
@@ -1019,7 +1015,7 @@ const Inventory = () => {
                       color: e.status === "Inactive" ? "gray" : "black",
                     }}
                   ></span> */}
-                </div>
+                </b>
               ),
             },
             {
@@ -1054,11 +1050,10 @@ const Inventory = () => {
                 selectedSubCategory?.value || ""
               }-${filteringText || ""}-${
                 selectedStatus?.value === false
-        ? "false"
-        : selectedStatus?.value === true
-        ? "true"
-        : ""
-                
+                  ? "false"
+                  : selectedStatus?.value === true
+                  ? "true"
+                  : ""
               }-${currentPage}`
             ] || []
           }

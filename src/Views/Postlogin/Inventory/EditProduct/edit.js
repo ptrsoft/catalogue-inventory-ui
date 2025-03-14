@@ -175,7 +175,7 @@ const Edit = () => {
       setInputTag("");
     }
   };
-  console.log(tags, "tag");
+  // console.log(tags, "tag");
 
   const removeTokenForTag = (index) => {
     setTags((prevValues) => {
@@ -222,7 +222,6 @@ const Edit = () => {
       setIsVariant(productDetail.isVariant || false);
       setParentProductId(productDetail.parentProductId || "");
       setSearchName(productDetail.search_name || "");
-      setLowStockAlert(productDetail.stockQuantityAlert || "");
       setBuyerLimit(productDetail.buyerLimit || "");
       setSellingPrice(productDetail.sellingPrice || "");
       setComparePrice(productDetail.comparePrice || "");
@@ -234,7 +233,7 @@ const Edit = () => {
       setCreatedAt(productDetail.createdAt || "");
       setUpdatedAt(productDetail.updatedAt || "");
       setTotalQuantityB2CUnit(productDetail.TotalquantityB2cUnit || "");
-      setTableData(productDetail?.variants||[])
+
     }
   }, [productDetail]);
    //add varient code
@@ -279,7 +278,7 @@ const Edit = () => {
   if (!productDetail) {
     return <div>No product details available.</div>;
   }
-console.log(images,"array of images");
+// console.log(images,"array of images");
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -317,6 +316,7 @@ console.log(images,"array of images");
       MinimumSellingWeightUnit,
       MaximumSellingWeightUnit,
       stockQuantityAlert,
+      
       sellingPrice: Number(sellingPrice),
       comparePrice: Number(comparePrice),
       purchasingPrice: Number(purchasingPrice),
@@ -327,8 +327,7 @@ console.log(images,"array of images");
       totalQuantityInB2c: Number(totalQuantityInB2C),
       minimumSellingWeight: Number(minimumSellingWeight),
       maximumSellingWeight: Number(maximumSellingWeight),
-      variants:tableData,
-    
+      isVariant:isVariant   
     };
  console.log(productData,"product");
     dispatch(updateProductDetails({ id, productData }))
@@ -345,6 +344,8 @@ console.log(images,"array of images");
             header: "Updated Item",
             dismissible: true,
             id: "message_success",
+            onDismiss: () => setItems([]),
+
           },
         ]);
 
@@ -793,8 +794,8 @@ console.log(images,"array of images");
                 <Input
                   type="number"
                   name="lowStockAlert"
-                  value={lowStockAlert}
-                  onChange={({ detail }) => setLowStockAlert(detail.value)}
+                  value={stockQuantityAlert}
+                  onChange={({ detail }) => setStockQuantityAlert(detail.value)}
                 />
               </FormField>
                                     </SpaceBetween>

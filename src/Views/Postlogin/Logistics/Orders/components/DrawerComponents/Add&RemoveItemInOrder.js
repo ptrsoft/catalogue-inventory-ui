@@ -16,7 +16,7 @@ import { fetchProducts } from "Redux-Store/Products/ProductThunk";
 import { useDispatch } from "react-redux"; // Import useDispatch and useSelector
 import { fetchOrderById } from "Redux-Store/Orders/OrdersThunk";
 
-const AddItemInOrder = ({ selectedOrder,setFlashMessages }) => {
+const AddItemInOrder = ({ selectedOrder }) => {
   const dispatch = useDispatch();
 
   const [visible, setVisible] = useState(false);
@@ -215,41 +215,40 @@ const sendApiRequest = async (addItems, removeProductIds) => {
       dispatch(fetchOrderById(selectedOrder?.orderId));
 
       // Show a generic success message if no items were added or removed
-      setFlashMessages({
-        type: "success",
-        content: "Order updated successfully!",
-        dismissible: true,
-        onDismiss: () => setFlashMessages([]),
-      });
+    //   setFlashMessages({
+    //     type: "success",
+    //     content: "Order updated successfully!",
+    //     dismissible: true,
+    //   });
+
+    //   // Auto-close the flash message after 3 seconds
+    //   // setTimeout(() => setFlashMessages([]), 3000);
+    // } else {
+    //   // If response is not ok, show a generic error message
+    //   setFlashMessages({
+    //     type: "error",
+    //     content: "Failed to update order!",
+    //     dismissible: true,
+    //     onDismiss: () => setFlashMessages([]),
+    //   });
 
       // Auto-close the flash message after 3 seconds
-      setTimeout(() => setFlashMessages([]), 3000);
-    } else {
-      // If response is not ok, show a generic error message
-      setFlashMessages({
-        type: "error",
-        content: "Failed to update order!",
-        dismissible: true,
-        onDismiss: () => setFlashMessages([]),
-      });
-
-      // Auto-close the flash message after 3 seconds
-      setTimeout(() => setFlashMessages([]), 3000);
+      // setTimeout(() => setFlashMessages([]), 3000);
     }
   } catch (error) {
     // Catch any network errors or unexpected issues
     console.error("Error occurred:", error);
 
     // For general errors, show a fallback error message
-    setFlashMessages({
-      type: "error",
-      content: "An unexpected error occurred while updating the order!",
-      dismissible: true,
-      onDismiss: () => setFlashMessages([]),
-    });
+    // setFlashMessages({
+    //   type: "error",
+    //   content: "An unexpected error occurred while updating the order!",
+    //   dismissible: true,
+    //   onDismiss: () => setFlashMessages([]),
+    // });
 
-    // Auto-close the flash message after 3 seconds
-    setTimeout(() => setFlashMessages([]), 3000);
+    // // Auto-close the flash message after 3 seconds
+    // setTimeout(() => setFlashMessages([]), 3000);
   }
 };
 
@@ -404,7 +403,9 @@ const sendApiRequest = async (addItems, removeProductIds) => {
                       marginRight: "10px",
                     }}
                   />
-                  {item.name}
+                     {item.name}-
+                      {item.totalQuantityInB2c}
+                      {item.totalquantityB2cUnit}
                 </div>
               ),
             },
@@ -516,8 +517,8 @@ const sendApiRequest = async (addItems, removeProductIds) => {
                     alt="products"
                   ></img>
 
-                  <p> {item.productName}</p>
-                </div>
+<p> {item?.productName}-{item?.quantityUnits}{item?.unit}</p>
+</div>
               ),
             },
             {
@@ -598,7 +599,7 @@ const sendApiRequest = async (addItems, removeProductIds) => {
                     alt="products"
                   ></img>
 
-                  <p> {item?.productName}</p>
+                  <p> {item?.productName}-{item?.quantityUnits}{item?.unit}</p>
                 </div>
               ),
             },

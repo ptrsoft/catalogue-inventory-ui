@@ -91,10 +91,10 @@ const Drawer = ({
         ]);
       });
   };
-  const handleFlashMessage = (content) => {
-    setFlashMessages(() => [content]);
-    console.log(content,"content");
-  };
+  // const handleFlashMessage = (content) => {
+  //   setFlashMessages(() => [content]);
+  //   console.log(content,"content");
+  // };
 
   //reattempt logic
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -180,7 +180,7 @@ const Drawer = ({
               <Invoice selectedOrder={selectedOrder} flag={"single"} />
             </div>
             <OrderDetails selectedOrder={selectedOrder} usersbyid={usersbyid} />
-            <AddItemInOrder selectedOrder={selectedOrder} setFlashMessages={handleFlashMessage}/>
+            <AddItemInOrder selectedOrder={selectedOrder} />
 
             
             <AddDiscount selectedOrder={selectedOrder} />

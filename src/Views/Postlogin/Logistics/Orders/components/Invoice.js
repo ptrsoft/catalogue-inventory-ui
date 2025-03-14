@@ -380,6 +380,29 @@ const Invoice = ({ selectedOrder, flag }) => {
                   <td>{item.subtotal.toFixed(2)}</td>
                 </tr>
               ))}
+                 {selectedOrder?.removedItems?.map((item, index) => (
+                <tr style={{ padding: "10px", margin: "10px" }} key={index}>
+                  <td style={{ textAlign: "left", width: "140px" }}>
+                    {(() => {
+                      const parts = item.productName;
+                      return parts;
+                    })()}
+                  </td>
+
+                  <td style={{ textAlign: "left" }}>
+                    {item.quantityUnits}
+                    {item.unit}
+                  </td>
+
+                  <td>
+                    {item.quantity}
+
+                    {/* {item.unit === "pieces" ? "pcs" : item.unit} */}
+                  </td>
+                  <td colSpan={2}> Out Of Stock</td>
+                  {/* <td>{item.subtotal.toFixed(2)}</td> */}
+                </tr>
+              ))}
             </tbody>
           </table>
           <hr

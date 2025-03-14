@@ -429,6 +429,37 @@ const sendApiRequest = async (addItems, removeProductIds) => {
                 />
               ),
             },
+            {
+              id: "status",
+              header: "Status",
+              cell: (e) => (
+                <b style={{ display: "flex", width: "100px",
+                  color:e.availability === true | e.active === true?"green":"red"
+                 }}>
+                  {/* <Toggle
+                    onChange={() => handleToggleClick(e)}
+                    checked={e.active}
+                  > */}
+                  {e.availability === true
+                    ? "In Stock"
+                    : e.availability === false
+                    ? "Out Of Stock"
+                    : ""}
+                  {e.active === true
+                    ? "In Stock"
+                    : e.active === false
+                    ? "Out Of Stock"
+                    : ""}
+                  {/* </Toggle> */}
+                  {/* <span
+                    style={{
+                      marginLeft: "10px",
+                      color: e.status === "Inactive" ? "gray" : "black",
+                    }}
+                  ></span> */}
+                </b>
+              ),
+            },
           ]}
           // items={data.items}
           items={
@@ -521,7 +552,7 @@ const sendApiRequest = async (addItems, removeProductIds) => {
           stickyHeader
         />
       </Container>
-      {selectedOrder?.removedItems?.length>0 & (
+      {/* {selectedOrder?.removedItems?.length>0 & ( */}
 
 <>
       <div
@@ -596,14 +627,14 @@ const sendApiRequest = async (addItems, removeProductIds) => {
             },
           ]}
           //show remove items here
-          items={selectedOrder?.items}
+          items={selectedOrder?.removedItems}
           // variant="embedded"
           variant="borderless"
           stickyHeader
         />
       </Container>
       </>
-      )}
+      {/* )} */}
     </div>
   );
 };

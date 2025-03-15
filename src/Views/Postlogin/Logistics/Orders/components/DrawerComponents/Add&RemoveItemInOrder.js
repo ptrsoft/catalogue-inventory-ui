@@ -16,7 +16,7 @@ import { fetchProducts } from "Redux-Store/Products/ProductThunk";
 import { useDispatch } from "react-redux"; // Import useDispatch and useSelector
 import { fetchOrderById } from "Redux-Store/Orders/OrdersThunk";
 
-const AddItemInOrder = ({ selectedOrder }) => {
+const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
   const dispatch = useDispatch();
 
   const [visible, setVisible] = useState(false);
@@ -115,7 +115,6 @@ const AddItemInOrder = ({ selectedOrder }) => {
     }));
   };
 
-
   const subcategoryOptions = {
     "Fresh Vegetables": [
       { label: "Daily Vegetables", value: "Daily Vegetables" },
@@ -152,8 +151,8 @@ const AddItemInOrder = ({ selectedOrder }) => {
     ],
   };
 
-   // Add items to the order
-   const handleApplyItems = () => {
+  // Add items to the order
+  const handleApplyItems = () => {
     const updatedSelectedItems = selectedItems.map((item) => ({
       ...item,
       quantity: quantities[item.id] || 0, // Default to 0 if no quantity entered
@@ -169,14 +168,14 @@ const AddItemInOrder = ({ selectedOrder }) => {
 
     // Send addItems to the API
     sendApiRequest(addItems, null);
-    setVisible(false)
-    setSelectedItems([])
+    setVisible(false);
+    setSelectedItems([]);
     setQuantities({});
   };
 
   // Remove out of stock item
   const removeOutOfStockItem = (item) => {
-    console.log(item,"remove item details");
+    console.log(item, "remove item details");
     const removeProductIds = [item.productId]; // Single item or array of itemIds to remove
 
     console.log("Remove Product IDs:", removeProductIds);
@@ -185,73 +184,54 @@ const AddItemInOrder = ({ selectedOrder }) => {
     sendApiRequest(null, removeProductIds);
   };
 
-const sendApiRequest = async (addItems, removeProductIds) => {
-  const myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
+  const sendApiRequest = async (addItems, removeProductIds) => {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
 
-  const body = JSON.stringify({
-    removeProductIds: removeProductIds || [], // If no removeProductIds, send empty array
-    addItems: addItems || [], // If no addItems, send empty array
-  });
+    const body = JSON.stringify({
+      removeProductIds: removeProductIds || [], // If no removeProductIds, send empty array
+      addItems: addItems || [], // If no addItems, send empty array
+    });
 
-  const requestOptions = {
-    method: "PUT",
-    headers: myHeaders,
-    body: body,
-    redirect: "follow",
-  };
+    const requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      body: body,
+      redirect: "follow",
+    };
 
-  try {
-    const response = await fetch(
-      `https://api.admin.promodeagro.com/order/updateOrder/${selectedOrder?.orderId}`,
-      requestOptions
-    );
+    try {
+      const response = await fetch(
+        `https://api.admin.promodeagro.com/order/updateOrder/${selectedOrder?.orderId}`,
+        requestOptions
+      );
 
-    // Check if response is successful (status 200-299)
-    if (response.ok) {
-      const result = await response.json(); // Parse the JSON response
+      // Check if response is successful (status 200-299)
+      if (response.ok) {
+        const result = await response.json(); // Parse the JSON response
 
-      // Dispatch fetchOrderById first to refresh the order
-      dispatch(fetchOrderById(selectedOrder?.orderId));
+        // Dispatch fetchOrderById first to refresh the order
+        dispatch(fetchOrderById(selectedOrder?.orderId));
 
-      // Show a generic success message if no items were added or removed
-    //   setFlashMessages({
-    //     type: "success",
-    //     content: "Order updated successfully!",
-    //     dismissible: true,
-    //   });
+        // Show a generic success message if no items were added or removed
+        setFlashMessages("success", "Order updated successfully!");
 
-    //   // Auto-close the flash message after 3 seconds
-    //   // setTimeout(() => setFlashMessages([]), 3000);
-    // } else {
-    //   // If response is not ok, show a generic error message
-    //   setFlashMessages({
-    //     type: "error",
-    //     content: "Failed to update order!",
-    //     dismissible: true,
-    //     onDismiss: () => setFlashMessages([]),
-    //   });
+        // Auto-close the flash message after 3 seconds
+      } else {
+        // If response is not ok, show a generic error message
+        setFlashMessages("error", "Failed to update order!");
+      }
+    } catch (error) {
+      // Catch any network errors or unexpected issues
+      console.error("Error occurred:", error);
 
-      // Auto-close the flash message after 3 seconds
-      // setTimeout(() => setFlashMessages([]), 3000);
+      // For general errors, show a fallback error message
+      setFlashMessages(
+        "error",
+        "An unexpected error occurred while updating the order!"
+      );
     }
-  } catch (error) {
-    // Catch any network errors or unexpected issues
-    console.error("Error occurred:", error);
-
-    // For general errors, show a fallback error message
-    // setFlashMessages({
-    //   type: "error",
-    //   content: "An unexpected error occurred while updating the order!",
-    //   dismissible: true,
-    //   onDismiss: () => setFlashMessages([]),
-    // });
-
-    // // Auto-close the flash message after 3 seconds
-    // setTimeout(() => setFlashMessages([]), 3000);
-  }
-};
-
+  };
 
   return (
     <div>
@@ -403,16 +383,15 @@ const sendApiRequest = async (addItems, removeProductIds) => {
                       marginRight: "10px",
                     }}
                   />
-                     {item.name}-
-                      {item.totalQuantityInB2c}
-                      {item.totalquantityB2cUnit}
+                  {item.name}-{item.totalQuantityInB2c}
+                  {item.totalquantityB2cUnit}
                 </div>
               ),
             },
 
             {
               header: "Price Per Unit ",
-              cell: (item) => item.purchasingPrice,
+              cell: (item) => item.sellingPrice,
             },
             {
               header: "Add Quantity",
@@ -434,9 +413,16 @@ const sendApiRequest = async (addItems, removeProductIds) => {
               id: "status",
               header: "Status",
               cell: (e) => (
-                <b style={{ display: "flex", width: "100px",
-                  color:e.availability === true | e.active === true?"green":"red"
-                 }}>
+                <b
+                  style={{
+                    display: "flex",
+                    width: "100px",
+                    color:
+                      (e.availability === true) | (e.active === true)
+                        ? "green"
+                        : "red",
+                  }}
+                >
                   {/* <Toggle
                     onChange={() => handleToggleClick(e)}
                     checked={e.active}
@@ -517,8 +503,12 @@ const sendApiRequest = async (addItems, removeProductIds) => {
                     alt="products"
                   ></img>
 
-<p> {item?.productName}-{item?.quantityUnits}{item?.unit}</p>
-</div>
+                  <p>
+                    {" "}
+                    {item?.productName}-{item?.quantityUnits}
+                    {item?.unit}
+                  </p>
+                </div>
               ),
             },
             {
@@ -555,85 +545,93 @@ const sendApiRequest = async (addItems, removeProductIds) => {
       </Container>
       {/* {selectedOrder?.removedItems?.length>0 & ( */}
 
-<>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "10px",
-          marginTop: "10px",
-        }}
-      >
-        <Box variant="h4">Out Of Stock</Box>
-      </div>
-      <Container>
-        <Table
-          empty={
-            <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
-              <SpaceBetween size="m">
-                <>
-                  <b>No Orders available</b> {/* Show no data message */}
-                </>
-              </SpaceBetween>
-            </Box>
-          }
-          columnDefinitions={[
-            {
-              header: "Product Name",
-              cell: (item) => (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "5px",
-                  }}
-                >
-                  <img
-                    src={item?.productImage}
+      <>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "10px",
+            marginTop: "10px",
+          }}
+        >
+          <Box variant="h4">Out Of Stock</Box>
+        </div>
+        <Container>
+          <Table
+            empty={
+              <Box
+                margin={{ vertical: "xs" }}
+                textAlign="center"
+                color="inherit"
+              >
+                <SpaceBetween size="m">
+                  <>
+                    <b>No Orders available</b> {/* Show no data message */}
+                  </>
+                </SpaceBetween>
+              </Box>
+            }
+            columnDefinitions={[
+              {
+                header: "Product Name",
+                cell: (item) => (
+                  <div
                     style={{
-                      height: "30px",
-                      width: "30px",
-                      marginLeft: "5px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "5px",
                     }}
-                    alt="products"
-                  ></img>
+                  >
+                    <img
+                      src={item?.productImage}
+                      style={{
+                        height: "30px",
+                        width: "30px",
+                        marginLeft: "5px",
+                      }}
+                      alt="products"
+                    ></img>
 
-                  <p> {item?.productName}-{item?.quantityUnits}{item?.unit}</p>
-                </div>
-              ),
-            },
-            {
-              header: "Quantity",
-              cell: (item) => (
-                <div style={{ textAlign: "center" }}>{item?.quantity}</div>
-              ),
-              maxWidth: 150,
-            },
-            {
-              header: "Price",
-              cell: (item) => (
-                <div style={{ textAlign: "center" }}>{item?.price}</div>
-              ),
-              maxWidth: 150,
-            },
-            {
-              header: "Status",
-              cell: (item) => (
-                <b style={{ textAlign: "center", color: "red" }}>
-                  Out Of Stock
-                </b>
-              ),
-              maxWidth: 150,
-            },
-          ]}
-          //show remove items here
-          items={selectedOrder?.removedItems}
-          // variant="embedded"
-          variant="borderless"
-          stickyHeader
-        />
-      </Container>
+                    <p>
+                      {" "}
+                      {item?.productName}-{item?.quantityUnits}
+                      {item?.unit}
+                    </p>
+                  </div>
+                ),
+              },
+              {
+                header: "Quantity",
+                cell: (item) => (
+                  <div style={{ textAlign: "center" }}>{item?.quantity}</div>
+                ),
+                maxWidth: 150,
+              },
+              {
+                header: "Price",
+                cell: (item) => (
+                  <div style={{ textAlign: "center" }}>{item?.price}</div>
+                ),
+                maxWidth: 150,
+              },
+              {
+                header: "Status",
+                cell: (item) => (
+                  <b style={{ textAlign: "center", color: "red" }}>
+                    Out Of Stock
+                  </b>
+                ),
+                maxWidth: 150,
+              },
+            ]}
+            //show remove items here
+            items={selectedOrder?.removedItems}
+            // variant="embedded"
+            variant="borderless"
+            stickyHeader
+          />
+        </Container>
       </>
       {/* )} */}
     </div>

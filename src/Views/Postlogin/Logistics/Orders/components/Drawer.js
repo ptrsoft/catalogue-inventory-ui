@@ -91,10 +91,23 @@ const Drawer = ({
         ]);
       });
   };
-  // const handleFlashMessage = (content) => {
-  //   setFlashMessages(() => [content]);
-  //   console.log(content,"content");
-  // };
+  //call back function for showing flashbar from child compoent to parent compoenent
+  const handleFlashMessage = (type,content) => {
+    console.log(type,content,"flashbar");
+    setFlashMessages([
+      {
+        type: type,
+        content: content,
+        dismissible: true,
+        id: "successCancel",
+        onDismiss: () => setFlashMessages([]),
+      },
+    ]);
+    setTimeout(() => setFlashMessages([]), 3000);
+
+
+  };
+
 
   //reattempt logic
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -180,7 +193,7 @@ const Drawer = ({
               <Invoice selectedOrder={selectedOrder} flag={"single"} />
             </div>
             <OrderDetails selectedOrder={selectedOrder} usersbyid={usersbyid} />
-            <AddItemInOrder selectedOrder={selectedOrder} />
+            <AddItemInOrder selectedOrder={selectedOrder} setFlashMessages={handleFlashMessage} />
 
             
             <AddDiscount selectedOrder={selectedOrder} />

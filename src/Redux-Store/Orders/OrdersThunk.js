@@ -259,3 +259,29 @@ export const packOrders = createAsyncThunk(
   }
 );
 
+export const updateOrderItems = createAsyncThunk(
+  'orderInventory/updateOrderItems',
+  async ({ orderId, addItems, removeProductIds }, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) {
+        return rejectWithValue("Authorization token is missing.");
+      }
+
+      const url = `${config.FETCH_ORDERBYID}/updateOrder/${orderId}`;
+      const response = await postLoginService.put(url, {
+        removeProductIds: removeProductIds || [],
+        addItems: addItems || []
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+

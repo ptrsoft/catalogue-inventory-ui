@@ -14,7 +14,7 @@ import {
 } from "@cloudscape-design/components";
 import { fetchProducts } from "Redux-Store/Products/ProductThunk";
 import { useDispatch } from "react-redux"; // Import useDispatch and useSelector
-import { fetchOrderById } from "Redux-Store/Orders/OrdersThunk";
+import { fetchOrderById, updateOrderItems } from "Redux-Store/Orders/OrdersThunk";
 
 const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
   const dispatch = useDispatch();
@@ -185,51 +185,19 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
   };
 
   const sendApiRequest = async (addItems, removeProductIds) => {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const body = JSON.stringify({
-      removeProductIds: removeProductIds || [], // If no removeProductIds, send empty array
-      addItems: addItems || [], // If no addItems, send empty array
-    });
-
-    const requestOptions = {
-      method: "PUT",
-      headers: myHeaders,
-      body: body,
-      redirect: "follow",
-    };
-
     try {
-      const response = await fetch(
-        `https://api.admin.promodeagro.com/order/updateOrder/${selectedOrder?.orderId}`,
-        requestOptions
-      );
+      const result = await dispatch(updateOrderItems({
+        orderId: selectedOrder?.orderId,
+        addItems,
+        removeProductIds
+      })).unwrap();
 
-      // Check if response is successful (status 200-299)
-      if (response.ok) {
-        const result = await response.json(); // Parse the JSON response
-
-        // Dispatch fetchOrderById first to refresh the order
-        dispatch(fetchOrderById(selectedOrder?.orderId));
-
-        // Show a generic success message if no items were added or removed
-        setFlashMessages("success", "Order updated successfully!");
-
-        // Auto-close the flash message after 3 seconds
-      } else {
-        // If response is not ok, show a generic error message
-        setFlashMessages("error", "Failed to update order!");
-      }
+      // Dispatch fetchOrderById to refresh the order
+      dispatch(fetchOrderById(selectedOrder?.orderId));
+      setFlashMessages("success", "Order updated successfully!");
     } catch (error) {
-      // Catch any network errors or unexpected issues
       console.error("Error occurred:", error);
-
-      // For general errors, show a fallback error message
-      setFlashMessages(
-        "error",
-        "An unexpected error occurred while updating the order!"
-      );
+      setFlashMessages("error", "Failed to update order!");
     }
   };
 
@@ -264,26 +232,9 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
         // header={<Header>Add Items</Header>}
         header={
           <Header
-            actions={
-              <div style={{ marginLeft: "800px" }}>
-                <SpaceBetween direction="horizontal" size="xs">
-                  <button
-                    className="cancel-btn"
-                    style={{ borderRadius: "16px" }}
-                    onClick={() => setVisible(false)}
-                  >
-                    Cancel
-                  </button>
-                  <Button
-                    variant="primary"
-                    onClick={handleApplyItems}
-                    disabled={selectedItems.length === 0} // Disable if no item is selected
-                  >
-                    Save
-                  </Button>
-                </SpaceBetween>
-              </div>
-            }
+       
+             
+          
           >
             Add Items
           </Header>
@@ -298,7 +249,26 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
             />
           }
           header={
-            <Header>
+            <Header actions={
+              <Box float="right">
+              <SpaceBetween direction="horizontal" size="xs">
+                <button
+                  className="cancel-btn"
+                  style={{ borderRadius: "16px" }}
+                  onClick={() => setVisible(false)}
+                >
+                  Cancel
+                </button>
+                <Button
+                  variant="primary"
+                  onClick={handleApplyItems}
+                  disabled={selectedItems.length === 0} // Disable if no item is selected
+                >
+                  Save
+                </Button>
+              </SpaceBetween>
+              </Box>
+            }>
               <SpaceBetween direction="horizontal" size="xs">
                 <div style={{ width: "400px" }}>
                   <TextFilter
@@ -353,6 +323,8 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
                       : []
                   }
                 />
+                
+               
               </SpaceBetween>
             </Header>
           }
@@ -457,11 +429,12 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
             ] || []
           }
           selectionType="multi"
+          trackBy="id"
+
           selectedItems={selectedItems}
           onSelectionChange={({ detail }) =>
             setSelectedItems(detail.selectedItems)
           }
-          trackBy="itemCode"
           empty={
             <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
               <SpaceBetween size="m">

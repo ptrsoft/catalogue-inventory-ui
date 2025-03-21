@@ -23,3 +23,16 @@ export const CreateAdjustment = createAsyncThunk("CreateAdjustment", async (para
     return rejectWithValue(error.response ? error.response.data : error.message);
   }
 });
+
+export const createInventoryAdjustment = createAsyncThunk(
+  "createInventoryAdjustment",
+  async (adjustmentData, { rejectWithValue }) => {
+    try {
+      const url = config.FETCH_INVENTORY_ADJUSTMENTS;
+      const response = await postLoginService.post(url, adjustmentData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response ? error.response.data : error.message);
+    }
+  }
+);

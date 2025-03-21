@@ -17,12 +17,15 @@ import {
   } from "@cloudscape-design/components";
   import React from "react";
   import { useNavigate, useLocation } from "react-router-dom";
+  import { createInventoryAdjustment } from "Redux-Store/InventoryAdjustments/InventoryAdjustmentsThunk";
+  import { useDispatch } from "react-redux";
   
   // importing create adjustment data using routes
   const NewAdjustment = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { dataToSave } = location.state || {};
+    const dispatch = useDispatch();
   
     React.useEffect(() => {
       if (dataToSave) {
@@ -75,31 +78,11 @@ const getToken = () => {
       console.log("Request Body:", requestBody);
   
       try {
-        const token = getToken();
-        const response = await fetch(
-          "https://api.admin.promodeagro.com/inventory/adjust",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // Add token here
-            },
-            body: JSON.stringify(requestBody),
-          }
-        );
-        if (response.ok) {
-          const result = await response.json();
-          console.log("API response:", result);
-          // Handle success
-          navigate("/app/inventory/adjustments");
-        } else {
-          const error = await response.text();
-          console.error("API error:", error);
-          // Handle error
-        }
+        const result = await dispatch(createInventoryAdjustment(requestBody)).unwrap();
+        console.log("API response:", result);
+        navigate("/app/inventory/adjustments");
       } catch (error) {
-        console.error("Fetch error:", error);
-        // Handle fetch error
+        console.error("Error creating adjustment:", error);
       }
     };
   

@@ -612,8 +612,20 @@ const Orders = () => {
             }`}
           >
             <Table
-                  header={<Header>Total Selected Items: {selectedItems.length}
-            </Header>}
+                  header={
+                  <div style={{marginTop:'10px'}}><Header   actions={
+                    <Box float="right">
+                    <Pagination
+                      currentPageIndex={currentPage}
+                      onChange={({ detail }) =>
+                        handlePageChange(detail.currentPageIndex)
+                      }
+                      pagesCount={pagesCount}
+                    />
+                  </Box>
+                  }>Total Selected Items: {selectedItems.length}
+            </Header>
+            </div>}
               selectedItems={selectedItems}
               ariaLabels={{
                 selectionGroupLabel: "Select orders",
@@ -641,17 +653,7 @@ const Orders = () => {
                   </SpaceBetween>
                 </Box>
               }
-              pagination={
-                <Box float="right">
-                  <Pagination
-                    currentPageIndex={currentPage}
-                    onChange={({ detail }) =>
-                      handlePageChange(detail.currentPageIndex)
-                    }
-                    pagesCount={pagesCount}
-                  />
-                </Box>
-              }
+        
             />
           </div>
         </div>

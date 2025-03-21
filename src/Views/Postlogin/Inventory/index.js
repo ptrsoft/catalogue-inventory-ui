@@ -342,7 +342,7 @@ const Inventory = () => {
           onClick={() => setIsModalVisible(true)}
           disabled={!isAnyProductSelected}
         >
-          Move to Inactive
+          Move to Out Of Stock
         </Button>
       );
     } else if (selectedStatus?.value === false) {
@@ -352,7 +352,7 @@ const Inventory = () => {
           onClick={() => setIsModalVisible(true)}
           disabled={!isAnyProductSelected} // Disable button if no product is selected
         >
-          Move to Active
+          Move to In Stock
         </Button>
       );
     }
@@ -651,8 +651,8 @@ const Inventory = () => {
             onChange={handleSelectChange}
             options={[
               { label: "All", value: "" },
-              { label: "Active", value: true },
-              { label: "Inactive", value: false },
+              { label: "In Stock", value: true },
+              { label: "Out Of Stock", value: false },
             ]}
             placeholder="Select Status"
           />

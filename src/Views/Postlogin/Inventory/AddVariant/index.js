@@ -381,10 +381,10 @@ const AddEditVariant = () => {
   
 
   const unitOptions = [
-    { label: "Piece", value: "pieces" },
-    { label: "Grams", value: "grams" },
+    { label: "Pcs", value: "pieces" },
+    { label: "Grms", value: "grams" },
     { label: "Kgs", value: "kgs" },
-    { label: "Litres", value: "litres" },
+    { label: "Ltrs", value: "litres" },
   ];
 
   const handledelete = () => {
@@ -859,6 +859,11 @@ const AddEditVariant = () => {
       cell: (item) => (
         <div style={{ width: "200px" }}>
           <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+          <FormField
+          errorText={
+            isFormSubmitted && !item.quantity && "Required"
+          }
+        >
             <Input
               placeholder="Enter Quantity"
               type="text"
@@ -867,6 +872,7 @@ const AddEditVariant = () => {
                 handleInputChange(item.id, "quantity", detail.value) // Use item.id here
               }
             />
+            </FormField>
             <Select
               key={`quantity-${item.id}`} // Ensures the select stays stable and is unique
               expandToViewport
@@ -971,7 +977,7 @@ const AddEditVariant = () => {
       header: (
         <span>
           Minimum Selling Weight{" "}
-          <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+          {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
         </span>
       ),
       cell: (item) => (
@@ -1011,7 +1017,7 @@ const AddEditVariant = () => {
       header: (
         <span>
           Maximum Selling Weight{" "}
-          <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+          {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
         </span>
       ),
       cell: (item) => (
@@ -1057,6 +1063,11 @@ const AddEditVariant = () => {
       cell: (item) => (
         <div style={{ width: "200px" }}>
           <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+          <FormField
+          errorText={
+            isFormSubmitted && !item.totalQuantityInB2c && "Required"
+          }
+        >
             <Input
               placeholder="Enter Quantity"
               type="text"
@@ -1065,6 +1076,7 @@ const AddEditVariant = () => {
                 handleInputChange(item.id, "totalQuantityInB2c", detail.value) // Use item.id here
               }
             />
+            </FormField>
             <Select
               key={`total-quantity-b2c-${item.id}`} // Unique key for each unit select
               expandToViewport

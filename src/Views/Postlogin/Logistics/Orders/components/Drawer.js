@@ -16,7 +16,7 @@ import { cancelOrder, reattempt } from "Redux-Store/Orders/OrdersThunk";
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch and useSelector
 import Invoice from "./Invoice";
 import OrderDetails from "./DrawerComponents/OrderDetails";
-import AddDiscount from "./DrawerComponents/AddDiscount";
+import AddDiscount from "./DrawerComponents/Cost&Discount";
 import AddItemInOrder from "./DrawerComponents/Add&RemoveItemInOrder";
 const Drawer = ({
   isDrawerOpen,
@@ -265,7 +265,7 @@ const Drawer = ({
                 <p>
                   <strong>Payment:</strong>{" "}
                   <b style={{ color: "#1D4ED8" }}>
-                    <i>{selectedOrder?.totalPrice}</i>
+                    <i>{selectedOrder?.finalTotal}</i>
                   </b>
                 </p>
                 <p>

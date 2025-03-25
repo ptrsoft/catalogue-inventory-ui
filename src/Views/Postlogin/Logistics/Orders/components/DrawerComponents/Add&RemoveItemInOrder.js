@@ -430,11 +430,11 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
           }
           selectionType="multi"
           trackBy="id"
-
           selectedItems={selectedItems}
           onSelectionChange={({ detail }) =>
             setSelectedItems(detail.selectedItems)
           }
+          isItemDisabled={(item) => item?.availability===false || item?.active===false}
           empty={
             <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
               <SpaceBetween size="m">

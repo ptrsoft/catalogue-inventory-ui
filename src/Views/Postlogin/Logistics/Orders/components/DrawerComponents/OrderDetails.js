@@ -84,7 +84,7 @@ const OrderDetails = ({ selectedOrder, usersbyid }) => {
                 </div>
                 <div className="info-row">
                   <span className="label">Total Price:</span>
-                  <span className="value">{selectedOrder?.totalPrice}</span>
+                  <span className="value">{selectedOrder?.finalTotal}</span>
                 </div>
 
                 {usersbyid.map((user) => (

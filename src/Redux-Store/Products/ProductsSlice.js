@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'; 
-import { fetchProducts, PutToggle, updateProductsStatus, deleteProduct, fetchProductById, updateProductDetails, fetchInventoryStats,putPricingById,ImportProducts,exportProducts  } from './ProductThunk'; // Ensure to import updateProductsStatus
+import { fetchProducts, PutToggle, updateProductsStatus, deleteProduct, fetchProductById, updateProductDetails, fetchInventoryStats,putPricingById,ImportProducts,exportProducts, fetchInventoryCollection } from './ProductThunk'; // Ensure to import updateProductsStatus
 import status from "Redux-Store/Constants";
 
 const productsSlice = createSlice({
@@ -11,7 +11,12 @@ const productsSlice = createSlice({
       error: null,
       nextKey: null
     },
-    
+    inventoryCollection: {
+      data: {},
+      status: 'idle',
+      error: null,
+      nextKey: null
+    },
     productDetail: { status: 'idle', data: null, error: null },
     export: { status: 'idle', data: null, error: null },
 
@@ -192,6 +197,22 @@ const productsSlice = createSlice({
       .addCase(updateProductDetails.rejected, (state, action) => {
         state.productDetailStatus = status.FAILURE; // Set error state
         state.productDetailError = action.error.message; // Capture error message
+      })
+      // Add cases for inventory collection
+      .addCase(fetchInventoryCollection.pending, (state) => {
+        state.inventoryCollection.status = status.IN_PROGRESS;
+      })
+      .addCase(fetchInventoryCollection.fulfilled, (state, action) => {
+        const { data } = action.payload;
+        const currentPage = action.meta.arg.pageKey ? action.meta.arg.pageKey : 1;
+        
+        state.inventoryCollection.data[currentPage] = data;
+        state.inventoryCollection.nextKey = action.payload.nextKey;
+        state.inventoryCollection.status = status.SUCCESS;
+      })
+      .addCase(fetchInventoryCollection.rejected, (state, action) => {
+        state.inventoryCollection.status = status.FAILURE;
+        state.inventoryCollection.error = action.error.message;
       });
   },
 });

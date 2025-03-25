@@ -7,6 +7,7 @@ import Button from "@cloudscape-design/components/button";
 import TextFilter from "@cloudscape-design/components/text-filter";
 import Header from "@cloudscape-design/components/header";
 import Container from "@cloudscape-design/components/container";
+import Spinner from "@cloudscape-design/components/spinner";
 
 import {
   fetchProducts,
@@ -14,6 +15,8 @@ import {
   deleteProduct,
   fetchInventoryStats,
   putPricingById,
+  exportProducts,
+  fetchInventoryCollection,
 } from "Redux-Store/Products/ProductThunk";
 import Tabs from "@cloudscape-design/components/tabs";
 import Overview from "./drawerTabs/overview";
@@ -34,6 +37,7 @@ import {
   Popover,
 } from "@cloudscape-design/components";
 import { Link } from "react-router-dom";
+import ProductPDF from "./components/ProductPDF";
 
 const Inventory = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -87,21 +91,22 @@ const Inventory = () => {
 
   // Export API handler
   const handleExport = () => {
-    fetch("https://api.admin.promodeagro.com/inventory/exportProducts")
-      .then((response) => response.json())
+    dispatch(exportProducts())
+      .unwrap()
       .then((data) => {
         if (data.fileUrl) {
-          console.log(data, "export data ");
-          // Create a temporary link element to trigger file download
+          console.log(data, "export data");
           const link = document.createElement("a");
           link.href = data.fileUrl;
-          link.download = data.fileUrl.split("/").pop(); // Extract filename from URL
+          link.download = data.fileUrl.split("/").pop();
           link.click();
         } else {
           console.error("Failed to export products.");
         }
       })
-      .catch((error) => console.error("Error during export:", error));
+      .catch((error) => {
+        console.error("Error during export:", error);
+      });
   };
   // Toggles the visibility of the popover
   const handleButtonClick = () => {
@@ -131,6 +136,7 @@ const Inventory = () => {
   const inventoryStats = useSelector((state) => state.products.inventoryStats);
   const [nextKeys, setNextKeys] = useState({}); // Store nextKey per page
   const [hoveredProductId, setHoveredProductId] = React.useState(null); // State to track hovered product ID
+  const [selectedView, setSelectedView] = useState('allProducts'); // Add this new state
 
   const dispatch = useDispatch();
   const products = useSelector(
@@ -143,7 +149,38 @@ const Inventory = () => {
   const [fetchedPages, setFetchedPages] = useState({}); // Store fetched data per page
   const [pagesCount, setPagesCount] = useState(1); // Keep track of total pages
 
+  // Add function to combine all fetched pages data
+  const getCombinedProducts = () => {
+    const filterKey = `${selectedCategory?.value || ""}-${
+      selectedSubCategory?.value || ""
+    }-${filteringText || ""}-${
+      selectedStatus?.value === false
+        ? "false"
+        : selectedStatus?.value === true
+        ? "true"
+        : ""
+    }`;
+    
+    // Get all pages for current filter
+    const allPages = Object.keys(fetchedPages)
+      .filter(key => key.startsWith(filterKey))
+      .map(key => fetchedPages[key])
+      .flat();
+    
+    return allPages;
+  };
+
+  // Add new state for inventory collection
+  const inventoryCollection = useSelector((state) => state.products.inventoryCollection);
+  const [collectionCurrentPage, setCollectionCurrentPage] = useState(1);
+  const [collectionFilteringText, setCollectionFilteringText] = useState("");
+  const [isCollectionFetched, setIsCollectionFetched] = useState(false);
+
+  console.log(inventoryCollection, "inventory collection");
   console.log("Current Page:", currentPage);
+
+  // Add loading state for item collection
+  const [isItemCollectionLoading, setIsItemCollectionLoading] = useState(false);
 
   useEffect(() => {
     dispatch(fetchInventoryStats());
@@ -222,6 +259,23 @@ const Inventory = () => {
     nextKeys,
     fetchedPages,
   ]);
+
+  // Modify handleItemCollectionView to show loading state
+  const handleItemCollectionView = () => {
+    if (!isCollectionFetched) {
+      setIsItemCollectionLoading(true);
+      dispatch(fetchInventoryCollection({
+        search: collectionFilteringText,
+        pageKey: collectionCurrentPage === 1 ? undefined : inventoryCollection.nextKey
+      }))
+      .finally(() => {
+        setIsItemCollectionLoading(false);
+        setIsCollectionFetched(true);
+      });
+    }
+    setSelectedView('itemCollection');
+  };
+
   // Handle page changes
   const handlePageChange = (pageIndex) => {
     setCurrentPage(pageIndex); // Update current page
@@ -697,6 +751,7 @@ const Inventory = () => {
                       >
                         Export
                       </Button>
+                      <ProductPDF products={getCombinedProducts()}/>
                     </div>
                   }
                 >
@@ -720,33 +775,74 @@ const Inventory = () => {
             { colspan: { default: 12, xs: 3 } },
           ]}
         >
-          <Container
-            size="xs"
-            header={
+          <div 
+            style={{ 
+              cursor: 'pointer',
+              backgroundColor: selectedView === 'allProducts' ? '#f4f9ff' : 'white',
+              borderRadius: '16px',
+              border: selectedView === 'allProducts' ? '1px solid #0972D3' : '1px solid #e9ebed',
+              padding: '16px',
+              boxShadow: selectedView === 'allProducts' ? 'none' : '0 2px 4px rgba(0, 0, 0, 0.1)'
+            }}
+            onClick={() => setSelectedView('allProducts')}
+          >
+            <div style={{ marginBottom: '8px' }}>
               <Header variant="h2">
                 {inventoryStats?.data?.totalProducts}
               </Header>
-            }
-          >
+            </div>
             <b>All Products</b>
-          </Container>
-
-          <Container
-            size="xs"
-            header={
-              <Header variant="h2">{inventoryStats?.data?.active}</Header>
-            }
+          </div>
+          <div 
+            style={{ 
+              cursor: 'pointer',
+              backgroundColor: selectedView === 'itemCollection' ? '#f4f9ff' : 'white',
+              borderRadius: '16px',
+              border: selectedView === 'itemCollection' ? '1px solid #0972D3' : '1px solid #e9ebed',
+              padding: '16px',
+              boxShadow: selectedView === 'itemCollection' ? 'none' : '0 2px 4px rgba(0, 0, 0, 0.1)'
+            }}
+            onClick={handleItemCollectionView}
           >
+            <div style={{ marginBottom: '8px' }}>
+              <Header variant="h2">{inventoryCollection?.data[1]?.length || 42}</Header>
+            </div>
+            <b>Multiple-Variants Items</b>
+          </div>
+
+          <div 
+            style={{ 
+              // cursor: 'pointer',
+              backgroundColor:  'white',
+              borderRadius: '16px',
+              border: '1px solid #e9ebed',
+              padding: '16px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+            }}
+            // onClick={() => setSelectedView('publishedStock')}
+          >
+            <div style={{ marginBottom: '8px' }}>
+              <Header variant="h2">{inventoryStats?.data?.active}</Header>
+            </div>
             <b>Published Stock</b>
-          </Container>
+          </div>
 
-          <Container size="xs" header={<Header variant="h2">212</Header>}>
-            <b>Low Stock Alert</b>
-          </Container>
-
-          <Container size="l" header={<Header variant="h2">223</Header>}>
+          <div 
+            style={{ 
+              // cursor: 'pointer',
+              backgroundColor: 'white',
+              borderRadius: '16px',
+              border:  '1px solid #e9ebed',
+              padding: '16px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+            }}
+            // onClick={() => setSelectedView('expired')}
+          >
+            <div style={{ marginBottom: '8px' }}>
+              <Header variant="h2">223</Header>
+            </div>
             <b>Expired</b>
-          </Container>
+          </div>
         </Grid>
         <Box float="right">
           <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -819,254 +915,360 @@ const Inventory = () => {
         >
           Are you sure You want to delete this product?
         </Modal>
-        <Table
-          renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
-            `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
-          }
-          onSelectionChange={({ detail }) =>
-            setSelectedItems(detail.selectedItems)
-          }
-          selectedItems={selectedItems}
-          ariaLabels={{
-            selectionGroupLabel: "Items selection",
-            allItemsSelectionLabel: () => "select all",
-            itemSelectionLabel: ({ selectedItems }, item) => item.name,
-          }}
-          header={
-            <Header
-              actions={
-                <Button
-                  disabled={isFieldChanged}
-                  variant="normal"
-                  onClick={handleBulkModifyPrice}
-                >
-                  Bulk Update Price
-                </Button>
+        {selectedView === 'allProducts' && (
+          <>
+            <Table
+              renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
+                `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
               }
-            >
-              Total Selected Items: {selectedItems.length}
-            </Header>
-          }
-          variant="borderless"
-          columnDefinitions={[
-            {
-              id: "itemCode",
-              header: "Item Code",
-              cell: (e) => `#${e.id}`,
-              isRowHeader: true,
-            },
-            {
-              id: "name",
-              header: "Name",
-              cell: (e) => {
-                return (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => handleProductClick(e)}
-                    onMouseEnter={() => setHoveredProductId(e.id)} // Set hovered product ID
-                    onMouseLeave={() => setHoveredProductId(null)} // Clear hovered product ID
-                  >
-                    <img
-                      src={e.image}
-                      alt={e.name}
+              onSelectionChange={({ detail }) =>
+                setSelectedItems(detail.selectedItems)
+              }
+              selectedItems={selectedItems}
+              ariaLabels={{
+                selectionGroupLabel: "Items selection",
+                allItemsSelectionLabel: () => "select all",
+                itemSelectionLabel: ({ selectedItems }, item) => item.name,
+              }}
+              header={
+                <Header
+                  actions={
+                    <Button
+                      disabled={isFieldChanged}
+                      variant="normal"
+                      onClick={handleBulkModifyPrice}
+                    >
+                      Bulk Update Price
+                    </Button>
+                  }
+                >
+                  Total Selected Items: {selectedItems.length}
+                </Header>
+              }
+              variant="borderless"
+              columnDefinitions={[
+                {
+                  id: "itemCode",
+                  header: "Item Code",
+                  cell: (e) => `#${e.id}`,
+                  isRowHeader: true,
+                },
+                {
+                  id: "name",
+                  header: "Name",
+                  cell: (e) => {
+                    return (
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleProductClick(e)}
+                        onMouseEnter={() => setHoveredProductId(e.id)} // Set hovered product ID
+                        onMouseLeave={() => setHoveredProductId(null)} // Clear hovered product ID
+                      >
+                        <img
+                          src={e.image}
+                          alt={e.name}
+                          style={{
+                            width: "30px",
+                            height: "30px",
+                            marginRight: "0.5rem",
+                          }}
+                        />
+                        <span
+                          style={{
+                            // textDecoration: "underline",
+                            color: hoveredProductId === e.id ? "blue" : "black", // Change color based on hovered product ID
+                          }}
+                        >
+                          {e.name}-
+                          {e.totalQuantityInB2c}
+                          {e.totalquantityB2cUnit}
+                        </span>
+                      </div>
+                    );
+                  },
+                  width: 250,
+                  minWidth: 180,
+                },
+                {
+                  id: "purchasingPrice",
+                  header: "Purchasing Price",
+                  cell: (item) => (
+                    <div style={{ width: "80px" }}>
+                      <FormField
+                        errorText={validationErrors[item.id]?.purchasingPrice}
+                      >
+                        <Input
+                          disabled={
+                            !selectedItems.some(
+                              (selectedItem) => selectedItem.id === item.id
+                            )
+                          }
+                          placeholder="Enter Price"
+                          type="number"
+                          value={
+                            editedProducts[item.id]?.purchasingPrice ??
+                            item.purchasingPrice
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              item.id,
+                              "purchasingPrice",
+                              e.detail.value
+                            )
+                          }
+                          ariaLabel="Purchasing Price"
+                        />
+                      </FormField>
+                    </div>
+                  ),
+                },
+                {
+                  id: "sellingPrice",
+                  header: "Selling Price",
+                  cell: (item) => (
+                    <div style={{ width: "80px" }}>
+                      <FormField
+                        errorText={validationErrors[item.id]?.sellingPrice}
+                      >
+                        <Input
+                          placeholder="Enter Price"
+                          type="number"
+                          value={
+                            editedProducts[item.id]?.sellingPrice ??
+                            item.sellingPrice
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              item.id,
+                              "sellingPrice",
+                              e.detail.value
+                            )
+                          }
+                          ariaLabel="Selling Price"
+                          disabled={
+                            !selectedItems.some(
+                              (selectedItem) => selectedItem.id === item.id
+                            )
+                          }
+                        />
+                      </FormField>
+                    </div>
+                  ),
+                },
+                {
+                  id: "category",
+                  header: "Category",
+                  cell: (e) => e.category,
+                },
+                {
+                  id: "subCategory",
+                  header: "Sub Category",
+                  cell: (e) => e.subCategory,
+                },
+
+                {
+                  id: "quantityOnHand",
+                  header: "Quantity In Stock",
+                  cell: (e) => `${e.stockQuantity} ${e.units}`, // Use e.unit to get the unit from the API
+                },
+                {
+                  id: "stockAlert",
+                  header: "Stock Alert",
+                  cell: (e) => (
+                    <span style={{ color: getStockAlertColor("Available") }}>
+                      Available
+                    </span>
+                  ),
+                },
+
+                {
+                  id: "status",
+                  header: "Status",
+                  cell: (e) => (
+                    <b style={{ display: "flex", width: "100px",
+                      color:e.availability === true | e.active === true?"green":"red"
+                     }}>
+                      {/* <Toggle
+                        onChange={() => handleToggleClick(e)}
+                        checked={e.active}
+                      > */}
+                      {e.availability === true
+                        ? "In Stock"
+                        : e.availability === false
+                        ? "Out Of Stock"
+                        : ""}
+                      {e.active === true
+                        ? "In Stock"
+                        : e.active === false
+                        ? "Out Of Stock"
+                        : ""}
+                      {/* </Toggle> */}
+                      {/* <span
+                        style={{
+                          marginLeft: "10px",
+                          color: e.status === "Inactive" ? "gray" : "black",
+                        }}
+                      ></span> */}
+                    </b>
+                  ),
+                },
+                {
+                  id: "action",
+                  header: "Action",
+                  cell: (e) => (
+                    <div
                       style={{
-                        width: "30px",
-                        height: "30px",
-                        marginRight: "0.5rem",
-                      }}
-                    />
-                    <span
-                      style={{
-                        // textDecoration: "underline",
-                        color: hoveredProductId === e.id ? "blue" : "black", // Change color based on hovered product ID
+                        display: "flex",
+                        gap: "15px",
+                        alignContent: "center",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                     >
-                      {e.name}-
-                      {e.totalQuantityInB2c}
-                      {e.totalquantityB2cUnit}
-                    </span>
-                  </div>
-                );
-              },
-              width: 250,
-              minWidth: 180,
-            },
-            {
-              id: "purchasingPrice",
-              header: "Purchasing Price",
-              cell: (item) => (
-                <div style={{ width: "80px" }}>
-                  <FormField
-                    errorText={validationErrors[item.id]?.purchasingPrice}
-                  >
-                    <Input
-                      disabled={
-                        !selectedItems.some(
-                          (selectedItem) => selectedItem.id === item.id
-                        )
-                      }
-                      placeholder="Enter Price"
-                      type="number"
-                      value={
-                        editedProducts[item.id]?.purchasingPrice ??
-                        item.purchasingPrice
-                      }
-                      onChange={(e) =>
-                        handleInputChange(
-                          item.id,
-                          "purchasingPrice",
-                          e.detail.value
-                        )
-                      }
-                      ariaLabel="Purchasing Price"
-                    />
-                  </FormField>
-                </div>
-              ),
-            },
-            {
-              id: "sellingPrice",
-              header: "Selling Price",
-              cell: (item) => (
-                <div style={{ width: "80px" }}>
-                  <FormField
-                    errorText={validationErrors[item.id]?.sellingPrice}
-                  >
-                    <Input
-                      placeholder="Enter Price"
-                      type="number"
-                      value={
-                        editedProducts[item.id]?.sellingPrice ??
-                        item.sellingPrice
-                      }
-                      onChange={(e) =>
-                        handleInputChange(
-                          item.id,
-                          "sellingPrice",
-                          e.detail.value
-                        )
-                      }
-                      ariaLabel="Selling Price"
-                      disabled={
-                        !selectedItems.some(
-                          (selectedItem) => selectedItem.id === item.id
-                        )
-                      }
-                    />
-                  </FormField>
-                </div>
-              ),
-            },
-            {
-              id: "category",
-              header: "Category",
-              cell: (e) => e.category,
-            },
-            {
-              id: "subCategory",
-              header: "Sub Category",
-              cell: (e) => e.subCategory,
-            },
+                      <Link to={`/app/inventory/edit?id=${e.id}`}>
+                        <Button iconName="edit" variant="inline-link" />
+                      </Link>
+                      <Button
+                        iconName="remove"
+                        // color="red"
+                        variant="icon"
+                        onClick={() => openModal(e.id)}
+                      ></Button>
+                    </div>
+                  ),
+                },
+              ]}
+              enableKeyboardNavigation
+              items={
+                fetchedPages[
+                  `${selectedCategory?.value || ""}-${
+                    selectedSubCategory?.value || ""
+                  }-${filteringText || ""}-${
+                    selectedStatus?.value === false
+                      ? "false"
+                      : selectedStatus?.value === true
+                      ? "true"
+                      : ""
+                  }-${currentPage}`
+                ] || []
+              }
+              selectionType="multi"
+              trackBy="id"
+              empty={
+                <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
+                  <SpaceBetween size="m">
+                    <b>No Products</b>
+                  </SpaceBetween>
+                </Box>
+              }
+            />
+          </>
+        )}
 
-            {
-              id: "quantityOnHand",
-              header: "Quantity on Hand",
-              cell: (e) => `${e.stockQuantity} ${e.units}`, // Use e.unit to get the unit from the API
-            },
-            {
-              id: "stockAlert",
-              header: "Stock Alert",
-              cell: (e) => (
-                <span style={{ color: getStockAlertColor("Available") }}>
-                  Available
-                </span>
-              ),
-            },
+        {selectedView === 'itemCollection' && (
+          <>
+            {isItemCollectionLoading ? (
+              <Box textAlign="center" padding="xl">
+                <Spinner size="large" />
+              </Box>
+            ) : (
+              <Table
+                variant="borderless"
+                columnDefinitions={[
+                  {
+                    id: "name",
+                    header: "Name",
+                    cell: (e) => {
+                      return (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <img
+                            src={e.image}
+                            alt={e.name}
+                            style={{
+                              width: "30px",
+                              height: "30px",
+                              marginRight: "0.5rem",
+                            }}
+                          />  
+                          <div>
+                          <p>{e.name}</p>
+                          <p>{e.variations?.length} {e.variations?.length === 1 ? 'Variant' : 'Variants'}</p>
+                          </div>
+                        </div>
+                      );
+                    },
+                    width: 200,
+                  },
+                  {
+                    id: "category",
+                    header: "Category",
+                    cell: (e) => e.category,
+                    width: 150,
+                  },
+                  {
+                    id: "subCategory",
+                    header: "Sub Category",
+                    cell: (e) => e.subCategory,
+                    width: 150,
+                  },
+                  {
+                    id: "action",
+                    header: <div style={{textAlign: "center"}}>Action</div>,
+                    cell: (e) => (
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "15px",
+                          alignContent: "center",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Link to={`/app/inventory/edit?id=${e.groupId}`}>
+                          <Button iconName="edit" variant="inline-link" />
+                        </Link>
+                        <Button
+                          iconName="remove"
+                          variant="icon"
+                          onClick={() => openModal(e.groupId)}
+                        ></Button>
+                      </div>
+                    ),
+                  },
+                ]}
+                items={inventoryCollection.data[collectionCurrentPage] || []}
+                loadingText="Loading inventory collection"
+                empty={
+                  <Box textAlign="center" color="inherit">
+                    <b>No inventory collection items</b>
+                  </Box>
+                }
+              />
+            )}
+          </>
+        )}
 
-            {
-              id: "status",
-              header: "Status",
-              cell: (e) => (
-                <b style={{ display: "flex", width: "100px",
-                  color:e.availability === true | e.active === true?"green":"red"
-                 }}>
-                  {/* <Toggle
-                    onChange={() => handleToggleClick(e)}
-                    checked={e.active}
-                  > */}
-                  {e.availability === true
-                    ? "In Stock"
-                    : e.availability === false
-                    ? "Out Of Stock"
-                    : ""}
-                  {e.active === true
-                    ? "In Stock"
-                    : e.active === false
-                    ? "Out Of Stock"
-                    : ""}
-                  {/* </Toggle> */}
-                  {/* <span
-                    style={{
-                      marginLeft: "10px",
-                      color: e.status === "Inactive" ? "gray" : "black",
-                    }}
-                  ></span> */}
-                </b>
-              ),
-            },
-            {
-              id: "action",
-              header: "Action",
-              cell: (e) => (
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "15px",
-                    alignContent: "center",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Link to={`/app/inventory/edit?id=${e.id}`}>
-                    <Button iconName="edit" variant="inline-link" />
-                  </Link>
-                  <Button
-                    iconName="remove"
-                    variant="icon"
-                    onClick={() => openModal(e.id)}
-                  ></Button>
-                </div>
-              ),
-            },
-          ]}
-          enableKeyboardNavigation
-          items={
-            fetchedPages[
-              `${selectedCategory?.value || ""}-${
-                selectedSubCategory?.value || ""
-              }-${filteringText || ""}-${
-                selectedStatus?.value === false
-                  ? "false"
-                  : selectedStatus?.value === true
-                  ? "true"
-                  : ""
-              }-${currentPage}`
-            ] || []
-          }
-          selectionType="multi"
-          trackBy="id"
-          empty={
-            <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
-              <SpaceBetween size="m">
-                <b>No Products</b>
-              </SpaceBetween>
-            </Box>
-          }
-        />{" "}
+        {/* Show different tables based on selected view */}
+        {selectedView === 'publishedStock' && (
+          <Box textAlign="center" color="inherit">
+            <b>Published Stock View Coming Soon</b>
+          </Box>
+        )}
+
+        {selectedView === 'expired' && (
+          <Box textAlign="center" color="inherit">
+            <b>Expired Items View Coming Soon</b>
+          </Box>
+        )}
       </SpaceBetween>
       {isDrawerOpen && selectedProduct && (
         <div
@@ -1197,4 +1399,3 @@ const Inventory = () => {
 };
 
 export default Inventory;
-

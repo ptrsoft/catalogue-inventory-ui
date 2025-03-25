@@ -27,6 +27,8 @@ const AddEditVariant = () => {
  const navigate=useNavigate()
 
   const [name, setName] = useState("");
+  const [overallStock, setOverallStock] = useState("");
+  const [overallStockUnit, setOverallStockUnit] = useState(null);
   const [selectedCategory, setSelectedCategory] = React.useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = React.useState(null);
   const [isShowIntable, setShowIntable] = useState(false);
@@ -211,14 +213,14 @@ const AddEditVariant = () => {
 
     const formData = {
       name: name,
+      overallStock: overallStock,
+      overallStockUnit: overallStockUnit ? overallStockUnit.value : null,
       expiry: formattedExpiryDate,
       category: selectedCategory ? selectedCategory.value : null,
-      subCategory: selectedSubCategory ? selectedSubCategory.value : null, // Remove empty URLs
+      subCategory: selectedSubCategory ? selectedSubCategory.value : null,
       tags: tags,
-
       description: description,
       images: [imageUrl1, imageUrl2, imageUrl3].filter(Boolean),
-      units: "",
       variants: tableData,
     };
     console.log(formData, "formdata with variant");
@@ -334,19 +336,19 @@ const AddEditVariant = () => {
         values.map((name, index) => ({
           id: index + 1,
           attribute: name,
-          quantity: "",
           purchasingPrice: "",
           sellingPrice: "",
           comparePrice: "",
-          buyerLimit: "",
+          // buyerLimit: "",
           lowStockAlert: "",
-          stockQuantity: 0,
+          stockQuantity: "",
           availability: false,
           unit: null, // Default value only
-          minimumSellingWeight: "",  // Extra field
-          maximumSellingWeight: "",  // Extra field
-          MinimumSellingWeightUnit: "",  // Extra field
-          MaximumSellingWeightUnit: "",  // Extra field
+          expiryDate: "",
+          // minimumSellingWeight: "",  // Extra field
+          // maximumSellingWeight: "",  // Extra field
+          // MinimumSellingWeightUnit: "",  // Extra field
+          // MaximumSellingWeightUnit: "",  // Extra field
           totalQuantityInB2c: "",  // Extra field
           totalquantityB2cUnit: "",  // Extra field
         }))
@@ -406,7 +408,7 @@ const AddEditVariant = () => {
             <Flashbar items={items} />
       
       <SpaceBetween size="l">
-      <Box float="right" >
+      <Box float="right"  margin={{top:'m'}}>
               <Button onClick={handleSave} variant="primary">Save</Button>
               </Box>
         <Container  header={<Header>Category</Header>}>
@@ -490,14 +492,33 @@ const AddEditVariant = () => {
                 style={{ width: "100%" }}
               />
             </FormField>
-            <FormField label="Expiry Date">
-              <Input
-                type="date"
-                onChange={({ detail }) => setExpiryDate(detail.value)}
-                value={expiryDate}
-                required
-              />
+            <FormField
+  label={
+    <span>
+     Over All Stock{" "}
+      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+    </span>
+  }              errorText={isFormSubmitted && !overallStock && "Required"}
+            >
+              <div style={{ width: "100%" }}>
+                <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                  <Input
+                    size="xs"
+                    placeholder="Input Overall Stock"
+                    value={overallStock}
+                    onChange={({ detail }) => setOverallStock(detail.value)}
+                  />
+                  <Select
+                    expandToViewport
+                    selectedOption={overallStockUnit}
+                    onChange={({ detail }) => setOverallStockUnit(detail.selectedOption)}
+                    options={unitOptions}
+                    placeholder="Select Unit"
+                  />
+                </Grid>
+              </div>
             </FormField>
+          
           </Grid>
           <div>
           <strong>Tags</strong>
@@ -853,7 +874,7 @@ const AddEditVariant = () => {
       header: (
         <span>
           Quantity In Stock{" "}
-          <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+          {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
         </span>
       ),
       cell: (item) => (
@@ -861,27 +882,30 @@ const AddEditVariant = () => {
           <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
           <FormField
           errorText={
-            isFormSubmitted && !item.quantity && "Required"
+            isFormSubmitted && !item.stockQuantity && "Required"
           }
         >
             <Input
               placeholder="Enter Quantity"
               type="text"
-              value={item.quantity}
+              value={item.stockQuantity}
+              disabled={!!overallStock}
               onChange={({ detail }) =>
-                handleInputChange(item.id, "quantity", detail.value) // Use item.id here
+                handleInputChange(item.id, "stockQuantity", detail.value)
               }
             />
             </FormField>
             <Select
+                          disabled={!!overallStock}
+
               key={`quantity-${item.id}`} // Ensures the select stays stable and is unique
               expandToViewport
-              selectedOption={unitOptions.find((opt) => opt.value === item.quantityUnit)}
+              selectedOption={unitOptions.find((opt) => opt.value === item.unit)}
               onChange={(event) => {
                 event.stopPropagation(); // Prevent parent handlers from closing the dropdown
                 handleInputChange(
                   item.id,
-                  "quantityUnit",
+                  "unit",
                   event.detail.selectedOption.value
                 );
               }}
@@ -972,86 +996,86 @@ const AddEditVariant = () => {
         </FormField>
       ),
     },
-    {
-      id: "minimumSellingWeight",
-      header: (
-        <span>
-          Minimum Selling Weight{" "}
-          {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
-        </span>
-      ),
-      cell: (item) => (
-        <div style={{ width: "200px" }}>
-          <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
-            <Input
-              placeholder="Enter Minimum Selling Weight"
-              type="text"
-              value={item.minimumSellingWeight}
-              onChange={({ detail }) =>
-                handleInputChange(item.id, "minimumSellingWeight", detail.value) // Use item.id here
-              }
-            />
-            <Select
-              key={`min-selling-weight-${item.id}`} // Unique key for each unit select
-              expandToViewport
-              selectedOption={unitOptions.find(
-                (opt) => opt.value === item.minimumSellingWeightUnit
-              )}
-              onChange={(event) => {
-                event.stopPropagation(); // Prevent parent handlers from closing the dropdown
-                handleInputChange(
-                  item.id,
-                  "minimumSellingWeightUnit",
-                  event.detail.selectedOption.value
-                );
-              }}
-              options={unitOptions}
-              placeholder="Select Unit"
-            />
-          </Grid>
-        </div>
-      ),
-    },
-    {
-      id: "maximumSellingWeight",
-      header: (
-        <span>
-          Maximum Selling Weight{" "}
-          {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
-        </span>
-      ),
-      cell: (item) => (
-        <div style={{ width: "200px" }}>
-          <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
-            <Input
-              placeholder="Enter Maximum Selling Weight"
-              type="text"
-              value={item.maximumSellingWeight}
-              onChange={({ detail }) =>
-                handleInputChange(item.id, "maximumSellingWeight", detail.value) // Use item.id here
-              }
-            />
-            <Select
-              key={`max-selling-weight-${item.id}`} // Unique key for each unit select
-              expandToViewport
-              selectedOption={unitOptions.find(
-                (opt) => opt.value === item.maximumSellingWeightUnit
-              )}
-              onChange={(event) => {
-                event.stopPropagation(); // Prevent parent handlers from closing the dropdown
-                handleInputChange(
-                  item.id,
-                  "maximumSellingWeightUnit",
-                  event.detail.selectedOption.value
-                );
-              }}
-              options={unitOptions}
-              placeholder="Select Unit"
-            />
-          </Grid>
-        </div>
-      ),
-    },
+    // {
+    //   id: "minimumSellingWeight",
+    //   header: (
+    //     <span>
+    //       Minimum Selling Weight{" "}
+    //       {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
+    //     </span>
+    //   ),
+    //   cell: (item) => (
+    //     <div style={{ width: "200px" }}>
+    //       <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+    //         <Input
+    //           placeholder="Enter Minimum Selling Weight"
+    //           type="text"
+    //           value={item.minimumSellingWeight}
+    //           onChange={({ detail }) =>
+    //             handleInputChange(item.id, "minimumSellingWeight", detail.value) // Use item.id here
+    //           }
+    //         />
+    //         <Select
+    //           key={`min-selling-weight-${item.id}`} // Unique key for each unit select
+    //           expandToViewport
+    //           selectedOption={unitOptions.find(
+    //             (opt) => opt.value === item.minimumSellingWeightUnit
+    //           )}
+    //           onChange={(event) => {
+    //             event.stopPropagation(); // Prevent parent handlers from closing the dropdown
+    //             handleInputChange(
+    //               item.id,
+    //               "minimumSellingWeightUnit",
+    //               event.detail.selectedOption.value
+    //             );
+    //           }}
+    //           options={unitOptions}
+    //           placeholder="Select Unit"
+    //         />
+    //       </Grid>
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   id: "maximumSellingWeight",
+    //   header: (
+    //     <span>
+    //       Maximum Selling Weight{" "}
+    //       {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
+    //     </span>
+    //   ),
+    //   cell: (item) => (
+    //     <div style={{ width: "200px" }}>
+    //       <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+    //         <Input
+    //           placeholder="Enter Maximum Selling Weight"
+    //           type="text"
+    //           value={item.maximumSellingWeight}
+    //           onChange={({ detail }) =>
+    //             handleInputChange(item.id, "maximumSellingWeight", detail.value) // Use item.id here
+    //           }
+    //         />
+    //         <Select
+    //           key={`max-selling-weight-${item.id}`} // Unique key for each unit select
+    //           expandToViewport
+    //           selectedOption={unitOptions.find(
+    //             (opt) => opt.value === item.maximumSellingWeightUnit
+    //           )}
+    //           onChange={(event) => {
+    //             event.stopPropagation(); // Prevent parent handlers from closing the dropdown
+    //             handleInputChange(
+    //               item.id,
+    //               "maximumSellingWeightUnit",
+    //               event.detail.selectedOption.value
+    //             );
+    //           }}
+    //           options={unitOptions}
+    //           placeholder="Select Unit"
+    //         />
+    //       </Grid>
+    //     </div>
+    //   ),
+    // },
     {
       id: "totalQuantityInB2c",
       header: (
@@ -1081,13 +1105,13 @@ const AddEditVariant = () => {
               key={`total-quantity-b2c-${item.id}`} // Unique key for each unit select
               expandToViewport
               selectedOption={unitOptions.find(
-                (opt) => opt.value === item.totalQuantityInB2cUnit
+                (opt) => opt.value === item.totalquantityB2cUnit
               )}
               onChange={(event) => {
                 event.stopPropagation(); // Prevent parent handlers from closing the dropdown
                 handleInputChange(
                   item.id,
-                  "totalQuantityInB2cUnit",
+                  "totalquantityB2cUnit",
                   event.detail.selectedOption.value
                 );
               }}
@@ -1115,22 +1139,22 @@ const AddEditVariant = () => {
       ),
     },
     
-    {
-      id: "buyerLimit",
-      header: "Buyer Limit",
-      cell: (item) => (
-        <FormField>
-          <Input
-            placeholder="Enter Limit"
-            type="number"
-            value={item.buyerLimit}
-            onChange={({ detail }) =>
-              handleInputChange(item.id, "buyerLimit", detail.value) // Use item.id here
-            }
-          />
-        </FormField>
-      ),
-    },
+    // {
+    //   id: "buyerLimit",
+    //   header: "Buyer Limit",
+    //   cell: (item) => (
+    //     <FormField>
+    //       <Input
+    //         placeholder="Enter Limit"
+    //         type="number"
+    //         value={item.buyerLimit}
+    //         onChange={({ detail }) =>
+    //           handleInputChange(item.id, "buyerLimit", detail.value) // Use item.id here
+    //         }
+    //       />
+    //     </FormField>
+    //   ),
+    // },
     {
       id: "lowStock",
       header: "Low Stock Alert",
@@ -1159,6 +1183,21 @@ const AddEditVariant = () => {
         />
       ),
     },
+    {
+      id: "expiryDate",
+      header: "Expiry Date",
+      cell: (item) => (
+        <FormField>
+          <Input
+            type="date"
+            onChange={({ detail }) => 
+              handleInputChange(item.id, "expiryDate", detail.value)
+            }
+            value={item.expiryDate}
+          />
+        </FormField>
+      )
+    }
   ]}
   items={tableData}
   empty={<p>No variants added yet.</p>}

@@ -300,3 +300,40 @@ export const ImportProducts = createAsyncThunk(
     }
   }
 );
+
+export const fetchInventoryCollection = createAsyncThunk(
+  "products/fetchInventoryCollection",
+  async (params, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+
+      if (!token) {
+        return rejectWithValue("Authorization token is missing.");
+      }
+
+      let url = config.FETCH_INVENTORY_COLLECTION;
+      let queryParams = [];
+
+      // Add search term if provided
+      if (params?.search) queryParams.push(`search=${encodeURIComponent(params.search)}`);
+      
+      // Add pageKey for pagination
+      if (params?.pageKey) queryParams.push(`pageKey=${encodeURIComponent(params.pageKey)}`);
+
+      if (queryParams.length > 0) url += `?${queryParams.join("&")}`;
+
+      const response = await postLoginService.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return {
+        data: response.data.items,
+        nextKey: response.data.nextKey,
+      };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);

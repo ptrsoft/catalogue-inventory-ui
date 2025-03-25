@@ -7,6 +7,7 @@ const Config = {
   DELETE:`${BASE_URL}/inventory/{id}`,
   PRODUCT_DETAIL:`${BASE_URL}/inventory/{id}`,
   FETCH_CASH_COLLECTION:`${BASE_URL}/runsheet/cash-collection`,
+  FETCH_INVENTORY_COLLECTION:`${BASE_URL}/inventory/collection`,
   Add_PINCODE:`${BASE_URL}/pincode`,
   GET_PINCODE:`${BASE_URL}/pincode`,
   CONTAINER_DIV:`${BASE_URL}/inventory/stats`,
@@ -52,7 +53,7 @@ const Config = {
     PUT_PRICING:`${BASE_URL}/inventory`,
     FETCH_RIDERS:`${BASE_URL}/rider`,
     IMPORT_PRODUCTS:`${BASE_URL}/inventory/import`,
-    EXPORT_PRODUCTS:`${BASE_URL}/inventory/exportPrducts`
+    EXPORT_PRODUCTS:`${BASE_URL}/inventory/exportProducts`
 
  
 };

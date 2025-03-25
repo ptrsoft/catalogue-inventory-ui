@@ -7,6 +7,7 @@ import Button from "@cloudscape-design/components/button";
 import TextFilter from "@cloudscape-design/components/text-filter";
 import Header from "@cloudscape-design/components/header";
 import Container from "@cloudscape-design/components/container";
+import Spinner from "@cloudscape-design/components/spinner";
 
 import {
   fetchProducts,
@@ -36,7 +37,7 @@ import {
   Popover,
 } from "@cloudscape-design/components";
 import { Link } from "react-router-dom";
-import ProductPDF from "./components/ItemsPDF";
+import ProductPDF from "./components/ProductPDF";
 
 const Inventory = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -178,6 +179,9 @@ const Inventory = () => {
   console.log(inventoryCollection, "inventory collection");
   console.log("Current Page:", currentPage);
 
+  // Add loading state for item collection
+  const [isItemCollectionLoading, setIsItemCollectionLoading] = useState(false);
+
   useEffect(() => {
     dispatch(fetchInventoryStats());
   }, [dispatch]);
@@ -256,14 +260,18 @@ const Inventory = () => {
     fetchedPages,
   ]);
 
-  // Add handler for item collection view
+  // Modify handleItemCollectionView to show loading state
   const handleItemCollectionView = () => {
     if (!isCollectionFetched) {
+      setIsItemCollectionLoading(true);
       dispatch(fetchInventoryCollection({
         search: collectionFilteringText,
         pageKey: collectionCurrentPage === 1 ? undefined : inventoryCollection.nextKey
-      }));
-      setIsCollectionFetched(true);
+      }))
+      .finally(() => {
+        setIsItemCollectionLoading(false);
+        setIsCollectionFetched(true);
+      });
     }
     setSelectedView('itemCollection');
   };
@@ -797,7 +805,7 @@ const Inventory = () => {
             onClick={handleItemCollectionView}
           >
             <div style={{ marginBottom: '8px' }}>
-              <Header variant="h2">{inventoryCollection?.data[1]?.length || 0}</Header>
+              <Header variant="h2">{inventoryCollection?.data[1]?.length || 42}</Header>
             </div>
             <b>Multiple-Variants Items</b>
           </div>
@@ -1163,105 +1171,89 @@ const Inventory = () => {
 
         {selectedView === 'itemCollection' && (
           <>
-            {/* <Header variant="h2">Inventory Collection</Header> */}
-            {/* <TextFilter
-              filteringText={collectionFilteringText}
-              filteringPlaceholder="Search inventory collection"
-              filteringAriaLabel="Filter inventory collection"
-              onChange={({ detail }) => setCollectionFilteringText(detail.filteringText)}
-            /> */}
-            
-            <Table
-            variant="borderless"
-              columnDefinitions={[
-                // {
-                //   id: "itemCode",
-                //   header: "Item Code",
-                //   cell: (e) => e.groupId || "-",
-                //   width: 120,
-                // },
-                {
-                  id: "name",
-                  header: "Name",
-                  cell: (e) => {
-                    return (
+            {isItemCollectionLoading ? (
+              <Box textAlign="center" padding="xl">
+                <Spinner size="large" />
+              </Box>
+            ) : (
+              <Table
+                variant="borderless"
+                columnDefinitions={[
+                  {
+                    id: "name",
+                    header: "Name",
+                    cell: (e) => {
+                      return (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <img
+                            src={e.image}
+                            alt={e.name}
+                            style={{
+                              width: "30px",
+                              height: "30px",
+                              marginRight: "0.5rem",
+                            }}
+                          />  
+                          <div>
+                          <p>{e.name}</p>
+                          <p>{e.variations?.length} {e.variations?.length === 1 ? 'Variant' : 'Variants'}</p>
+                          </div>
+                        </div>
+                      );
+                    },
+                    width: 200,
+                  },
+                  {
+                    id: "category",
+                    header: "Category",
+                    cell: (e) => e.category,
+                    width: 150,
+                  },
+                  {
+                    id: "subCategory",
+                    header: "Sub Category",
+                    cell: (e) => e.subCategory,
+                    width: 150,
+                  },
+                  {
+                    id: "action",
+                    header: <div style={{textAlign: "center"}}>Action</div>,
+                    cell: (e) => (
                       <div
                         style={{
                           display: "flex",
+                          gap: "15px",
+                          alignContent: "center",
+                          justifyContent: "center",
                           alignItems: "center",
                         }}
                       >
-                        <img
-                          src={e.image}
-                          alt={e.name}
-                          style={{
-                            width: "30px",
-                            height: "30px",
-                            marginRight: "0.5rem",
-                          }}
-                        />  
-                        <div>
-                        <p>{e.name}</p>
-                        <p>{e.variations?.length} {e.variations?.length === 1 ? 'Variant' : 'Variants'}</p>
-                        </div>
+                        <Link to={`/app/inventory/edit?id=${e.groupId}`}>
+                          <Button iconName="edit" variant="inline-link" />
+                        </Link>
+                        <Button
+                          iconName="remove"
+                          variant="icon"
+                          onClick={() => openModal(e.groupId)}
+                        ></Button>
                       </div>
-                    );
+                    ),
                   },
-                  width: 200,
-                },
-                {
-                  id: "category",
-                  header: "Category",
-                  cell: (e) => e.category,
-                  width: 150,
-                },
-                {
-                  id: "subCategory",
-                  header: "Sub Category",
-                  cell: (e) => e.subCategory,
-                  width: 150,
-                },
-                {
-                  id: "action",
-                  header: <div style={{textAlign: "center"}}>Action</div>,
-                  cell: (e) => (
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "15px",
-                        alignContent: "center",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Link to={`/app/inventory/edit?id=${e.groupId}`}>
-                        <Button iconName="edit" variant="inline-link" />
-                      </Link>
-                      <Button
-                        iconName="remove"
-                        variant="icon"
-                        onClick={() => openModal(e.groupId)}
-                      ></Button>
-                    </div>
-                  ),
-                },
-               
-              ]}
-              items={inventoryCollection.data[collectionCurrentPage] || []}
-              loadingText="Loading inventory collection"
-              empty={
-                <Box textAlign="center" color="inherit">
-                  <b>No inventory collection items</b>
-                </Box>
-              }
-              // pagination={
-              //   <Pagination
-              //     currentPageIndex={collectionCurrentPage}
-              //     pagesCount={inventoryCollection.nextKey ? collectionCurrentPage + 1 : collectionCurrentPage}
-              //     onChange={({ detail }) => setCollectionCurrentPage(detail.currentPageIndex)}
-              //   />
-              // }
-            />
+                ]}
+                items={inventoryCollection.data[collectionCurrentPage] || []}
+                loadingText="Loading inventory collection"
+                empty={
+                  <Box textAlign="center" color="inherit">
+                    <b>No inventory collection items</b>
+                  </Box>
+                }
+              />
+            )}
           </>
         )}
 

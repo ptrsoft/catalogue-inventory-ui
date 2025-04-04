@@ -918,6 +918,9 @@ const Inventory = () => {
         {selectedView === 'allProducts' && (
           <>
             <Table
+            // expandableRows={'name'}
+            // resizableColumns
+            contentDensity="compact"
               renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
                 `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
               }
@@ -965,8 +968,8 @@ const Inventory = () => {
                           cursor: "pointer",
                         }}
                         onClick={() => handleProductClick(e)}
-                        onMouseEnter={() => setHoveredProductId(e.id)} // Set hovered product ID
-                        onMouseLeave={() => setHoveredProductId(null)} // Clear hovered product ID
+                        onMouseEnter={() => setHoveredProductId(e.id)}
+                        onMouseLeave={() => setHoveredProductId(null)}
                       >
                         <img
                           src={e.image}
@@ -979,6 +982,7 @@ const Inventory = () => {
                         />
                         <span
                           style={{
+                            // width: "250px",
                             // textDecoration: "underline",
                             color: hoveredProductId === e.id ? "blue" : "black", // Change color based on hovered product ID
                           }}
@@ -992,6 +996,37 @@ const Inventory = () => {
                   },
                   width: 250,
                   minWidth: 180,
+                },
+                {
+                  id: "status",
+                  header: "Status",
+                  cell: (e) => (
+                    <b style={{ display: "flex", width: "100px",
+                      color:e.availability === true | e.active === true?"green":"red"
+                     }}>
+                      {/* <Toggle
+                        onChange={() => handleToggleClick(e)}
+                        checked={e.active}
+                      > */}
+                      {e.availability === true
+                        ? "In Stock"
+                        : e.availability === false
+                        ? "Out Of Stock"
+                        : ""}
+                      {e.active === true
+                        ? "In Stock"
+                        : e.active === false
+                        ? "Out Of Stock"
+                        : ""}
+                      {/* </Toggle> */}
+                      {/* <span
+                        style={{
+                          marginLeft: "10px",
+                          color: e.status === "Inactive" ? "gray" : "black",
+                        }}
+                      ></span> */}
+                    </b>
+                  ),
                 },
                 {
                   id: "purchasingPrice",
@@ -1069,6 +1104,7 @@ const Inventory = () => {
                   header: "Sub Category",
                   cell: (e) => e.subCategory,
                 },
+           
 
                 {
                   id: "quantityOnHand",
@@ -1085,37 +1121,7 @@ const Inventory = () => {
                   ),
                 },
 
-                {
-                  id: "status",
-                  header: "Status",
-                  cell: (e) => (
-                    <b style={{ display: "flex", width: "100px",
-                      color:e.availability === true | e.active === true?"green":"red"
-                     }}>
-                      {/* <Toggle
-                        onChange={() => handleToggleClick(e)}
-                        checked={e.active}
-                      > */}
-                      {e.availability === true
-                        ? "In Stock"
-                        : e.availability === false
-                        ? "Out Of Stock"
-                        : ""}
-                      {e.active === true
-                        ? "In Stock"
-                        : e.active === false
-                        ? "Out Of Stock"
-                        : ""}
-                      {/* </Toggle> */}
-                      {/* <span
-                        style={{
-                          marginLeft: "10px",
-                          color: e.status === "Inactive" ? "gray" : "black",
-                        }}
-                      ></span> */}
-                    </b>
-                  ),
-                },
+            
                 {
                   id: "action",
                   header: "Action",

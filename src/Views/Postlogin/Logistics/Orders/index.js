@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchOrderInventory,
   fetchOrderById,
+  updatePaymentStatus
 } from "Redux-Store/Orders/OrdersThunk";
 //components import
 import Stats from "./components/Stats";
@@ -439,10 +440,53 @@ const Orders = () => {
 
   //function of changing payment status 
   const handlePaymentStatusChange = () => {
-    // console.log("Item:", item);
-    // console.log("Status:", status);
-    console.log(selectedItems);
-  }
+    if (selectedItems.length === 0) {
+      showFlashbar({
+        type: "error",
+        message: "Please select at least one order to update payment status"
+      });
+      return;
+    }
+
+    // Update payment status for each selected order
+    selectedItems.forEach(item => {
+      dispatch(updatePaymentStatus({
+        orderId: item.id,
+        paymentStatus: "PAID"
+      }))
+        .unwrap()
+        .then(() => {
+          // Immediately update the UI by modifying the fetchedPages state
+          setFetchedPages((prev) => {
+            const filterKey = getFilterKey();
+            const updatedPage = prev[filterKey]?.map((order) =>
+              order.id === item.id
+                ? { ...order, paymentStatus: "PAID" }
+                : order
+            );
+
+            return {
+              ...prev,
+              [filterKey]: updatedPage,
+            };
+          });
+
+          showFlashbar({
+            type: "success",
+            message: `Payment status updated for order ${item.id}`
+          });
+        })
+        .catch(error => {
+          showFlashbar({
+            type: "error",
+            message: `Failed to update payment status for order ${item.id}: ${error.message}`
+          });
+        });
+    });
+
+    // Clear selected items after updating
+    setSelectedItems([]);
+  };
 
 
 
@@ -587,7 +631,7 @@ const Orders = () => {
             {/* {filters?.category?.value === "COD" && ( */}
 
             <Box float="right">
-            <Button variant="primary" onClick={handleAssignOrdersStatus} disabled={selectedItems.length === 0} // Disable when no items are selected
+            <Button variant="primary" onClick={handlePaymentStatusChange} disabled={selectedItems.length === 0} // Disable when no items are selected
             >Update Payment Status</Button>
             </Box>
             {/* )} */}

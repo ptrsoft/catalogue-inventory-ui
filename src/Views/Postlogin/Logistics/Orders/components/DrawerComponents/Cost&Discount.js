@@ -70,7 +70,7 @@ const AddDiscount = ({ selectedOrder }) => {
           </div>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <strong>Shipping Charges:</strong>
-            <strong>RS.{selectedOrder?.deliveryCharges}</strong>
+            <strong>{selectedOrder?.deliveryCharges === "0.00" ? "Free" : `RS.${selectedOrder?.deliveryCharges}`}</strong>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <strong>Discount:</strong>

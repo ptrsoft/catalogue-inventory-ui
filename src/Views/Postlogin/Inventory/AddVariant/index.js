@@ -588,11 +588,11 @@ const AddEditVariant = () => {
 >
   <div style={{ width: "100%"}}>
     <Textarea
-      rows={5}
+      rows={10}
       onChange={handleChange}
       placeholder="Add Item Description"
       value={description}
-      maxLength={500}
+      maxLength={1000}
     />
   </div>
 </FormField>

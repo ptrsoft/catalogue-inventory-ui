@@ -7,7 +7,8 @@ import {
     fetchUsers, 
     packOrders, 
     fetchUsersbyid,
-    reattempt
+    reattempt,
+    updatePaymentStatus
 } from './OrdersThunk'; 
 import status from 'Redux-Store/Constants';
 
@@ -37,6 +38,8 @@ const initialState = {
     cancelUserStatus: 'idle',
     cancelUserError: null,
     packStatus: null,
+    paymentStatusUpdate: 'idle', // Added for payment status update
+    paymentStatusError: null, // Added for payment status error
   };
 
 const orderInventorySlice = createSlice({
@@ -203,6 +206,28 @@ const orderInventorySlice = createSlice({
             .addCase(packOrders.rejected, (state, action) => {
                 state.packStatus = 'failed';
                 state.error = action.payload || action.error.message;
+            })
+            // Handle updatePaymentStatus actions
+            .addCase(updatePaymentStatus.pending, (state) => {
+                state.paymentStatusUpdate = 'loading';
+                state.paymentStatusError = null;
+            })
+            .addCase(updatePaymentStatus.fulfilled, (state, action) => {
+                state.paymentStatusUpdate = status.SUCCESS;
+                // Update the order's payment status in the state
+                const updatedOrderId = action.payload.id;
+                state.orders.data = Object.keys(state.orders.data).reduce((acc, pageKey) => {
+                    acc[pageKey] = state.orders.data[pageKey].map(order =>
+                        order.id === updatedOrderId
+                            ? { ...order, paymentStatus: action.payload.paymentStatus }
+                            : order
+                    );
+                    return acc;
+                }, {});
+            })
+            .addCase(updatePaymentStatus.rejected, (state, action) => {
+                state.paymentStatusUpdate = 'failed';
+                state.paymentStatusError = action.payload || action.error.message;
             });
     },
 });

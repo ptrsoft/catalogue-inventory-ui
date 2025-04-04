@@ -100,7 +100,8 @@ const Edit = () => {
   const [maximumSellingWeight, setMaximumSellingWeight] = useState("");
   const [minimumSellingWeight, setMinimumSellingWeight] = useState("");
   const [images, setImages] = useState([]);
-
+  const [overallStock, setOverallStock] = useState("");
+  const [overallStockUnit, setOverallStockUnit] = useState(null);
   const unitOptions = [
     { label: "Pcs", value: "pieces" },
     { label: "Grms", value: "grams" },
@@ -163,7 +164,9 @@ const Edit = () => {
       setDescription(productDetail.description || "");
       setSubCategory(productDetail.subCategory || "");
       setExpiryDate(productDetail.expiry);
-      setAvailability(productDetail.availability || "");
+      setAvailability(productDetail.availability !== undefined ? productDetail.availability : 
+                      productDetail.active !== undefined ? productDetail.active : 
+                      false);
       setTotalQuantityInB2C(productDetail.totalQuantityInB2c || "");
       settotalquantityB2cUnit(productDetail.totalquantityB2cUnit || "");
       setMinimumSellingWeightUnit(productDetail.MinimumSellingWeightUnit || "");
@@ -216,10 +219,10 @@ const Edit = () => {
       category,
       subCategory,
       units,
-      expiry:
-        expiryDate === "No Expiry"
-          ? expiryDate
-          : new Date(expiryDate).toISOString(),
+      // expiry:
+      //   expiryDate === "No Expiry"
+      //     ? expiryDate
+      //     : new Date(expiryDate).toISOString(),
       availability,
       
       TotalquantityB2cUnit:totalquantityB2cUnit,
@@ -481,7 +484,7 @@ const Edit = () => {
                     onChange={({ detail }) => setName(detail.value)}
                   />
                 </FormField>
-                <FormField label="Expiry Date">
+                {/* <FormField label="Expiry Date">
                   <Input
                     type="date"
                     value={expiryDate}
@@ -489,7 +492,35 @@ const Edit = () => {
                     onChange={({ detail }) => setExpiryDate(detail.value)}
                     required
                   />
-                </FormField>
+                </FormField> */}
+                   <FormField
+  label={
+    <span>
+     Over All Stock{" "}
+      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+    </span>
+  }   
+  //            errorText={isFormSubmitted && !overallStock && "Required"}
+            >
+              <div style={{ width: "100%" }}>
+                <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                  <Input
+                    size="xs"
+                    placeholder="Input Overall Stock"
+                    value={overallStock}
+                    onChange={({ detail }) => setOverallStock(detail.value)}
+                  />
+                  <Select
+                    expandToViewport
+                    selectedOption={overallStockUnit}
+                    onChange={({ detail }) => setOverallStockUnit(detail.selectedOption)}
+                    options={unitOptions}
+                    placeholder="Select Unit"
+                  />
+                </Grid>
+              </div>
+            </FormField>
+          
               </Grid>
               <div>
                 <strong>Tags</strong>
@@ -559,9 +590,13 @@ const Edit = () => {
               >
                 <div style={{ width: "100%" }}>
                   <Textarea
+                        rows={10}
+
                     value={description}
                     invalid={invalidFields.description}
                     onChange={({ detail }) => setDescription(detail.value)}
+                    maxLength={1000}
+
                   />
                 </div>
               </FormField>

@@ -337,3 +337,27 @@ export const fetchInventoryCollection = createAsyncThunk(
     }
   }
 );
+
+export const fetchAllInventory = createAsyncThunk(
+  "products/fetchAllInventory",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+
+      if (!token) {
+        return rejectWithValue("Authorization token is missing.");
+      }
+
+      const url = config.FETCH_ALL_INVENTORY;
+      const response = await postLoginService.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);

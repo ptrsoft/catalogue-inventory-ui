@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'; 
-import { fetchProducts, PutToggle, updateProductsStatus, deleteProduct, fetchProductById, updateProductDetails, fetchInventoryStats,putPricingById,ImportProducts,exportProducts, fetchInventoryCollection } from './ProductThunk'; // Ensure to import updateProductsStatus
+import { fetchProducts, PutToggle, updateProductsStatus, deleteProduct, fetchProductById, updateProductDetails, fetchInventoryStats,putPricingById,ImportProducts,exportProducts, fetchInventoryCollection, fetchAllInventory } from './ProductThunk'; // Ensure to import updateProductsStatus
 import status from "Redux-Store/Constants";
 
 const productsSlice = createSlice({
@@ -19,6 +19,11 @@ const productsSlice = createSlice({
     },
     productDetail: { status: 'idle', data: null, error: null },
     export: { status: 'idle', data: null, error: null },
+    allInventory: { 
+      data: [], 
+      status: 'idle', 
+      error: null 
+    },
 
     productDetailStatus: 'idle', // Status for fetching product details
     productDetailError: null, // Error for fetching product details
@@ -213,6 +218,19 @@ const productsSlice = createSlice({
       .addCase(fetchInventoryCollection.rejected, (state, action) => {
         state.inventoryCollection.status = status.FAILURE;
         state.inventoryCollection.error = action.error.message;
+      })
+      // Add cases for fetchAllInventory
+      .addCase(fetchAllInventory.pending, (state) => {
+        state.allInventory.status = status.IN_PROGRESS;
+        state.allInventory.error = null;
+      })
+      .addCase(fetchAllInventory.fulfilled, (state, action) => {
+        state.allInventory.status = status.SUCCESS;
+        state.allInventory.data = action.payload;
+      })
+      .addCase(fetchAllInventory.rejected, (state, action) => {
+        state.allInventory.status = status.FAILURE;
+        state.allInventory.error = action.payload || action.error.message;
       });
   },
 });

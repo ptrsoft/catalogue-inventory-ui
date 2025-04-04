@@ -285,3 +285,32 @@ export const updateOrderItems = createAsyncThunk(
   }
 );
 
+export const updatePaymentStatus = createAsyncThunk(
+  'orderInventory/updatePaymentStatus',
+  async ({ orderId, paymentStatus }, { rejectWithValue, dispatch }) => {
+    try {
+      const token = getToken();
+      if (!token) {
+        return rejectWithValue("Authorization token is missing.");
+      }
+
+      const url = config.UPDATE_PAYMENT_STATUS;
+      const response = await postLoginService.put(url, {
+        orderId,
+        paymentStatus
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Refresh order details after updating payment status
+      dispatch(fetchOrderById(orderId));
+      
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+

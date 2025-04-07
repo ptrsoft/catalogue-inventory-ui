@@ -259,6 +259,8 @@ const AddEditVariant = () => {
         setTimeout(() => {
           setItems([]); // Clear flash message
         }, 3000);
+        navigate("/app/inventory");
+
         // window.location.reload(); // This will force a full page reload
       })
 

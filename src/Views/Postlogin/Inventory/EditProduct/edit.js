@@ -263,7 +263,7 @@ const Edit = () => {
 
         // setTimeout(() => {
         //   setItems([]);
-        //   navigate("/app/inventory");
+          navigate("/app/inventory");
 
         //   window.location.reload(); // Force reload after navigation.
         // }, 2000);

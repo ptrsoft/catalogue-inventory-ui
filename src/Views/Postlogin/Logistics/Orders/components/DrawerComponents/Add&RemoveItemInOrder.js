@@ -151,26 +151,32 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
     ],
   };
 
-  // Add items to the order
+  const resetFilters = () => {
+    setFilteringText("");
+    setSelectedCategory(null);
+    setSelectedSubCategory(null);
+    setCurrentPage(1);
+  };
+
   const handleApplyItems = () => {
     const updatedSelectedItems = selectedItems.map((item) => ({
       ...item,
-      quantity: quantities[item.id] || 0, // Default to 0 if no quantity entered
+      quantity: quantities[item.id] || 0,
     }));
 
     const addItems = updatedSelectedItems.map((item) => ({
       productId: item.id,
       quantity: item.quantity,
-      quantityUnits: item.unit, // Assuming each item has a quantity of 1 unit
+      quantityUnits: item.unit,
     }));
 
     console.log("Add Items Array:", addItems);
 
-    // Send addItems to the API
     sendApiRequest(addItems, null);
     setVisible(false);
     setSelectedItems([]);
     setQuantities({});
+    resetFilters(); // Reset filters after saving
   };
 
   // Remove out of stock item
@@ -226,16 +232,14 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
       {/* Modal for Selecting Items */}
       <Modal
         size="max"
-        onDismiss={() => setVisible(false)}
+        onDismiss={() => {
+          setVisible(false);
+          resetFilters(); // Reset filters when modal is dismissed
+        }}
         visible={visible}
         closeAriaLabel="Close modal"
-        // header={<Header>Add Items</Header>}
         header={
-          <Header
-       
-             
-          
-          >
+          <Header>
             Add Items
           </Header>
         }
@@ -255,14 +259,17 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
                 <button
                   className="cancel-btn"
                   style={{ borderRadius: "16px" }}
-                  onClick={() => setVisible(false)}
+                  onClick={() => {
+                    setVisible(false);
+                    resetFilters(); // Reset filters when canceling
+                  }}
                 >
                   Cancel
                 </button>
                 <Button
                   variant="primary"
                   onClick={handleApplyItems}
-                  disabled={selectedItems.length === 0} // Disable if no item is selected
+                  disabled={selectedItems.length === 0}
                 >
                   Save
                 </Button>

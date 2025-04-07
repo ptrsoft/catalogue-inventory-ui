@@ -280,11 +280,11 @@ const Orders = () => {
     {
       header: "Order Date",
       cell: (item) => item.orderDate
-        ? item.orderDate.slice(0,10).toLocaleString("en-GB", {
+        ? new Date(item.orderDate).toLocaleString("en-GB", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
-          })
+          }).replace(/\//g, "-")
         : "N/A"
     }
 ,    

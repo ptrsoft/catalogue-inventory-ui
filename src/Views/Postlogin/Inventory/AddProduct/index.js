@@ -177,9 +177,17 @@ const AddItemForm = () => {
         setStockQuantity("");
         setFileUploadValue([]); // Clear the file upload
         setIsFormSubmitted(false);
-        setTimeout(() => {
-          setItems([]); // Clear flash message
-        }, 3000);
+        
+        // Navigate back to the Inventory component with success state immediately
+        navigate("/app/inventory", { 
+          state: { 
+            itemAdded: true, 
+            itemName: name 
+          },
+          replace: true
+        });
+        
+        // No need for setTimeout here
         // window.location.reload(); // This will force a full page reload
       })
 

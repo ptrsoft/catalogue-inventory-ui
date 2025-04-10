@@ -36,10 +36,11 @@ import {
   Input,
   Popover,
 } from "@cloudscape-design/components";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ProductPDF from "./components/ProductPDF";
 
 const Inventory = () => {
+  const location = useLocation();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const fileInputRef = useRef(null); // Create a reference for the file input
   // Handle Import button click to show the file dialog
@@ -60,6 +61,33 @@ const Inventory = () => {
       },
     ]);
   };
+  
+  // Check for success state from AddProduct component
+  useEffect(() => {
+ 
+    
+    if (location.state?.itemAdded) {
+      // console.log("Item added successfully, showing flashbar");
+      setFlashMessages([
+        {
+          type: "success",
+          header: "Item Added Successfully",
+          content: `Item "${location.state.itemName}" has been successfully added to the inventory.`,
+          dismissible: true,
+          onDismiss: () => setFlashMessages([]),
+        },
+      ]);
+      
+      // Auto-dismiss the flashbar after 3 seconds
+      setTimeout(() => {
+        setFlashMessages([]);
+      }, 5000);
+      
+      // Clear the state after showing the message
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
+  
   // Import API handler
   const handleFileImport = (event) => {
     const file = event.target.files[0];
@@ -95,7 +123,7 @@ const Inventory = () => {
       .unwrap()
       .then((data) => {
         if (data.fileUrl) {
-          console.log(data, "export data");
+          // console.log(data, "export data");
           const link = document.createElement("a");
           link.href = data.fileUrl;
           link.download = data.fileUrl.split("/").pop();
@@ -176,8 +204,8 @@ const Inventory = () => {
   const [collectionFilteringText, setCollectionFilteringText] = useState("");
   const [isCollectionFetched, setIsCollectionFetched] = useState(false);
 
-  console.log(inventoryCollection, "inventory collection");
-  console.log("Current Page:", currentPage);
+  // console.log(inventoryCollection, "inventory collection");
+  // console.log("Current Page:", currentPage);
 
   // Add loading state for item collection
   const [isItemCollectionLoading, setIsItemCollectionLoading] = useState(false);
@@ -221,7 +249,7 @@ const Inventory = () => {
       )
         .unwrap()
         .then((result) => {
-          console.log("Fetched products for page:", currentPage, result);
+          // console.log("Fetched products for page:", currentPage, result);
 
           // Adjust to check the correct data structure
           if (Array.isArray(result.data)) {
@@ -299,9 +327,9 @@ const Inventory = () => {
     setSelectedStatus(detail.selectedOption);
     setCurrentPage(1); // Reset page to 1 when filters change
 
-    console.log(selectedStatus, "status");
+    // console.log(selectedStatus, "status");
   };
-  console.log(selectedStatus?.value, "status");
+  // console.log(selectedStatus?.value, "status");
 
   if (status === "LOADING") {
     return (
@@ -317,7 +345,7 @@ const Inventory = () => {
 
   const handleConfirmToggle = () => {
     const newStatus = selectedStatus?.value ? false : true;
-    console.log(newStatus, "new staussess");
+    // console.log(newStatus, "new staussess");
     const ids = selectedItems.map((item) => item.id); // Get the IDs of the selected items
     dispatch(PutToggle({ ids, active: newStatus }))
       .unwrap()
@@ -578,10 +606,10 @@ const Inventory = () => {
 
     try {
       const response = await dispatch(putPricingById(pricingDataArray));
-      console.log(response, "bulk resp");
+      // console.log(response, "bulk resp");
 
       if (response.payload?.message === "success") {
-        console.log("Bulk modify successful", response);
+        // console.log("Bulk modify successful", response);
         setItems([
           {
             type: "success",
@@ -613,6 +641,15 @@ const Inventory = () => {
 
   return (
     <SpaceBetween size="s">
+      {/* Flash Message Notifications */}
+      {/* {console.log("Rendering component, flashMessages:", flashMessages)} */}
+      {flashMessages.length > 0 && (
+        <Flashbar 
+          items={flashMessages} 
+          stackNotifications={true}
+        />
+      )}
+      <Flashbar items={items} />
       <Modal
         visible={isModalVisible1}
         onDismiss={() => setModalVisible1(false)}
@@ -630,9 +667,6 @@ const Inventory = () => {
       >
         Are you sure you want to bulk modify the prices for the selected items?
       </Modal>
-      <Flashbar items={items} />
-      {/* Flash Message Notifications */}
-      {flashMessages.length > 0 && <Flashbar items={flashMessages} />}
       <BreadcrumbGroup
         items={[
           { text: "Dashboard", href: "/app/dashboard" },
@@ -751,7 +785,13 @@ const Inventory = () => {
                       >
                         Export
                       </Button>
-                      <ProductPDF products={getCombinedProducts()}/>
+                      <ProductPDF products={getCombinedProducts()} onDownloadSuccess={() => {
+                        showFlashMessage("success", "PDF downloaded successfully");
+                        // Auto-dismiss the flashbar after 3 seconds
+                        setTimeout(() => {
+                          setFlashMessages([]);
+                        }, 3000);
+                      }}/>
                     </div>
                   }
                 >

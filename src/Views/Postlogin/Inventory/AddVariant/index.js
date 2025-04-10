@@ -259,7 +259,13 @@ const AddEditVariant = () => {
         setTimeout(() => {
           setItems([]); // Clear flash message
         }, 3000);
-        navigate("/app/inventory");
+        navigate("/app/inventory", { 
+          state: { 
+            itemAdded: true, 
+            itemName: name 
+          },
+          // replace: true
+        });
 
         // window.location.reload(); // This will force a full page reload
       })
@@ -498,9 +504,10 @@ const AddEditVariant = () => {
   label={
     <span>
      Over All Stock{" "}
-      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+      <span style={{ color: "red", fontWeight: "bold" }}></span>
     </span>
-  }              errorText={isFormSubmitted && !overallStock && "Required"}
+  }
+              //  errorText={isFormSubmitted && !overallStock && "Required"}
             >
               <div style={{ width: "100%" }}>
                 <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>

@@ -9,7 +9,7 @@ import { Button, Spinner } from "@cloudscape-design/components";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllInventory } from "Redux-Store/Products/ProductThunk";
 
-const ProductPDF = () => {
+const ProductPDF = ({ onDownloadSuccess }) => {
   const dispatch = useDispatch();
   const { data: products, status } = useSelector((state) => state.products.allInventory);
   const [isLoading, setIsLoading] = useState(false);
@@ -259,6 +259,11 @@ const ProductPDF = () => {
     addFooter();
 
     doc.save("products.pdf");
+    
+    // Notify parent component that PDF was successfully downloaded
+    if (onDownloadSuccess) {
+      onDownloadSuccess();
+    }
   };
 
   return (
@@ -267,6 +272,7 @@ const ProductPDF = () => {
       iconName={isLoading ? "status-pending" : "download"}
       onClick={handleDownload}
       disabled={isLoading}
+      loading={isLoading}
     >
       {isLoading ? "Downloading" : "Download PDF"}
     </Button>

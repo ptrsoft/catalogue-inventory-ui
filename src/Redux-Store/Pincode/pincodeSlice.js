@@ -63,7 +63,6 @@ const pincodeSlice = createSlice({
       .addCase(updateDeliveryType.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
-        getPincodes()  // You can handle this data based on the response structure
       })
       .addCase(updateDeliveryType.rejected, (state, action) => {
         state.loading = false;
@@ -76,7 +75,6 @@ const pincodeSlice = createSlice({
       .addCase(updateStatus.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
-        getPincodes()
       })
       .addCase(updateStatus.rejected, (state, action) => {
         state.loading = false;

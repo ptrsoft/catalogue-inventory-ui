@@ -8,7 +8,7 @@ import TextFilter from "@cloudscape-design/components/text-filter";
 import Header from "@cloudscape-design/components/header";
 import Container from "@cloudscape-design/components/container";
 import Spinner from "@cloudscape-design/components/spinner";
-
+import { useMediaQuery } from 'react-responsive';
 import {
   fetchProducts,
   PutToggle,
@@ -35,6 +35,7 @@ import {
   FormField,
   Input,
   Popover,
+  Icon,
 } from "@cloudscape-design/components";
 import { Link, useLocation } from "react-router-dom";
 import ProductPDF from "./components/ProductPDF";
@@ -49,6 +50,7 @@ const Inventory = () => {
       fileInputRef.current.click(); // Open file dialog
     }
   };
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
   const [flashMessages, setFlashMessages] = useState([]);
   // Show flash messages
   const showFlashMessage = (type, content) => {
@@ -165,6 +167,7 @@ const Inventory = () => {
   const [nextKeys, setNextKeys] = useState({}); // Store nextKey per page
   const [hoveredProductId, setHoveredProductId] = React.useState(null); // State to track hovered product ID
   const [selectedView, setSelectedView] = useState('allProducts'); // Add this new state
+  const [isOpen, setIsOpen] = useState(false);
 
   const dispatch = useDispatch();
   const products = useSelector(
@@ -639,6 +642,10 @@ const Inventory = () => {
     }, 3000);
   };
 
+  const toggleFilter = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <SpaceBetween size="s">
       {/* Flash Message Notifications */}
@@ -667,25 +674,87 @@ const Inventory = () => {
       >
         Are you sure you want to bulk modify the prices for the selected items?
       </Modal>
-      <BreadcrumbGroup
-        items={[
-          { text: "Dashboard", href: "/app/dashboard" },
-          { text: "Inventory", href: "/app/inventory" },
-          { text: "Items", href: "/app/inventory" },
-        ]}
-        ariaLabel="Breadcrumbs"
-      />
-      <Header variant="h1">
-        <strong>Items</strong>
+  <BreadcrumbGroup
+              items={[
+                { text: "Dashboard", href: "/app/Dashboard" },
+                // { text: "Logistics", href: "/app/Dashboard" },
+                { text: "Inventory", href: "#" },
+              ]}
+              ariaLabel="Breadcrumbs"
+            />
+      <Header 
+        variant="h1"
+        actions={isMobile ? (
+          <SpaceBetween size="xs" direction="horizontal">
+            <Button href="/app/Inventory/addItem">Add Item</Button>
+            <div>
+              <Popover
+                onDismiss={() => setIsPopoverOpen(false)}
+                position="left"
+                align="start"
+                size="small"
+                wrapTriggerText={false}
+                triggerType="custom"
+                content={
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                    }}
+                  >
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileImport}
+                      accept=".xlsx"
+                      style={{ display: "none" }}
+                    />
+                    <Button
+                      variant="inline-link"
+                      iconName="upload"
+                      onClick={handleImport}
+                    >
+                      Import
+                    </Button>
+                    <Button
+                      variant="inline-link"
+                      iconName="download"
+                      onClick={handleExport}
+                    >
+                      Export
+                    </Button>
+                    <ProductPDF products={getCombinedProducts()} onDownloadSuccess={() => {
+                      showFlashMessage("success", "PDF downloaded successfully");
+                      setTimeout(() => {
+                        setFlashMessages([]);
+                      }, 3000);
+                    }}/>
+                  </div>
+                }
+              >
+                <Button
+                  iconName="ellipsis"
+                  onClick={handleButtonClick}
+                  ariaLabel="Options menu"
+                  variant="icon"
+                />
+              </Popover>
+            </div>
+          </SpaceBetween>
+        ) : undefined}
+      >
+        <strong>
+        <span style={{textDecoration: "underline", textDecorationColor: "#0972D3", textDecorationThickness: "2px", textUnderlineOffset: "6px"}}>Items</span>
+
+        </strong>
       </Header>
       <SpaceBetween size="m">
         <Grid
           gridDefinition={[
-            { colspan: { default: 12, xs: 4 } },
-            { colspan: { default: 12, xs: 2 } },
-            { colspan: { default: 12, xs: 2 } },
-            { colspan: { default: 12, xs: 2 } },
-            { colspan: { default: 12, xs: 2 } },
+            { colspan: { default: isMobile ? 10 : 12, xxs: isMobile ? 10 : 4 } },
+            { colspan: { default: isMobile ? 2 : 12, xxs: isMobile ? 2 : 2 } },
+            { colspan: { default: isMobile ? 12 : 12, xxs: isMobile ? 12 : 6 } },
           ]}
         >
           <TextFilter
@@ -694,126 +763,187 @@ const Inventory = () => {
             filteringAriaLabel="Filter instances"
             onChange={handleSearchChange}
           />
-          <Select
-            required
-            selectedOption={selectedCategory}
-            onChange={handleCategoryChange}
-            options={[
-              { label: "All", value: "" },
-              {
-                label: "Fresh Vegetables",
-                value: "Fresh Vegetables",
-              },
-              {
-                label: "Fresh Fruits",
-                value: "Fresh Fruits",
-              },
-              {
-                label: "Dairy",
-                value: "Dairy",
-              },
-              {
-                label: "Groceries",
-                value: "Groceries",
-              },
-              { label: "Bengali Special", value: "Bengali Special" },
-              { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" },
-            ]}
-            placeholder="Select Category"
-          />
-          <Select
-            disabled={!selectedCategory || selectedCategory.value === ""} // Disable if no category or "All" is selected
-            required
-            selectedOption={selectedSubCategory}
-            onChange={handleSubCategoryChange}
-            placeholder="Select Sub Category"
-            options={
-              selectedCategory
-                ? subcategoryOptions[selectedCategory.value] || []
-                : []
-            }
-          />
-          <Select
-            required
-            selectedOption={selectedStatus}
-            onChange={handleSelectChange}
-            options={[
-              { label: "All", value: "" },
-              { label: "In Stock", value: true },
-              { label: "Out Of Stock", value: false },
-            ]}
-            placeholder="Select Status"
-          />
+          {/* Filter Toggle */}
+          <span
+            onClick={toggleFilter}
+            style={{
+              display: "flex",
+              justifyContent: isMobile ? "center" : "space-between",
+              alignItems: "center",
+              cursor: "pointer",
+              border: isMobile ? "2px solid #9BA7B6" : "3px solid #9BA7B6",
+              padding: isMobile ? "4px" : "4px 8px",
+              borderRadius: "8px",
+              backgroundColor: "white",
+              width: isMobile ? "32px" : "auto",
+              gap: "5px",
+            }}
+          >
+            {isMobile ? (
+              <Icon variant="link" name="filter" />
+            ) : (
+              <>
+                <div style={{ display: "flex", gap: "5px" }}>
+                  <Icon variant="link" name="filter" />
+                  <span
+                    style={{
+                      fontWeight: "normal", 
+                      color: "#9BA7B6",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    Filters
+                  </span>
+                </div>
+                <Icon
+                  variant="link"
+                  name={isOpen ? "caret-up-filled" : "caret-down-filled"}
+                />
+              </>
+            )}
+          </span>
           <Box float="right">
-            <SpaceBetween size="xs" direction="horizontal">
-              {/* <Button href="/app/Inventory/addItem">Add Item</Button> */}
-              <Button href="/app/Inventory/addItem">Add Item</Button>
-              <div>
-                <Popover
-                  onDismiss={() => setIsPopoverOpen(false)}
-                  position="left"
-                  align="start"
-                  size="small"
-                  wrapTriggerText={false}
-                  triggerType="custom"
-                  content={
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "8px",
-                      }}
-                    >
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileImport}
-                        accept=".xlsx"
-                        style={{ display: "none" }}
-                      />
-                      <Button
-                        variant="inline-link"
-                        iconName="upload"
-                        onClick={handleImport}
+            {!isMobile && (
+              <SpaceBetween size="xs" direction="horizontal">
+                <Button href="/app/Inventory/addItem">Add Item</Button>
+                <div>
+                  <Popover
+                    onDismiss={() => setIsPopoverOpen(false)}
+                    position="left"
+                    align="start"
+                    size="small"
+                    wrapTriggerText={false}
+                    triggerType="custom"
+                    content={
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "8px",
+                        }}
                       >
-                        Import
-                      </Button>
-                      <Button
-                        variant="inline-link"
-                        iconName="download"
-                        onClick={handleExport}
-                      >
-                        Export
-                      </Button>
-                      <ProductPDF products={getCombinedProducts()} onDownloadSuccess={() => {
-                        showFlashMessage("success", "PDF downloaded successfully");
-                        // Auto-dismiss the flashbar after 3 seconds
-                        setTimeout(() => {
-                          setFlashMessages([]);
-                        }, 3000);
-                      }}/>
-                    </div>
-                  }
-                >
-                  <Button
-                    iconName="ellipsis"
-                    onClick={handleButtonClick}
-                    ariaLabel="Options menu"
-                    variant="icon"
-                  />
-                </Popover>
-              </div>
-            </SpaceBetween>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleFileImport}
+                          accept=".xlsx"
+                          style={{ display: "none" }}
+                        />
+                        <Button
+                          variant="inline-link"
+                          iconName="upload"
+                          onClick={handleImport}
+                        >
+                          Import
+                        </Button>
+                        <Button
+                          variant="inline-link"
+                          iconName="download"
+                          onClick={handleExport}
+                        >
+                          Export
+                        </Button>
+                        <ProductPDF products={getCombinedProducts()} onDownloadSuccess={() => {
+                          showFlashMessage("success", "PDF downloaded successfully");
+                          setTimeout(() => {
+                            setFlashMessages([]);
+                          }, 3000);
+                        }}/>
+                      </div>
+                    }
+                  >
+                    <Button
+                      iconName="ellipsis"
+                      onClick={handleButtonClick}
+                      ariaLabel="Options menu"
+                      variant="icon"
+                    />
+                  </Popover>
+                </div>
+              </SpaceBetween>
+            )}
           </Box>
         </Grid>
+        
+        {/* Filter UI that appears when toggle is clicked */}
+        {isOpen && (
+          <div style={{ 
+            // padding: "16px", 
+            // backgroundColor: "white", 
+            // borderRadius: "8px", 
+            // border: "1px solid #e9ebed",
+            marginBottom: "16px"
+          }}>
+            <Grid
+              gridDefinition={[
+                { colspan: { default: 12, xs: 12 } },
+                { colspan: { default: 12, xs: 12 } },
+                { colspan: { default: 12, xs: 12 } },
+              ]}
+            >
+              <Select
+                required
+                selectedOption={selectedCategory}
+                onChange={handleCategoryChange}
+                options={[
+                  { label: "All", value: "" },
+                  {
+                    label: "Fresh Vegetables",
+                    value: "Fresh Vegetables",
+                  },
+                  {
+                    label: "Fresh Fruits",
+                    value: "Fresh Fruits",
+                  },
+                  {
+                    label: "Dairy",
+                    value: "Dairy",
+                  },
+                  {
+                    label: "Groceries",
+                    value: "Groceries",
+                  },
+                  { label: "Bengali Special", value: "Bengali Special" },
+                  { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" },
+                ]}
+                placeholder="Select Category"
+              />
+              <Select
+                disabled={!selectedCategory || selectedCategory.value === ""} // Disable if no category or "All" is selected
+                required
+                selectedOption={selectedSubCategory}
+                onChange={handleSubCategoryChange}
+                placeholder="Select Sub Category"
+                options={
+                  selectedCategory
+                    ? subcategoryOptions[selectedCategory.value] || []
+                    : []
+                }
+              />
+              <Select
+                required
+                selectedOption={selectedStatus}
+                onChange={handleSelectChange}
+                options={[
+                  { label: "All", value: "" },
+                  { label: "In Stock", value: true },
+                  { label: "Out Of Stock", value: false },
+                ]}
+                placeholder="Select Status"
+              />
+            </Grid>
+          </div>
+        )}
+        
         {/* stats */}
         <Grid
-          gridDefinition={[
-            { colspan: { default: 12, xs: 3 } },
-            { colspan: { default: 12, xs: 3 } },
-            { colspan: { default: 12, xs: 3 } },
-            { colspan: { default: 12, xs: 3 } },
-          ]}
+            gridDefinition={[
+              { colspan: { default:isMobile ? 6 : 12, xxs: isMobile ? 10 : 3 } },
+              { colspan: { default:isMobile ? 6 : 12, xxs: isMobile ? 2 : 3 } },
+              { colspan: { default:isMobile ? 6 : 12, xxs: isMobile ? 12 : 3 } },
+              { colspan: { default:isMobile ? 6 : 12, xxs: isMobile ? 12 : 3 } },
+
+            ]}
         >
           <div 
             style={{ 
@@ -847,7 +977,7 @@ const Inventory = () => {
             <div style={{ marginBottom: '8px' }}>
               <Header variant="h2">{inventoryCollection?.data[1]?.length || 42}</Header>
             </div>
-            <b>Multiple-Variants Items</b>
+            <b>{isMobile ? "Multiple Variants" : "Multiple-Variants Items"}</b>
           </div>
 
           <div 
@@ -985,7 +1115,7 @@ const Inventory = () => {
                     </Button>
                   }
                 >
-                  Total Selected Items: {selectedItems.length}
+                  {isMobile ? `Selected: ${selectedItems.length}` : `Total Selected Items: ${selectedItems.length}`}
                 </Header>
               }
               variant="borderless"

@@ -14,9 +14,11 @@ import {
   SpaceBetween,
   Icon,
   Input,
+  Container,
 } from "@cloudscape-design/components";
 import { useNavigate } from "react-router-dom";
 import { cancelOrder, fetchUsersbyid } from "Redux-Store/Orders/OrdersThunk";
+import { useMediaQuery } from 'react-responsive';
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -86,7 +88,8 @@ const Orders = () => {
   //using dispatch hitting apis
   const dispatch = useDispatch();
 
-
+  // Check if device is mobile
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
   
   useEffect(() => {
     const pageKey = currentPage === 1 ? undefined : nextKeys[currentPage - 1];
@@ -286,10 +289,7 @@ const Orders = () => {
             year: "numeric",
           }).replace(/\//g, "-")
         : "N/A"
-    }
-,    
-    
-
+    },
     { header: "Customer Name", cell: (item) => item.customerName },
     { header: "Items", cell: (item) => item.items },
 
@@ -488,65 +488,200 @@ const Orders = () => {
     setSelectedItems([]);
   };
 
+  // Main content for both mobile and desktop
+  const ordersContent = (
+    <SpaceBetween direction="vertical" size="xl">
+      <Stats />
+      <div>
+        <Grid
+          gridDefinition={[
+            { colspan: { default:isMobile ? 10 : 12, xxs: isMobile ? 10 : 4 } },
+            { colspan: { default:isMobile ? 2 : 12, xxs: isMobile ? 2 : 2 } },
+            { colspan: { default:isMobile ? 12 : 12, xxs: isMobile ? 12 : 6 } },
+          ]}
+        >
+          {/* Search bar */}
+          <TextFilter
+            filteringText={filteringText}
+            filteringPlaceholder="Search"
+            filteringAriaLabel="Filter instances"
+            onChange={handleSearchChange}
+          />
+          {/* Filter Toggle */}
+          <span
+            onClick={toggleFilter}
+            style={{
+              display: "flex",
+              justifyContent: isMobile ? "center" : "space-between",
+              alignItems: "center",
+              cursor: "pointer",
+              border: isMobile ? "2px solid #9BA7B6" : "3px solid #9BA7B6",
+              padding: isMobile ? "4px" : "4px 8px",
+              borderRadius: "8px",
+              backgroundColor: "white",
+              width: isMobile ? "32px" : "auto",
+              gap: "5px",
+            }}
+          >
+            {isMobile ? (
+              <Icon variant="link" name="filter" />
+            ) : (
+              <>
+                <div style={{ display: "flex", gap: "5px" }}>
+                  <Icon variant="link" name="filter" />
+                  <span
+                    style={{
+                      fontWeight: "normal", 
+                      color: "#9BA7B6",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    Filters
+                  </span>
+                </div>
+                <Icon
+                  variant="link"
+                  name={isOpen ? "caret-up-filled" : "caret-down-filled"}
+                />
+              </>
+            )}
+          </span>
+            {/* Sort dropdown */}
+     
 
+          <Box float="right">
+            <Button 
+              variant="primary" 
+              onClick={handlePaymentStatusChange} 
+              disabled={selectedItems.length === 0}
+            >
+              {isMobile ? "Update payment status" : "Update Payment Status"}
+            </Button>
+          </Box>
+        </Grid>
+        {isOpen && (
+          <FilterComponent
+            statuscategory={filters.statuscategory}
+            ageFilter={filters.ageFilter}
+            shifts={filters.shifts}
+            category={filters.category}
+            pincode={filters.pincode}
+            currentPage={currentPage}
+            onFilterChange={handleFilterChange}
+          />
+        )}
+      
+        {/* Orders table */}
+        <div
+          className={`orders-container ${
+            isDrawerOpen ? "blur-background" : ""
+          }`}
+        >
+          <Table
+            header={
+              <div style={{marginTop:'10px'}}>
+                <Header actions={
+                  <Box float="right">
+                    <Pagination
+                      currentPageIndex={currentPage}
+                      onChange={({ detail }) =>
+                        handlePageChange(detail.currentPageIndex)
+                      }
+                      pagesCount={pagesCount}
+                    />
+                  </Box>
+                }>
+                  {isMobile ? `Selected: ${selectedItems.length}` : `Total Selected Items: ${selectedItems.length}`}
+                </Header>
+              </div>
+            }
+            selectedItems={selectedItems}
+            ariaLabels={{
+              selectionGroupLabel: "Select orders",
+              itemSelectionLabel: (item) => `Select order ${item.id}`,
+            }}
+            onSelectionChange={({ detail }) =>
+              setSelectedItems(detail.selectedItems)
+            }
+            selectionType="multi"
+            renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
+              `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
+            }
+            trackBy="id"
+            variant="borderless"
+            columnDefinitions={columns}
+            items={fetchedPages[getFilterKey()] || []}
+            empty={
+              <Box
+                margin={{ vertical: "xs" }}
+                textAlign="center"
+                color="inherit"
+              >
+                <SpaceBetween size="m">
+                  <b>No Orders {error}</b>
+                </SpaceBetween>
+              </Box>
+            }
+          />
+        </div>
+      </div>
+      <Drawer
+        isDrawerOpen={isDrawerOpen}
+        selectedProduct={selectedProduct}
+        handleCloseDrawer={handleCloseDrawer}
+        selectedOrder={selectedOrder}
+        error={error}
+        usersbyid={usersbyid}
+        fetchpages={fetchedPages}
+        onCancelOrder={handleCancelOrder}
+      />
+    </SpaceBetween>
+  );
 
   return (
-    <ContentLayout
-      headerVariant="high-contrast"
-      notifications={<Flashbar items={flashbarItems} />}
-      breadcrumbs={
-        <>
-          {/* {flashMessages.map((msg) => (
-            <div
-              key={msg.id}
-              style={{
-                padding: "20px",
-                margin: "10px 0",
-                borderRadius: "8px",
-                backgroundColor: `${msg.type === "info" ? "green" : "red"}`,
-                color: msg.type === "info" ? "white" : "white",
-              }}
-            >
-              {msg.content}
-            </div>
-          ))} */}
+    isMobile ? (
+      <div>
+            <SpaceBetween direction="vertical" size="m">
+
+        <Flashbar items={flashbarItems} />
           <BreadcrumbGroup
-            items={[
-              { text: "Dashboard", href: "/app/Dashboard" },
-              { text: "Logistics", href: "/app/Dashboard" },
-              { text: "Orders", href: "#" },
-            ]}
-            ariaLabel="Breadcrumbs"
-          />
-        </>
-      }
-      header={
+              items={[
+                { text: "Dashboard", href: "/app/Dashboard" },
+                // { text: "Logistics", href: "/app/Dashboard" },
+                { text: "Orders", href: "#" },
+              ]}
+              ariaLabel="Breadcrumbs"
+            />
         <Header
+          variant="h2"
           actions={
-            <>
+            <div style={{display:"flex", gap:"10px", marginBottom:"22px"}}>
               {filters?.statuscategory?.value === "order placed" ? (
                 <Button
                   variant="primary"
                   onClick={() => setIsModalOpenForPacker(true)}
-                  disabled={selectedItems.length === 0} // Disable when no items are selected
+                  disabled={selectedItems.length === 0}
+                  title="Assign To Packer"
                 >
-                  Assign To Packer
+                  {isMobile ? "Assign To Packer" : "Assign To Packer"}
                 </Button>
               ) : filters?.statuscategory?.value === "undelivered" ||
                 filters?.statuscategory?.value === "packed" ? (
                 <Button
                   variant="primary"
                   onClick={NavigateToRunsheet}
-                  disabled={selectedItems.length === 0} // Disable when no items are selected
+                  disabled={selectedItems.length === 0}
+                  iconName="file-open"
+                  title="Create Runsheet"
                 >
-                  Create Runsheet
+                  {isMobile ? "Create Runsheet" : "Create Runsheet"}
                 </Button>
               ) : filters?.statuscategory?.value ===
                 "Request for Cancellation" ? (
                 <MultipleOrdersCancellation
-                  onOrdersCancelled={handleResetSelectedItems} // Pass the callback
+                  onOrdersCancelled={handleResetSelectedItems}
                   selectedItems={selectedItems}
-                  cancelOrdersThunk={cancelOrder} // Pass the thunk for order cancellation
+                  cancelOrdersThunk={cancelOrder}
                   dispatch={dispatch}
                   setFlashMessages={setFlashbarItems}
                 />
@@ -560,160 +695,97 @@ const Orders = () => {
                 showFlashbar={showFlashbar}
                 onAssignOrderStatusChange={handleAssignOrdersStatus}
               />
+              
               <div style={{ marginLeft: "10px" }}>
-              <Invoice printRef={printRef} flag={'multiple'} selectedOrder={selectedItems.length > 0 ? selectedItems : selectedOrder} />
-
-              </div>
-              {/* Flash messages */}
-            </>
+                  <Invoice 
+                    printRef={printRef} 
+                    flag={'multiple'} 
+                    selectedOrder={selectedItems.length > 0 ? selectedItems : selectedOrder} 
+                  />
+                </div>
+            </div>
           }
-          variant="h1"
         >
-          Orders
+          <span style={{textDecoration: "underline", textDecorationColor: "#0972D3", textDecorationThickness: "2px", textUnderlineOffset: "6px"}}>Orders</span>
         </Header>
-      }
-    >
-      <SpaceBetween direction="vertical" size="xl">
-        <Stats />
-        <div>
-          <Grid
-            gridDefinition={[
-              { colspan: { default: 12, xxs: 4 } },
-              { colspan: { default: 12, xxs: 2 } },
-              { colspan: { default: 12, xxs: 6 } },
-
-            ]}
-          >
-            {/* Search bar */}
-            <TextFilter
-              filteringText={filteringText}
-              filteringPlaceholder="Search"
-              filteringAriaLabel="Filter instances"
-              onChange={handleSearchChange}
-            />
-            {/* Filter Toggle */}
-            <span
-              onClick={toggleFilter}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                cursor: "pointer",
-                border: "3px solid #9BA7B6",
-                padding: "4px 8px",
-                borderRadius: "8px",
-                backgroundColor: "white",
-                gap: "5px",
-              }}
-            >
-              {/* Filter Icon */}
-              <div style={{ display: "flex", gap: "5px" }}>
-                <Icon variant="link" name="filter" />
-
-                {/* Filter Text */}
-                <span
-                  style={{
-                    fontWeight: "normal",
-                    color: "#9BA7B6",
-                    fontStyle: "italic",
-                  }}
-                >
-                  Filters
-                </span>
-              </div>
-
-              {/* Caret Icon */}
-              <Icon
-                variant="link"
-                name={isOpen ? "caret-up-filled" : "caret-down-filled"}
-              />
-            </span>
-            {/* {filters?.category?.value === "COD" && ( */}
-
-            <Box float="right">
-            <Button variant="primary" onClick={handlePaymentStatusChange} disabled={selectedItems.length === 0} // Disable when no items are selected
-            >Update Payment Status</Button>
-            </Box>
-            {/* )} */}
-          
-          </Grid>
-          {/* Sort dropdown */}
-          {isOpen && (
-            <FilterComponent
-              statuscategory={filters.statuscategory}
-              ageFilter={filters.ageFilter}
-              shifts={filters.shifts}
-              category={filters.category}
-              pincode={filters.pincode}
-              currentPage={currentPage}
-              onFilterChange={handleFilterChange} // Corrected prop name
-            />
-          )}
-          {/* Orders table */}
-          <div
-            className={`orders-container ${
-              isDrawerOpen ? "blur-background" : ""
-            }`}
-          >
-            <Table
-                  header={
-                  <div style={{marginTop:'10px'}}><Header   actions={
-                    <Box float="right">
-                    <Pagination
-                      currentPageIndex={currentPage}
-                      onChange={({ detail }) =>
-                        handlePageChange(detail.currentPageIndex)
-                      }
-                      pagesCount={pagesCount}
-                    />
-                  </Box>
-                  }>Total Selected Items: {selectedItems.length}
-            </Header>
-            </div>}
-              selectedItems={selectedItems}
-              ariaLabels={{
-                selectionGroupLabel: "Select orders",
-                itemSelectionLabel: (item) => `Select order ${item.id}`,
-              }}
-              onSelectionChange={({ detail }) =>
-                setSelectedItems(detail.selectedItems)
-              } // Update selected items
-              selectionType="multi" // Enable multi-select checkboxes
-              renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
-                `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
-              }
-              trackBy="id" // Unique identifier for items
-              variant="borderless"
-              columnDefinitions={columns}
-              items={fetchedPages[getFilterKey()] || []}
-              empty={
-                <Box
-                  margin={{ vertical: "xs" }}
-                  textAlign="center"
-                  color="inherit"
-                >
-                  <SpaceBetween size="m">
-                    <b>No Orders {error}</b>
-                  </SpaceBetween>
-                </Box>
-              }
+        </SpaceBetween>
         
+        {ordersContent}
+      </div>
+    ) : (
+      <ContentLayout
+        headerVariant="high-contrast"
+        notifications={<Flashbar items={flashbarItems} />}
+        breadcrumbs={
+          <>
+            <BreadcrumbGroup
+              items={[
+                { text: "Dashboard", href: "/app/Dashboard" },
+                { text: "Logistics", href: "/app/Dashboard" },
+                { text: "Orders", href: "#" },
+              ]}
+              ariaLabel="Breadcrumbs"
             />
-          </div>
-        </div>
-        <Drawer
-          isDrawerOpen={isDrawerOpen}
-          selectedProduct={selectedProduct}
-          handleCloseDrawer={handleCloseDrawer}
-          selectedOrder={selectedOrder}
-         
-          error={error}
-          usersbyid={usersbyid}
-          fetchpages={fetchedPages}
-          onCancelOrder={handleCancelOrder} // Pass handler to child
-        />
-      </SpaceBetween>
-    </ContentLayout>
+          </>
+        }
+        header={
+          <Header
+            actions={
+              <>
+                {filters?.statuscategory?.value === "order placed" ? (
+                  <Button
+                    variant="primary"
+                    onClick={() => setIsModalOpenForPacker(true)}
+                    disabled={selectedItems.length === 0}
+                  >
+                    Assign To Packer
+                  </Button>
+                ) : filters?.statuscategory?.value === "undelivered" ||
+                  filters?.statuscategory?.value === "packed" ? (
+                  <Button
+                    variant="primary"
+                    onClick={NavigateToRunsheet}
+                    disabled={selectedItems.length === 0}
+                  >
+                    Create Runsheet
+                  </Button>
+                ) : filters?.statuscategory?.value ===
+                  "Request for Cancellation" ? (
+                  <MultipleOrdersCancellation
+                    onOrdersCancelled={handleResetSelectedItems}
+                    selectedItems={selectedItems}
+                    cancelOrdersThunk={cancelOrder}
+                    dispatch={dispatch}
+                    setFlashMessages={setFlashbarItems}
+                  />
+                ) : null}
+
+                <AssignToPackersModal
+                  isOpen={isModalOpenForPacker}
+                  onClose={() => setIsModalOpenForPacker(false)}
+                  onAssign={handleAssignOrders}
+                  selectedOrders={selectedItems}
+                  showFlashbar={showFlashbar}
+                  onAssignOrderStatusChange={handleAssignOrdersStatus}
+                />
+                <div style={{ marginLeft: "10px" }}>
+                  <Invoice 
+                    printRef={printRef} 
+                    flag={'multiple'} 
+                    selectedOrder={selectedItems.length > 0 ? selectedItems : selectedOrder} 
+                  />
+                </div>
+              </>
+            }
+            variant="h1"
+          >
+            Orders
+          </Header>
+        }
+      >
+        {ordersContent}
+      </ContentLayout>
+    )
   );
 };
 

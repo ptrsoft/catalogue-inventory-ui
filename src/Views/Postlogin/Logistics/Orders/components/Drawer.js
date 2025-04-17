@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, {  useState, useEffect } from "react";
 import {
   Container,
   Box,
@@ -10,7 +10,7 @@ import {
   Modal,
   Textarea,
 } from "@cloudscape-design/components";
-
+import { useMediaQuery } from 'react-responsive';
 import { cancelOrder, reattempt } from "Redux-Store/Orders/OrdersThunk";
 
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch and useSelector
@@ -36,6 +36,8 @@ const Drawer = ({
     setCancelOrderId(null); // Clear the order ID
     setCancellationReason(""); // Clear the cancellation reason
   };
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
   const handleOpenModal = (orderId) => {
     setCancelOrderId(orderId); // Set the order ID to cancel
     // console.log(Cancelo,"id from modal");
@@ -145,7 +147,7 @@ const Drawer = ({
             top: 0,
             right: 0,
             height: "100%",
-            width: "450px",
+            width: isMobile ? "100vw" : "450px",
             backgroundColor: "white",
             boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.5)",
             zIndex: 1000,

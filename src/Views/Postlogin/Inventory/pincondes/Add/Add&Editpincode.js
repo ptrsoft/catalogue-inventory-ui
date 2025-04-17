@@ -160,8 +160,8 @@ const formatTime = (time) => {
     <SpaceBetween size="m">
       <BreadcrumbGroup
         items={[
-          { text: "Dashboard", href: "/app/dashboard" },
-          { text: "Inventory", href: "/app/dashboard" },
+          // { text: "Dashboard", href: "/app/dashboard" },
+          // { text: "Inventory", href: "/app/dashboard" },
           { text: "Pincodes", href: "/app/inventory/pincodes" },
           { text: pay ? "Edit Pincode" : "Add Pincode", href: "#" }, // Update breadcrumb text
         ]}
@@ -192,6 +192,7 @@ const formatTime = (time) => {
         }
       >
         {pay ? (
+          
           <span style={{ fontWeight: "bolder" }}>Edit Pincode</span>
         ) : (
           <span style={{ fontWeight: "bolder" }}>Add Pincode</span>
@@ -329,12 +330,11 @@ const formatTime = (time) => {
                     </div>
                   </FormField>
                   <div style={{ marginTop: "25px" }}>
-                    <Button
+                    <button class="cancel-btn"
                       onClick={() => handleRemoveShift(shiftIndex)}
-                      variant="normal"
                     >
                       Remove
-                    </Button>
+                    </button>
                   </div>
                 </div>
                 <h3>Add Slot</h3>

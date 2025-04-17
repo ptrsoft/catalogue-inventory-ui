@@ -14,18 +14,21 @@ import {
   Flashbar,
   Icon
 } from "@cloudscape-design/components";
+import { useMediaQuery } from 'react-responsive';
+
 import { Table, Toggle } from "@cloudscape-design/components";
 import { uploadImage } from "Redux-Store/uploadImage/uploadThunk";
 import { addProduct } from "Redux-Store/Products/ProductThunk";
 import { FileUpload } from "@cloudscape-design/components";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import './styles.css'; // Import the CSS file
 
 
 const AddEditVariant = () => {
   const dispatch = useDispatch();
  const navigate=useNavigate()
-
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
   const [name, setName] = useState("");
   const [overallStock, setOverallStock] = useState("");
   const [overallStockUnit, setOverallStockUnit] = useState(null);
@@ -115,73 +118,19 @@ const AddEditVariant = () => {
   };
 
   const handleChange = ({ detail }) => {
-    if (detail.value.length <= 247) {
+    if (detail.value.length <= 100000) {
       setDescription(detail.value);
     }
   };
   const [fileUploadValue, setFileUploadValue] = useState([]);
 
-  // const handleImageUpload = async (file, setImageUrl) => {
-  //   if (file) {
-  //     try {
-  //       const result = await dispatch(uploadImage(file)).unwrap();
-  //       setImageUrl(result); // Update the state with the returned URL
-  //     } catch (error) {
-  //       console.error(`Failed to upload image:`, error);
-  //     }
-  //   }
-  // };
 
-  // Function for single product image upload
-  const handleFileChange = (files) => {
-    files.forEach((file, index) => {
-      if (index === 0) handleImageUpload(file, setImageUrl1);
-      else if (index === 1) handleImageUpload(file, setImageUrl2);
-      else if (index === 2) handleImageUpload(file, setImageUrl3);
-    });
-  };
-
-  const handleFileChange2 = (id, files) => {
-    setTableData((prevData) =>
-      prevData.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              fileUploadValue: files, // Store uploaded files
-            }
-          : item
-      )
-    );
-
-    // Upload each file and update the corresponding item's imageUrls array
-    Promise.all(
-      files.map(async (file) => {
-        try {
-          const result = await dispatch(uploadImage(file)).unwrap();
-          return result;
-        } catch (error) {
-          console.error(`Failed to upload image:`, error);
-          return null; // Handle errors gracefully
-        }
-      })
-    ).then((uploadedUrls) => {
-      setTableData((prevData) =>
-        prevData.map((item) =>
-          item.id === id
-            ? {
-                ...item,
-                imageUrls: uploadedUrls.filter((url) => url !== null), // Store all valid image URLs in an array
-              }
-            : item
-        )
-      );
-    });
-  };
 
   //add Tag code
   const [inputTag, setInputTag] = useState("");
   const handleKeyPressForTag = (event) => {
     if (event.key === "Enter" && inputTag.trim() !== "") {
+      event.preventDefault(); // Prevent default behavior
       setTags([...tags, inputTag.trim()]);
       setInputTag("");
     }
@@ -347,18 +296,15 @@ const AddEditVariant = () => {
           purchasingPrice: "",
           sellingPrice: "",
           comparePrice: "",
-          // buyerLimit: "",
-          lowStockAlert: "",
+          saleLimit: "",
           stockQuantity: "",
-          availability: false,
-          unit: null, // Default value only
+          unit: null,
+          totalQuantityInB2c: "",
+          totalquantityB2cUnit: null,
+          lowStockAlert: "",
+          availability: true,
           expiryDate: "",
-          // minimumSellingWeight: "",  // Extra field
-          // maximumSellingWeight: "",  // Extra field
-          // MinimumSellingWeightUnit: "",  // Extra field
-          // MaximumSellingWeightUnit: "",  // Extra field
-          totalQuantityInB2c: "",  // Extra field
-          totalquantityB2cUnit: "",  // Extra field
+          imageUrls: [],
         }))
       );
     }
@@ -408,8 +354,40 @@ const AddEditVariant = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
+  // Function to handle variant image upload
+  const handleVariantImageUpload = async (id, file) => {
+    if (file) {
+      try {
+        const result = await dispatch(uploadImage(file)).unwrap();
+        setTableData((prevData) =>
+          prevData.map((item) =>
+            item.id === id
+              ? { ...item, imageUrls: [...item.imageUrls, result] }
+              : item
+          )
+        );
+      } catch (error) {
+        console.error(`Failed to upload variant image:`, error);
+      }
+    }
+  };
+
+  // Function to remove a specific image from a variant
+  const handleRemoveVariantImage = (id, imageIndex) => {
+    setTableData((prevData) =>
+      prevData.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              imageUrls: item.imageUrls.filter((_, index) => index !== imageIndex)
+            }
+          : item
+      )
+    );
+  };
+
   return (
-    <div style={{marginLeft:'50px',marginRight:'50px'}}>
+    <div className={isMobile ? "add-variant-container-mobile" : "add-variant-container"}>
      
   
         
@@ -422,12 +400,12 @@ const AddEditVariant = () => {
         <Container  header={<Header>Category</Header>}>
           <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
 
-          <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+                <Grid gridDefinition={[{ colspan: { default: isMobile ? 12 : 6 } }, { colspan: { default: isMobile ? 12 : 6 } }]}>
             <FormField
                label={
-                <span>
+                <span className="form-field-label">
                  Category{" "}
-                  <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                  <span className="required-indicator">*</span>
                 </span>
               }
               errorText={isFormSubmitted && !selectedCategory && "Required"}
@@ -457,9 +435,9 @@ const AddEditVariant = () => {
             </FormField>
             <FormField
                 label={
-                  <span>
+                  <span className="form-field-label">
                    Sub Category{" "}
-                    <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                    <span className="required-indicator">*</span>
                   </span>
                 }
               errorText={isFormSubmitted && !selectedSubCategory && "Required"}
@@ -483,12 +461,12 @@ const AddEditVariant = () => {
           <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
           <SpaceBetween size="m">
 
-          <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+          <Grid gridDefinition={[{ colspan: { default: isMobile ? 12 : 6 } }, { colspan: { default: isMobile ? 12 : 6 } }]}>
             <FormField
   label={
-    <span>
+    <span className="form-field-label">
      Item Name{" "}
-      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+      <span className="required-indicator">*</span>
     </span>
   }              errorText={isFormSubmitted && !name && "Required"}
             >
@@ -502,15 +480,15 @@ const AddEditVariant = () => {
             </FormField>
             <FormField
   label={
-    <span>
+    <span className="form-field-label">
      Over All Stock{" "}
-      <span style={{ color: "red", fontWeight: "bold" }}></span>
+      <span className="required-indicator"></span>
     </span>
   }
               //  errorText={isFormSubmitted && !overallStock && "Required"}
             >
               <div style={{ width: "100%" }}>
-                <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                <Grid disableGutters={!isMobile} gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
                   <Input
                     size="xs"
                     placeholder="Input Overall Stock"
@@ -531,166 +509,108 @@ const AddEditVariant = () => {
           </Grid>
           <div>
           <strong>Tags</strong>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "5px",
-              alignItems: "center",
-              border: "2px solid #ccc",
-              padding: "5px",
-              borderRadius: "8px",
-              marginTop: "5px",
-            }}
-          >
+          <div className="tag-container">
             {tags?.map((tag, index) => (
               <div
                 key={index}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  background: "#f3f3f3",
-                  padding: "4px 8px",
-                  borderRadius: "4px",
-                  margin: "4px",
-                }}
+                className="tag-item"
               >
                 {tag}
                 <button
                   onClick={() => removeTokenForTag(index)}
-                  style={{
-                    marginLeft: "8px",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "#0073e6",
-                  }}
+                  className="tag-remove-button"
                 >
                   ×
                 </button>
               </div>
             ))}
-            <input
-              placeholder="Enter Tag"
-              value={inputTag}
-              onChange={(event) => setInputTag(event.target.value)}
-              onKeyPress={handleKeyPressForTag}
-              style={{
-                flex: 1,
-                padding: "8px",
-                border: "none",
-                outline: "none",
-                width: "100%",
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (inputTag.trim() !== "") {
+                  setTags([...tags, inputTag.trim()]);
+                  setInputTag("");
+                }
+                return false;
               }}
-            />
+              className="tag-form"
+              style={{ flex: 1, display: "flex" }}
+            >
+              <input
+                placeholder="Enter Tag"
+                value={inputTag}
+                onChange={(event) => setInputTag(event.target.value)}
+                className="tag-input"
+              />
+            </form>
           </div>
           </div>
 
           <FormField
    label={
-    <span>
+    <span className="form-field-label">
      Description{" "}
-      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+      <span className="required-indicator">*</span>
     </span>
   }  errorText={isFormSubmitted && !description && "Required"}
   stretch // This ensures the FormField takes full width
 >
   <div style={{ width: "100%"}}>
     <Textarea
-      rows={10}
+      rows={8}
       onChange={handleChange}
       placeholder="Add Item Description"
       value={description}
-      maxLength={1000}
+      maxLength={100000}
     />
   </div>
 </FormField>
    <FormField
    label={
-    <span>
+    <span className="form-field-label">
      Add Item Image{" "}
-      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+      <span className="required-indicator">*</span>
     </span>
   }                 errorText={isFormSubmitted && !imageUrl1 && "Atleast Add one Image"}
                  stretch // This ensures the FormField takes full width
                >
-<div style={{ border: "2px dashed #4A90E2", padding: "16px", borderRadius: "8px", width: "100%", textAlign: "left", marginTop: "3px" }}>
+<div className="image-upload-container">
  
-  <div style={{ display: "flex", gap: "12px", marginTop: "12px" }}>
+  <div className="image-preview-container">
     {[imageUrl1, imageUrl2, imageUrl3].map((image, index) => (
       (index === 0 || (index === 1 && imageUrl1) || (index === 2 && imageUrl2)) && ( // Show conditionally
-        <div key={index} style={{ position: "relative", width: "80px", height: "80px" }}>
+        <div key={index} className="image-preview">
           {image ? (
             <>
-              <img src={image} alt="Uploaded" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px", border: "1px solid #ddd" }} />
+              <img src={image} alt="Uploaded" />
               <div
-                style={{
-                  position: "absolute",
-                  inset: "0",
-                  backgroundColor: "rgba(0, 0, 0, 0.6)",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: "8px",
-                  opacity: "0",
-                  transition: "opacity 0.3s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
+                className="image-overlay"
               >
                 <button
-                  style={{
-                    background: "#fff",
-                    border: "none",
-                    padding: "4px 8px",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "12px",
-                    marginBottom: "4px",
-                  }}
+                  className="image-action-button"
                   onClick={() => handleReplaceImage(index === 0 ? setImageUrl1 : index === 1 ? setImageUrl2 : setImageUrl3)}
                 >
                   Replace
                 </button>
                 <button
-                  style={{
-                    background: "red",
-                    color: "#fff",
-                    border: "none",
-                    padding: "4px 8px",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "12px",
-                  }}
+                  className="image-remove-button"
                   onClick={() => handleRemoveImage(index === 0 ? setImageUrl1 : index === 1 ? setImageUrl2 : setImageUrl3)}
                 >
                   Remove
                 </button>
               </div>
             </>
-          ) : (
+          ) 
+          : (
             <label
-              style={{
-                width: "120px",
-                height: "80px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "1px dashed #aaa",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "12px",
-                color: "#4A90E2",
-              }}
+              className="image-upload-label"
             >
               <div><Icon name='upload'></Icon></div>
-              <div style={{ fontSize: "12px", marginTop: "4px", textAlign: "center" }}>Upload Image</div>
+              <div className="image-upload-label-text">Upload Image</div>
               <input
                 type="file"
                 accept="image/*"
-                style={{ display: "none" }}
+                className="image-upload-input"
                 onChange={(e) => handleImageUpload(e.target.files[0], index === 0 ? setImageUrl1 : index === 1 ? setImageUrl2 : setImageUrl3)}
               />
             </label>
@@ -699,7 +619,7 @@ const AddEditVariant = () => {
       )
     ))}
   </div>
-  <p style={{ fontSize: "12px", color: "#777", marginTop: "8px" }}>
+  <p className="image-upload-hint">
     Upload a cover image for your item. File format: <b>jpeg, png</b>. Recommended size: <b>300×200</b>.
   </p>
 </div>
@@ -866,362 +786,619 @@ const AddEditVariant = () => {
         {tableData.length > 0 && isShowIntable && (
           <Container header={<Header>Manage Variant</Header>}>
             <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
-            <p>
+            <p style={{marginBottom:"15px"}}>
               Based on your item variant, these are the different versions of
               your variants that customers can buy.
             </p>
-            <Table
-  variant="borderless"
-  columnDefinitions={[
-    {
-      id: "name",
-      header: "Variant Name",
-      cell: (item) => item.attribute,
-    },
-    {
-      id: "quantity",
-      header: (
-        <span>
-          Quantity In Stock{" "}
-          {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
-        </span>
-      ),
-      cell: (item) => (
-        <div style={{ width: "200px" }}>
-          <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
-          <FormField
-          errorText={
-            isFormSubmitted && !item.stockQuantity && "Required"
-          }
-        >
-            <Input
-              placeholder="Enter Quantity"
-              type="text"
-              value={item.stockQuantity}
-              disabled={!!overallStock}
-              onChange={({ detail }) =>
-                handleInputChange(item.id, "stockQuantity", detail.value)
-              }
-            />
-            </FormField>
-            <Select
-                          disabled={!!overallStock}
+            
+            {isMobile ? (
+              // Mobile view - Display variants in containers
+              <SpaceBetween size="m">
+                {tableData.map((item) => (
+                  <Container key={item.id} variant="stacked">
+                    <SpaceBetween size="m">
+                      <Header variant="h3">Variant: {item.attribute}</Header>
+                      
+                      <FormField
+                        label={
+                          <span>
+                            Quantity In Stock
+                          </span>
+                        }
+                        errorText={
+                          isFormSubmitted && !item.stockQuantity && "Required"
+                        }
+                      >
+                        <div style={{ width: "100%" }}>
+                          <Grid  gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+                            <Input
+                              placeholder="Enter Quantity"
+                              type="text"
+                              value={item.stockQuantity}
+                              disabled={!!overallStock}
+                              onChange={({ detail }) =>
+                                handleInputChange(item.id, "stockQuantity", detail.value)
+                              }
+                            />
+                            <Select
+                              disabled={!!overallStock}
+                              key={`quantity-${item.id}`}
+                              expandToViewport
+                              selectedOption={unitOptions.find((opt) => opt.value === item.unit)}
+                              onChange={(event) => {
+                                event.stopPropagation();
+                                handleInputChange(
+                                  item.id,
+                                  "unit",
+                                  event.detail.selectedOption.value
+                                );
+                              }}
+                              options={unitOptions}
+                              placeholder="Select Unit"
+                            />
+                          </Grid>
+                        </div>
+                      </FormField>
+                      <Grid  gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
 
-              key={`quantity-${item.id}`} // Ensures the select stays stable and is unique
-              expandToViewport
-              selectedOption={unitOptions.find((opt) => opt.value === item.unit)}
-              onChange={(event) => {
-                event.stopPropagation(); // Prevent parent handlers from closing the dropdown
-                handleInputChange(
-                  item.id,
-                  "unit",
-                  event.detail.selectedOption.value
-                );
-              }}
-              options={unitOptions}
-              placeholder="Select Unit"
-            />
-          </Grid>
-        </div>
-      ),
-    },
-    {
-      id: "purchasePrice",
-      header:   <span>
-      Purchasing Price {" "}
-        <span style={{ color: "red", fontWeight: "bold" }}>*</span>
-      </span>,
-      cell: (item) => (
-        <FormField
-          errorText={
-            isFormSubmitted && !item.purchasingPrice && "Required"
-          }
-        >
-          <Input
-            required
-            size="3xs"
-            placeholder="Rs."
-            value={item.purchasingPrice}
-            onChange={
-              ({ detail }) =>
-                handleInputChange(
-                  item.id,
-                  "purchasingPrice",
-                  detail.value
-                ) // Use item.id here
-            }
-          />
-        </FormField>
-      ),
-    },
-    {
-      id: "sellingPrice",
-      header:    <span>
-      Selling Price{" "}
-       <span style={{ color: "red", fontWeight: "bold" }}>*</span>
-     </span>,
-      cell: (item) => (
-        <FormField
-          errorText={
-            isFormSubmitted && !item.sellingPrice && "Required"
-          }
-        >
-          <Input
-            required
-            size="3xs"
-            placeholder="Rs."
-            value={item.sellingPrice}
-            onChange={
-              ({ detail }) =>
-                handleInputChange(
-                  item.id,
-                  "sellingPrice",
-                  detail.value
-                ) // Use item.id here
-            }
-          />
-        </FormField>
-      ),
-    },
-    {
-      id: "comparePrice",
-      header: "Compare Price",
-      cell: (item) => (
-        <FormField>
-          <Input
-          placeholder="Rs."
+                      
+                      <FormField
+                        label={
+                          <span>
+                            Purchasing Price{" "}
+                            <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                          </span>
+                        }
+                        errorText={
+                          isFormSubmitted && !item.purchasingPrice && "Required"
+                        }
+                      >
+                        <Input
+                          required
+                          size="3xs"
+                          placeholder="Rs."
+                          value={item.purchasingPrice}
+                          onChange={({ detail }) =>
+                            handleInputChange(
+                              item.id,
+                              "purchasingPrice",
+                              detail.value
+                            )
+                          }
+                        />
+                      </FormField>
+                      
+                      <FormField
+                        label={
+                          <span>
+                            Selling Price{" "}
+                            <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                          </span>
+                        }
+                        errorText={
+                          isFormSubmitted && !item.sellingPrice && "Required"
+                        }
+                      >
+                        <Input
+                          required
+                          size="3xs"
+                          placeholder="Rs."
+                          value={item.sellingPrice}
+                          onChange={({ detail }) =>
+                            handleInputChange(
+                              item.id,
+                              "sellingPrice",
+                              detail.value
+                            )
+                          }
+                        />
+                      </FormField>
+                      </Grid>
+                      <Grid  gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+                      <FormField label="Compare Price">
+                        <Input
+                          placeholder="Rs."
+                          type="number"
+                          value={item.comparePrice}
+                          onChange={({ detail }) =>
+                            handleInputChange(
+                              item.id,
+                              "comparePrice",
+                              detail.value
+                            )
+                          }
+                        />
+                      </FormField>
+                      <FormField label="Sale Limit">
+                        <Input
+                          placeholder="Enter Limit"
+                          type="number"
+                          value={item.saleLimit}
+                          onChange={({ detail }) =>
+                            handleInputChange(item.id, "saleLimit", detail.value)
+                          }
+                        />
+                      </FormField>
+                      </Grid>
+                  
+                      
+                      <FormField
+                        label={
+                          <span>
+                            Total Quantity In B2c{" "}
+                            <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                          </span>
+                        }
+                        errorText={
+                          isFormSubmitted && !item.totalQuantityInB2c && "Required"
+                        }
+                      >
+                        <div style={{ width: "100%" }}>
+                          <Grid  gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+                            <Input
+                              placeholder="Enter Quantity"
+                              type="text"
+                              value={item.totalQuantityInB2c}
+                              onChange={({ detail }) =>
+                                handleInputChange(item.id, "totalQuantityInB2c", detail.value)
+                              }
+                            />
+                            <Select
+                              key={`total-quantity-b2c-${item.id}`}
+                              expandToViewport
+                              selectedOption={unitOptions.find(
+                                (opt) => opt.value === item.totalquantityB2cUnit
+                              )}
+                              onChange={(event) => {
+                                event.stopPropagation();
+                                handleInputChange(
+                                  item.id,
+                                  "totalquantityB2cUnit",
+                                  event.detail.selectedOption.value
+                                );
+                              }}
+                              options={unitOptions}
+                              placeholder="Select Unit"
+                            />
+                          </Grid>
+                        </div>
+                      </FormField>
+                      
+                    
+                      <Grid  gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+                      <FormField label="Low Stock Alert">
+                        <Input
+                          placeholder="Enter Stock Alert"
+                          type="number"
+                          value={item.lowStockAlert}
+                          onChange={({ detail }) =>
+                            handleInputChange(item.id, "lowStockAlert", detail.value)
+                          }
+                        />
+                      </FormField>
 
-            type="number"
-            value={item.comparePrice}
-            onChange={
-              ({ detail }) =>
-                handleInputChange(
-                  item.id,
-                  "comparePrice",
-                  detail.value
-                ) // Use item.id here
-            }
-          />
-        </FormField>
-      ),
-    },
-    // {
-    //   id: "minimumSellingWeight",
-    //   header: (
-    //     <span>
-    //       Minimum Selling Weight{" "}
-    //       {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
-    //     </span>
-    //   ),
-    //   cell: (item) => (
-    //     <div style={{ width: "200px" }}>
-    //       <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
-    //         <Input
-    //           placeholder="Enter Minimum Selling Weight"
-    //           type="text"
-    //           value={item.minimumSellingWeight}
-    //           onChange={({ detail }) =>
-    //             handleInputChange(item.id, "minimumSellingWeight", detail.value) // Use item.id here
-    //           }
-    //         />
-    //         <Select
-    //           key={`min-selling-weight-${item.id}`} // Unique key for each unit select
-    //           expandToViewport
-    //           selectedOption={unitOptions.find(
-    //             (opt) => opt.value === item.minimumSellingWeightUnit
-    //           )}
-    //           onChange={(event) => {
-    //             event.stopPropagation(); // Prevent parent handlers from closing the dropdown
-    //             handleInputChange(
-    //               item.id,
-    //               "minimumSellingWeightUnit",
-    //               event.detail.selectedOption.value
-    //             );
-    //           }}
-    //           options={unitOptions}
-    //           placeholder="Select Unit"
-    //         />
-    //       </Grid>
-    //     </div>
-    //   ),
-    // },
-    // {
-    //   id: "maximumSellingWeight",
-    //   header: (
-    //     <span>
-    //       Maximum Selling Weight{" "}
-    //       {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
-    //     </span>
-    //   ),
-    //   cell: (item) => (
-    //     <div style={{ width: "200px" }}>
-    //       <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
-    //         <Input
-    //           placeholder="Enter Maximum Selling Weight"
-    //           type="text"
-    //           value={item.maximumSellingWeight}
-    //           onChange={({ detail }) =>
-    //             handleInputChange(item.id, "maximumSellingWeight", detail.value) // Use item.id here
-    //           }
-    //         />
-    //         <Select
-    //           key={`max-selling-weight-${item.id}`} // Unique key for each unit select
-    //           expandToViewport
-    //           selectedOption={unitOptions.find(
-    //             (opt) => opt.value === item.maximumSellingWeightUnit
-    //           )}
-    //           onChange={(event) => {
-    //             event.stopPropagation(); // Prevent parent handlers from closing the dropdown
-    //             handleInputChange(
-    //               item.id,
-    //               "maximumSellingWeightUnit",
-    //               event.detail.selectedOption.value
-    //             );
-    //           }}
-    //           options={unitOptions}
-    //           placeholder="Select Unit"
-    //         />
-    //       </Grid>
-    //     </div>
-    //   ),
-    // },
-    {
-      id: "totalQuantityInB2c",
-      header: (
-        <span>
-          Total Quantity In B2c{" "}
-          <span style={{ color: "red", fontWeight: "bold" }}>*</span>
-        </span>
-      ),
-      cell: (item) => (
-        <div style={{ width: "200px" }}>
-          <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
-          <FormField
-          errorText={
-            isFormSubmitted && !item.totalQuantityInB2c && "Required"
-          }
-        >
-            <Input
-              placeholder="Enter Quantity"
-              type="text"
-              value={item.totalQuantityInB2c}
-              onChange={({ detail }) =>
-                handleInputChange(item.id, "totalQuantityInB2c", detail.value) // Use item.id here
-              }
-            />
-            </FormField>
-            <Select
-              key={`total-quantity-b2c-${item.id}`} // Unique key for each unit select
-              expandToViewport
-              selectedOption={unitOptions.find(
-                (opt) => opt.value === item.totalquantityB2cUnit
-              )}
-              onChange={(event) => {
-                event.stopPropagation(); // Prevent parent handlers from closing the dropdown
-                handleInputChange(
-                  item.id,
-                  "totalquantityB2cUnit",
-                  event.detail.selectedOption.value
-                );
-              }}
-              options={unitOptions}
-              placeholder="Select Unit"
-            />
-          </Grid>
-        </div>
-      ),
-    },
-    {
-      id: "saleLimit",
-      header: "Sale Limit",
-      cell: (item) => (
-        <FormField>
-          <Input
-            placeholder="Enter Limit"
-            type="number"
-            value={item.saleLimit}
-            onChange={({ detail }) =>
-              handleInputChange(item.id, "saleLimit", detail.value) // Use item.id here
-            }
-          />
-        </FormField>
-      ),
-    },
-    
-    // {
-    //   id: "buyerLimit",
-    //   header: "Buyer Limit",
-    //   cell: (item) => (
-    //     <FormField>
-    //       <Input
-    //         placeholder="Enter Limit"
-    //         type="number"
-    //         value={item.buyerLimit}
-    //         onChange={({ detail }) =>
-    //           handleInputChange(item.id, "buyerLimit", detail.value) // Use item.id here
-    //         }
-    //       />
-    //     </FormField>
-    //   ),
-    // },
-    {
-      id: "lowStock",
-      header: "Low Stock Alert",
-      cell: (item) => (
-        <FormField>
-          <Input
-            placeholder="Enter Stock Alert"
-            type="number"
-            value={item.lowStockAlert}
-            onChange={({ detail }) =>
-              handleInputChange(item.id, "lowStockAlert", detail.value) // Use item.id here
-            }
-          />
-        </FormField>
-      ),
-    },
-    {
-      id: "status",
-      header: "Status",
-      cell: (item) => (
-        <Toggle
-          checked={item.availability}
-          onChange={({ detail }) =>
-            handleToggleChange(item.id, detail.checked) // Use item.id here
-          }
-        />
-      ),
-    },
-    {
-      id: "expiryDate",
-      header: "Expiry Date",
-      cell: (item) => (
-        <FormField>
-          <Input
-            type="date"
-            onChange={({ detail }) => 
-              handleInputChange(item.id, "expiryDate", detail.value)
-            }
-            value={item.expiryDate}
-          />
-        </FormField>
-      )
-    }
-  ]}
-  items={tableData}
-  empty={<p>No variants added yet.</p>}
-/>
+                      <div style={{ display: "flex", alignItems: "center", marginLeft:"18px" }}>
 
+                      <FormField label="Status">
+                        <Toggle
+                          checked={item.availability}
+                          onChange={({ detail }) =>
+                            handleToggleChange(item.id, detail.checked)
+                          }
+                        />
+                      </FormField>
+                      </div>
+
+                      </Grid>
+                      <Grid  gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+                      <FormField label="Expiry Date">
+
+                        <Input
+                          type="date"
+                          onChange={({ detail }) => 
+                            handleInputChange(item.id, "expiryDate", detail.value)
+                          }
+                          value={item.expiryDate}
+                        />
+                      </FormField>
+                      {/* upload image button with icon */}
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <FormField label="Upload Image">
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                         
+                          
+                          {item.imageUrls.length < 5 && (
+                            <Button 
+                              variant="link" 
+                              size="medium" 
+                              iconName="upload"
+                              onClick={() => {
+                                const fileInput = document.createElement("input");
+                                fileInput.type = "file";
+                                fileInput.accept = "image/*";
+                                fileInput.onchange = (event) => {
+                                  const file = event.target.files[0];
+                                  if (file) {
+                                    handleVariantImageUpload(item.id, file);
+                                  }
+                                };
+                                fileInput.click();
+                              }}
+                            />
+                          )}
+                          
+                          {item.imageUrls.length === 0 && (
+                            <p className="image-upload-hint">
+                              Upload Upto 5 images
+                            </p>
+                          )}
+                        </div>
+                      </FormField>
+                      </div>
+                      </Grid>
+                      <div className="image-preview-container">
+                            {item.imageUrls.map((image, index) => (
+                              <div key={index} className="image-preview">
+                                <img 
+                                  src={image} 
+                                  alt={`Variant ${item.attribute} img ${index + 1}`} 
+                                />
+                                <div className="image-overlay">
+                                  <button
+                                    className="image-action-button"
+                                    onClick={() => {
+                                      const fileInput = document.createElement("input");
+                                      fileInput.type = "file";
+                                      fileInput.accept = "image/*";
+                                      fileInput.onchange = (event) => {
+                                        const file = event.target.files[0];
+                                        if (file) {
+                                          handleVariantImageUpload(item.id, file);
+                                        }
+                                      };
+                                      fileInput.click();
+                                    }}
+                                  >
+                                    Replace
+                                  </button>
+                                  <button
+                                    className="image-remove-button"
+                                    onClick={() => handleRemoveVariantImage(item.id, index)}
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                    </SpaceBetween>
+                  </Container>
+                ))}
+              </SpaceBetween>
+            ) : (
+              // Desktop view - Display variants in table
+              <Table
+                variant="borderless"
+                columnDefinitions={[
+                  {
+                    id: "name",
+                    header: "Variant Name",
+                    cell: (item) => item.attribute,
+                  },
+                  {
+                    id: "quantity",
+                    header: (
+                      <span>
+                        Quantity In Stock{" "}
+                      </span>
+                    ),
+                    cell: (item) => (
+                      <div style={{ width: "200px" }}>
+                        <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                        <FormField
+                        errorText={
+                          isFormSubmitted && !item.stockQuantity && "Required"
+                        }
+                      >
+                          <Input
+                            placeholder="Enter Quantity"
+                            type="text"
+                            value={item.stockQuantity}
+                            disabled={!!overallStock}
+                            onChange={({ detail }) =>
+                              handleInputChange(item.id, "stockQuantity", detail.value)
+                            }
+                          />
+                          </FormField>
+                          <Select
+                                    disabled={!!overallStock}
+
+                            key={`quantity-${item.id}`} // Ensures the select stays stable and is unique
+                            expandToViewport
+                            selectedOption={unitOptions.find((opt) => opt.value === item.unit)}
+                            onChange={(event) => {
+                              event.stopPropagation(); // Prevent parent handlers from closing the dropdown
+                              handleInputChange(
+                                item.id,
+                                "unit",
+                                event.detail.selectedOption.value
+                              );
+                            }}
+                            options={unitOptions}
+                            placeholder="Select Unit"
+                          />
+                        </Grid>
+                      </div>
+                    ),
+                  },
+                  {
+                    id: "purchasePrice",
+                    header:   <span>
+                    Purchasing Price {" "}
+                      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                    </span>,
+                    cell: (item) => (
+                      <FormField
+                        errorText={
+                          isFormSubmitted && !item.purchasingPrice && "Required"
+                        }
+                      >
+                        <Input
+                          required
+                          size="3xs"
+                          placeholder="Rs."
+                          value={item.purchasingPrice}
+                          onChange={
+                            ({ detail }) =>
+                              handleInputChange(
+                                item.id,
+                                "purchasingPrice",
+                                detail.value
+                              ) // Use item.id here
+                          }
+                        />
+                      </FormField>
+                    ),
+                  },
+                  {
+                    id: "sellingPrice",
+                    header:    <span>
+                    Selling Price{" "}
+                     <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                   </span>,
+                    cell: (item) => (
+                      <FormField
+                        errorText={
+                          isFormSubmitted && !item.sellingPrice && "Required"
+                        }
+                      >
+                        <Input
+                          required
+                          size="3xs"
+                          placeholder="Rs."
+                          value={item.sellingPrice}
+                          onChange={
+                            ({ detail }) =>
+                              handleInputChange(
+                                item.id,
+                                "sellingPrice",
+                                detail.value
+                              ) // Use item.id here
+                          }
+                        />
+                      </FormField>
+                    ),
+                  },
+                  {
+                    id: "comparePrice",
+                    header: "Compare Price",
+                    cell: (item) => (
+                      <FormField>
+                        <Input
+                        placeholder="Rs."
+
+                          type="number"
+                          value={item.comparePrice}
+                          onChange={
+                            ({ detail }) =>
+                              handleInputChange(
+                                item.id,
+                                "comparePrice",
+                                detail.value
+                              ) // Use item.id here
+                          }
+                        />
+                      </FormField>
+                    ),
+                  },
+                  {
+                    id: "totalQuantityInB2c",
+                    header: (
+                      <span>
+                        Total Quantity In B2c{" "}
+                        <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                      </span>
+                    ),
+                    cell: (item) => (
+                      <div style={{ width: "200px" }}>
+                        <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                        <FormField
+                        errorText={
+                          isFormSubmitted && !item.totalQuantityInB2c && "Required"
+                        }
+                      >
+                          <Input
+                            placeholder="Enter Quantity"
+                            type="text"
+                            value={item.totalQuantityInB2c}
+                            onChange={({ detail }) =>
+                              handleInputChange(item.id, "totalQuantityInB2c", detail.value) // Use item.id here
+                            }
+                          />
+                          </FormField>
+                          <Select
+                            key={`total-quantity-b2c-${item.id}`} // Unique key for each unit select
+                            expandToViewport
+                            selectedOption={unitOptions.find(
+                              (opt) => opt.value === item.totalquantityB2cUnit
+                            )}
+                            onChange={(event) => {
+                              event.stopPropagation(); // Prevent parent handlers from closing the dropdown
+                              handleInputChange(
+                                item.id,
+                                "totalquantityB2cUnit",
+                                event.detail.selectedOption.value
+                              );
+                            }}
+                            options={unitOptions}
+                            placeholder="Select Unit"
+                          />
+                        </Grid>
+                      </div>
+                    ),
+                  },
+                  {
+                    id: "saleLimit",
+                    header: "Sale Limit",
+                    cell: (item) => (
+                      <FormField>
+                        <Input
+                          placeholder="Enter Limit"
+                          type="number"
+                          value={item.saleLimit}
+                          onChange={({ detail }) =>
+                            handleInputChange(item.id, "saleLimit", detail.value) // Use item.id here
+                          }
+                        />
+                      </FormField>
+                    ),
+                  },
+                  {
+                    id: "lowStock",
+                    header: "Low Stock Alert",
+                    cell: (item) => (
+                      <FormField>
+                        <Input
+                          placeholder="Enter Stock Alert"
+                          type="number"
+                          value={item.lowStockAlert}
+                          onChange={({ detail }) =>
+                            handleInputChange(item.id, "lowStockAlert", detail.value) // Use item.id here
+                          }
+                        />
+                      </FormField>
+                    ),
+                  },
+                  {
+                    id: "status",
+                    header: "Status",
+                    cell: (item) => (
+                      <Toggle
+                        checked={item.availability}
+                        onChange={({ detail }) =>
+                          handleToggleChange(item.id, detail.checked) // Use item.id here
+                        }
+                      />
+                    ),
+                  },
+                  {
+                    id: "expiryDate",
+                    header: "Expiry Date",
+                    cell: (item) => (
+                      <FormField>
+                        <Input
+                          type="date"
+                          onChange={({ detail }) => 
+                            handleInputChange(item.id, "expiryDate", detail.value)
+                          }
+                          value={item.expiryDate}
+                        />
+                      </FormField>
+                    )
+                  },
+                  {
+                    id: "image",
+                    header: "Image",
+                    cell: (item) => (
+                      <div className="desktop-variant-image-cell">
+                        <div className="image-preview-container">
+                          {item.imageUrls.map((image, index) => (
+                            <div key={index} className="desktop-variant-image-preview">
+                              <img 
+                                src={image} 
+                                alt={`Variant ${item.attribute} Img ${index + 1}`} 
+                              />
+                              <div className="image-overlay">
+                                <button
+                                  className="image-action-button"
+                                  onClick={() => {
+                                    const fileInput = document.createElement("input");
+                                    fileInput.type = "file";
+                                    fileInput.accept = "image/*";
+                                    fileInput.onchange = (event) => {
+                                      const file = event.target.files[0];
+                                      if (file) {
+                                        handleVariantImageUpload(item.id, file);
+                                      }
+                                    };
+                                    fileInput.click();
+                                  }}
+                                >
+                                  Replace
+                                </button>
+                                <button
+                                  className="image-remove-button"
+                                  onClick={() => handleRemoveVariantImage(item.id, index)}
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {item.imageUrls.length < 5 && (
+                          <Button 
+                            variant="icon" 
+                            size="small" 
+                            iconName="upload"
+                            onClick={() => {
+                              const fileInput = document.createElement("input");
+                              fileInput.type = "file";
+                              fileInput.accept = "image/*";
+                              fileInput.onchange = (event) => {
+                                const file = event.target.files[0];
+                                if (file) {
+                                  handleVariantImageUpload(item.id, file);
+                                }
+                              };
+                              fileInput.click();
+                            }}
+                          />
+                        )}
+                        
+                        {item.imageUrls.length === 0 && (
+                          <p className="image-upload-hint">
+                            Upload up to 5 images
+                          </p>
+                        )}
+                      </div>
+                    )
+                  }
+                ]}
+                items={tableData}
+                empty={<p>No variants added yet.</p>}
+              />
+            )}
           </Container>
         )}
 
-     <Box float="right">
+     <div className="action-buttons">
             <Button onClick={handleSave}>Save Item</Button>
             <Button variant="link" onClick={() => navigate("/app/inventory")}>
-  Cancel
-</Button>
-
-          </Box>
+              Cancel
+            </Button>
+     </div>
       </SpaceBetween>
     </div>
   );

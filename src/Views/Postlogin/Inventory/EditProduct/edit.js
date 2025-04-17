@@ -30,8 +30,11 @@ import {
 } from "@cloudscape-design/components"; // Adjust the import path if needed
 import Flashbar from "@cloudscape-design/components/flashbar";
 import status from "Redux-Store/Constants";
+import { useMediaQuery } from 'react-responsive';
+
 
 const Edit = () => {
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const navigate = useNavigate(); // Initialize useNavigate
@@ -122,6 +125,7 @@ const Edit = () => {
   const [inputTag, setInputTag] = useState("");
   const handleKeyPressForTag = (event) => {
     if (event.key === "Enter" && inputTag.trim() !== "") {
+      event.preventDefault(); // Prevent default behavior
       setTags([...tags, inputTag.trim()]);
       setInputTag("");
     }
@@ -261,12 +265,12 @@ const Edit = () => {
           },
         ]);
 
-        // setTimeout(() => {
-        //   setItems([]);
+        setTimeout(() => {
+          setItems([]);
           // navigate("/app/inventory");
 
-        //   window.location.reload(); // Force reload after navigation.
-        // }, 2000);
+          // window.location.reload(); // Force reload after navigation.
+        }, 2000);
       })
       .catch((error) => {
         console.log("Product Data:", productData);
@@ -362,7 +366,7 @@ const Edit = () => {
     <SpaceBetween size="xs">
       <BreadcrumbGroup
         items={[
-          { text: "Dashboard", href: "/app/dashboard" },
+          // { text: "Dashboard", href: "/app/dashboard" },
           { text: "Inventory", href: "/app/inventory" },
           { text: "Edit Item" },
         ]}
@@ -379,11 +383,96 @@ const Edit = () => {
         Edit Item
       </Header>
       <SpaceBetween direction="vertical" size="l">
-        <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+        {/* mobile view  */}
+        {isMobile?(
+            <Grid gridDefinition={[{ colspan: { default: isMobile ? 12 : 8 } }, { colspan: { default: isMobile ? 12 : 4 } }]} order={isMobile ? [1, 0] : [0, 1]}>
+               <Container header={<Header>Status</Header>}>
+              <FormField
+                                    errorText={!status && "Required"}
+  
+                label={
+                  <span>
+                    Status{" "}
+                    <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                  </span>
+                }
+              >
+                <Select
+                  name="statusofItem"
+                  selectedOption={
+                    availability
+                      ? { label: "In Stock", value: true }
+                      : { label: "Out Of Stock", value: false }
+                  }
+                  onChange={({ detail }) =>
+                    setAvailability(detail.selectedOption.value)
+                  }
+                  options={[
+                    { label: "In Stock", value: true },
+                    { label: "Out Of Stock", value: false },
+                  ]}
+                  placeholder="Select Status"
+                />
+              </FormField>
+            </Container>
+            <Container header={<Header>Category</Header>}>
+              <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
+              <Grid  gridDefinition={[{ colspan: { default: isMobile ? 12 : 6 } }, { colspan: { default: isMobile ? 12 : 6 } }]}>
+                <FormField
+                                      errorText={!category && "Required"}
+  
+                  label={
+                    <span>
+                      Category{" "}
+                      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                    </span>
+                  }
+                >
+                  <Select
+                    selectedOption={
+                      category ? { label: category, value: category } : null
+                    }
+                    onChange={({ detail }) => {
+                      setCategory(detail.selectedOption.value);
+                      setSubCategory(null);
+                    }}
+                    options={categoryOptions}
+                    placeholder="Select a category"
+                  />
+                </FormField>
+                {/* Subcategory Dropdown */}
+                <FormField
+                errorText={!subCategory && "Required"}
+                  label={
+                    <span>
+                      Sub Category{" "}
+                      <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                    </span>
+                  }
+                >
+                  <Select
+                    selectedOption={
+                      subCategory
+                        ? { label: subCategory, value: subCategory }
+                        : null
+                    }
+                    onChange={({ detail }) =>
+                      setSubCategory(detail.selectedOption.value)
+                    }
+                    options={category ? subcategoryOptions[category] || [] : []}
+                    placeholder="Select a subcategory"
+                  />
+                </FormField>
+              </Grid>
+            </Container>
+           
+          </Grid>
+        ):
+        (
+          <Grid gridDefinition={[{ colspan: { default: isMobile ? 12 : 8 } }, { colspan: { default: isMobile ? 12 : 4 } }]} order={isMobile ? [1, 0] : [0, 1]}>
           <Container header={<Header>Category</Header>}>
             <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
-
-            <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+            <Grid  gridDefinition={[{ colspan: { default: isMobile ? 12 : 6 } }, { colspan: { default: isMobile ? 12 : 6 } }]}>
               <FormField
                                     errorText={!category && "Required"}
 
@@ -461,11 +550,13 @@ const Edit = () => {
             </FormField>
           </Container>
         </Grid>
-        <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+        )}
+       
+        <Grid gridDefinition={[{ colspan: { default: isMobile ? 12 : 8 } }, { colspan: { default: isMobile ? 12 : 4 } }]}>
           <Container fitHeight header={<Header>Item Information</Header>}>
             <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
             <SpaceBetween size="l">
-              <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+              <Grid gridDefinition={[{ colspan: { default: isMobile ? 12 : 6 } }, { colspan: { default: isMobile ? 12 : 6 } }]}>
                 <FormField
                                       errorText={!name && "Required"}
 
@@ -503,7 +594,7 @@ const Edit = () => {
   //            errorText={isFormSubmitted && !overallStock && "Required"}
             >
               <div style={{ width: "100%" }}>
-                <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                <Grid disableGutters={!isMobile} gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
                   <Input
                     size="xs"
                     placeholder="Input Overall Stock"
@@ -523,7 +614,7 @@ const Edit = () => {
           
               </Grid>
               <div>
-                <strong>Tags</strong>
+                <strong>Tagsssss</strong>
                 <div
                   style={{
                     display: "flex",
@@ -563,19 +654,30 @@ const Edit = () => {
                       </button>
                     </div>
                   ))}
-                  <input
-                    placeholder="Enter Tag"
-                    value={inputTag}
-                    onChange={(event) => setInputTag(event.target.value)}
-                    onKeyPress={handleKeyPressForTag}
-                    style={{
-                      flex: 1,
-                      padding: "8px",
-                      border: "none",
-                      outline: "none",
-                      width: "100%",
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (inputTag.trim() !== "") {
+                        setTags([...tags, inputTag.trim()]);
+                        setInputTag("");
+                      }
+                      return false;
                     }}
-                  />
+                    style={{ flex: 1, display: "flex" }}
+                  >
+                    <input
+                      placeholder="Enter Tag"
+                      value={inputTag}
+                      onChange={(event) => setInputTag(event.target.value)}
+                      style={{
+                        flex: 1,
+                        padding: "8px",
+                        border: "none",
+                        outline: "none",
+                        width: "100%",
+                      }}
+                    />
+                  </form>
                 </div>
               </div>
 
@@ -590,12 +692,13 @@ const Edit = () => {
               >
                 <div style={{ width: "100%" }}>
                   <Textarea
-                        rows={10}
+                  
+                        rows={8}
 
                     value={description}
                     invalid={invalidFields.description}
                     onChange={({ detail }) => setDescription(detail.value)}
-                    maxLength={1000}
+                    maxLength={100000}
 
                   />
                 </div>
@@ -1028,7 +1131,7 @@ const Edit = () => {
             </SpaceBetween>
           </Box>
         </Grid>
-        <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+          <Grid gridDefinition={[{ colspan: { default: isMobile ? 12 : 8 } }, { colspan: { default: isMobile ? 12 : 4 } }]}>
           <Container header={<Header headingTagOverride="h3">Pricing</Header>}>
             <hr style={{ marginLeft: "-15px", marginRight: "-15px" }} />
 

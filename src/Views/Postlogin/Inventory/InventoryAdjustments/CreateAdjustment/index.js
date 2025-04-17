@@ -22,10 +22,10 @@ import { useNavigate } from "react-router-dom";
 import { ErrorMessages, ValidationEngine } from "Utils/helperFunctions";
 import { fetchProducts } from "Redux-Store/Products/ProductThunk";
 import { useDispatch, useSelector } from "react-redux";
+import { useMediaQuery } from 'react-responsive';
 
 const useFormState = (initialState) => {
   const [state, setState] = useState(initialState);
-
   const handleChange = (field) => (event) => {
     const value = event.detail
       ? event.detail.value || event.detail.selectedOption
@@ -42,6 +42,7 @@ const useFormState = (initialState) => {
 const CreateNewAdjustments = () => {
   // modal table data from redux
   const dispatch = useDispatch();
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
   const products = useSelector((state) => state.products.products);
   console.log(products, "prod");
@@ -242,7 +243,7 @@ const CreateNewAdjustments = () => {
           code: item.itemCode,
           name: item.name,
           images: item.images[0],
-          sellingprice: item.msp,
+          sellingPrice: item.sellingPrice,
           stockOnHold: item.stockQuantity,
           purchasingPrice: item.purchasingPrice,
           adjustQuantity: item.adjustQuantity,
@@ -287,6 +288,10 @@ const CreateNewAdjustments = () => {
   const handleDeleteItem = (id) => {
     setItems(items.filter((item) => item.id !== id));
   };
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleFilter = () => {
+    setIsOpen(!isOpen);
+  };
 
   const subcategoryOptions = {
     "Fresh Vegetables": [
@@ -328,7 +333,7 @@ const CreateNewAdjustments = () => {
     <>
       <BreadcrumbGroup
         items={[
-          { text: "Dashboard", href: "/app/dashboard" },
+          // { text: "Dashboard", href: "/app/dashboard" },
           {
             text: "Inventory Adjustments",
             href: "/app/inventory/inventory-adjustments",
@@ -344,24 +349,38 @@ const CreateNewAdjustments = () => {
               <Header
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
-                    <Button onClick={handleBackNavigate}>Cancel</Button>
-                    <Button onClick={handleSave} variant="primary">
-                      Save
+             
+                      <Button   onClick={handleBackNavigate}
+                    iconName="close" variant="normal">
+                    {isMobile ? "" : "Cancel Adjustment"}
+
                     </Button>
+                      <button
+                      className="cancel-btn"
+                      style={{ borderRadius: "16px",backgroundColor:'#0972D3',borderColor:'#0972D3',color:'white' }}
+                      onClick={handleSave} >
+                      Save
+                    </button>
                   </SpaceBetween>
                 }
-                variant="h1"
+                variant={isMobile ? "h3" : "h1"}
               >
+                
                 New Adjustment
               </Header>
             }
           >
             <Grid
-              gridDefinition={[
-                { colspan: 4 },
-                { colspan: 4 },
-                { colspan: 4 },
+              gridDefinition={isMobile ? [
                 { colspan: 12 },
+                { colspan: 12}, 
+                { colspan: 12},
+                { colspan: 12 }
+              ] : [
+                { colspan: 4 },
+                { colspan: 4 },
+                { colspan: 4 },
+                { colspan: 12 }
               ]}
             >
               <FormField label="Adjustment No.">
@@ -536,7 +555,7 @@ const CreateNewAdjustments = () => {
                       </span>
                     ),
 
-                    cell: (item) => item.msp,
+                    cell: (item) => item.sellingPrice,
                   },
                   {
                     header: (
@@ -740,55 +759,125 @@ const CreateNewAdjustments = () => {
           }
           header={
             <Header>
-              <SpaceBetween direction="horizontal" size="xs">
-                <div style={{ width: "400px" }}>
-                  <TextFilter
-                    filteringText={filteringText}
-                    filteringPlaceholder="Search"
-                    filteringAriaLabel="Filter instances"
-                    onChange={handleSearchChange}
-                  />
+      <SpaceBetween size="m">
+    <Grid
+          gridDefinition={[
+            { colspan: { default: isMobile ? 10 : 12, xxs: isMobile ? 10 : 4 } },
+            { colspan: { default: isMobile ? 2 : 12, xxs: isMobile ? 2 : 2 } },
+            { colspan: { default: isMobile ? 12 : 12, xxs: isMobile ? 12 : 6 } },
+          ]}
+        >
+          <div style={{width:"280px"}}>
+          <TextFilter
+            filteringText={filteringText}
+            filteringPlaceholder="Search"
+            filteringAriaLabel="Filter instances"
+            onChange={handleSearchChange}
+          />
+          </div>
+          {/* Filter Toggle */}
+          <span
+            onClick={toggleFilter}
+            style={{
+              display: "flex",
+              justifyContent: isMobile ? "center" : "space-between",
+              alignItems: "center",
+              cursor: "pointer",
+              border: isMobile ? "2px solid #9BA7B6" : "3px solid #9BA7B6",
+              padding: isMobile ? "4px" : "4px 8px",
+              borderRadius: "8px",
+              backgroundColor: "white",
+              width: isMobile ? "32px" : "auto",
+              gap: "10px",
+            }}
+          >
+            {isMobile ? (
+              <Icon variant="link" name="filter" />
+            ) : (
+              <>
+                <div style={{ display: "flex", gap: "5px" }}>
+                  <Icon variant="link" name="filter" />
+                  <span
+                    style={{
+                      fontWeight: "normal", 
+                      color: "#9BA7B6",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    Filters
+                  </span>
                 </div>
-                <Select
-                  required
-                  selectedOption={selectedCategory}
-                  onChange={handleCategoryChange}
-                  options={[
-                    { label: "All", value: "" },
-                    {
-                      label: "Fresh Vegetables",
-                      value: "Fresh Vegetables",
-                    },
-                    {
-                      label: "Fresh Fruits",
-                      value: "Fresh Fruits",
-                    },
-                    {
-                      label: "Dairy",
-                      value: "Dairy",
-                    },
-                    {
-                      label: "Groceries",
-                      value: "Groceries",
-                    },
-                    { label: "Bengali Special", value: "Bengali Special" },
-                    { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" },
-                  ]}
-                  placeholder="Select Category"
+                <Icon
+                  variant="link"
+                  name={isOpen ? "caret-up-filled" : "caret-down-filled"}
                 />
-                <Select
-                  disabled={!selectedCategory || selectedCategory.value === ""} // Disable if no category or "All" is selected
-                  required
-                  selectedOption={selectedSubCategory}
-                  onChange={handleSubCategoryChange}
-                  placeholder="Select Sub Category"
-                  options={
-                    selectedCategory
-                      ? subcategoryOptions[selectedCategory.value] || []
-                      : []
-                  }
-                />
-              </SpaceBetween>
+              </>
+            )}
+          </span>
+          
+        </Grid>
+        
+        {/* Filter UI that appears when toggle is clicked */}
+        {isOpen && (
+          <div style={{ 
+            // padding: "16px", 
+            // backgroundColor: "white", 
+            // borderRadius: "8px", 
+            // border: "1px solid #e9ebed",
+            marginBottom: "16px"
+          }}>
+            <Grid
+              gridDefinition={[
+                { colspan: { default: 12, xs: 12 } },
+                { colspan: { default: 12, xs: 12 } },
+              ]}
+            >
+              <Select
+                required
+                selectedOption={selectedCategory}
+                onChange={handleCategoryChange}
+                options={[
+                  { label: "All", value: "" },
+                  {
+                    label: "Fresh Vegetables",
+                    value: "Fresh Vegetables",
+                  },
+                  {
+                    label: "Fresh Fruits",
+                    value: "Fresh Fruits",
+                  },
+                  {
+                    label: "Dairy",
+                    value: "Dairy",
+                  },
+                  {
+                    label: "Groceries",
+                    value: "Groceries",
+                  },
+                  { label: "Bengali Special", value: "Bengali Special" },
+                  { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" },
+                ]}
+                placeholder="Select Category"
+              />
+              <Select
+                disabled={!selectedCategory || selectedCategory.value === ""} // Disable if no category or "All" is selected
+                required
+                selectedOption={selectedSubCategory}
+                onChange={handleSubCategoryChange}
+                placeholder="Select Sub Category"
+                options={
+                  selectedCategory
+                    ? subcategoryOptions[selectedCategory.value] || []
+                    : []
+                }
+              />
+           
+            </Grid> 
+               </div>
+        )}
+        </SpaceBetween>
+        
+
             </Header>
           }
           variant="borderless"
@@ -831,7 +920,7 @@ const CreateNewAdjustments = () => {
               header: "Purchasing Price",
               cell: (item) => item.purchasingPrice,
             },
-            { header: "MSP", cell: (item) => item.msp },
+            { header: "SP", cell: (item) => item.sellingPrice },
           ]}
           // items={data.items}
           items={

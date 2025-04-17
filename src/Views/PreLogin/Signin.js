@@ -5,9 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { Button, FormField, Input, Container } from "@cloudscape-design/components";
 import { LuEyeOff } from "react-icons/lu";
 import { FiEye } from "react-icons/fi";
+import { useMediaQuery } from 'react-responsive';
 
 const Signin = () => {
   const navigate = useNavigate();
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
   const dispatch = useDispatch();
   const { loading, error, isAuthenticated } = useSelector((state) => state.auth); 
   const [items, setItems] = React.useState([]);
@@ -136,8 +138,8 @@ const Signin = () => {
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        width: "24rem",
-        height: "22rem",
+        width: isMobile ? "22rem" : "24rem",
+        height: isMobile ? "22rem" : "22rem",
         borderRadius: "10px",
         backgroundColor: "white",
         boxShadow: "0 1px 8px rgba(0, 0, 0, 0.2)",

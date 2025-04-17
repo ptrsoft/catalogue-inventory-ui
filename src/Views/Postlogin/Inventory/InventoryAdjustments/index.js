@@ -13,15 +13,14 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 import { fetchAdjustments } from 'Redux-Store/InventoryAdjustments/InventoryAdjustmentsThunk';
 import { format } from 'date-fns'; // Import date-fns format function
-
-
+import { useMediaQuery } from 'react-responsive';
 
 const InventoryAdjustments = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [filteringText, setFilteringText] = useState('');
   const [currentPageIndex, setCurrentPageIndex] = useState(1);
-
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
   // Fetch adjustments data from Redux store
   const { data = [], status } = useSelector((state) => state.InvertorAdjustments.adjustments);
 
@@ -138,10 +137,10 @@ const InventoryAdjustments = () => {
           }
           header={
             <Header
-              variant='h1'
+              variant='h2'
               actions={
-                <Button onClick={handleNavigate} iconName='add-plus'>
-                  New Adjustment
+                <Button onClick={handleNavigate} variant='primary' iconName='add-plus'>
+                  {!isMobile && "New Adjustment"}
                 </Button>
               }
             >

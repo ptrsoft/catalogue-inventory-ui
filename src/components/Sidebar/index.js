@@ -1,4 +1,3 @@
-
 import { SideNavigation } from "@cloudscape-design/components";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -44,16 +43,7 @@ const Sidebar = () => {
           text: "Items",
           href: "/app/inventory"
         },
-        {
-          type: "link",
-          text: "Item Collection",
-          href: "#/page5"
-        },
-        {
-          type: "link",
-          text: "Transfer",
-          href: "*"
-        },
+      
         {
           type: "link",
           text: "Inventory Adjustments",
@@ -90,6 +80,7 @@ const Sidebar = () => {
     <SideNavigation
       activeHref={location.pathname}
       header={{ href: "#/", text: "PTR Technologies" }}
+      
       onFollow={handleNavigation}
       items={items.map(item => {
         if (item.type === 'link') {

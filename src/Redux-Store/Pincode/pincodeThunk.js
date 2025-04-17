@@ -69,7 +69,7 @@ export const updatePincode = createAsyncThunk(
         let url = `${config.GET_PINCODE}`; // Base URL for the request
         const params = [];
   
-        // Add search parameter if it’s provided
+        // Add search parameter if it's provided
         if (String(search).trim()) {
           params.push(`search=${encodeURIComponent(String(search))}`);
         }
@@ -100,13 +100,13 @@ export const updatePincode = createAsyncThunk(
 // New thunk for PATCH request
 export const updateDeliveryType = createAsyncThunk(
     'pincode/updateDeliveryType',
-    async ({ type, pincodes }, { rejectWithValue,dispatch }) => {
-      console.log(type, pincodes, "all values for delivery type");
+    async ({ deliveryTypes, pincodes }, { rejectWithValue,dispatch }) => {
+      console.log(deliveryTypes, pincodes, "all values for delivery type");
       try {
         const url = `${config.GET_PINCODE}/delivery-type`;
   
         const response = await postLoginService.patch(url, {
-          type,      // 'same day' or 'next day'
+          deliveryTypes,      // 'same day' or 'next day'
           pincodes,  // Array of pincode strings
         });
   
@@ -124,7 +124,7 @@ export const updateDeliveryType = createAsyncThunk(
 
   export const updateStatus = createAsyncThunk(
     'pincode/updateStatus',
-    async ({ status, pincodes }, { rejectWithValue,dispatch }) => {
+    async ({ status, pincodes }, { rejectWithValue, dispatch }) => {
       try {
         const url = `${config.GET_PINCODE}/status`;
         const response = await postLoginService.patch(url, {

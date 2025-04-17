@@ -17,7 +17,11 @@ import {
   FormField,
   // ButtonFlow,
   TextContent,
+  Icon,
+  Flashbar,
 } from "@cloudscape-design/components";
+import { useMediaQuery } from 'react-responsive';
+
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -27,6 +31,7 @@ import {
 } from "Redux-Store/Pincode/pincodeThunk"; // Assuming you have imported the thunk
 
 function PincodeList() {
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [selectedCodes, setSelectedCodes] = useState([]);
@@ -39,8 +44,10 @@ function PincodeList() {
   const [selectedPincode, setSelectedPincode] = useState(null); // Store selected pincode for modal
   const [statusToUpdate, setStatusToUpdate] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isOpen, setIsOpen] = useState(false);
+  const [flashMessages, setFlashMessages] = useState([]); // State for flashbar messages
 
-  const ITEMS_PER_PAGE = 15;
+  const ITEMS_PER_PAGE = 50;
   // Track the status to update
   // Get pincodes data from Redux store
   const {
@@ -102,14 +109,50 @@ function PincodeList() {
       selectedPincode.deliveryType === "same day" ? "next day" : "same day";
     dispatch(
       updateDeliveryType({
-        type: oppositeType,
+        deliveryTypes: [oppositeType],
         pincodes: selectedCodes,
       })
-    );
-    setIsModalOpen(false); // Close modal after confirming
-    setSelectedPincode(null);
-    setStatusToUpdate(null);
-    setSelectedCodes([]); // Unselect all selected cards after confirming
+    )
+    .unwrap()
+    .then(() => {
+      // Show success message
+      setFlashMessages([
+        {
+          type: "success",
+          content: `Delivery type updated to ${oppositeType} successfully`,
+          dismissible: true,
+          onDismiss: () => setFlashMessages([]),
+        },
+      ]);
+      
+      // Auto-dismiss after 3 seconds
+      setTimeout(() => {
+        setFlashMessages([]);
+      }, 3000);
+      
+      // Refresh the data
+      dispatch(getPincodes({ 
+        search: searchQuery, 
+        status: statusFilter?.value === true || statusFilter?.value === false ? statusFilter.value : "", 
+        type: deliveryTypeFilter?.value || "" 
+      }));
+      
+      setIsModalOpen(false); // Close modal after confirming
+      setSelectedPincode(null);
+      setStatusToUpdate(null);
+      setSelectedCodes([]); // Unselect all selected cards after confirming
+    })
+    .catch((error) => {
+      // Show error message
+      setFlashMessages([
+        {
+          type: "error",
+          content: `Failed to update delivery type: "${error.message || error}" .Change Delivery Type From Edit`,
+          dismissible: true,
+          onDismiss: () => setFlashMessages([]),
+        },
+      ]);
+    });
   };
 
   // Confirm status update
@@ -120,11 +163,47 @@ function PincodeList() {
           status: statusToUpdate,
           pincodes: selectedCodes,
         })
-      );
-      setIsModalOpen(false);
-      setSelectedPincode(null);
-      setStatusToUpdate(null);
-      setSelectedCodes([]); // Unselect all selected cards after confirming
+      )
+      .unwrap()
+      .then(() => {
+        // Show success message
+        setFlashMessages([
+          {
+            type: "success",
+            content: `Status updated to ${statusToUpdate ? "active" : "inactive"} successfully`,
+            dismissible: true,
+            onDismiss: () => setFlashMessages([]),
+          },
+        ]);
+        
+        // Auto-dismiss after 3 seconds
+        setTimeout(() => {
+          setFlashMessages([]);
+        }, 3000);
+        
+        // Refresh the data
+        dispatch(getPincodes({ 
+          search: searchQuery, 
+          status: statusFilter?.value === true || statusFilter?.value === false ? statusFilter.value : "", 
+          type: deliveryTypeFilter?.value || "" 
+        }));
+        
+        setIsModalOpen(false);
+        setSelectedPincode(null);
+        setStatusToUpdate(null);
+        setSelectedCodes([]); // Unselect all selected cards after confirming
+      })
+      .catch((error) => {
+        // Show error message
+        setFlashMessages([
+          {
+            type: "error",
+            content: `Failed to update status: ${error.message || error}`,
+            dismissible: true,
+            onDismiss: () => setFlashMessages([]),
+          },
+        ]);
+      });
     }
   };
   const handleViewPincode = (pincodes) => {
@@ -142,32 +221,29 @@ function PincodeList() {
     currentPage * ITEMS_PER_PAGE
   );
 
+  const toggleFilter = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <Box>
       <SpaceBetween direction="vertical" size="m">
+        {/* Flashbar for notifications */}
+        {flashMessages.length > 0 && (
+          <Flashbar items={flashMessages} />
+        )}
+        
         <BreadcrumbGroup
           items={[
             { text: "Dashboard", href: "/app/dashboard" },
-            { text: "Inventory", href: "/app/dashboard" },
+            // { text: "Inventory", href: "/app/dashboard" },
             { text: "Pincodes", href: "#" },
           ]}
         />
         <Header
           variant="h1"
           actions={
-            <SpaceBetween direction="horizontal" size="s">
-              <Button
-                disabled={selectedCodes.length === 0}
-                onClick={handleConvertStatusClick}
-              >
-                Mark
-              </Button>
-              <Button
-                disabled={selectedCodes.length === 0} // Disable if no pincode is selected
-                onClick={handleConvertDeliveryTypeClick}
-              >
-                 Delivery Type
-              </Button>
+            isMobile && (
               <Button
                 variant="primary"
                 onClick={Addpincode}
@@ -175,17 +251,37 @@ function PincodeList() {
               >
                 Add Pincode
               </Button>
-            </SpaceBetween>
+            ) 
+          
+            
           }
         >
-          <span style={{ fontWeight: "bolder" }}>Pincodes</span>
-        </Header>
+          <span style={{textDecoration: "underline", textDecorationColor: "#0972D3", textDecorationThickness: "2px", textUnderlineOffset: "6px"}}>Pincodes</span>
+          </Header>
+        {isMobile && (
+          <Box float="right">
+        <SpaceBetween direction="horizontal" size="s">
+                <Button
+                  disabled={selectedCodes.length === 0}
+                  onClick={handleConvertStatusClick}
+                >
+                  Mark
+                </Button>
+                <Button
+                  disabled={selectedCodes.length === 0} // Disable if no pincode is selected
+                  onClick={handleConvertDeliveryTypeClick}
+                >
+                  Delivery Type
+                </Button>
+
+                </SpaceBetween>
+                </Box>
+        )}
         <Grid
           gridDefinition={[
-            { colspan: 4 },
-            { colspan: 2 },
-            { colspan: 2 },
-            { colspan: 4 },
+            { colspan: { default: isMobile ? 10 : 12, xxs: isMobile ? 10 : 4 } },
+            { colspan: { default: isMobile ? 2 : 12, xxs: isMobile ? 2 : 2 } },
+            { colspan: { default: isMobile ? 12 : 12, xxs: isMobile ? 12 : 6 } },
           ]}
         >
           <TextFilter
@@ -194,39 +290,121 @@ function PincodeList() {
             filteringAriaLabel="Filter instances"
             onChange={handleSearchChange}
           />
-          <Select
-            placeholder="Status"
-            selectedOption={statusFilter}
-            onChange={({ detail }) => setStatusFilter(detail.selectedOption)}
-            options={[
-              { label: "Active", value: true },
-              { label: "Inactive", value: false },
-            ]}
-          />
-          <Select
-            placeholder="Delivery Type"
-            selectedOption={deliveryTypeFilter}
-            onChange={({ detail }) =>
-              setDeliveryTypeFilter(detail.selectedOption)
-            }
-            options={[
-              { label: "Same Day Delivery", value: "same day" },
-              { label: "Next Day Delivery", value: "next day" },
-            ]}
-          />
+          {/* Filter Toggle */}
+          <span
+            onClick={toggleFilter}
+            style={{
+              display: "flex",
+              justifyContent: isMobile ? "center" : "space-between",
+              alignItems: "center",
+              cursor: "pointer",
+              border: isMobile ? "2px solid #9BA7B6" : "3px solid #9BA7B6",
+              padding: isMobile ? "4px" : "4px 8px",
+              borderRadius: "8px",
+              backgroundColor: "white",
+              width: isMobile ? "32px" : "auto",
+              gap: "5px",
+            }}
+          >
+            {isMobile ? (
+              <Icon variant="link" name="filter" />
+            ) : (
+              <>
+                <div style={{ display: "flex", gap: "5px" }}>
+                  <Icon variant="link" name="filter" />
+                  <span
+                    style={{
+                      fontWeight: "normal", 
+                      color: "#9BA7B6",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    Filters
+                  </span>
+                </div>
+                <Icon
+                  variant="link"
+                  name={isOpen ? "caret-up-filled" : "caret-down-filled"}
+                />
+              </>
+            )}
+          </span>
           <Box float="right">
-            <Pagination
-              currentPageIndex={currentPage}
-              pagesCount={totalPages}
-              onChange={(event) =>
-                setCurrentPage(event.detail.currentPageIndex)
-              }
-            />
+            {!isMobile && (
+              <SpaceBetween size="xs" direction="horizontal">
+                <Button
+                  disabled={selectedCodes.length === 0}
+                  onClick={handleConvertStatusClick}
+                >
+                  Mark
+                </Button>
+                <Button
+                  disabled={selectedCodes.length === 0}
+                  onClick={handleConvertDeliveryTypeClick}
+                >
+                  Delivery Type
+                </Button>
+                <Button
+                variant="primary"
+                onClick={Addpincode}
+                iconName="add-plus"
+              >
+                Add Pincode
+              </Button>
+              </SpaceBetween>
+             )} 
           </Box>
         </Grid>
 
+        {/* Filter UI that appears when toggle is clicked */}
+        {isOpen && (
+          <div style={{ marginBottom: "16px" }}>
+            <Grid
+              gridDefinition={[
+                { colspan: { default: 12, xs: 12 } },
+                { colspan: { default: 12, xs: 12 } },
+              ]}
+            >
+              <Select
+                placeholder="Status"
+                selectedOption={statusFilter}
+                onChange={({ detail }) => setStatusFilter(detail.selectedOption)}
+                options={[
+                  { label: "Active", value: true },
+                  { label: "Inactive", value: false },
+                ]}
+              />
+              <Select
+                placeholder="Delivery Type"
+                selectedOption={deliveryTypeFilter}
+                onChange={({ detail }) =>
+                  setDeliveryTypeFilter(detail.selectedOption)
+                }
+                options={[
+                  { label: "Same Day Delivery", value: "same day" },
+                  { label: "Next Day Delivery", value: "next day" },
+                ]}
+              />
+            </Grid>
+          </div>
+        )}
+
+        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+        
+        <h3>{pincodes?.items.length} Pincodes</h3>
+        <Pagination
+        
+            currentPageIndex={currentPage}
+            pagesCount={totalPages}
+            onChange={(event) =>
+              setCurrentPage(event.detail.currentPageIndex)
+            }
+          />
+       
+        </div>
+
         <ColumnLayout columns={3}>
-          {pincodes?.items.map((pincode) => (
+          {currentItems?.map((pincode) => (
             <div className="runsheet-container" key={pincode.pincode}>
               <Header
                 // variant="h2"

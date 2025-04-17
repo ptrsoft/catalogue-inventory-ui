@@ -11,14 +11,16 @@ import {
   Header,
   SpaceBetween,
   Container,
+  Grid,
 } from "@cloudscape-design/components";
 import { fetchProducts } from "Redux-Store/Products/ProductThunk";
 import { useDispatch } from "react-redux"; // Import useDispatch and useSelector
 import { fetchOrderById, updateOrderItems } from "Redux-Store/Orders/OrdersThunk";
+import { useMediaQuery } from 'react-responsive';
 
 const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
   const dispatch = useDispatch();
-
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
   const [visible, setVisible] = useState(false);
   const handleSearchChange = ({ detail }) => {
     setFilteringText(detail.filteringText);
@@ -254,37 +256,67 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
           }
           header={
             <Header actions={
-              <Box float="right">
-              <SpaceBetween direction="horizontal" size="xs">
-                <button
-                  className="cancel-btn"
-                  style={{ borderRadius: "16px" }}
-                  onClick={() => {
-                    setVisible(false);
-                    resetFilters(); // Reset filters when canceling
-                  }}
-                >
-                  Cancel
-                </button>
-                <Button
-                  variant="primary"
-                  onClick={handleApplyItems}
-                  disabled={selectedItems.length === 0}
-                >
-                  Save
-                </Button>
-              </SpaceBetween>
-              </Box>
+              !isMobile && (
+                <Box float="right">
+                  <SpaceBetween direction="horizontal" size="xs">
+                    <button
+                      className="cancel-btn"
+                      style={{ borderRadius: "16px" }}
+                      onClick={() => {
+                        setVisible(false);
+                        resetFilters(); // Reset filters when canceling
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <Button
+                      variant="primary"
+                      onClick={handleApplyItems}
+                      disabled={selectedItems.length === 0}
+                    >
+                      Save
+                    </Button>
+                  </SpaceBetween>
+                </Box>
+              )
             }>
-              <SpaceBetween direction="horizontal" size="xs">
-                <div style={{ width: "400px" }}>
-                  <TextFilter
-                    filteringText={filteringText}
-                    filteringPlaceholder="Search"
-                    filteringAriaLabel="Filter instances"
-                    onChange={handleSearchChange}
-                  />
-                </div>
+              <Grid
+                gridDefinition={[
+                  { colspan: { default: isMobile ? 12 : 6 } },
+                  { colspan: { default: isMobile ? 12 : 3 } },
+                  { colspan: { default: isMobile ? 12 : 3 } },
+                  { colspan: { default: isMobile ? 12 : 12 } }
+                ]}
+              >
+                {isMobile && (
+                  <Box float="right">
+                    <SpaceBetween direction="horizontal" size="xs">
+                      <button
+                        className="cancel-btn"
+                        style={{ borderRadius: "16px" }}
+                        onClick={() => {
+                          setVisible(false);
+                          resetFilters(); // Reset filters when canceling
+                        }}
+                      >
+                        Cancel
+                      </button>
+                      <Button
+                        variant="primary"
+                        onClick={handleApplyItems}
+                        disabled={selectedItems.length === 0}
+                      >
+                        Save
+                      </Button>
+                    </SpaceBetween>
+                  </Box>
+                )}
+                <TextFilter
+                  filteringText={filteringText}
+                  filteringPlaceholder="Search"
+                  filteringAriaLabel="Filter instances"
+                  onChange={handleSearchChange}
+                />
                 <Select
                   required
                   selectedOption={selectedCategory}
@@ -318,6 +350,7 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
                   ]}
                   placeholder="Select Category"
                 />
+                
                 <Select
                   disabled={!selectedCategory || selectedCategory.value === ""} // Disable if no category or "All" is selected
                   required
@@ -330,9 +363,7 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
                       : []
                   }
                 />
-                
-               
-              </SpaceBetween>
+              </Grid>
             </Header>
           }
           variant="borderless"

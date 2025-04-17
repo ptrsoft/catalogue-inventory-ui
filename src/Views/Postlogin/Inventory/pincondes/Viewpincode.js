@@ -16,10 +16,12 @@ import {
   BreadcrumbGroup,
   Modal,
 } from "@cloudscape-design/components";
+import { useMediaQuery } from 'react-responsive';
 import { useDispatch } from "react-redux";
 import { updateStatus } from "Redux-Store/Pincode/pincodeThunk";
 
 const PincodeView = () => {
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
@@ -111,18 +113,35 @@ const PincodeView = () => {
       {/* Breadcrumb */}
       <BreadcrumbGroup
         items={[
-          { text: "Dashboard", href: "/app/dashboard" },
-          { text: "Inventory", href: "/app/dashboard" },
+          // { text: "Dashboard", href: "/app/dashboard" },
+          // { text: "Inventory", href: "/app/dashboard" },
           { text: "Pincodes", href: "/app/inventory/pincodes" },
           { text: "View Pincode", href: "#" },
         ]}
       />
+      <Header variant="h2" actions={
+        isMobile && (
+          <SpaceBetween direction="horizontal" size="xs">
+          <Button variant="normal" onClick={handleConvertStatusClick}>
+            {localActive ? "Mark Inactive" : "Mark Active"}
+          </Button>
+          <Button
+            variant="normal"
+            onClick={() => editbynavigating(currentData)}
+            iconName="edit"
+          >
+            
+          </Button>
+        </SpaceBetween>
+      )}> View Pincode</Header>
 
       <Container
         header={
+     
           <Header
             variant="h4"
             actions={
+              !isMobile && (
               <SpaceBetween direction="horizontal" size="xs">
                 <Button variant="normal" onClick={handleConvertStatusClick}>
                   {localActive ? "Mark Inactive" : "Mark Active"}
@@ -135,8 +154,10 @@ const PincodeView = () => {
                   Edit
                 </Button>
               </SpaceBetween>
+              )
             }
           >
+
             <SpaceBetween size="m" direction="vertical">
               <p>Pincode No</p>
               <div
@@ -147,11 +168,12 @@ const PincodeView = () => {
                     fontWeight: "bolder",
                     color: "#0972D3",
                     fontSize: "40px",
+                    marginBottom:isMobile ? "8px" : "0px"
                   }}
                 >
                   {pincode}
                 </span>
-                <span style={{ marginTop: "8px" }}>
+                <span style={{ marginTop: "8px",marginBottom:isMobile ? "8px" : "0px" }}>
                   <StatusIndicator type={localActive ? "success" : "stopped"}>
                     {localActive ? "Active" : "Inactive"}
                   </StatusIndicator>
@@ -169,7 +191,7 @@ const PincodeView = () => {
       { label: "Next Day Delivery", value: "next day", description: "Item is delivered the following day or according to a booked delivery slot." },
     ].map((method) => (
       // Check if the value exists in the deliveryTypes array
-      deliveryTypes.includes(method.value) && (
+      deliveryTypes?.includes(method.value) && (
         <div
           key={method.value}
           style={{

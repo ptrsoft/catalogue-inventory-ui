@@ -343,7 +343,7 @@ const AddItemForm = () => {
      <SpaceBetween direction="vertical" size="l">
      <BreadcrumbGroup
           items={[
-            { text: "Dashboard", href: "/app/dashboard" },
+            // { text: "Dashboard", href: "/app/dashboard" },
 
             { text: "Inventory", href: "/app/inventory" },
             { text: "Add Item", href: "/app/inventory/addItem" },

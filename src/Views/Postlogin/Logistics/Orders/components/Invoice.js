@@ -4,9 +4,11 @@ import Barcode from "./BarCode";
 import { useDispatch } from "react-redux";
 import { Button } from "@cloudscape-design/components";
 import { fetchOrderById } from "Redux-Store/Orders/OrdersThunk";
+import { useMediaQuery } from 'react-responsive';
 
 const Invoice = ({ selectedOrder, flag }) => {
   // For printing bill
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
   const printRef = useRef([]);
   const [fetchedOrders, setFetchedOrders] = useState([]);
@@ -111,11 +113,12 @@ const Invoice = ({ selectedOrder, flag }) => {
     <>
       {flag === "multiple" ? (
         <Button
-          variant="primary"
+          variant={isMobile ? "normal" : "primary"}
           onClick={handlePrint}
-          disabled={selectedOrder?.length === 0} // Disable when no items are selected
+          disabled={selectedOrder?.length === 0}
+          iconName={isMobile ? "download" : undefined}
         >
-          Multiple Print Bill
+          {isMobile ? "" : "Multiple Print Bill"}
         </Button>
       ) : (
         <button onClick={handlePrint} className="print-btn">

@@ -5,6 +5,8 @@ import {
   ContentLayout,
   Calendar,
 } from "@cloudscape-design/components";
+import { useMediaQuery } from 'react-responsive';
+
 import Container from "@cloudscape-design/components/container";
 import Header from "@cloudscape-design/components/header";
 import Grid from "@cloudscape-design/components/grid";
@@ -16,6 +18,7 @@ import Icon from "@cloudscape-design/components/icon";
 
 const CustomDropdown = ({ options, selectedOption, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
   const handleOptionClick = (option) => {
     onChange(option);
@@ -131,305 +134,358 @@ const DashboardCards = () => {
   //   setSelectedFilter(option);
   // };
 
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+  const dashboardContent = (
+    <SpaceBetween direction="vertical" size="l">
+      <Container className="top-container" style={{ marginBottom: "1rem" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <h2 style={{ marginBottom: "1rem" }}>Ecommerce's Dashboard</h2>
+        </div>
+
+        <ColumnLayout columns={4} variant="default" minColumnWidth={120}>
+          <div>
+            <Box variant="awsui-key-label">
+              <p style={{ fontSize: 12 }}>Total Item In Inventory</p>
+            </Box>
+            <span
+              style={{ fontSize: 38, fontWeight: "1000", lineHeight: 1.3 }}
+            >
+              1023
+            </span>
+          </div>
+          <div>
+            <Box variant="awsui-key-label">
+              <p style={{ fontSize: 12 }}>Total Quality On Hand</p>
+            </Box>
+            <span
+              style={{ fontSize: 38, fontWeight: "1000", lineHeight: 1.3 }}
+            >
+              3206
+            </span>
+          </div>
+          <div>
+            <Box variant="awsui-key-label">
+              <p style={{ fontSize: 12 }}>Total Inventory Value</p>
+            </Box>
+            <span
+              style={{ fontSize: 38, fontWeight: "1000", lineHeight: 1.3 }}
+            >
+              $44k
+            </span>
+          </div>
+          <div>
+            <Box variant="awsui-key-label">
+              <p style={{ fontSize: 12 }}>Recent Orer</p>
+            </Box>
+            <span
+              style={{ fontSize: 38, fontWeight: "1000", lineHeight: 1.3 }}
+            >
+              14
+            </span>
+          </div>
+        </ColumnLayout>
+      </Container>
+
+      <Grid
+        gridDefinition={[
+          { colspan: { default: 12, xxs: 6 } },
+          { colspan: { default: 12, xxs: 6 } },
+        ]}
+      >
+        <Container>
+          {/* BarChart section */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1rem",
+            }}
+          >
+            <h3>Purchase & Sales Stock</h3>
+            <CustomDropdown
+              options={filterOptions}
+              selectedOption={selectedFilter1}
+              onChange={setSelectedFilter1}
+            />
+          </div>
+          <BarChart
+            series={[
+              {
+                title: "Purchase",
+                type: "bar",
+                data: [
+                  { x: new Date(1601058600000), y: 91394 },
+                  { x: new Date(1601065800000), y: 56012 },
+                  { x: new Date(1601073000000), y: 156204 },
+                  { x: new Date(1601080200000), y: 98349 },
+                  { x: new Date(1601087400000), y: 99249 },
+                ],
+                valueFormatter: (e) =>
+                  Math.abs(e) >= 1e9
+                    ? (e / 1e9).toFixed(1).replace(/\.0$/, "") + "G"
+                    : Math.abs(e) >= 1e6
+                    ? (e / 1e6).toFixed(1).replace(/\.0$/, "") + "M"
+                    : Math.abs(e) >= 1e3
+                    ? (e / 1e3).toFixed(1).replace(/\.0$/, "") + "K"
+                    : e.toFixed(2),
+              },
+              {
+                title: "Sales",
+                type: "bar",
+                data: [
+                  { x: new Date(1601058600000), y: 133294 },
+                  { x: new Date(1601065800000), y: 96012 },
+                  { x: new Date(1601073000000), y: 112604 },
+                  { x: new Date(1601080200000), y: 68349 },
+                  { x: new Date(1601087400000), y: 79249 },
+                ],
+                valueFormatter: (e) =>
+                  Math.abs(e) >= 1e9
+                    ? (e / 1e9).toFixed(1).replace(/\.0$/, "") + "G"
+                    : Math.abs(e) >= 1e6
+                    ? (e / 1e6).toFixed(1).replace(/\.0$/, "") + "M"
+                    : Math.abs(e) >= 1e3
+                    ? (e / 1e3).toFixed(1).replace(/\.0$/, "") + "K"
+                    : e.toFixed(2),
+              },
+            ]}
+            xDomain={[
+              new Date(1601058600000),
+              new Date(1601065800000),
+              new Date(1601073000000),
+              new Date(1601080200000),
+              new Date(1601087400000),
+            ]}
+            yDomain={[0, 156204]}
+            i18nStrings={{
+              filterLabel: "Filter displayed data",
+              filterPlaceholder: "Filter data",
+              legendAriaLabel: "Legend",
+              chartAriaRoleDescription: "line chart",
+              xTickFormatter: (e) =>
+                e
+                  .toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })
+                  .split(", ")
+                  .join("\n"),
+            }}
+            ariaLabel="Single data series line chart"
+            errorText="Error loading data."
+            height={300}
+            loadingText="Loading chart"
+            recoveryText="Retry"
+            empty={
+              <Box textAlign="center" color="inherit">
+                <b>No data available</b>
+                <Box variant="p" color="inherit">
+                  There is no data available
+                </Box>
+              </Box>
+            }
+            noMatch={
+              <Box textAlign="center" color="inherit">
+                <b>No matching data</b>
+                <Box variant="p" color="inherit">
+                  There is no matching data to display
+                </Box>
+                <Button onClick={() => console.log("Clear filter")}>
+                  Clear filter
+                </Button>
+              </Box>
+            }
+          />
+        </Container>
+
+        <Container>
+          {/* PieChart section */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1rem",
+            }}
+          >
+            <h3>Transactions</h3>
+            <CustomDropdown
+              options={filterOptions}
+              selectedOption={selectedFilter2}
+              onChange={setSelectedFilter2}
+            />
+          </div>
+          <PieChart
+            data={data}
+            i18nStrings={{
+              detailsValue: "Value",
+              detailsPercentage: "Percentage",
+              filterLabel: "Filter displayed data",
+              filterPlaceholder: "Filter data",
+              filterSelectedAriaLabel: "selected",
+              detailPopoverDismissAriaLabel: "Dismiss",
+              legendAriaLabel: "Legend",
+              chartAriaRoleDescription: "pie chart",
+              segmentDescription: (datum, sum) =>
+                `${datum.data.title} - ${datum.data.value} (${datum.data.percentage}%)`,
+            }}
+            ariaDescription="Donut chart showing customer preferences for meal plans."
+            ariaLabel="Donut chart"
+            errorText="Error loading data."
+            loadingText="Loading chart"
+            recoveryText="Retry"
+            size="large"
+            variant="donut"
+            empty={
+              <Box textAlign="center" color="inherit">
+                <b>No data available</b>
+                <Box variant="p" color="inherit">
+                  There is no data available
+                </Box>
+              </Box>
+            }
+          />
+        </Container>
+
+        <Container>
+          {/* Another PieChart section */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1rem",
+            }}
+          >
+            <h3>Order Type</h3>
+            <CustomDropdown
+              options={filterOptions}
+              selectedOption={selectedFilter3}
+              onChange={setSelectedFilter3}
+            />
+          </div>
+          <PieChart
+            data={data2}
+            i18nStrings={{
+              detailsValue: "Value",
+              detailsPercentage: "Percentage",
+              filterLabel: "Filter displayed data",
+              filterPlaceholder: "Filter data",
+              filterSelectedAriaLabel: "selected",
+              detailPopoverDismissAriaLabel: "Dismiss",
+              legendAriaLabel: "Legend",
+              chartAriaRoleDescription: "pie chart",
+              segmentDescription: (datum, sum) =>
+                `${datum.data.title} - ${datum.data.value} (${datum.data.percentage}%)`,
+            }}
+            ariaDescription="Donut chart showing order types."
+            ariaLabel="Donut chart"
+            errorText="Error loading data."
+            loadingText="Loading chart"
+            recoveryText="Retry"
+            size="large"
+            variant="donut"
+            empty={
+              <Box textAlign="center" color="inherit">
+                <b>No data available</b>
+                <Box variant="p" color="inherit">
+                  There is no data available
+                </Box>
+              </Box>
+            }
+          />
+        </Container>
+      </Grid>
+    </SpaceBetween>
+  );
+
   return (
-    <ContentLayout
-      headerVariant="high-contrast"
-      defaultPadding
-      header={
+    isMobile ? (
+      <div>
         <Header
-          variant="h1"
+          variant="h2"
           actions={
-            <div style={{display:"flex",gap:"10px"}}>
+            <div style={{display:"flex",gap:"10px",marginBottom:"22px"}}>
               <Button
                 iconAlign="right"
                 iconName="calendar"
                 onClick={handleButtonClick}
                 size=""
               >
-                {isCalendarVisible ? "Hide Calendar" : "Calendar"}
-              </Button>
-              <Button  href= "/app/inventory/addItem" iconName="add-plus" variant="primary" wrapText={false}>
-                Add Item
+                  {isMobile ? "" : (isCalendarVisible ? "Hide Calendar" : "Calendar")}
+                  </Button>
+              <Button 
+                href="/app/inventory/addItem" 
+                iconName="add-plus" 
+                variant="primary"
+                wrapText={false}
+                title="Add Item"
+              >
+                {isMobile ? "" : "Add Item"}
               </Button>
             </div>
           }
         >
-          Dashboard
+          <span style={{textDecoration: "underline", textDecorationColor: "#0972D3", textDecorationThickness: "2px", textUnderlineOffset: "6px"}}>Dashboard</span>
         </Header>
-      }
-    >
-      {isCalendarVisible && (
-        <Container>
-          <Calendar
-            onChange={({ detail }) => setValue(detail.value)}
-            value={value}
-          />
-        </Container>
-      )}
-
-      <SpaceBetween direction="vertical" size="l">
-        <Container className="top-container" style={{ marginBottom: "1rem" }}>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <h2 style={{ marginBottom: "1rem" }}>Ecommerce's Dashboard</h2>
-          </div>
-
-          <ColumnLayout columns={4} variant="default" minColumnWidth={120}>
-            <div>
-              <Box variant="awsui-key-label">
-                <p style={{ fontSize: 12 }}>Total Item In Inventory</p>
-              </Box>
-              <span
-                style={{ fontSize: 38, fontWeight: "1000", lineHeight: 1.3 }}
-              >
-                1023
-              </span>
-            </div>
-            <div>
-              <Box variant="awsui-key-label">
-                <p style={{ fontSize: 12 }}>Total Quality On Hand</p>
-              </Box>
-              <span
-                style={{ fontSize: 38, fontWeight: "1000", lineHeight: 1.3 }}
-              >
-                3206
-              </span>
-            </div>
-            <div>
-              <Box variant="awsui-key-label">
-                <p style={{ fontSize: 12 }}>Total Inventory Value</p>
-              </Box>
-              <span
-                style={{ fontSize: 38, fontWeight: "1000", lineHeight: 1.3 }}
-              >
-                $44k
-              </span>
-            </div>
-            <div>
-              <Box variant="awsui-key-label">
-                <p style={{ fontSize: 12 }}>Recent Orer</p>
-              </Box>
-              <span
-                style={{ fontSize: 38, fontWeight: "1000", lineHeight: 1.3 }}
-              >
-                14
-              </span>
-            </div>
-          </ColumnLayout>
-        </Container>
-
-        <Grid
-          gridDefinition={[
-            { colspan: { default: 12, xxs: 6 } },
-            { colspan: { default: 12, xxs: 6 } },
-          ]}
-        >
+        
+        {isCalendarVisible && (
           <Container>
-            {/* BarChart section */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1rem",
-              }}
-            >
-              <h3>Purchase & Sales Stock</h3>
-              <CustomDropdown
-                options={filterOptions}
-                selectedOption={selectedFilter1}
-                onChange={setSelectedFilter1}
-              />
-            </div>
-            <BarChart
-              series={[
-                {
-                  title: "Purchase",
-                  type: "bar",
-                  data: [
-                    { x: new Date(1601058600000), y: 91394 },
-                    { x: new Date(1601065800000), y: 56012 },
-                    { x: new Date(1601073000000), y: 156204 },
-                    { x: new Date(1601080200000), y: 98349 },
-                    { x: new Date(1601087400000), y: 99249 },
-                  ],
-                  valueFormatter: (e) =>
-                    Math.abs(e) >= 1e9
-                      ? (e / 1e9).toFixed(1).replace(/\.0$/, "") + "G"
-                      : Math.abs(e) >= 1e6
-                      ? (e / 1e6).toFixed(1).replace(/\.0$/, "") + "M"
-                      : Math.abs(e) >= 1e3
-                      ? (e / 1e3).toFixed(1).replace(/\.0$/, "") + "K"
-                      : e.toFixed(2),
-                },
-                {
-                  title: "Sales",
-                  type: "bar",
-                  data: [
-                    { x: new Date(1601058600000), y: 133294 },
-                    { x: new Date(1601065800000), y: 96012 },
-                    { x: new Date(1601073000000), y: 112604 },
-                    { x: new Date(1601080200000), y: 68349 },
-                    { x: new Date(1601087400000), y: 79249 },
-                  ],
-                  valueFormatter: (e) =>
-                    Math.abs(e) >= 1e9
-                      ? (e / 1e9).toFixed(1).replace(/\.0$/, "") + "G"
-                      : Math.abs(e) >= 1e6
-                      ? (e / 1e6).toFixed(1).replace(/\.0$/, "") + "M"
-                      : Math.abs(e) >= 1e3
-                      ? (e / 1e3).toFixed(1).replace(/\.0$/, "") + "K"
-                      : e.toFixed(2),
-                },
-              ]}
-              xDomain={[
-                new Date(1601058600000),
-                new Date(1601065800000),
-                new Date(1601073000000),
-                new Date(1601080200000),
-                new Date(1601087400000),
-              ]}
-              yDomain={[0, 156204]}
-              i18nStrings={{
-                filterLabel: "Filter displayed data",
-                filterPlaceholder: "Filter data",
-                legendAriaLabel: "Legend",
-                chartAriaRoleDescription: "line chart",
-                xTickFormatter: (e) =>
-                  e
-                    .toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })
-                    .split(", ")
-                    .join("\n"),
-              }}
-              ariaLabel="Single data series line chart"
-              errorText="Error loading data."
-              height={300}
-              loadingText="Loading chart"
-              recoveryText="Retry"
-              empty={
-                <Box textAlign="center" color="inherit">
-                  <b>No data available</b>
-                  <Box variant="p" color="inherit">
-                    There is no data available
-                  </Box>
-                </Box>
-              }
-              noMatch={
-                <Box textAlign="center" color="inherit">
-                  <b>No matching data</b>
-                  <Box variant="p" color="inherit">
-                    There is no matching data to display
-                  </Box>
-                  <Button onClick={() => console.log("Clear filter")}>
-                    Clear filter
-                  </Button>
-                </Box>
-              }
+            <Calendar
+              onChange={({ detail }) => setValue(detail.value)}
+              value={value}
             />
           </Container>
+        )}
 
+        {dashboardContent}
+      </div>
+    ) : (
+      <ContentLayout
+        headerVariant="high-contrast"
+        defaultPadding={true}
+        header={
+          <Header
+            variant="h1"
+            actions={
+              <div style={{display:"flex",gap:"10px"}}>
+                <Button
+                  iconAlign="right"
+                  iconName="calendar"
+                  onClick={handleButtonClick}
+                  size=""
+                >
+                  {isMobile ? "" : (isCalendarVisible ? "Hide Calendar" : "Calendar")}
+                </Button>
+                <Button 
+                  href="/app/inventory/addItem" 
+                  iconName="add-plus" 
+                  variant="primary"
+                  wrapText={false}
+                  title="Add Item"
+                >
+                  {isMobile ? "" : "Add Item"}
+                </Button>
+              </div>
+            }
+          >
+            Dashboard
+          </Header>
+        }
+      >
+        {isCalendarVisible && (
           <Container>
-            {/* PieChart section */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1rem",
-              }}
-            >
-              <h3>Transactions</h3>
-              <CustomDropdown
-                options={filterOptions}
-                selectedOption={selectedFilter2}
-                onChange={setSelectedFilter2}
-              />
-            </div>
-            <PieChart
-              data={data}
-              i18nStrings={{
-                detailsValue: "Value",
-                detailsPercentage: "Percentage",
-                filterLabel: "Filter displayed data",
-                filterPlaceholder: "Filter data",
-                filterSelectedAriaLabel: "selected",
-                detailPopoverDismissAriaLabel: "Dismiss",
-                legendAriaLabel: "Legend",
-                chartAriaRoleDescription: "pie chart",
-                segmentDescription: (datum, sum) =>
-                  `${datum.data.title} - ${datum.data.value} (${datum.data.percentage}%)`,
-              }}
-              ariaDescription="Donut chart showing customer preferences for meal plans."
-              ariaLabel="Donut chart"
-              errorText="Error loading data."
-              loadingText="Loading chart"
-              recoveryText="Retry"
-              size="large"
-              variant="donut"
-              empty={
-                <Box textAlign="center" color="inherit">
-                  <b>No data available</b>
-                  <Box variant="p" color="inherit">
-                    There is no data available
-                  </Box>
-                </Box>
-              }
+            <Calendar
+              onChange={({ detail }) => setValue(detail.value)}
+              value={value}
             />
           </Container>
+        )}
 
-          <Container>
-            {/* Another PieChart section */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1rem",
-              }}
-            >
-              <h3>Order Type</h3>
-              <CustomDropdown
-                options={filterOptions}
-                selectedOption={selectedFilter3}
-                onChange={setSelectedFilter3}
-              />
-            </div>
-            <PieChart
-              data={data2}
-              i18nStrings={{
-                detailsValue: "Value",
-                detailsPercentage: "Percentage",
-                filterLabel: "Filter displayed data",
-                filterPlaceholder: "Filter data",
-                filterSelectedAriaLabel: "selected",
-                detailPopoverDismissAriaLabel: "Dismiss",
-                legendAriaLabel: "Legend",
-                chartAriaRoleDescription: "pie chart",
-                segmentDescription: (datum, sum) =>
-                  `${datum.data.title} - ${datum.data.value} (${datum.data.percentage}%)`,
-              }}
-              ariaDescription="Donut chart showing order types."
-              ariaLabel="Donut chart"
-              errorText="Error loading data."
-              loadingText="Loading chart"
-              recoveryText="Retry"
-              size="large"
-              variant="donut"
-              empty={
-                <Box textAlign="center" color="inherit">
-                  <b>No data available</b>
-                  <Box variant="p" color="inherit">
-                    There is no data available
-                  </Box>
-                </Box>
-              }
-            />
-          </Container>
-        </Grid>
-      </SpaceBetween>
-    </ContentLayout>
+        {dashboardContent}
+      </ContentLayout>
+    )
   );
 };
 

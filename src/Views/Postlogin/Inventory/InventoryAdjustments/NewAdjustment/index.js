@@ -19,9 +19,12 @@ import {
   import { useNavigate, useLocation } from "react-router-dom";
   import { createInventoryAdjustment } from "Redux-Store/InventoryAdjustments/InventoryAdjustmentsThunk";
   import { useDispatch } from "react-redux";
-  
+  import { useMediaQuery } from 'react-responsive';
+
   // importing create adjustment data using routes
   const NewAdjustment = () => {
+    const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
     const navigate = useNavigate();
     const location = useLocation();
     const { dataToSave } = location.state || {};
@@ -37,9 +40,7 @@ import {
     const [visible, setVisible] = React.useState(false);
     const [confirmVisible, setConfirmVisible] = React.useState(false);
   
-    const items = [
-      // Your item data
-    ];
+   
   
     const handlePrint = () => {
       window.print();
@@ -68,7 +69,7 @@ const getToken = () => {
           itemCode: item.code,
           name: item.name,
           stock: parseInt(item.stockOnHold), // Assuming stock is in kg and needs to be a number
-          currentCompareAtPrice: parseInt(item.sellingprice), // Parsing price
+          currentCompareAtPrice: parseInt(item.sellingPrice), // Parsing price
           currentOnlineStorePrice: parseInt(item.purchasingPrice), // Assuming current online store price is same as purchasing price
           adjustQuantity: parseInt(item.adjustQuantity), // Set this value based on your need
           newPurchasingPrice: parseInt(item.adjustPurchasePrice), // Example new price
@@ -99,7 +100,7 @@ const getToken = () => {
       <>
         <BreadcrumbGroup
           items={[
-            { text: "Dashboard", href: "/app/dashboard" },
+            // { text: "Dashboard", href: "/app/dashboard" },
             { text: "Inventory Adjustments", href: "#components" },
             { text: "New Adjustment", href: "#components" },
           ]}
@@ -111,26 +112,55 @@ const getToken = () => {
               <Header
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
-                    <Button onClick={() => setVisible(true)}>Cancel Adjustment</Button>
-                    <Button onClick={handleSubmitClick} variant="primary">
-                      Submit Adjustment
+                    <Button                       onClick={() => setVisible(true)}
+                    iconName="close" variant="normal">
+                    {isMobile ? "" : "Cancel Adjustment"}
+
                     </Button>
-                    <Button
-                      onClick={() => navigate("/app/inventory/adjustments")}
-                      variant="primary"
+                     {/* <button
+                      className="cancel-btn"
+                      style={{ borderRadius: "16px" }}
+
+                      onClick={() => setVisible(true)}>
+                      {isMobile ? "Cancel" : "Cancel Adjustment"}
+                   </button> */}
+                   <button
+                      className="cancel-btn"
+                      style={{ borderRadius: "16px",backgroundColor:'#0972D3',borderColor:'#0972D3',color:'white' }}
+                      onClick={handleSubmitClick}
                     >
-                      Back To Adjustments
-                    </Button>
+                                            {isMobile ? "Submit" : "Submit Adjustment"}
+
+                    </button>
+                 
+                  
+                    {!isMobile && (
+                      <Button
+                        onClick={() => navigate("/app/inventory/adjustments")}
+                        variant="primary"
+                      >
+                        Back To Adjustments
+                      </Button>
+                    )}
                   </SpaceBetween>
                 }
-                variant="h1"
+                variant={isMobile ? "h3" : "h1"}
               >
-                New Adjustment
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  {isMobile && (
+                    <Icon
+                      name="arrow-left"
+                      variant="link"
+                      onClick={() => navigate("/app/inventory/adjustments")}
+                    />
+                  )}
+                  New Adjustment
+                </div>
               </Header>
             }
           >
             <Container>
-              <Grid gridDefinition={[{ colspan: 4 }, { colspan: 4 }, { colspan: 4 }, { colspan: 12 }]}>
+              <Grid gridDefinition={isMobile ? [{ colspan: 12 }, { colspan: 12 }, { colspan: 12 }, { colspan: 12 }] : [{ colspan: 4 }, { colspan: 4 }, { colspan: 4 }, { colspan: 12 }]}>
                 <FormField label="Adjustment No.">
                   <Input value="SA-001" disabled />
                 </FormField>
@@ -247,7 +277,7 @@ const getToken = () => {
                         </span>
                       ),
   
-                      cell: (item) => item.sellingprice,
+                      cell: (item) => item.sellingPrice,
                     },
                     {
                       header: (

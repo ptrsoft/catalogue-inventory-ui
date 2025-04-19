@@ -152,13 +152,14 @@ const Drawer = ({
             boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.5)",
             zIndex: 1000,
             overflowY: "auto",
+       
             // color: "red",
           }}
         >
           {" "}
           {flashMessages.length > 0 && <Flashbar items={flashMessages} />}
-          <Box padding="l">
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Box padding="s">
+            <div style={{ display: "flex", justifyContent: "space-between", }}>
               <Header variant="h3">Orders Details</Header>
 
               <Button

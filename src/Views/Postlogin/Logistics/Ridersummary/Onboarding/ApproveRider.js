@@ -110,9 +110,9 @@ const ApproveRider = () => {
 
   // Breadcrumb items
   const breadcrumbItems = [
-    { text: 'Dashboard', href: '/app/dashboard' },
-    { text: 'Logistics', href: '/app/dashboard' },
-    { text: 'Rider Summary', href: '/app/Logistics/RiderSummary' },
+    // { text: 'Dashboard', href: '/app/dashboard' },
+    // { text: 'Logistics', href: '/app/dashboard' },
+    { text: 'Rider Summary', href: '/app/Logistics/RiderSummary/onboarding' },
     { text: 'Rider Details', href: '#' },
   ];
   return (
@@ -218,7 +218,7 @@ const ApproveRider = () => {
                           </Box>
                         </Container>
                       ) : (
-                        <div onClick={() => handleDocClick(doc)} style={{ position: "relative", width: "72vw", cursor: "pointer" }}>
+                        <div onClick={() => handleDocClick(doc)} style={{ position: "relative", width: "100%", cursor: "pointer" }}>
                           <div style={{ paddingBottom: "5px" }}>
                             <div key={doc.id} className="info-item">
                               <span className="label">Document Name :</span>

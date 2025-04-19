@@ -24,7 +24,7 @@ const Onboarding = () => {
   const dispatch = useDispatch();
   const [RejectedMessage, setRejectedMessage] = useState(null);
   const { items, count, error } = useSelector((state) => state.riders);
-  const [status, setStatus] = useState('pending');
+  const [status, setStatus] = useState('active');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPageIndex, setCurrentPageIndex] = useState(1);
   const pageSize = 10;
@@ -159,9 +159,9 @@ const handleStatusToggle = async (item) => {
        <SpaceBetween direction="vertical" size="m">
         <BreadcrumbGroup
           items={[
-            { text: 'Dashboard', href: '/app/dashboard' },
-            { text: 'Logistics', href: '/app/dashboard' },
-            { text: 'Rider Summary', href: '#' },
+            { text: 'Rider Summary', href: '/app/Logistics/RiderSummary' },
+            // { text: 'Logistics', href: '/app/dashboard' },
+            { text: 'Onboardings', href: '#' },
           ]}
         />
         <Header variant="h1">Rider Summary</Header>

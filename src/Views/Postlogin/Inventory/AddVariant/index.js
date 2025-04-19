@@ -488,7 +488,7 @@ const AddEditVariant = () => {
               //  errorText={isFormSubmitted && !overallStock && "Required"}
             >
               <div style={{ width: "100%" }}>
-                <Grid disableGutters={!isMobile} gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                <Grid disableGutters={!isMobile} gridDefinition={[{ colspan: 7 }, { colspan: 5 }]}>
                   <Input
                     size="xs"
                     placeholder="Input Overall Stock"
@@ -839,7 +839,7 @@ const AddEditVariant = () => {
                           </Grid>
                         </div>
                       </FormField>
-                      <Grid  gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+                      <Grid  gridDefinition={[{ colspan: 12 }, { colspan: 12 }]}>
 
                       
                       <FormField
@@ -990,7 +990,7 @@ const AddEditVariant = () => {
                       </div>
 
                       </Grid>
-                      <Grid  gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+                      <Grid  gridDefinition={[{ colspan: 12 }, { colspan: 12 }]}>
                       <FormField label="Expiry Date">
 
                         <Input

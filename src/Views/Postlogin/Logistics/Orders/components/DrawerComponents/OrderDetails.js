@@ -5,9 +5,9 @@ const OrderDetails = ({ selectedOrder, usersbyid }) => {
   return (
     <div>
       {/* Order and Customer Info */}
-      <div className="items-container">
-        <div style={{ marginBottom: "10px" }}>
-          <Container>
+      <div className="items-container"  >
+        <div style={{ marginBottom: "10px" }} >
+          <Container >
             <div className="product-card">
               <div className="details">
                 <div className="info-row">

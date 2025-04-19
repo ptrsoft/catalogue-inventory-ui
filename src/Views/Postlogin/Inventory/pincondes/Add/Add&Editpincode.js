@@ -169,7 +169,7 @@ const formatTime = (time) => {
       {flashMessages.length > 0 && <Flashbar items={flashMessages} />}
 
       <Header
-        variant="h1"
+        variant="h2"
         actions={
           <SpaceBetween direction="horizontal" size="s">
             <Button variant="normal" onClick={backtopincodes}>
@@ -307,7 +307,7 @@ const formatTime = (time) => {
               <SpaceBetween direction="vertical" size="m">
                 <div style={{ display: "flex", gap: "5px" }}>
                   <FormField label="Shift Name">
-                    <div style={{ width: "48vw" }}>
+                    <div style={{ width: "46vw" }}>
                     <Select
   selectedOption={shift.name ? { label: shift.name, value: shift.name } : null} // Only show a selected option if shift.name has a value
 

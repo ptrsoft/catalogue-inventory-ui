@@ -101,7 +101,7 @@ const getToken = () => {
         <BreadcrumbGroup
           items={[
             // { text: "Dashboard", href: "/app/dashboard" },
-            { text: "Inventory Adjustments", href: "#components" },
+            { text: "Inventory Adjustments", href: "/adjustments" },
             { text: "New Adjustment", href: "#components" },
           ]}
           ariaLabel="Breadcrumbs"
@@ -112,18 +112,17 @@ const getToken = () => {
               <Header
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
-                    <Button                       onClick={() => setVisible(true)}
-                    iconName="close" variant="normal">
-                    {isMobile ? "" : "Cancel Adjustment"}
-
-                    </Button>
-                     {/* <button
-                      className="cancel-btn"
-                      style={{ borderRadius: "16px" }}
-
-                      onClick={() => setVisible(true)}>
-                      {isMobile ? "Cancel" : "Cancel Adjustment"}
-                   </button> */}
+                
+                    <button
+                     onClick={() => setVisible(true)}
+                        className="cancel-btn"
+                        style={{ borderRadius: "64px", padding:isMobile?"5px":"6px 8px" }}
+                      >
+                         {isMobile ? "" : "Cancel Adjustment"}
+                         {isMobile ? 
+                         <Icon name="close" size="small"></Icon> : ""}
+                      </button>
+      
                    <button
                       className="cancel-btn"
                       style={{ borderRadius: "16px",backgroundColor:'#0972D3',borderColor:'#0972D3',color:'white' }}
@@ -136,7 +135,7 @@ const getToken = () => {
                   
                     {!isMobile && (
                       <Button
-                        onClick={() => navigate("/app/inventory/adjustments")}
+                        onClick={() => navigate("/app/inventory/create-adjustment")}
                         variant="primary"
                       >
                         Back To Adjustments
@@ -151,7 +150,7 @@ const getToken = () => {
                     <Icon
                       name="arrow-left"
                       variant="link"
-                      onClick={() => navigate("/app/inventory/adjustments")}
+                      onClick={() => navigate("/app/inventory/create-adjustment")}
                     />
                   )}
                   New Adjustment

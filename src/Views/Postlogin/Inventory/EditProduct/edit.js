@@ -594,7 +594,7 @@ const Edit = () => {
   //            errorText={isFormSubmitted && !overallStock && "Required"}
             >
               <div style={{ width: "100%" }}>
-                <Grid disableGutters={!isMobile} gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                <Grid disableGutters={!isMobile} gridDefinition={[{ colspan: 7 }, { colspan: 5 }]}>
                   <Input
                     size="xs"
                     placeholder="Input Overall Stock"

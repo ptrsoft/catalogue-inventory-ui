@@ -116,7 +116,7 @@ a.awsui_anchor_1kosq_101th_109{
 .details {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 10px 20px; /* Control the gaps between the rows and columns */
+  gap: 10px 3px; /* Control the gaps between the rows and columns */
   font-family: Arial, sans-serif;
   color: #333;
   width: 100%; /* Full width to fill container */

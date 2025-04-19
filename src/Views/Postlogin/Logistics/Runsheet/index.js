@@ -125,7 +125,7 @@ useEffect(() => {
         <BreadcrumbGroup
           items={[
             { text: "Dashboard", href: "/app/dashboard" },
-            { text: "Logistics", href: "/app/dashboard" },
+            // { text: "Logistics", href: "/app/dashboard" },
             { text: "Runsheet", href: "#" },
           ]}
         />

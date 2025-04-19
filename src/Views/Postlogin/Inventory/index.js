@@ -876,9 +876,9 @@ const Inventory = () => {
           }}>
             <Grid
               gridDefinition={[
-                { colspan: { default: 12, xs: 12 } },
-                { colspan: { default: 12, xs: 12 } },
-                { colspan: { default: 12, xs: 12 } },
+                { colspan: isMobile ? 12 : 4 },
+                { colspan: isMobile ? 12 : 4 },
+                { colspan: isMobile ? 12 : 4 },
               ]}
             >
               <Select

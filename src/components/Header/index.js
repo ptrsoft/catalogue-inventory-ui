@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import TopNavigation from "@cloudscape-design/components/top-navigation";
 import { Input } from "@cloudscape-design/components";
-import logo from '../../assets/img/logo_PTR 1.png';
+import logo from '../../assets/images/PTR Svg logo.svg';
 import { authSignOut } from "Redux-Store/authenticate/signout/signoutThunk";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "context/Authcontext"; // Import useAuth

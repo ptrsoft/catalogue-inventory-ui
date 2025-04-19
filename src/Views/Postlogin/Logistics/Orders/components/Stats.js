@@ -2,9 +2,12 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, Container, ColumnLayout } from '@cloudscape-design/components';
 import { fetchOrderStats } from 'Redux-Store/Orders/OrdersThunk'; // Assuming you have this thunk for fetching stats
+import { useMediaQuery } from 'react-responsive';
 
 const Stats = () => {
   const dispatch = useDispatch();
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
   
   // Select data from the Redux store
   const { orderStats, statsLoading, statsError } = useSelector((state) => state.orderInventory);
@@ -24,7 +27,7 @@ const Stats = () => {
 
   return (
     <Container className="top-container" style={{ marginBottom: "1rem" }}>
-      <ColumnLayout columns={6} variant="default" minColumnWidth={150}>
+      <ColumnLayout columns={isMobile ? 2 : 6} variant="default" minColumnWidth={isMobile ? 50 : 150}>
         <div>
           <Box variant="awsui-key-label">
             <p style={{ fontSize: 12, fontWeight: "bold" }}>Total Orders</p>

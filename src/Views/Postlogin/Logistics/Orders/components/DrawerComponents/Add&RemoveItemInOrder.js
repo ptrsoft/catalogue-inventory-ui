@@ -532,7 +532,7 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
             {
               header: "Price",
               cell: (item) => (
-                <div style={{ textAlign: "center" }}>{item.price}</div>
+                <div style={{ textAlign: "center" }}>{item.subtotal}</div>
               ),
               maxWidth: 150,
             },

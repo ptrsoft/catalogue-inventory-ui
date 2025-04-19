@@ -53,7 +53,7 @@ const RiderSummary = () => {
         <SpaceBetween direction='vertical' size='s'>
         <BreadcrumbGroup items={[
             { text: 'Dashboard', href: '/app/dashboard' },
-            { text: 'Logistics', href: '/app/dashboard' },
+            // { text: 'Logistics', href: '/app/dashboard' },
             { text: 'Rider Summary', href: '/logistics/rider-summary' },
           ]} />
             <Header

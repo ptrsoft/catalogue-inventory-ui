@@ -35,7 +35,7 @@ const ViewRunsheet = () => {
       <SpaceBetween direction="vertical" size="s">
         <BreadcrumbGroup
           items={[
-            { text: "Logistics", href: "/app/dashboard" },
+            // { text: "Logistics", href: "/app/dashboard" },
             { text: "Runsheet", href: "/app/Logistics/runsheet" },
             { text: "View Runsheet", href: "/runsheet/view" },
           ]}

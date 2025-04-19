@@ -336,7 +336,7 @@ const CreateNewAdjustments = () => {
           // { text: "Dashboard", href: "/app/dashboard" },
           {
             text: "Inventory Adjustments",
-            href: "/app/inventory/inventory-adjustments",
+            href: "/app/inventory/adjustments",
           },
           { text: "New Adjustment", href: "#components" },
         ]}
@@ -350,11 +350,16 @@ const CreateNewAdjustments = () => {
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
              
-                      <Button   onClick={handleBackNavigate}
-                    iconName="close" variant="normal">
-                    {isMobile ? "" : "Cancel Adjustment"}
-
-                    </Button>
+                      
+                    <button
+                        className="cancel-btn"
+                        style={{ borderRadius: "64px", padding:isMobile?"5px":"6px 8px" }}
+                        onClick={handleBackNavigate}
+                      >
+                         {isMobile ? "" : "Cancel Adjustment"}
+                         {isMobile ? 
+                         <Icon name="close" size="small"></Icon> : ""}
+                      </button>
                       <button
                       className="cancel-btn"
                       style={{ borderRadius: "16px",backgroundColor:'#0972D3',borderColor:'#0972D3',color:'white' }}
@@ -762,8 +767,8 @@ const CreateNewAdjustments = () => {
       <SpaceBetween size="m">
     <Grid
           gridDefinition={[
-            { colspan: { default: isMobile ? 10 : 12, xxs: isMobile ? 10 : 4 } },
-            { colspan: { default: isMobile ? 2 : 12, xxs: isMobile ? 2 : 2 } },
+            { colspan: { default: isMobile ? 10 : 8, xxs: isMobile ? 10 : 4 } },
+            { colspan: { default: isMobile ? 2 : 4, xxs: isMobile ? 2 : 2 } },
             { colspan: { default: isMobile ? 12 : 12, xxs: isMobile ? 12 : 6 } },
           ]}
         >

@@ -173,8 +173,8 @@ const RiderDetails = () => {
   };
 
   const breadcrumbItems = [
-    { text: "Dashboard", href: "/app/dashboard" },
-    { text: "Logistics", href: "/app/dashboard" },
+    // { text: "Dashboard", href: "/app/dashboard" },
+    // { text: "Logistics", href: "/app/dashboard" },
     { text: "Rider Summary", href: "/app/Logistics/RiderSummary/onboarding" },
     { text: "Rider Details", href: "#" },
   ];

@@ -726,12 +726,11 @@ const Edit = () => {
                   <div
                     style={{ display: "flex", gap: "12px", marginTop: "12px" }}
                   >
-                    {images.map(
+                     {[imageUrl1, imageUrl2, imageUrl3].map(
                       (image, index) =>
-                        // (index === 0 ||
-                        //   (index === 1 && imageUrl1) ||
-                        //   (index === 2 && imageUrl2)) && // Show conditionally
-                        (
+                        (index === 0 ||
+                          (index === 1 && imageUrl1) ||
+                          (index === 2 && imageUrl2)) && ( // Show conditionally
                           <div
                             key={index}
                             style={{

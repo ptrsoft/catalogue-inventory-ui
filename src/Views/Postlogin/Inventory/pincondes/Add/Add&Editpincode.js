@@ -19,8 +19,11 @@ import { AiTwotoneDelete } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPincode, updatePincode } from "Redux-Store/Pincode/pincodeThunk";
 import { useLocation } from "react-router-dom";
+import { useMediaQuery } from 'react-responsive';
 
 const AddEditPincode = () => {
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.pincode);
@@ -169,9 +172,9 @@ const formatTime = (time) => {
       {flashMessages.length > 0 && <Flashbar items={flashMessages} />}
 
       <Header
-        variant="h2"
+        variant={isMobile ? "h3" : "h2"}
         actions={
-          <SpaceBetween direction="horizontal" size="s">
+          <SpaceBetween direction="horizontal" size="xs">
             <Button variant="normal" onClick={backtopincodes}>
               Cancel
             </Button>
@@ -307,7 +310,7 @@ const formatTime = (time) => {
               <SpaceBetween direction="vertical" size="m">
                 <div style={{ display: "flex", gap: "5px" }}>
                   <FormField label="Shift Name">
-                    <div style={{ width: "46vw" }}>
+                    <div style={{ width: isMobile ? "40vw" : "47vw" }}>
                     <Select
   selectedOption={shift.name ? { label: shift.name, value: shift.name } : null} // Only show a selected option if shift.name has a value
 

@@ -169,8 +169,9 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
     const addItems = updatedSelectedItems.map((item) => ({
       productId: item.id,
       quantity: item.quantity,
-      quantityUnits: item.unit,
+      quantityUnits: `${item.totalQuantityInB2c}${item.totalquantityB2cUnit}`,
     }));
+    console.log(selectedItems,"select")
 
     console.log("Add Items Array:", addItems);
 

@@ -142,10 +142,10 @@ const DashboardCards = () => {
           <h2 style={{ marginBottom: "1rem" }}>Ecommerce's Dashboard</h2>
         </div>
 
-        <ColumnLayout columns={4} variant="default" minColumnWidth={120}>
+        <ColumnLayout columns={4} variant="default" minColumnWidth={138}>
           <div>
             <Box variant="awsui-key-label">
-              <p style={{ fontSize: 12 }}>Total Item In Inventory</p>
+              <p style={{ fontSize: 11 }}>Total Item In Inventory</p>
             </Box>
             <span
               style={{ fontSize: 38, fontWeight: "1000", lineHeight: 1.3 }}

@@ -11,18 +11,25 @@ const service = axios.create({
   baseURL: config.BASE_URL, // Correctly set base URL
   timeout: 60000,
 });
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+};
 
 service.interceptors.request.use(
   (request) => {
-    const user = JSON.parse(localStorage.getItem("user")); // Retrieve and parse 'user' object from local storage
-    const jwtToken = user?.accessToken; // Extract accessToken if available
+    const token = getCookie('login');
+    // console.log('My token:', token);
+    // const user = JSON.parse(localStorage.getItem("user")); // Retrieve and parse 'user' object from local storage
+    // const fromlocaltoken = user?.accessToken; // Extract accessToken if available
 
-    if (jwtToken) {
-      request.headers[TOKEN_PAYLOAD_KEY] = `Bearer ${jwtToken}`; // Set token in request headers
+    if (token) {
+      request.headers[TOKEN_PAYLOAD_KEY] = `Bearer ${token}`; // Set token in request headers
     }
 
     if (
-      !jwtToken &&
+      !token &&
       request.headers.hasOwnProperty(PUBLIC_REQUEST_KEY) &&
       !request.headers[PUBLIC_REQUEST_KEY]
     ) {

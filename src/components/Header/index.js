@@ -35,6 +35,14 @@ const Header = () => {
             console.log("Sign-out Response:", response);
             localStorage.clear();
             logout(); // Only call the context logout here
+            if (
+              window.location.hostname === "localhost"
+            ) {
+              document.cookie =
+                "login=; path=/; max-age=0";
+            }
+            document.cookie =
+            "login=; path=/; domain=inventory.promodeagro.com; max-age=0";
             navigate("/auth/signin");
           })
           .catch((error) => {
@@ -58,9 +66,12 @@ const Header = () => {
       navigate("/auth/signin");
     }
   };
+
   
 
   useEffect(() => {
+
+
     const checkTokenExpiration = () => {
       const userData = localStorage.getItem("user");
 
@@ -89,7 +100,7 @@ const Header = () => {
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 1000, background: "#fff" }}>
       <TopNavigation
-        search={<Input type="search" placeholder="Search" ariaLabel="Search" />}
+        // search={<Input type="search" placeholder="Search" ariaLabel="Search" />}
         identity={{
           href: "/app/dashboard",
           title: "Inventory",

@@ -7,8 +7,8 @@ const OrderDetails = ({ selectedOrder, usersbyid }) => {
       {/* Order and Customer Info */}
       <div className="items-container"  >
         <div style={{ marginBottom: "10px" }} >
-          <Container >
-            <div className="product-card">
+          <Container disableContentPaddings>
+            <div className="product-card" style={{margin:'8px'}}>
               <div className="details">
                 <div className="info-row">
                   <b>Order ID:</b>

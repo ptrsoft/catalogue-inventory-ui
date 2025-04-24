@@ -12,7 +12,8 @@ import {
   Grid,
   Modal,
   Flashbar,
-  Icon
+  Icon,
+  BreadcrumbGroup
 } from "@cloudscape-design/components";
 import { useMediaQuery } from 'react-responsive';
 
@@ -42,6 +43,9 @@ const AddEditVariant = () => {
   const [imageUrl2, setImageUrl2] = React.useState("");
   const [imageUrl3, setImageUrl3] = React.useState("");
   
+  const imagesArray= [imageUrl1, imageUrl2, imageUrl3].filter(Boolean)
+
+  
   const handleImageUpload = async (file, setImageUrl) => {
     if (file) {
       try {
@@ -52,6 +56,30 @@ const AddEditVariant = () => {
       }
     }
   };
+
+  const handleUploadClick = (files) => {
+    const fileArray = Array.from(files);
+
+    const slots = [
+      { url: imageUrl1, set: setImageUrl1 },
+      { url: imageUrl2, set: setImageUrl2 },
+      { url: imageUrl3, set: setImageUrl3 },
+    ];
+
+    let index = 0;
+
+    for (let i = 0; i < slots.length && index < fileArray.length; i++) {
+      if (!slots[i].url) {
+        handleImageUpload(fileArray[index], slots[i].set);
+        index++;
+      }
+    }
+
+    if (index < fileArray.length) {
+      console.warn("Only 3 images allowed. Extra files were not uploaded.");
+    }
+  };
+
 
   const handleReplaceImage = (setImageUrl) => {
     const fileInput = document.createElement("input");
@@ -128,13 +156,8 @@ const AddEditVariant = () => {
 
   //add Tag code
   const [inputTag, setInputTag] = useState("");
-  const handleKeyPressForTag = (event) => {
-    if (event.key === "Enter" && inputTag.trim() !== "") {
-      event.preventDefault(); // Prevent default behavior
-      setTags([...tags, inputTag.trim()]);
-      setInputTag("");
-    }
-  };
+
+
   // console.log(tags, "tag");
 
   const removeTokenForTag = (index) => {
@@ -155,7 +178,6 @@ const AddEditVariant = () => {
     // if (!isFormValid()) {
     //   return; // Exit if the form is invalid
     // }
-
     const formattedExpiryDate = expiryDate
       ? new Date(expiryDate).toISOString()
       : undefined;
@@ -169,7 +191,7 @@ const AddEditVariant = () => {
       subCategory: selectedSubCategory ? selectedSubCategory.value : null,
       tags: tags,
       description: description,
-      images: [imageUrl1, imageUrl2, imageUrl3].filter(Boolean),
+      images: imagesArray,
       variants: tableData,
     };
     console.log(formData, "formdata with variant");
@@ -355,22 +377,24 @@ const AddEditVariant = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   // Function to handle variant image upload
-  const handleVariantImageUpload = async (id, file) => {
-    if (file) {
-      try {
-        const result = await dispatch(uploadImage(file)).unwrap();
-        setTableData((prevData) =>
-          prevData.map((item) =>
-            item.id === id
-              ? { ...item, imageUrls: [...item.imageUrls, result] }
-              : item
-          )
-        );
-      } catch (error) {
-        console.error(`Failed to upload variant image:`, error);
-      }
+  const handleVariantImageUpload = async (id, files) => {
+    try {
+      const uploadedImages = await Promise.all(
+        files.map((file) => dispatch(uploadImage(file)).unwrap())
+      );
+  
+      setTableData((prevData) =>
+        prevData.map((item) =>
+          item.id === id
+            ? { ...item, imageUrls: [...item.imageUrls, ...uploadedImages] }
+            : item
+        )
+      );
+    } catch (error) {
+      console.error("Failed to upload one or more variant images:", error);
     }
   };
+  
 
   // Function to remove a specific image from a variant
   const handleRemoveVariantImage = (id, imageIndex) => {
@@ -388,14 +412,26 @@ const AddEditVariant = () => {
 
   return (
     <div className={isMobile ? "add-variant-container-mobile" : "add-variant-container"}>
-     
+       <BreadcrumbGroup
+          items={[
+            // { text: "Dashboard", href: "/app/dashboard" },
+
+            { text: "Inventory", href: "/app/inventory" },
+            { text: "Add Item", href: "/app/inventory/addItem" },
+          ]}
+          ariaLabel="Breadcrumbs"
+        />
   
         
             <Flashbar items={items} />
       
       <SpaceBetween size="l">
-      <Box float="right"  margin={{top:'m'}}>
-              <Button onClick={handleSave} variant="primary">Save</Button>
+      <Box   margin={{top:'m'}}>
+        <Header variant="h2" actions={
+                        <Button onClick={handleSave} variant="primary">Save</Button>
+
+
+        }>Add Item</Header>
               </Box>
         <Container  header={<Header>Category</Header>}>
           <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
@@ -577,10 +613,29 @@ const AddEditVariant = () => {
 <div className="image-upload-container">
  
   <div className="image-preview-container">
-    {[imageUrl1, imageUrl2, imageUrl3].map((image, index) => (
+    {imageUrl1&&imageUrl2&&imageUrl3? null:
+    (
+  <label
+              className="image-upload-label"
+            >
+              <div><Icon  name='upload'></Icon></div>
+              <div className="image-upload-label-text">Upload Image</div>
+              <input
+              
+                type="file"
+                accept="image/*"
+                multiple
+                className="image-upload-input"
+                onChange={(e) => handleUploadClick(e.target.files)}
+              />
+            </label>
+    )}
+    </div>
+    <div style={{display:'flex',justifyContent:'center',alignItems:'center'}}>
+    {imagesArray.map((image, index) => (
       (index === 0 || (index === 1 && imageUrl1) || (index === 2 && imageUrl2)) && ( // Show conditionally
         <div key={index} className="image-preview">
-          {image ? (
+          {image &&(
             <>
               <img src={image} alt="Uploaded" />
               <div
@@ -600,27 +655,18 @@ const AddEditVariant = () => {
                 </button>
               </div>
             </>
-          ) 
-          : (
-            <label
-              className="image-upload-label"
-            >
-              <div><Icon name='upload'></Icon></div>
-              <div className="image-upload-label-text">Upload Image</div>
-              <input
-                type="file"
-                accept="image/*"
-                className="image-upload-input"
-                onChange={(e) => handleImageUpload(e.target.files[0], index === 0 ? setImageUrl1 : index === 1 ? setImageUrl2 : setImageUrl3)}
-              />
-            </label>
-          )}
+          ) }
+          
+          
+           
+          
         </div>
       )
     ))}
+    {/* </div> */}
   </div>
   <p className="image-upload-hint">
-    Upload a cover image for your item. File format: <b>jpeg, png</b>. Recommended size: <b>300×200</b>.
+    Upload Upto 3 images for your item. File format: <b>jpeg, png</b>. Recommended size: <b>300×200</b>.
   </p>
 </div>
 </FormField>
@@ -1008,23 +1054,24 @@ const AddEditVariant = () => {
                          
                           
                           {item.imageUrls.length < 5 && (
-                            <Button 
-                              variant="link" 
-                              size="medium" 
-                              iconName="upload"
-                              onClick={() => {
-                                const fileInput = document.createElement("input");
-                                fileInput.type = "file";
-                                fileInput.accept = "image/*";
-                                fileInput.onchange = (event) => {
-                                  const file = event.target.files[0];
-                                  if (file) {
-                                    handleVariantImageUpload(item.id, file);
-                                  }
-                                };
-                                fileInput.click();
-                              }}
-                            />
+                         <Button 
+                         variant="icon" 
+                         size="small" 
+                         iconName="upload"
+                         onClick={() => {
+                           const fileInput = document.createElement("input");
+                           fileInput.type = "file";
+                           fileInput.accept = "image/*";
+                           fileInput.multiple = true; // enable multiple image selection
+                           fileInput.onchange = (event) => {
+                             const files = Array.from(event.target.files);
+                             if (files.length > 0) {
+                               handleVariantImageUpload(item.id, files); // Pass all selected files
+                             }
+                           };
+                           fileInput.click();
+                         }}
+                       />
                           )}
                           
                           {item.imageUrls.length === 0 && (
@@ -1358,23 +1405,25 @@ const AddEditVariant = () => {
                         </div>
                         
                         {item.imageUrls.length < 5 && (
-                          <Button 
-                            variant="icon" 
-                            size="small" 
-                            iconName="upload"
-                            onClick={() => {
-                              const fileInput = document.createElement("input");
-                              fileInput.type = "file";
-                              fileInput.accept = "image/*";
-                              fileInput.onchange = (event) => {
-                                const file = event.target.files[0];
-                                if (file) {
-                                  handleVariantImageUpload(item.id, file);
-                                }
-                              };
-                              fileInput.click();
-                            }}
-                          />
+                        <Button 
+                        variant="icon" 
+                        size="small" 
+                        iconName="upload"
+                        onClick={() => {
+                          const fileInput = document.createElement("input");
+                          fileInput.type = "file";
+                          fileInput.accept = "image/*";
+                          fileInput.multiple = true; // enable multiple image selection
+                          fileInput.onchange = (event) => {
+                            const files = Array.from(event.target.files);
+                            if (files.length > 0) {
+                              handleVariantImageUpload(item.id, files); // Pass all selected files
+                            }
+                          };
+                          fileInput.click();
+                        }}
+                      />
+                      
                         )}
                         
                         {item.imageUrls.length === 0 && (

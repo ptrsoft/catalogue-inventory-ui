@@ -1044,7 +1044,10 @@ const Inventory = () => {
               onChange={({ detail }) =>
                 handlePageChange(detail.currentPageIndex)
               }
+              openEnd
+              
               pagesCount={pagesCount}
+              // key={nextKey}
             />
           </div>
         </Box>

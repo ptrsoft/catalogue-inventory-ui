@@ -12,10 +12,14 @@ import {
   Grid,
   SpaceBetween
 } from '@cloudscape-design/components';
+import { useMediaQuery } from 'react-responsive';
+
 
 import { useNavigate } from 'react-router-dom';
 
 const RiderSummary = () => {
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
   const [successMessage, setSuccessMessage] = useState(null);
   const navigate=useNavigate()
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,7 +62,17 @@ const RiderSummary = () => {
           ]} />
             <Header
           variant="h2"
-       
+          actions={
+            <div>
+            {isMobile ? (
+              <Button variant="primary" iconName='envelope' onClick={onboardrider} >Onbaord</Button>
+            ) : (
+              <Button variant="primary" iconName='envelope' onClick={onboardrider}>Onboarding Entries</Button>
+            )}
+
+          
+       </div>
+          }
         
         >
           Rider Summary
@@ -79,7 +93,6 @@ const RiderSummary = () => {
       />
       <Box>
 
-    <Button variant="primary" iconName='envelope' onClick={onboardrider}>Onboarding Entries</Button>
     <Box float='right' margin={{top:"xl"}}> 
          <Pagination
             currentPageIndex={currentPage}

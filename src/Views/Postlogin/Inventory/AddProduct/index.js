@@ -338,10 +338,10 @@ const AddItemForm = () => {
 
   return (
     <>
-                 <Flashbar items={items} />
+                 {/* <Flashbar items={items} /> */}
 
-     <SpaceBetween direction="vertical" size="l">
-     <BreadcrumbGroup
+     {/* <SpaceBetween direction="vertical" size="l"> */}
+     {/* <BreadcrumbGroup
           items={[
             // { text: "Dashboard", href: "/app/dashboard" },
 
@@ -349,9 +349,9 @@ const AddItemForm = () => {
             { text: "Add Item", href: "/app/inventory/addItem" },
           ]}
           ariaLabel="Breadcrumbs"
-        />
+        /> */}
 
-<Header
+{/* <Header
   variant="h1"
   actions={
     !isMultipleVariant && (
@@ -364,7 +364,7 @@ const AddItemForm = () => {
   }
 >
   Add Item
-</Header>
+</Header> */}
 
      
         {/* Radio buttons to toggle between forms */}
@@ -390,7 +390,7 @@ const AddItemForm = () => {
           </label>
         </div> */}
          
-      </SpaceBetween>
+      {/* </SpaceBetween> */}
 
       <Box>
    

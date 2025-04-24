@@ -614,7 +614,7 @@ const Edit = () => {
           
               </Grid>
               <div>
-                <strong>Tagsssss</strong>
+                <strong>Tags</strong>
                 <div
                   style={{
                     display: "flex",
@@ -726,11 +726,12 @@ const Edit = () => {
                   <div
                     style={{ display: "flex", gap: "12px", marginTop: "12px" }}
                   >
-                    {[imageUrl1, imageUrl2, imageUrl3].map(
+                    {images.map(
                       (image, index) =>
-                        (index === 0 ||
-                          (index === 1 && imageUrl1) ||
-                          (index === 2 && imageUrl2)) && ( // Show conditionally
+                        // (index === 0 ||
+                        //   (index === 1 && imageUrl1) ||
+                        //   (index === 2 && imageUrl2)) && // Show conditionally
+                        (
                           <div
                             key={index}
                             style={{
@@ -885,7 +886,7 @@ const Edit = () => {
             <SpaceBetween size="l">
               <Container header={<Header>Inventory</Header>}>
                 <SpaceBetween size="l">
-                  <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                  <Grid gridDefinition={[{ colspan: 7 }, { colspan: 5 }]}>
                     <FormField
                       label={
                         <span>
@@ -936,7 +937,6 @@ const Edit = () => {
               <Container header={<Header>Sale in B2C</Header>}>
                 <hr style={{ marginLeft: "-15px", marginRight: "-15px" }}></hr>
                 <SpaceBetween size="l">
-                  <Grid gridDefinition={[{ colspan: 9 }, { colspan: 3 }]}>
                     <FormField
                       label={
                         <span>
@@ -964,6 +964,8 @@ const Edit = () => {
                         </Popover>
                       }
                     >
+                                        <Grid disableGutters={isMobile} gridDefinition={[{ colspan: 7 }, { colspan: 5 }]}>
+
                       <Input
                         type="number"
                         name="quantityInStock"
@@ -972,8 +974,7 @@ const Edit = () => {
                           setTotalQuantityInB2C(detail.value)
                         }
                       />
-                    </FormField>
-                    <FormField label="Unit">
+                   
                       <Select
                         selectedOption={
                           totalquantityB2cUnit
@@ -989,9 +990,9 @@ const Edit = () => {
                         options={unitOptions}
                         placeholder="Select Unit"
                       />
+                      </Grid>
                     </FormField>
-                  </Grid>
-                  <Grid gridDefinition={[{ colspan: 9 }, { colspan: 3 }]}>
+                  
                     <FormField
                       label="Minimum Weight"
                       info={
@@ -1012,6 +1013,8 @@ const Edit = () => {
                         </Popover>
                       }
                     >
+                  <Grid disableGutters={isMobile} gridDefinition={[{ colspan: 7 }, { colspan: 5 }]}>
+
                       <Input
                         type="number"
                         name="min weight"
@@ -1020,8 +1023,7 @@ const Edit = () => {
                           setMinimumSellingWeight(detail.value)
                         }
                       />
-                    </FormField>
-                    <FormField label="Unit">
+                  
                       <Select
                         selectedOption={
                           MinimumSellingWeightUnit
@@ -1039,9 +1041,9 @@ const Edit = () => {
                         options={unitOptions}
                         placeholder="Select Unit"
                       />
+                       </Grid>
                     </FormField>
-                  </Grid>
-                  <Grid gridDefinition={[{ colspan: 9 }, { colspan: 3 }]}>
+                 
                     <FormField
                       label="Maximum Weight"
                       info={
@@ -1062,6 +1064,8 @@ const Edit = () => {
                         </Popover>
                       }
                     >
+                  <Grid disableGutters={isMobile} gridDefinition={[{ colspan: 7 }, { colspan: 5 }]}>
+
                       <Input
                         type="maximum"
                         name="maximum"
@@ -1070,8 +1074,8 @@ const Edit = () => {
                           setMaximumSellingWeight(detail.value)
                         }
                       />
-                    </FormField>
-                    <FormField label="Unit">
+                    
+                   
                       <Select
                         selectedOption={
                           MaximumSellingWeightUnit
@@ -1089,8 +1093,9 @@ const Edit = () => {
                         options={unitOptions}
                         placeholder="Select Unit"
                       />
+                      </Grid>
                     </FormField>
-                  </Grid>
+                  
                   <FormField
                     label={
                       <span>
@@ -1134,7 +1139,7 @@ const Edit = () => {
           <Grid gridDefinition={[{ colspan: { default: isMobile ? 12 : 8 } }, { colspan: { default: isMobile ? 12 : 4 } }]}>
           <Container header={<Header headingTagOverride="h3">Pricing</Header>}>
             <hr style={{ marginLeft: "-15px", marginRight: "-15px" }} />
-
+<SpaceBetween direction="vertical" size="l">
             <FormField
               label={
                 <span>
@@ -1207,6 +1212,7 @@ const Edit = () => {
                 readOnly
               />
             </FormField>
+            </SpaceBetween>
           </Container>
         </Grid>
       </SpaceBetween>

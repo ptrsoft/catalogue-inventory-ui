@@ -63,6 +63,11 @@ const Signin = () => {
           onDismiss: () => setItems([]),
           id: "message_1",
         }]);
+        if (window.location.hostname === "localhost") {
+          document.cookie = `login=${response?.accessToken}; path=/; max-age=60`;
+        } else {
+          document.cookie = `login=${response?.accessToken}; path=/; domain=inventory.promodeagro.com; max-age=25920000`;
+        }
   
       })
       .catch((error) => {

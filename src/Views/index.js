@@ -82,7 +82,7 @@ const Views = () => {
         <Route  path={`${PREFIX_APP_PATH}/logistics/riderSummary/onboarding/riderDetails/:id`} element={<ProtectedRoute element={<RiderDetails />} isAuthenticated={isAuthenticated}/>} />
         <Route  path={`${PREFIX_APP_PATH}/logistics/riderSummary/onboarding/approveRider/:id`} element={<ProtectedRoute element={<ApproveRider />} isAuthenticated={isAuthenticated}/>} />
         <Route  path={`${PREFIX_APP_PATH}/logistics/collectionPayment`} element={<ProtectedRoute element={<CollectionPayment />}isAuthenticated={isAuthenticated} />} />
-        <Route  path={`${PREFIX_APP_PATH}/logistics/collectionPayment/view-details/:id`} element={<ProtectedRoute element={<ViewDetailsPage />}isAuthenticated={isAuthenticated} />} />
+        <Route  path={`${PREFIX_APP_PATH}/logistics/collectionPayment/ViewCollection/:id`} element={<ProtectedRoute element={<ViewDetailsPage />}isAuthenticated={isAuthenticated} />} />
         <Route  path={`${PREFIX_APP_PATH}/purchaseOrders`} element={<ProtectedRoute element={<PurchaseOrders />} isAuthenticated={isAuthenticated}/>} />
         <Route  path={`${PREFIX_APP_PATH}/settings`} element={<ProtectedRoute element={<Settings />}isAuthenticated={isAuthenticated} />} />
         <Route  path={`${PREFIX_APP_PATH}/settings/rbac`} element={<ProtectedRoute element={<Alloptions />}isAuthenticated={isAuthenticated} />} />

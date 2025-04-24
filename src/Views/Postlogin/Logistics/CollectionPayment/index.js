@@ -16,12 +16,16 @@ import {
   Popover, // Import Popover
   Calendar, // Import Calendar
 } from '@cloudscape-design/components';
+import { useMediaQuery } from 'react-responsive';
+
 import * as XLSX from 'xlsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCashCollection } from 'Redux-Store/cashCollection/cashCollectionThunk';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const CashCollectionTable = () => {
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -97,7 +101,7 @@ const CashCollectionTable = () => {
   }));
 
   const handleViewDetailsClick = (status, runsheetId) => {
-    navigate(`/app/Logistics/CashCollection/view-details/${runsheetId}`, { state: { status } });
+    navigate(`/app/Logistics/CollectionPayment/ViewCollection/${runsheetId}`, { state: { status } });
   };
 
   const handleDateSelect = ({ detail }) => {
@@ -133,9 +137,13 @@ const CashCollectionTable = () => {
         variant="h1"
         actions={
           <div style={{ display: 'flex', gap: '5px' }}>
-            <Button iconName="external" onClick={handleExportToExcel}>
-              Export
-            </Button>
+            {isMobile ? (
+              <Button iconName="external" onClick={handleExportToExcel} />
+            ) : (
+              <Button iconName="external" onClick={handleExportToExcel}>
+                Export
+              </Button>
+            )}
             <Popover
               wrapTriggerText={false}
               triggerType='custom'
@@ -151,7 +159,11 @@ const CashCollectionTable = () => {
               // dismissButton={true}
               isOpen={showCalendar} // Control visibility with showCalendar
             >
-<Button iconName="calendar">{selectedDate || 'Sort by Date'}</Button>
+{isMobile ? (
+  <Button iconName="calendar" />
+) : (
+  <Button iconName="calendar">{selectedDate || 'Sort by Date'}</Button>
+)}
 </Popover>
           </div>
         }
@@ -159,7 +171,11 @@ const CashCollectionTable = () => {
         Cash Collection
       </Header>
 
-      <Grid gridDefinition={[{ colspan: 4 }, { colspan: 3 }, { colspan: 5 }]}>
+      <Grid gridDefinition={[
+        { colspan: { default: isMobile ? 12 : 4,  } },
+        { colspan: { default: isMobile ? 12 : 3, } }, 
+        { colspan: { default: isMobile ? 12 : 5, } }
+      ]}>
         <TextFilter
           filteringText={filteringText}
           filteringPlaceholder="Search Runsheet, agent"
@@ -174,12 +190,13 @@ const CashCollectionTable = () => {
           placeholder="Sort By Status"
           selectedAriaLabel="Selected status"
         />
-        <Box float='right' margin={{top:"xl"}}> 
+        <Box float='right'> 
          <Pagination
             // currentPageIndex={currentPage}
             // onChange={({ detail }) => setCurrentPage(detail.currentPageIndex)}
             pagesCount={2} // Adjust according to the data size
-          /></Box>
+          />
+          </Box>
       
       </Grid>
 

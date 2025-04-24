@@ -130,7 +130,12 @@ useEffect(() => {
           ]}
         />
 
-        <Header variant="h1">Runsheet</Header>
+        <Header variant="h1" actions={
+             <Button variant="primary" iconName="add-plus" onClick={handleCreateRunSheet}>
+             Create Runsheet
+           </Button>
+
+        }>Runsheet</Header>
 
         <Grid
           gridDefinition={[
@@ -144,9 +149,7 @@ useEffect(() => {
             filteringAriaLabel="Filter instances"
             onChange={handleSearchChange}
           />
-          <Button variant="primary" iconName="add-plus" onClick={handleCreateRunSheet}>
-            Create Runsheet
-          </Button>
+       
         </Grid>
         <Box float='right'> 
          <Pagination

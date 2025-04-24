@@ -31,16 +31,23 @@
   width: 100%;
   text-align: left;
   margin-top: 3px;
+  height: 200px;
 }
 
 .image-preview-container {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 12px;
 }
 
 .image-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+margin-top: 5px;
+  margin-right: 5px;
   position: relative;
   width: 70px;
   height: 70px;
@@ -92,6 +99,7 @@
 }
 
 .image-upload-label {
+  margin-top: -15px;
   width: 100px;
   height: 70px;
   display: flex;
@@ -119,6 +127,7 @@
   font-size: 10px;
   color: #777;
   margin-top: 2px;
+  text-align: center;
 }
 
 /* Tag Input Styles */

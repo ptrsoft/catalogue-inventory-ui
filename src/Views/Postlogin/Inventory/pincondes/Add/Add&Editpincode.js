@@ -13,6 +13,7 @@ import {
   Container,
   BreadcrumbGroup,
   Flashbar,
+  Icon
 } from "@cloudscape-design/components";
 import { useNavigate } from "react-router-dom";
 import { AiTwotoneDelete } from "react-icons/ai";
@@ -175,9 +176,16 @@ const formatTime = (time) => {
         variant={isMobile ? "h3" : "h2"}
         actions={
           <SpaceBetween direction="horizontal" size="xs">
-            <Button variant="normal" onClick={backtopincodes}>
-              Cancel
-            </Button>
+           
+            <button
+            onClick={backtopincodes}
+                        className="cancel-btn"
+                        style={{ borderRadius: "64px", padding:isMobile?"5px":"6px 8px" }}
+                      >
+                         {isMobile ? "" : "Cancel"}
+                         {isMobile ? 
+                         <Icon name="close" size="small"></Icon> : ""}
+                      </button>
             <Button
               variant="primary"
               onClick={handleSavePincode}
@@ -289,7 +297,7 @@ const formatTime = (time) => {
         header={
           <Header
             variant="h3"
-            description="Add multiple shifts in single pincodes"
+            description=<span style={{margin:'4px'}}>Add multiple shifts in single pincodes</span>
             actions={
               <Button
                 onClick={handleAddShift}
@@ -322,10 +330,10 @@ const formatTime = (time) => {
   options={[
     { label: "Select a shift", value: "", disabled: true }, // Placeholder option with empty value
 
-    { label: "morning", value: "morning" },
-    { label: "afternoon", value: "afternoon" },
-    { label: "evening", value: "evening" },
-    { label: "night", value: "night" }
+    { label: "Morning", value: "Morning" },
+    { label: "Afternoon", value: "Afternoon" },
+    { label: "Evening", value: "Evening" },
+    { label: "Night", value: "Night" }
   ]}
   placeholder="Select a shift" // Placeholder text
 
@@ -352,6 +360,7 @@ const formatTime = (time) => {
     updatedShifts[shiftIndex].slots[slotIndex].start = event.detail.value;
     setShifts(updatedShifts);
   }}
+
 />
                     </FormField>
                     <FormField label="End Time">
@@ -366,6 +375,7 @@ const formatTime = (time) => {
                           setShifts(updatedShifts);
                         }}
                       />
+
                     </FormField>
                     {/* <FormField label="Date">
   <Input value={slot.date ? slot.date : "Auto Generated"} disabled />

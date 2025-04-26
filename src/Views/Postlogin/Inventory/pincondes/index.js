@@ -265,14 +265,14 @@ function PincodeList() {
                   disabled={selectedCodes.length === 0}
                   onClick={handleConvertStatusClick}
                 >
-                  Mark
-                </Button>
-                <Button
+                                    {statusFilter.value?'Inactive':'Active'}
+                                    </Button>
+                {/* <Button
                   disabled={selectedCodes.length === 0} // Disable if no pincode is selected
                   onClick={handleConvertDeliveryTypeClick}
                 >
                   Delivery Type
-                </Button>
+                </Button> */}
 
                 </SpaceBetween>
                 </Box>
@@ -336,14 +336,15 @@ function PincodeList() {
                   disabled={selectedCodes.length === 0}
                   onClick={handleConvertStatusClick}
                 >
-                  Mark
+                                    {statusFilter.value?'Inactive':'Active'}
+
                 </Button>
-                <Button
+                {/* <Button
                   disabled={selectedCodes.length === 0}
                   onClick={handleConvertDeliveryTypeClick}
                 >
                   Delivery Type
-                </Button>
+                </Button> */}
                 <Button
                 variant="primary"
                 onClick={Addpincode}

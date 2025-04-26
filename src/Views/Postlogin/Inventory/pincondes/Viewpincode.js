@@ -123,7 +123,7 @@ const PincodeView = () => {
         isMobile && (
           <SpaceBetween direction="horizontal" size="xs">
           <Button variant="normal" onClick={handleConvertStatusClick}>
-            {localActive ? "Mark Inactive" : "Mark Active"}
+            {localActive ? "Inactive" : "Active"}
           </Button>
           <Button
             variant="normal"
@@ -144,7 +144,7 @@ const PincodeView = () => {
               !isMobile && (
               <SpaceBetween direction="horizontal" size="xs">
                 <Button variant="normal" onClick={handleConvertStatusClick}>
-                  {localActive ? "Mark Inactive" : "Mark Active"}
+                  {localActive ? " Inactive" : "Active"}
                 </Button>
                 <Button
                   variant="normal"

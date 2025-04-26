@@ -1,5 +1,8 @@
 import { SideNavigation } from "@cloudscape-design/components";
 import { useLocation, useNavigate } from "react-router-dom";
+import logo from '../../assets/images/PTR Svg logo.svg';
+import { useMediaQuery } from 'react-responsive';
+
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -75,11 +78,21 @@ const Sidebar = () => {
       navigate(event.detail.href);
     }
   };
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
 
   return (
-    <SideNavigation
+    <SideNavigation 
       activeHref={location.pathname}
-      header={{ href: "#/", text: "PTR Technologies" }}
+      header={{ href: "/", text:
+        <div style={{display:'flex',alignItems:'center',gap:'15px'}}>
+          {isMobile&&(
+          <img  width={40} height={40}alt="logo" src={logo}></img>
+          )}
+          <h3>PTR Technologies
+          </h3>
+        </div>
+         }}
       
       onFollow={handleNavigation}
       items={items.map(item => {

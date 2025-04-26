@@ -57,7 +57,7 @@ const Orders = () => {
   const { usersbyid } = useSelector((state) => state.orderInventory);
   const [filters, setFilters] = useState({
     category: null,
-    statuscategory: { label: "order placed", value: "order placed" },
+    statuscategory: { label: "Order Placed", value: "order placed" },
     ageFilter: {
       label: "Today's Orders",
       value: "today",

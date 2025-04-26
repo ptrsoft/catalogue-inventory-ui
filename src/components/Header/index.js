@@ -7,9 +7,12 @@ import logo from '../../assets/images/PTR Svg logo.svg';
 import { authSignOut } from "Redux-Store/authenticate/signout/signoutThunk";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "context/Authcontext"; // Import useAuth
+import { useMediaQuery } from 'react-responsive';
 
 
 const Header = () => {
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { logout } = useAuth(); // Get logout from Auth context
@@ -98,7 +101,7 @@ const Header = () => {
   }, []);
 
   return (
-    <div style={{ position: "sticky", top: 0, zIndex: 1000, background: "#fff" }}>
+    <div style={{ position: isMobile?"":"sticky", top: 0, zIndex: isMobile?0:1000, background: "#fff" }}>
       <TopNavigation
         // search={<Input type="search" placeholder="Search" ariaLabel="Search" />}
         identity={{
@@ -116,7 +119,7 @@ const Header = () => {
             description: userEmail,
             iconName: "user-profile",
             items: [
-              { id: "profile", text: "Profile" },
+              // { id: "profile", text: "Profile" },
               {
                 variant: "primary-button",
                 id: "signout",

@@ -17,6 +17,8 @@ import { fetchProducts } from "Redux-Store/Products/ProductThunk";
 import { useDispatch } from "react-redux"; // Import useDispatch and useSelector
 import { fetchOrderById, updateOrderItems } from "Redux-Store/Orders/OrdersThunk";
 import { useMediaQuery } from 'react-responsive';
+import Invoice2 from "./Invoice";
+import ProductPDF from "Views/Postlogin/Inventory/components/ProductPDF";
 
 const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
   const dispatch = useDispatch();
@@ -230,6 +232,8 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
           >
             Add Item
           </Button>
+       
+          <Invoice2 orderData={selectedOrder} flag={true}/>
         </div>
       </div>
       {/* Modal for Selecting Items */}

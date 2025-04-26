@@ -963,7 +963,7 @@ const Edit = () => {
                         </Popover>
                       }
                     >
-                                        <Grid disableGutters={isMobile} gridDefinition={[{ colspan: 7 }, { colspan: 5 }]}>
+                                        <Grid  gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
 
                       <Input
                         type="number"
@@ -1012,7 +1012,7 @@ const Edit = () => {
                         </Popover>
                       }
                     >
-                  <Grid disableGutters={isMobile} gridDefinition={[{ colspan: 7 }, { colspan: 5 }]}>
+                  <Grid  gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
 
                       <Input
                         type="number"
@@ -1063,7 +1063,7 @@ const Edit = () => {
                         </Popover>
                       }
                     >
-                  <Grid disableGutters={isMobile} gridDefinition={[{ colspan: 7 }, { colspan: 5 }]}>
+                  <Grid  gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
 
                       <Input
                         type="maximum"

@@ -15,10 +15,12 @@ import html2canvas from 'html2canvas';
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux"; 
 import { fetchRiderById } from "Redux-Store/RiderSummary/RiderSummaryThunk";
+import { useMediaQuery } from 'react-responsive';
 
 
 // Helper function to get document labels
 const getDocumentLabel = (docName) => {
+
   switch (docName) {
     case "userPhoto":
       return "Rider Photo";
@@ -44,6 +46,8 @@ const getDocumentLabel = (docName) => {
 };
 
 const ApproveRider = () => {
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
   const { id: riderId } = useParams();
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [base64, setBase64] = useState('');
@@ -124,13 +128,13 @@ const ApproveRider = () => {
           <SpaceBetween direction="vertical" size="s">
             <hr />
             <Container>
-              <Grid gridDefinition={[{ colspan: 2 }, { colspan: 10 }]}>
-                <Box>
+              <Grid gridDefinition={[{ colspan: isMobile?12:2 }, { colspan: isMobile?12:10 }]}>
+                <Box margin={{left:isMobile?"xxxl":""}}>
                   <img
                   
                     src={riderDetails?.documents[0]?.image}
                     alt="Rider"
-                    style={{ width: '180px', height: "140px", borderRadius: "5px" }}
+                    style={{ width:'140px', height:"140px", borderRadius: "5px" }}
                   />
                 </Box>
                 <Box>
@@ -140,19 +144,19 @@ const ApproveRider = () => {
                     <div className="rider-info">
                       <div className="info-item">
                         <span className="label">Rider Name :</span>
-                        <span className="value">{riderDetails?.personalDetails?.fullName || 'N/A'}</span>
+                        <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.fullName || 'N/A'}</span>
                       </div>
                       <div className="info-item">
                         <span className="label">Date of Birth :</span>
-                        <span className="value">{riderDetails?.personalDetails?.dob ? new Date(riderDetails.personalDetails.dob).toLocaleDateString() : 'N/A'}</span>
+                        <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.dob ? new Date(riderDetails.personalDetails.dob).toLocaleDateString() : 'N/A'}</span>
                       </div>
                       <div className="info-item">
                         <span className="label">Contact No :</span>
-                        <span className="value">{riderDetails?.number || 'N/A'}</span>
+                        <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.number || 'N/A'}</span>
                       </div>
                       <div className="info-item">
                         <span className="label">Email :</span>
-                        <span className="value">{riderDetails?.personalDetails?.email || 'N/A'}</span>
+                        <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.email || 'N/A'}</span>
                       </div>
                     </div>
                   </Box>
@@ -160,38 +164,38 @@ const ApproveRider = () => {
                   <hr />
                   <div className="address-info">
                     <div className="info-item">
-                      <span className="label">Address Line 01 :</span>
-                      <span className="value">{riderDetails?.personalDetails?.address?.address1 || 'N/A'}</span>
+                      <span className="label">Address Line 1 :</span>
+                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.address?.address1 || 'N/A'}</span>
                     </div>
                     <div className="info-item">
-                      <span className="label">Address Line 02 :</span>
-                      <span className="value">{riderDetails?.personalDetails?.address?.address2 || 'N/A'}</span>
+                      <span className="label">Address Line 2 :</span>
+                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.address?.address2 || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">LandMark :</span>
-                      <span className="value">{riderDetails?.personalDetails?.address?.landmark || 'N/A'}</span>
+                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.address?.landmark || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">Select State :</span>
-                      <span className="value">{riderDetails?.personalDetails?.address?.state || 'N/A'}</span>
+                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.address?.state || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">Select City :</span>
-                      <span className="value">{riderDetails?.personalDetails?.address?.city || 'N/A'}</span>
+                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.address?.city || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">Pin Code :</span>
-                      <span className="value">{riderDetails?.personalDetails?.address?.pincode || 'N/A'}</span>
+                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.address?.pincode || 'N/A'}</span>
                     </div>
                     <div className="section-header">References Contact</div>
                     <hr />
                     <div className="info-item">
                       <span className="label">Reference Name :</span>
-                      <span className="value">{riderDetails?.personalDetails?.reference?.number || 'N/A'}</span>
+                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.reference?.number || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">Relation :</span>
-                      <span className="value">{riderDetails?.personalDetails?.reference?.relation || 'N/A'}</span>
+                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.reference?.relation || 'N/A'}</span>
                     </div>
                   </div>
                   <div className="section-header">KYC Documents Details ( <i>Uploaded Documents </i> )</div>
@@ -222,7 +226,7 @@ const ApproveRider = () => {
                           <div style={{ paddingBottom: "5px" }}>
                             <div key={doc.id} className="info-item">
                               <span className="label">Document Name :</span>
-                              <span className="value">{getDocumentLabel(doc?.name)}</span>
+                              <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{getDocumentLabel(doc?.name)}</span>
                             </div>
                             <span>
                               <Button variant='inline-link' onClick={() => handleDocClick(doc)}>Download Or View</Button>
@@ -238,19 +242,19 @@ const ApproveRider = () => {
                   <div className="address-info">
                     <div className="info-item">
                       <span className="label" style={{ width: "180px" }}>Bank Name: </span>
-                      <span className="value">{riderDetails?.bankDetails?.bankName || 'N/A'}</span>
+                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.bankDetails?.bankName || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label" style={{ width: "180px" }}>Account Number:</span>
-                      <span className="value">{riderDetails?.bankDetails?.acc || 'N/A'}</span>
+                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.bankDetails?.acc || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label" style={{ width: "180px" }}>IFSC Code:</span>
-                      <span className="value">{riderDetails?.bankDetails?.ifsc || 'N/A'}</span>
+                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.bankDetails?.ifsc || 'N/A'}</span>
                     </div>
                     <div className="info-item">
                       <span className="label" style={{ width: "180px" }}>Bank Status:</span>
-                      <span className="value">{riderDetails?.bankDetails?.status || 'N/A'}</span>
+                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.bankDetails?.status || 'N/A'}</span>
                     </div>
                   </div>
                 </Box>

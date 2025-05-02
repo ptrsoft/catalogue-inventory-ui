@@ -16,8 +16,12 @@ import {
   closeRunsheet,
 } from "Redux-Store/Runsheet/RunsheetThunk";
 import PackIcon from "../../../../../assets/img/image.png";
+import { useMediaQuery } from 'react-responsive';
+
 
 const ViewDetailsPage = () => {
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
   const navigate = useNavigate();
   const [amount, setAmount] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,7 +74,13 @@ const ViewDetailsPage = () => {
           ]}
           ariaLabel="Breadcrumbs"
         />
-
+  {status === "Cash Pending" && (
+              <div className="status-container" style={{ width:"100%", display:'flex',justifyContent:'end' }}>
+                <Button variant="primary" onClick={handleCloseRunsheet}>
+                  Close Runsheet
+                </Button>
+              </div>
+            )}
         <SpaceBetween direction="vertical" size="s">
           <div
             className="runsheet-container"
@@ -80,30 +90,24 @@ const ViewDetailsPage = () => {
             <div className="details" style={{ width: "40%" }}>
               <div className="info-row">
                 <span className="label">Date:</span>
-                <span className="value">
+                <span className="value" style={{width:'190px',marginLeft:'-25px'}}>
                   {selectedRunsheet?.createdAt.slice(0, 10)}
                 </span>
               </div>
               <div className="info-row">
                 <span className="label">Runsheet ID:</span>
-                <span className="value">{selectedRunsheet?.id}</span>
+                <span className="value" style={{width:'190px',marginLeft:'-25px'}}>{selectedRunsheet?.id}</span>
               </div>
               <div className="info-row">
                 <span className="label">Rider Name:</span>
-                <b>{selectedRunsheet?.rider.name}</b>
+                <b style={{width:'190px',marginLeft:'-25px'}}>{selectedRunsheet?.rider.name}</b>
               </div>
               <div className="info-row">
                 <span className="label">Rider ID:</span>
-                <b>{selectedRunsheet?.rider?.id}</b>
+                <b style={{width:'190px',marginLeft:'-25px'}}>{selectedRunsheet?.rider?.id}</b>
               </div>
             </div>
-            {status === "Cash Pending" && (
-              <div className="status-container" style={{ width: "155px" }}>
-                <Button variant="primary" onClick={handleCloseRunsheet}>
-                  Close Runsheet
-                </Button>
-              </div>
-            )}
+          
             {status === "Cash Received" && (
               <div className="status-container" style={{ width: "300px" }}>
                 <div

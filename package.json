@@ -13,7 +13,6 @@
     "ajv": "^8.16.0",
     "ajv-keywords": "^5.1.0",
     "axios": "^1.7.4",
-    "html2canvas": "^1.4.1",
     "jsbarcode": "^3.11.6",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^5.0.2",
@@ -27,7 +26,6 @@
     "react-scripts": "5.0.1",
     "react-toastify": "^11.0.5",
     "sass-loader": "^14.2.1",
-    "styled-components": "^6.1.11",
     "web-vitals": "^2.1.4",
     "xlsx": "^0.18.5"
   },

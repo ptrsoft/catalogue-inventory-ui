@@ -1,14 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
-import Table from "@cloudscape-design/components/table";
-import Box from "@cloudscape-design/components/box";
-import Button from "@cloudscape-design/components/button";
-import TextFilter from "@cloudscape-design/components/text-filter";
-import Header from "@cloudscape-design/components/header";
-import Container from "@cloudscape-design/components/container";
-import Spinner from "@cloudscape-design/components/spinner";
-import { useMediaQuery } from 'react-responsive';
+import {
+  BreadcrumbGroup,
+  Table,
+  Box,
+  Button,
+  TextFilter,
+  Header,
+  Container,
+  Spinner,
+  Tabs,
+  Modal,
+  SpaceBetween,
+  StatusIndicator,
+  Select,
+  Flashbar,
+  Grid,
+  FormField,
+  Input,
+  Popover,
+  Icon
+} from "@cloudscape-design/components";
 import {
   fetchProducts,
   PutToggle,
@@ -18,28 +30,14 @@ import {
   exportProducts,
   fetchInventoryCollection,
 } from "Redux-Store/Products/ProductThunk";
-import Tabs from "@cloudscape-design/components/tabs";
 import Overview from "./drawerTabs/overview";
 import OrderHistory from "./drawerTabs/orderHistory";
 import Movement from "./drawerTabs/movement";
 import ItemVendor from "./drawerTabs/itemVendor";
-import Modal from "@cloudscape-design/components/modal";
-import {
-  SpaceBetween,
-  StatusIndicator,
-  Select,
-  Pagination,
-  Flashbar,
-  Grid,
-  Toggle,
-  FormField,
-  Input,
-  Popover,
-  Icon,
-} from "@cloudscape-design/components";
 import { Link, useLocation } from "react-router-dom";
 import ProductPDF from "./components/ProductPDF";
-
+import CustomPagination from './components/CustomPagination';
+import {useMediaQuery} from "react-responsive";
 const Inventory = () => {
   const location = useLocation();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -152,7 +150,6 @@ const Inventory = () => {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
   const [activeTabId, setActiveTabId] = React.useState("first");
-  const [currentPageIndex, setCurrentPageIndex] = React.useState(1);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [productToToggle, setProductToToggle] = React.useState(null);
   const [items, setItems] = React.useState([]);
@@ -170,12 +167,8 @@ const Inventory = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const products = useSelector(
-    (state) => state.products.products.data[currentPage] || []
-  ); // Access current page data
+
   const status = useSelector((state) => state.products.products.status);
-  const { data = [] } = products;
-  const nextKey = useSelector((state) => state.products.products.nextKey);
 
   const [fetchedPages, setFetchedPages] = useState({}); // Store fetched data per page
   const [pagesCount, setPagesCount] = useState(1); // Keep track of total pages
@@ -207,8 +200,6 @@ const Inventory = () => {
   const [collectionFilteringText, setCollectionFilteringText] = useState("");
   const [isCollectionFetched, setIsCollectionFetched] = useState(false);
 
-  // console.log(inventoryCollection, "inventory collection");
-  // console.log("Current Page:", currentPage);
 
   // Add loading state for item collection
   const [isItemCollectionLoading, setIsItemCollectionLoading] = useState(false);
@@ -252,7 +243,6 @@ const Inventory = () => {
       )
         .unwrap()
         .then((result) => {
-          // console.log("Fetched products for page:", currentPage, result);
 
           // Adjust to check the correct data structure
           if (Array.isArray(result.data)) {
@@ -315,6 +305,7 @@ const Inventory = () => {
   // Prepare items for the table
   const handleCategoryChange = ({ detail }) => {
     setSelectedCategory(detail.selectedOption);
+    setSelectedSubCategory(null);
     setCurrentPage(1); // Reset page to 1 when filters change
   };
   const handleSubCategoryChange = ({ detail }) => {
@@ -330,9 +321,7 @@ const Inventory = () => {
     setSelectedStatus(detail.selectedOption);
     setCurrentPage(1); // Reset page to 1 when filters change
 
-    // console.log(selectedStatus, "status");
   };
-  // console.log(selectedStatus?.value, "status");
 
   if (status === "LOADING") {
     return (
@@ -341,14 +330,10 @@ const Inventory = () => {
       </Box>
     );
   }
-  const handleToggleClick = (product) => {
-    setProductToToggle(product);
-    setIsModalVisible(true);
-  };
+
 
   const handleConfirmToggle = () => {
     const newStatus = selectedStatus?.value ? false : true;
-    // console.log(newStatus, "new staussess");
     const ids = selectedItems.map((item) => item.id); // Get the IDs of the selected items
     dispatch(PutToggle({ ids, active: newStatus }))
       .unwrap()
@@ -648,8 +633,7 @@ const Inventory = () => {
 
   return (
     <SpaceBetween size="s">
-      {/* Flash Message Notifications */}
-      {/* {console.log("Rendering component, flashMessages:", flashMessages)} */}
+
       {flashMessages.length > 0 && (
         <Flashbar 
           items={flashMessages} 
@@ -868,17 +852,14 @@ const Inventory = () => {
         {/* Filter UI that appears when toggle is clicked */}
         {isOpen && (
           <div style={{ 
-            // padding: "16px", 
-            // backgroundColor: "white", 
-            // borderRadius: "8px", 
-            // border: "1px solid #e9ebed",
+        
             marginBottom: "16px"
           }}>
             <Grid
               gridDefinition={[
-                { colspan: isMobile ? 12 : 4 },
-                { colspan: isMobile ? 12 : 4 },
-                { colspan: isMobile ? 12 : 4 },
+                { colspan: isMobile ? 12 : 2 },
+                { colspan: isMobile ? 12 : 2 },
+                { colspan: isMobile ? 12 : 2 },
               ]}
             >
               <Select
@@ -935,85 +916,84 @@ const Inventory = () => {
           </div>
         )}
         
-        {/* stats */}
         <Grid
-            gridDefinition={[
-              { colspan: { default:isMobile ? 6 : 12, xxs: isMobile ? 10 : 3 } },
-              { colspan: { default:isMobile ? 6 : 12, xxs: isMobile ? 2 : 3 } },
-              { colspan: { default:isMobile ? 6 : 12, xxs: isMobile ? 12 : 3 } },
-              { colspan: { default:isMobile ? 6 : 12, xxs: isMobile ? 12 : 3 } },
+     gridDefinition={[
+       { colspan: { default:isMobile ? 6 : 12, xxs: isMobile ? 10 : 3 } },
+       { colspan: { default:isMobile ? 6 : 12, xxs: isMobile ? 2 : 3 } },
+       { colspan: { default:isMobile ? 6 : 12, xxs: isMobile ? 12 : 3 } },
+       { colspan: { default:isMobile ? 6 : 12, xxs: isMobile ? 12 : 3 } },
 
-            ]}
-        >
-          <div 
-            style={{ 
-              cursor: 'pointer',
-              backgroundColor: selectedView === 'allProducts' ? '#f4f9ff' : 'white',
-              borderRadius: '16px',
-              border: selectedView === 'allProducts' ? '1px solid #0972D3' : '1px solid #e9ebed',
-              padding: '16px',
-              boxShadow: selectedView === 'allProducts' ? 'none' : '0 2px 4px rgba(0, 0, 0, 0.1)'
-            }}
-            onClick={() => setSelectedView('allProducts')}
-          >
-            <div style={{ marginBottom: '8px' }}>
-              <Header variant="h2">
-                {inventoryStats?.data?.totalProducts}
-              </Header>
-            </div>
-            <b>All Products</b>
-          </div>
-          <div 
-            style={{ 
-              cursor: 'pointer',
-              backgroundColor: selectedView === 'itemCollection' ? '#f4f9ff' : 'white',
-              borderRadius: '16px',
-              border: selectedView === 'itemCollection' ? '1px solid #0972D3' : '1px solid #e9ebed',
-              padding: '16px',
-              boxShadow: selectedView === 'itemCollection' ? 'none' : '0 2px 4px rgba(0, 0, 0, 0.1)'
-            }}
-            onClick={handleItemCollectionView}
-          >
-            <div style={{ marginBottom: '8px' }}>
-              <Header variant="h2">{inventoryCollection?.data[1]?.length || 42}</Header>
-            </div>
-            <b>{isMobile ? "Multiple Variants" : "Multiple-Variants Items"}</b>
-          </div>
+     ]}
+ >
+   <div 
+     style={{ 
+       cursor: 'pointer',
+       backgroundColor: selectedView === 'allProducts' ? '#f4f9ff' : 'white',
+       borderRadius: '16px',
+       border: selectedView === 'allProducts' ? '1px solid #0972D3' : '1px solid #e9ebed',
+       padding: '16px',
+       boxShadow: selectedView === 'allProducts' ? 'none' : '0 2px 4px rgba(0, 0, 0, 0.1)'
+     }}
+     onClick={() => setSelectedView('allProducts')}
+   >
+     <div style={{ marginBottom: '8px' }}>
+       <Header variant="h2">
+         {inventoryStats?.data?.totalProducts}
+       </Header>
+     </div>
+     <b style={{fontSize:isMobile ? "12px" : "14px"}}>All Products</b>
+   </div>
+   <div 
+     style={{ 
+       cursor: 'pointer',
+       backgroundColor: selectedView === 'itemCollection' ? '#f4f9ff' : 'white',
+       borderRadius: '16px',
+       border: selectedView === 'itemCollection' ? '1px solid #0972D3' : '1px solid #e9ebed',
+       padding: '16px',
+       boxShadow: selectedView === 'itemCollection' ? 'none' : '0 2px 4px rgba(0, 0, 0, 0.1)'
+     }}
+     onClick={handleItemCollectionView}
+   >
+     <div style={{ marginBottom: '8px' }}>
+       <Header variant="h2">{inventoryCollection?.data[1]?.length || 42}</Header>
+     </div>
+     <b style={{fontSize:isMobile ? "12px" : "14px"}}>{isMobile ? "Multiple Variants" : "Multiple-Variants Items"}</b>
+   </div>
 
-          <div 
-            style={{ 
-              // cursor: 'pointer',
-              backgroundColor:  'white',
-              borderRadius: '16px',
-              border: '1px solid #e9ebed',
-              padding: '16px',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-            }}
-            // onClick={() => setSelectedView('publishedStock')}
-          >
-            <div style={{ marginBottom: '8px' }}>
-              <Header variant="h2">{inventoryStats?.data?.active}</Header>
-            </div>
-            <b>Published Stock</b>
-          </div>
+   <div 
+     style={{ 
+       // cursor: 'pointer',
+       backgroundColor:  'white',
+       borderRadius: '16px',
+       border: '1px solid #e9ebed',
+       padding: '16px',
+       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+     }}
+     // onClick={() => setSelectedView('publishedStock')}
+   >
+     <div style={{ marginBottom: '8px' }}>
+       <Header variant="h2">{inventoryStats?.data?.active}</Header>
+     </div>
+     <b style={{fontSize:isMobile ? "12px" : "14px"}}>Published Stock</b>
+   </div>
 
-          <div 
-            style={{ 
-              // cursor: 'pointer',
-              backgroundColor: 'white',
-              borderRadius: '16px',
-              border:  '1px solid #e9ebed',
-              padding: '16px',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-            }}
-            // onClick={() => setSelectedView('expired')}
-          >
-            <div style={{ marginBottom: '8px' }}>
-              <Header variant="h2">223</Header>
-            </div>
-            <b>Expired</b>
-          </div>
-        </Grid>
+   <div 
+     style={{ 
+       // cursor: 'pointer',
+       backgroundColor: 'white',
+       borderRadius: '16px',
+       border:  '1px solid #e9ebed',
+       padding: '16px',
+       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+     }}
+     // onClick={() => setSelectedView('expired')}
+   >
+     <div style={{ marginBottom: '8px' }}>
+       <Header variant="h2">223</Header>
+     </div>
+     <b style={{fontSize:isMobile ? "12px" : "14px"}}>Expired</b>
+   </div>
+ </Grid>
         <Box float="right">
           <div style={{ display: "flex", gap: "0.5rem" }}>
             {renderModalButton()}
@@ -1039,15 +1019,10 @@ const Inventory = () => {
             >
               Are you sure you want to change the status of this products?
             </Modal>{" "}
-            <Pagination
-              currentPageIndex={currentPage}
-              onChange={({ detail }) =>
-                handlePageChange(detail.currentPageIndex)
-              }
-              openEnd
-              
-              pagesCount={pagesCount}
-              // key={nextKey}
+            <CustomPagination
+              currentPage={currentPage}
+              totalPages={pagesCount}
+              onPageChange={handlePageChange}
             />
           </div>
         </Box>
@@ -1155,8 +1130,7 @@ const Inventory = () => {
                         />
                         <span
                           style={{
-                            // width: "250px",
-                            // textDecoration: "underline",
+                          
                             color: hoveredProductId === e.id ? "blue" : "black", // Change color based on hovered product ID
                           }}
                         >
@@ -1177,10 +1151,7 @@ const Inventory = () => {
                     <b style={{ display: "flex", width: "100px",
                       color:e.availability === true | e.active === true?"green":"red"
                      }}>
-                      {/* <Toggle
-                        onChange={() => handleToggleClick(e)}
-                        checked={e.active}
-                      > */}
+                  
                       {e.availability === true
                         ? "In Stock"
                         : e.availability === false
@@ -1191,13 +1162,7 @@ const Inventory = () => {
                         : e.active === false
                         ? "Out Of Stock"
                         : ""}
-                      {/* </Toggle> */}
-                      {/* <span
-                        style={{
-                          marginLeft: "10px",
-                          color: e.status === "Inactive" ? "gray" : "black",
-                        }}
-                      ></span> */}
+                  
                     </b>
                   ),
                 },
@@ -1503,46 +1468,6 @@ const Inventory = () => {
                 </h7>{" "}
               </p>
             </h1>
-            {/* <div
-                style={{ display: "flex", alignItems: "center"}}
-              >
-                <Toggle
-                  onChange={() => handleToggleClick(selectedProduct)}
-                  checked={selectedProduct.active}
-                  style={{
-                    marginRight: "10px",
-                    marginLeft: "10px",
-                    color:
-                      selectedProduct.status === "Inactive" ? "gray" : "black",
-                  }}
-                >
-                  {selectedProduct.active ? "Active" : "Inactive"}
-                </Toggle>
-                </div> */}
-
-            {/* <ButtonDropdown
-                  items={[
-                    {
-                      text: "Reorder",
-                      id: "reorder",
-                    },
-                    {
-                      text: "Transfer Item",
-                      id: "transferItem",
-                    },
-                    {
-                      text: "Clone Item",
-                      id: "cloneItem",
-                    },
-                    {
-                      text: "Delete Item",
-                      id: "deleteItem",
-                    },
-                  ]}
-                  variant="primary"
-                >
-                  Action
-                </ButtonDropdown> */}
 
             <Tabs
               onChange={({ detail }) => setActiveTabId(detail.activeTabId)}

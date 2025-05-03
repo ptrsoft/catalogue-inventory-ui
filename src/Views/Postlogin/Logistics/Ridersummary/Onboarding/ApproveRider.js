@@ -190,7 +190,7 @@ const ApproveRider = () => {
                     <div className="section-header">References Contact</div>
                     <hr />
                     <div className="info-item">
-                      <span className="label">Reference Name :</span>
+                      <span className="label">Reference No :</span>
                       <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.reference?.number || 'N/A'}</span>
                     </div>
                     <div className="info-item">
@@ -225,8 +225,8 @@ const ApproveRider = () => {
                         <div onClick={() => handleDocClick(doc)} style={{ position: "relative", width: "100%", cursor: "pointer" }}>
                           <div style={{ paddingBottom: "5px" }}>
                             <div key={doc.id} className="info-item">
-                              <span className="label">Document Name :</span>
-                              <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{getDocumentLabel(doc?.name)}</span>
+                              <span className="label" style={{width:isMobile?'30px':'150px',marginRight:'-15px'}}>Document:</span>
+                              <span className="value" style={{width:isMobile?'200px':'150px', textAlign:'left',marginLeft:'-15px',marginRight:'-15px'}}>{getDocumentLabel(doc?.name)}</span>
                             </div>
                             <span>
                               <Button variant='inline-link' onClick={() => handleDocClick(doc)}>Download Or View</Button>

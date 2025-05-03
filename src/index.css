@@ -367,4 +367,8 @@ a.awsui_anchor_1kosq_101th_109{
 
 }
 
+/* Sidebar specific button icon margin */
+.awsui_header-link_l0dv0_1s9d7_147:not(#\9) {
+  margin-top: -3px !important;
+}
 

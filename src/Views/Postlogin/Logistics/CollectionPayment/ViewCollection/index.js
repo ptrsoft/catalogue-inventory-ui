@@ -104,7 +104,7 @@ const ViewDetailsPage = () => {
               </div>
               <div className="info-row">
                 <span className="label">Rider ID:</span>
-                <b style={{width:'190px',marginLeft:'-25px'}}>{selectedRunsheet?.rider?.id}</b>
+                <b style={{width: isMobile ? '170px' : '400px',marginLeft:'-25px'}}>{selectedRunsheet?.rider?.id}</b>
               </div>
             </div>
           

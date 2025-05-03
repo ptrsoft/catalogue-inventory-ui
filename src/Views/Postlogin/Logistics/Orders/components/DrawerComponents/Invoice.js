@@ -249,18 +249,41 @@ const Invoice = ({ orderData, flag }) => {
       `${product.subtotal || "0.00"}`
     ]);
   
-    // Custom pagination logic
+    // Custom pagination logic with dynamic item distribution
     const chunks = [];
     if (tableData && tableData.length > 0) {
-      // First page: 13 items
-      chunks.push(tableData.slice(0, 14));
+      const totalItems = tableData.length;
+      let currentIndex = 0;
+
+      // First page: 17 items if total items > 20, otherwise 14 items
+      const firstPageItems = totalItems > 17 ? 17 : 14;
+      chunks.push(tableData.slice(0, firstPageItems));
+      currentIndex = firstPageItems;
+
+      // Calculate remaining items
+      const remainingItems = tableData.slice(currentIndex);
       
-      // Remaining items
-      const remaining = tableData.slice(14);
+      // For second page
+      const secondPageItems = totalItems > 38 ? 21 : 19;
+      if (remainingItems.length > 0) {
+        chunks.push(remainingItems.slice(0, secondPageItems));
+        currentIndex += secondPageItems;
+      }
+
+      // For third page and beyond, increase items per page progressively
+      let pageNumber = 3;
+      let itemsPerPage = secondPageItems + 2; // Start with 2 more items than second page
       
-      // Middle pages: 18 items per page
-      for (let i = 0; i < remaining.length; i += 19) {
-        chunks.push(remaining.slice(i, i + 19));
+      while (currentIndex < totalItems) {
+        const currentChunk = tableData.slice(currentIndex, currentIndex + itemsPerPage);
+        if (currentChunk.length > 0) {
+          chunks.push(currentChunk);
+          currentIndex += itemsPerPage;
+          itemsPerPage += 2; // Increase by 2 items for each subsequent page
+          pageNumber++;
+        } else {
+          break;
+        }
       }
     }
   
@@ -299,17 +322,29 @@ const Invoice = ({ orderData, flag }) => {
         },
         columnStyles: {
           0: { cellWidth: 15, halign: 'center' },
-          1: { cellWidth: 85, halign: 'left' },
+          1: { cellWidth: 88, halign: 'left' },
           2: { cellWidth: 22, halign: 'left' },
           3: { cellWidth: 25, halign: 'center' },
-          4: { cellWidth: 18, halign: 'left' },
+          4: { cellWidth: 15, halign: 'center' },
           5: { cellWidth: 35, halign: 'center' },
         },
-        // Keep all table styles unchanged
-        didDrawPage: () => {
+        didDrawPage: (data) => {
           addHeader();
           addWatermark();
           addFooter();
+          
+          // Add "Continue..." text if there are more pages
+          if (index < chunks.length - 1) {
+            const pageHeight = doc.internal.pageSize.height;
+            const pageWidth = doc.internal.pageSize.width;
+            const tableBottom = data.cursor.y;
+            
+            // Position the "Continue..." text just below the table
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "italic");
+            doc.setTextColor(100, 100, 100);
+            doc.text("Continue...", pageWidth - 10, tableBottom + 5, { align: "right" });
+          }
         },
       });
     });

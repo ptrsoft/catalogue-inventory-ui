@@ -5,6 +5,7 @@ import { useMediaQuery } from 'react-responsive';
 
 
 const Sidebar = () => {
+  
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -72,24 +73,29 @@ const Sidebar = () => {
 
   ];
 
-  const handleNavigation = (event) => {
-    if (!event.detail.external) {
-      event.preventDefault();
-      navigate(event.detail.href);
-    }
+      const handleNavigation = (event) => {
+        if (!event.detail.external) {
+          event.preventDefault();
+          navigate(event.detail.href);
+        }
+      };
+
+  const handleNavigation1 = (event) => {
+console.log("hiii");
   };
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
 
   return (
     <SideNavigation 
+    onChange={handleNavigation1}
       activeHref={location.pathname}
       header={{ href: "/", text:
-        <div style={{display:'flex',alignItems:'center',gap:'15px'}}>
+        <div style={{display:'flex',alignItems:'center',gap:'2px', marginTop:isMobile?'-5px':'0px'}}>
           {isMobile&&(
-          <img  width={40} height={40}alt="logo" src={logo}></img>
+          <img style={{marginLeft:'18px'}} width={40} height={40}alt="logo" src={logo}></img>
           )}
-          <h3>PTR Technologies
+          <h3 style={{marginLeft:'18px'}}>PTR Technologies
           </h3>
         </div>
          }}

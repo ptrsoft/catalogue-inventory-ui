@@ -196,7 +196,7 @@ const ApproveRider = () => {
                     <div className="info-item">
                       <span className="label">Relation :</span>
                       <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.reference?.relation || 'N/A'}</span>
-                    </div>
+                    </div>   
                   </div>
                   <div className="section-header">KYC Documents Details ( <i>Uploaded Documents </i> )</div>
                   <hr />

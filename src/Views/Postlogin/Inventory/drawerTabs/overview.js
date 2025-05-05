@@ -7,17 +7,46 @@ import {
   Container,
   SpaceBetween,
 } from "@cloudscape-design/components";
+import {useMediaQuery} from "react-responsive";
+
 import BarChart from "@cloudscape-design/components/bar-chart";
 
 const Overview = ({ selectedProduct }) => {
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
   if (!selectedProduct) {
     return <div>No product selected</div>;
   }
 
   return (
     <div>
-      <div className="overview">
-        <div style={{ width: "38vw" }}>
+      <div className="overview" style={{ display: isMobile ? "block" : "flex" }}>
+        {isMobile && (
+          <div
+            style={{
+              borderRadius: "10px",
+              backgroundColor: "#E9EBED",
+              padding: "15px",
+              marginBottom: "30px",
+            }}
+          >
+            <div>
+              <img
+                style={{
+                  border: "1px solid #D9D9D9",
+                  width: "100%",
+                  height: "100%",
+                }}
+                src={selectedProduct.image}
+                alt="product"
+              />
+            </div>
+            <div style={{ display: "flex", gap: "15px", paddingTop: "7px" }}>
+            </div>
+          </div>
+        )}
+
+        <div style={{ width: isMobile ? "100%" : "38vw" }}>
           <ColumnLayout columns={1}>
             <div
               style={{
@@ -30,8 +59,8 @@ const Overview = ({ selectedProduct }) => {
               {/* Item Information */}
               <Container>
                 <SpaceBetween size="s">
-                  <Header>Item Information</Header>
-                  <ColumnLayout columns={2} minColumnWidth={170}>
+                  <Header variant={isMobile ? "h3" : "h2"}>Item Information</Header>
+                  <ColumnLayout columns={2} minColumnWidth={isMobile ? 120 : 170}>
                     <p>Category :</p>
                     <p>{selectedProduct.category}</p>
                     <p>Item Code :</p>
@@ -47,11 +76,11 @@ const Overview = ({ selectedProduct }) => {
               {/* Purchase and Sales Information */}
               <Container>
                 <SpaceBetween size="s">
-                  <Header>Purchase and Sales Information</Header>
-                  <ColumnLayout columns={2} minColumnWidth={170}>
+                  <Header variant={isMobile ? "h3" : "h2"}>Purchase and Sales Information</Header>
+                  <ColumnLayout columns={2} minColumnWidth={isMobile ? 120 : 170}>
                     <p>Purchasing Price :</p>
                     <p>Rs. {selectedProduct.purchasingPrice}</p>
-                    <p>Minimum Selling Price :</p>
+                    <p style={{width:isMobile ? "155px" : "100%"}}>Minimum Selling Price :</p>
                     <p>Rs. {selectedProduct.msp}</p>
                   </ColumnLayout>
                 </SpaceBetween>
@@ -60,7 +89,7 @@ const Overview = ({ selectedProduct }) => {
               {/* Quantity on Hand */}
               <Container>
                 <SpaceBetween size="s">
-                  <Header>Quantity on Hand</Header>
+                  <Header variant={isMobile ? "h3" : "h2"}>Quantity on Hand</Header>
                   <h1
                       style={{
                         backgroundColor: "#E9EBED",
@@ -75,19 +104,17 @@ const Overview = ({ selectedProduct }) => {
                       {selectedProduct.stockQuantity}
                       {selectedProduct.units}
                     </h1>
-                  <ColumnLayout columns={2} minColumnWidth={170}>
-                   
-                    
-                      <p>
-                        <b>Main Warehouse :</b> 
-                      </p>
-                      <p>{selectedProduct.stockQuantity}{selectedProduct.units}
-                      </p>
-                      <p>
-                        Girdhari Store :
-                      </p>
-                      <p> {selectedProduct.stockQuantity}
-                      {selectedProduct.units}</p>
+                  <ColumnLayout columns={2} minColumnWidth={isMobile ? 120 : 170}>
+                    <p>
+                      <b>Main Warehouse :</b> 
+                    </p>
+                    <p>{selectedProduct.stockQuantity}{selectedProduct.units}
+                    </p>
+                    <p>
+                      Girdhari Store :
+                    </p>
+                    <p> {selectedProduct.stockQuantity}
+                    {selectedProduct.units}</p>
                   </ColumnLayout>
                 </SpaceBetween>
               </Container>
@@ -95,74 +122,32 @@ const Overview = ({ selectedProduct }) => {
           </ColumnLayout>
         </div>
 
-        {/* Product Image */}
-        <div
-          style={{
-            borderRadius: "10px",
-            backgroundColor: "#E9EBED",
-            height: "47vh",
-            padding: "15px",
-            marginTop: "5px",
-            marginBottom: "10px",
-          }}
-        >
-          <div>
-            <img
-              style={{
-                border: "1px solid #D9D9D9",
-                width: "228px",
-                height: "250px",
-              }}
-              src={selectedProduct.image}
-              alt="product"
-            />
-          </div>
-
-          {/* Optional Additional Images */}
-          <div style={{ display: "flex", gap: "15px", paddingTop: "7px" }}>
-            {/* {selectedProduct.images && selectedProduct.images[1] && (
-              <div
+        {!isMobile && (
+          <div
+            style={{
+              borderRadius: "10px",
+              backgroundColor: "#E9EBED",
+              height: "47vh",
+              padding: "15px",
+              marginTop: "30px",
+              marginBottom: "30px",
+            }}
+          >
+            <div>
+              <img
                 style={{
                   border: "1px solid #D9D9D9",
-                  borderRadius: "10px",
-                  height: "37px",
-                  width: "50px",
+                  width: "228px",
+                  height: "250px",
                 }}
-              >
-                <img
-                  style={{
-                    borderRadius: "10px",
-                    height: "37px",
-                    width: "50px",
-                  }}
-                  src={selectedProduct.images[1]}
-                  alt="additional product"
-                />
-              </div>
-            )} */}
-
-            {/* {selectedProduct.images && selectedProduct.images[2] && (
-              // <div
-              //   style={{
-              //     border: "1px solid #D9D9D9",
-              //     borderRadius: "10px",
-              //     height: "37px",
-              //     width: "50px",
-              //   }}
-              // >
-              //   <img
-              //     style={{
-              //       borderRadius: "10px",
-              //       height: "37px",
-              //       width: "50px",
-              //     }}
-              //     src={selectedProduct.images[2]}
-              //     alt="additional product"
-              //   />
-              // </div>
-            )} */}
+                src={selectedProduct.image}
+                alt="product"
+              />
+            </div>
+            <div style={{ display: "flex", gap: "15px", paddingTop: "7px" }}>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Sales Order Summary with Bar Chart */}

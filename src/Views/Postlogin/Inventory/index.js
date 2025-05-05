@@ -1421,7 +1421,7 @@ const Inventory = () => {
             top: 0,
             right: 0,
             height: "100%",
-            width: "65%",
+            width: isMobile ? "100%" : "65%",
             backgroundColor: "white",
             boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.5)",
             zIndex: 1000,
@@ -1443,7 +1443,7 @@ const Inventory = () => {
                 onClick={handleCloseDrawer}
               />
             </div>
-            <h1 style={{ color: "#0972D3" }}>
+            <h1 style={{ color: "#0972D3", lineHeight: "1" }}>
               {selectedProduct.name}
               <br />
               <p

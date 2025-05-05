@@ -95,8 +95,8 @@ console.log("hiii");
           {isMobile&&(
           <img style={{marginLeft:'18px'}} width={40} height={40}alt="logo" src={logo}></img>
           )}
-          <h3 style={{marginLeft:'18px'}}>PTR Technologies
-          </h3>
+          <span style={{marginLeft:'18px',fontSize:'20px'}}>PTR Technologies
+          </span>
         </div>
          }}
       

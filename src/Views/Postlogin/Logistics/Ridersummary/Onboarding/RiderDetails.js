@@ -24,8 +24,10 @@ import {
 //importing  Custom Components
 import AddressTab from "./RiderDetailsComponents/AddressTab";
 import PersonalDetails from "./RiderDetailsComponents/PersonalDetails.js";
-
+import { useMediaQuery } from "react-responsive";
 const RiderDetails = () => {
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
   const { id: riderId } = useParams();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -185,14 +187,15 @@ const RiderDetails = () => {
       <SpaceBetween direction="vertical" size="s">
         <BreadcrumbGroup items={breadcrumbItems} />
         <Header
-          variant="h1"
+          variant={isMobile ? "h3" : "h1"}
           actions={
-            <div class="button-container">
+            <div class="button-container" >
               <button
                 className="cancel-btn"
                 style={{
                   borderRadius: "16px",
                   fontSize: "14px",
+                  marginRight: isMobile ? "-10px" : "0px",
                   border: `2px solid ${
                     riderDetails?.reviewStatus === "rejected"
                       ? "#5F6B7A"

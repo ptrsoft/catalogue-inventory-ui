@@ -754,6 +754,7 @@ const CreateNewAdjustments = () => {
           ></Header>
         }
       >
+    <div>          
         <Table
           pagination={
             <Pagination
@@ -767,19 +768,19 @@ const CreateNewAdjustments = () => {
       <SpaceBetween size="m">
     <Grid
           gridDefinition={[
-            { colspan: { default: isMobile ? 10 : 8, xxs: isMobile ? 10 : 4 } },
-            { colspan: { default: isMobile ? 2 : 4, xxs: isMobile ? 2 : 2 } },
-            { colspan: { default: isMobile ? 12 : 12, xxs: isMobile ? 12 : 6 } },
+            { colspan: { default: isMobile ? 10 : 8,} },
+            { colspan: { default: isMobile ? 2 : 4} },
+            { colspan: { default: isMobile ? 12 : 12} },
           ]}
         >
-          <div style={{width:"280px"}}>
+          {/* <div style={{width:"260px"}}> */}
           <TextFilter
             filteringText={filteringText}
             filteringPlaceholder="Search"
             filteringAriaLabel="Filter instances"
             onChange={handleSearchChange}
           />
-          </div>
+          {/* </div> */}
           {/* Filter Toggle */}
           <span
             onClick={toggleFilter}
@@ -792,7 +793,7 @@ const CreateNewAdjustments = () => {
               padding: isMobile ? "4px" : "4px 8px",
               borderRadius: "8px",
               backgroundColor: "white",
-              width: isMobile ? "32px" : "auto",
+              width: isMobile ? "32px" : "180px",
               gap: "10px",
             }}
           >
@@ -890,7 +891,7 @@ const CreateNewAdjustments = () => {
             {
               header: "Item Code",
               sortingField: "Item Code",
-              cell: (item) => "#" + item.itemCode,
+              cell: (item) => "#" + item.id,
             },
             {
               header: "Item Name",
@@ -913,13 +914,26 @@ const CreateNewAdjustments = () => {
                     }}
                   />
                   {item.name}
+                  {typeof item.totalQuantityInB2c !== "undefined" && (
+                    <>
+                      {" "}
+                      - {item.totalQuantityInB2c}
+                      {item.totalquantityB2cUnit ? ` ${item.totalquantityB2cUnit}` : ""}
+                    </>
+                  )}
                 </div>
               ),
             },
             {
-              header: "Stock on Hand",
-              sortingField: "stock on hand",
-              cell: (item) => item.stockQuantity,
+              header: "Quantity In Stock",
+              sortingField: "StockQuantity",
+              cell: (item) => {
+                // Show quantity with unit if available
+                if (item.stockQuantity !== undefined && item.stockQuantity !== null) {
+                  return `${item.stockQuantity} ${item.units || ""}`.trim();
+                }
+                return "-";
+              },
             },
             {
               header: "Purchasing Price",
@@ -949,6 +963,7 @@ const CreateNewAdjustments = () => {
             </Box>
           }
         />
+        </div>
       </Modal>
     </>
   );

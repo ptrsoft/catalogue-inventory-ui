@@ -156,7 +156,7 @@ const ApproveRider = () => {
                       </div>
                       <div className="info-item">
                         <span className="label">Email :</span>
-                        <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.email || 'N/A'}</span>
+                        <span className="value" style={{width:isMobile?'120px':'300px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.email || 'N/A'}</span>
                       </div>
                     </div>
                   </Box>
@@ -198,7 +198,8 @@ const ApproveRider = () => {
                       <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.personalDetails?.reference?.relation || 'N/A'}</span>
                     </div>   
                   </div>
-                  <div className="section-header">KYC Documents Details ( <i>Uploaded Documents </i> )</div>
+                  <div className="section-header">KYC Documents Details <br>
+                  </br> ( <i>Uploaded Documents </i> )</div>
                   <hr />
                   <SpaceBetween direction='vertical' size="s">
                   {riderDetails?.documents?.slice(1).map((doc) => (
@@ -225,7 +226,7 @@ const ApproveRider = () => {
                         <div onClick={() => handleDocClick(doc)} style={{ position: "relative", width: "100%", cursor: "pointer" }}>
                           <div style={{ paddingBottom: "5px" }}>
                             <div key={doc.id} className="info-item">
-                              <span className="label" style={{width:isMobile?'30px':'150px',marginRight:'-15px'}}>Document:</span>
+                              <span className="label" style={{width:'30px',marginRight:'-15px'}}>Document:</span>
                               <span className="value" style={{width:isMobile?'200px':'150px', textAlign:'left',marginLeft:'-15px',marginRight:'-15px'}}>{getDocumentLabel(doc?.name)}</span>
                             </div>
                             <span>
@@ -239,22 +240,27 @@ const ApproveRider = () => {
 
                   <div className="section-header">Bank Details</div>
                   <hr />
-                  <div className="address-info">
+                  <div className="address-info" style={{ 
+                    maxWidth: isMobile ? '100%' : 'auto',
+                    overflowX: isMobile ? 'auto' : 'visible',
+                    padding: isMobile ? '10px' : '0',
+                    whiteSpace: isMobile ? 'nowrap' : 'normal'
+                  }}>
                     <div className="info-item">
-                      <span className="label" style={{ width: "180px" }}>Bank Name: </span>
-                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.bankDetails?.bankName || 'N/A'}</span>
+                      <span className="label" style={{ width: "140px" }}>Bank Name: </span>
+                      <span className="value" style={{width:'120px',marginLeft:isMobile?'-2px':'-25px'}}>{riderDetails?.bankDetails?.bankName || 'N/A'}</span>
                     </div>
                     <div className="info-item">
-                      <span className="label" style={{ width: "180px" }}>Account Number:</span>
-                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.bankDetails?.acc || 'N/A'}</span>
+                      <span className="label" style={{ width: "140px" }}>Account Number: {" "}</span>
+                      <span className="value" style={{width:'180px',marginLeft: isMobile?'-2px':'-25px'}}> {" "} {riderDetails?.bankDetails?.acc || 'N/A'}09876543212</span>
                     </div>
                     <div className="info-item">
-                      <span className="label" style={{ width: "180px" }}>IFSC Code:</span>
-                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.bankDetails?.ifsc || 'N/A'}</span>
+                      <span className="label" style={{ width: "140px" }}>IFSC Code:</span>
+                      <span className="value" style={{width:'120px',marginLeft:isMobile?'-2px':'-25px'}}> {riderDetails?.bankDetails?.ifsc || 'N/A'}</span>
                     </div>
                     <div className="info-item">
-                      <span className="label" style={{ width: "180px" }}>Bank Status:</span>
-                      <span className="value" style={{width:'120px',marginLeft:'-15px'}}>{riderDetails?.bankDetails?.status || 'N/A'}</span>
+                      <span className="label" style={{ width: "140px" }}>Bank Status:</span>
+                      <span className="value" style={{width:'120px',marginLeft:isMobile?'-2px':'-25px'}}>{riderDetails?.bankDetails?.status || 'N/A'}</span>
                     </div>
                   </div>
                 </Box>

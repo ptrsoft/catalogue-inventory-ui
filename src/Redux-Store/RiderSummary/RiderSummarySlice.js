@@ -1,6 +1,6 @@
 // src/redux/slices/ridersSlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchRiders, fetchRiderById, verifyOrRejectDocument, updateRiderStatus } from './RiderSummaryThunk'; // Adjust import path as necessary
+import { fetchRiders, fetchRiderById, verifyOrRejectDocument, updateRiderStatus, fetchRiderSummary } from './RiderSummaryThunk'; // Adjust import path as necessary
 
 const ridersSlice = createSlice({
     name: 'riders',
@@ -16,9 +16,27 @@ const ridersSlice = createSlice({
         documentError: null, // Error message for document verification/rejection
         updateStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
         updateError: null,   // Error message for updating rider status
+        summaryItems: [],    // List of rider summary data
+        summaryStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+        summaryError: null,  // Error message for fetching rider summary
     },
     reducers: {},
     extraReducers: (builder) => {
+        // Handling fetchRiderSummary (Fetching rider summary)
+        builder
+            .addCase(fetchRiderSummary.pending, (state) => {
+                state.summaryStatus = 'loading';
+            })
+            .addCase(fetchRiderSummary.fulfilled, (state, action) => {
+                state.summaryStatus = 'succeeded';
+                state.summaryItems = action.payload.items || action.payload;
+                state.summaryError = null; // Clear any previous errors
+            })
+            .addCase(fetchRiderSummary.rejected, (state, action) => {
+                state.summaryStatus = 'failed';
+                state.summaryError = action.error.message; // Store the error message
+            });
+
         // Handling fetchRiders (Fetching all riders)
         builder
             .addCase(fetchRiders.pending, (state) => {

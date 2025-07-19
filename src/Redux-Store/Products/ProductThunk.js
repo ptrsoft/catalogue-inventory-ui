@@ -185,6 +185,27 @@ export const deleteProduct = createAsyncThunk(
   }
 );
 
+export const deleteGroup = createAsyncThunk(
+  "products/deleteGroup",
+  async (groupId, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) {
+        return rejectWithValue("Authorization token is missing.");
+      }
+      const url = config.DELETE_GROUP.replace("{groupId}", groupId);
+      const response = await postLoginService.delete(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data; // Assuming this returns the groupId of the deleted group
+    } catch (error) {
+      return rejectWithValue(error.response ? error.response.data : error.message);
+    }
+  }
+);
+
 export const fetchProductById = createAsyncThunk("products/fetchById", async (id, { rejectWithValue }) => {
   try {
     const token = getToken();
@@ -316,9 +337,12 @@ export const fetchInventoryCollection = createAsyncThunk(
 
       // Add search term if provided
       if (params?.search) queryParams.push(`search=${encodeURIComponent(params.search)}`);
+      if (params?.category) queryParams.push(`category=${encodeURIComponent(params.category)}`);
+      if (params?.subCategory) queryParams.push(`subCategory=${encodeURIComponent(params.subCategory)}`);
+
       
       // Add pageKey for pagination
-      if (params?.pageKey) queryParams.push(`pageKey=${encodeURIComponent(params.pageKey)}`);
+      if (params?.pageKey) queryParams.push(`nextKey=${encodeURIComponent(params.pageKey)}`);
 
       if (queryParams.length > 0) url += `?${queryParams.join("&")}`;
 
@@ -355,6 +379,56 @@ export const fetchAllInventory = createAsyncThunk(
         },
       });
 
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const fetchCollectionById = createAsyncThunk(
+  "products/fetchCollectionById",
+  async (groupId, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+
+      if (!token) {
+        return rejectWithValue("Authorization token is missing.");
+      }
+
+      const url = `${config.FETCH_COLLECTION_BY_ID}/${groupId}`;
+      const response = await postLoginService.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const updateGroup = createAsyncThunk(
+  "products/updateGroup",
+  async ({ groupId, groupData }, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) {
+        return rejectWithValue("Authorization token is missing.");
+      }
+      const url = `${config.BASE_URL}/inventory/update-group/${groupId}`;
+      const response = await postLoginService.put(
+        url,
+        groupData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

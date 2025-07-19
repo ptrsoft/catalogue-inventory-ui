@@ -45,6 +45,7 @@ const Signup = lazy(() => import("./PreLogin/Signup"));
 const ForgotPassword = lazy(() => import("./PreLogin/ForgotPassword"));
 const OtpVerification = lazy(() => import("./PreLogin/otpVerification"));
 const NewPassword = lazy(() => import("./PreLogin/newPassword"));
+const EditVariantGroup = lazy(() => import("./Postlogin/Inventory/EditVariantGroup"));
  // Protected Route Wrapper: Ensures user is authenticated
  const ProtectedRoute = ({ element,isAuthenticated }) => {
   return isAuthenticated ? element : <Navigate to={`${PREFIX_AUTH_PATH}/signin`} />;
@@ -96,6 +97,7 @@ const Views = () => {
         <Route  path={`${PREFIX_APP_PATH}/settings/rbac/groups/viewgroupdetail`} element={<ProtectedRoute element={<Viewgroupdetail />}isAuthenticated={isAuthenticated} />} />
         <Route  path={`${PREFIX_APP_PATH}/settings/rbac/policies`} element={<ProtectedRoute element={<PoliciesContent />} isAuthenticated={isAuthenticated}/>} />
         <Route  path={`${PREFIX_APP_PATH}/settings/rbac/permissions`} element={<ProtectedRoute element={<PermissionsContent />}isAuthenticated={isAuthenticated} />} />
+        <Route path="/app/inventory/edit-group/:groupId" element={<ProtectedRoute element={<EditVariantGroup />} isAuthenticated={isAuthenticated} />} />
 
         {/* Public Routes */}
         <Route  path={`${PREFIX_AUTH_PATH}/signin`} element={<Signin />} />

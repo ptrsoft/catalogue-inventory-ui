@@ -377,7 +377,7 @@ const Invoice = ({ selectedOrder, flag }) => {
                   <td>
                     {item.quantity}
 
-                    {/* {item.unit === "pieces" ? "pcs" : item.unit} */}
+                    {/* {item.unit === "Pcs" ? "Pcs" : item.unit} */}
                   </td>
                   <td>{item.price.toFixed(2)}</td>
                   <td>{item.subtotal.toFixed(2)}</td>
@@ -400,7 +400,7 @@ const Invoice = ({ selectedOrder, flag }) => {
                   <td>
                     {item.quantity}
 
-                    {/* {item.unit === "pieces" ? "pcs" : item.unit} */}
+                    {/* {item.unit === "Pcs" ? "Pcs" : item.unit} */}
                   </td>
                   <td colSpan={2}> Out Of Stock</td>
                   {/* <td>{item.subtotal.toFixed(2)}</td> */}

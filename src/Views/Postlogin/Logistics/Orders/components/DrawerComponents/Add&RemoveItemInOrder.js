@@ -162,7 +162,7 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
   };
 
   const handleApplyItems = () => {
-    const updatedSelectedItems = selectedItems.map((item) => ({
+    const updatedSelectedItems = (selectedItems || []).map((item) => ({
       ...item,
       quantity: quantities[item.id] || 0,
     }));
@@ -172,7 +172,7 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
       quantity: item.quantity,
       quantityUnits: `${item.totalQuantityInB2c}${item.totalquantityB2cUnit}`,
     }));
-    console.log(selectedItems,"select")
+    console.log(selectedItems || [],"select")
 
     console.log("Add Items Array:", addItems);
 
@@ -249,6 +249,14 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
             Add Items
           </Header>
         }
+        style={{
+          height: (() => {
+            const currentPageData = fetchedPages[`${selectedCategory?.value || ""}-${selectedSubCategory?.value || ""}-${filteringText || ""}-${currentPage}`];
+            console.log('Current Page Data:', currentPageData?.length);
+            console.log('All Fetched Pages:', fetchedPages);
+            return currentPageData?.length === 10 ? '100vh' : 'auto';
+          })()
+        }}
       >
         <Table
           pagination={
@@ -276,7 +284,7 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
                     <Button
                       variant="primary"
                       onClick={handleApplyItems}
-                      disabled={selectedItems.length === 0}
+                      disabled={(selectedItems || []).length === 0}
                     >
                       Save
                     </Button>
@@ -308,7 +316,7 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
                       <Button
                         variant="primary"
                         onClick={handleApplyItems}
-                        disabled={selectedItems.length === 0}
+                        disabled={(selectedItems || []).length === 0}
                       >
                         Save
                       </Button>
@@ -417,7 +425,7 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
                     handleQuantityChange(item, detail.value)
                   }
                   disabled={
-                    !selectedItems.some((selected) => selected.id === item.id)
+                    !(selectedItems || []).some((selected) => selected.id === item.id)
                   }
                   placeholder="Enter quantity"
                 />
@@ -472,9 +480,9 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
           }
           selectionType="multi"
           trackBy="id"
-          selectedItems={selectedItems}
+          selectedItems={selectedItems || []}
           onSelectionChange={({ detail }) =>
-            setSelectedItems(detail.selectedItems)
+            setSelectedItems(detail.selectedItems || [])
           }
           isItemDisabled={(item) => item?.availability===false || item?.active===false}
           empty={
@@ -552,7 +560,7 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
               ),
             },
           ]}
-          items={selectedOrder?.items}
+          items={selectedOrder?.items || []}
           // variant="embedded"
           variant="borderless"
           stickyHeader
@@ -641,7 +649,7 @@ const AddItemInOrder = ({ selectedOrder, setFlashMessages }) => {
               },
             ]}
             //show remove items here
-            items={selectedOrder?.removedItems}
+            items={selectedOrder?.removedItems || []}
             // variant="embedded"
             variant="borderless"
             stickyHeader

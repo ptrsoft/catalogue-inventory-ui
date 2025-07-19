@@ -29,6 +29,9 @@ import {
   putPricingById,
   exportProducts,
   fetchInventoryCollection,
+  fetchCollectionById,
+  deleteGroup, // 1. Import deleteGroup thunk
+  updateGroup, // 2. Import updateGroup thunk
 } from "Redux-Store/Products/ProductThunk";
 import Overview from "./drawerTabs/overview";
 import OrderHistory from "./drawerTabs/orderHistory";
@@ -38,6 +41,181 @@ import { Link, useLocation } from "react-router-dom";
 import ProductPDF from "./components/ProductPDF";
 import CustomPagination from './components/CustomPagination';
 import {useMediaQuery} from "react-responsive";
+
+// Add EditGroup component for editing multiple-variant item group
+
+
+import {Textarea } from "@cloudscape-design/components";
+
+const unitOptions = [
+  { label: "Pcs", value: "Pcs" },
+  { label: "Pkt", value: "Pkt" },
+  { label: "Gms", value: "Gms" },
+  { label: "Kg", value: "Kg" },
+  { label: "Ltr", value: "Ltr" },
+];
+
+const EditGroup = ({ groupData, onClose }) => {
+  const dispatch = useDispatch();
+  const [form, setForm] = useState({
+    name: groupData.name || "",
+    category: groupData.category || null,
+    subCategory: groupData.subCategory || null,
+    description: groupData.description || "",
+    images: groupData.images || [],
+    tags: groupData.tags || [],
+    variations: groupData.variations || [],
+  });
+  const [flash, setFlash] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Handlers for group fields
+  const handleChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // Handlers for variant fields
+  const handleVariantChange = (idx, field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      variations: prev.variations.map((v, i) =>
+        i === idx ? { ...v, [field]: value } : v
+      ),
+    }));
+  };
+
+  // Add new variant
+  const handleAddVariant = () => {
+    setForm((prev) => ({
+      ...prev,
+      variations: [
+        ...prev.variations,
+        {
+          name: "",
+          sellingPrice: 0,
+          purchasingPrice: 0,
+          stockQuantity: 0,
+          units: "Pcs",
+          comparePrice: 0,
+          totalQuantityInB2c: 0,
+          totalquantityB2cUnit: "Pcs",
+          buyerLimit: 1,
+          image: "",
+          tags: [],
+          description: "",
+        },
+      ],
+    }));
+  };
+
+  // Remove variant
+  const handleRemoveVariant = (idx) => {
+    setForm((prev) => ({
+      ...prev,
+      variations: prev.variations.filter((_, i) => i !== idx),
+    }));
+  };
+
+  // Update group
+  const handleUpdate = async () => {
+    setLoading(true);
+    setFlash([]);
+    try {
+      await dispatch(updateGroup({ groupId: groupData.groupId, groupData: form })).unwrap();
+      setFlash([
+        {
+          type: "success",
+          content: "Group updated successfully!",
+          dismissible: true,
+          onDismiss: () => setFlash([]),
+        },
+      ]);
+      if (onClose) onClose();
+    } catch (error) {
+      setFlash([
+        {
+          type: "error",
+          content: error.message || "Failed to update group.",
+          dismissible: true,
+          onDismiss: () => setFlash([]),
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Box padding="l" background="white" borderRadius="8px" boxShadow="0 2px 8px #0001">
+      <Flashbar items={flash} />
+      <Header>Edit Multiple-Variant Item Group</Header>
+      <SpaceBetween size="l">
+        <FormField label="Name">
+          <Input value={form.name} onChange={({ detail }) => handleChange("name", detail.value)} />
+        </FormField>
+        <FormField label="Category">
+          <Input value={form.category} onChange={({ detail }) => handleChange("category", detail.value)} />
+        </FormField>
+        <FormField label="Sub Category">
+          <Input value={form.subCategory} onChange={({ detail }) => handleChange("subCategory", detail.value)} />
+        </FormField>
+        <FormField label="Description">
+          <Textarea value={form.description} onChange={({ detail }) => handleChange("description", detail.value)} />
+        </FormField>
+        {/* Images, tags, etc. can be added here as needed */}
+        <Header variant="h2">Variants</Header>
+        {form.variations.map((variant, idx) => (
+          <Container key={idx} header={<Header>Variant {idx + 1}</Header>}>
+            <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}> 
+              <FormField label="Name">
+                <Input value={variant.name} onChange={({ detail }) => handleVariantChange(idx, "name", detail.value)} />
+              </FormField>
+              <FormField label="Selling Price">
+                <Input type="number" value={variant.sellingPrice} onChange={({ detail }) => handleVariantChange(idx, "sellingPrice", Number(detail.value))} />
+              </FormField>
+              <FormField label="Purchasing Price">
+                <Input type="number" value={variant.purchasingPrice} onChange={({ detail }) => handleVariantChange(idx, "purchasingPrice", Number(detail.value))} />
+              </FormField>
+              <FormField label="Stock Quantity">
+                <Input type="number" value={variant.stockQuantity} onChange={({ detail }) => handleVariantChange(idx, "stockQuantity", Number(detail.value))} />
+              </FormField>
+              <FormField label="Units">
+                <Select
+                  selectedOption={unitOptions.find((u) => u.value === variant.units) || unitOptions[0]}
+                  onChange={({ detail }) => handleVariantChange(idx, "units", detail.selectedOption.value)}
+                  options={unitOptions}
+                  placeholder="Select Unit"
+                />
+              </FormField>
+              <FormField label="Compare Price">
+                <Input type="number" value={variant.comparePrice} onChange={({ detail }) => handleVariantChange(idx, "comparePrice", Number(detail.value))} />
+              </FormField>
+              <FormField label="Total Quantity In B2C">
+                <Input type="number" value={variant.totalQuantityInB2c} onChange={({ detail }) => handleVariantChange(idx, "totalQuantityInB2c", Number(detail.value))} />
+              </FormField>
+              <FormField label="Total Quantity B2C Unit">
+                <Input value={variant.totalquantityB2cUnit} onChange={({ detail }) => handleVariantChange(idx, "totalquantityB2cUnit", detail.value)} />
+              </FormField>
+              <FormField label="Buyer Limit">
+                <Input type="number" value={variant.buyerLimit} onChange={({ detail }) => handleVariantChange(idx, "buyerLimit", Number(detail.value))} />
+              </FormField>
+              <FormField label="Image">
+                <Input value={variant.image} onChange={({ detail }) => handleVariantChange(idx, "image", detail.value)} />
+              </FormField>
+              <Button variant="icon" iconName="remove" onClick={() => handleRemoveVariant(idx)} />
+            </Grid>
+          </Container>
+        ))}
+        <Button onClick={handleAddVariant} iconName="add-plus">Add Variant</Button>
+        <Box float="right">
+          <Button variant="primary" loading={loading} onClick={handleUpdate}>Update</Button>
+          <Button variant="link" onClick={onClose}>Cancel</Button>
+        </Box>
+      </SpaceBetween>
+    </Box>
+  );
+};
+
 const Inventory = () => {
   const location = useLocation();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -154,8 +332,8 @@ const Inventory = () => {
   const [productToToggle, setProductToToggle] = React.useState(null);
   const [items, setItems] = React.useState([]);
   const [selectedCategory, setSelectedCategory] = React.useState(null);
-  const [selectedSubCategory, setSelectedSubCategory] = React.useState(null);
-  const [selectedStatus, setSelectedStatus] = React.useState(null);
+  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedItems, setSelectedItems] = useState([]);
   const [visible, setVisible] = React.useState(false);
@@ -165,6 +343,39 @@ const Inventory = () => {
   const [hoveredProductId, setHoveredProductId] = React.useState(null); // State to track hovered product ID
   const [selectedView, setSelectedView] = useState('allProducts'); // Add this new state
   const [isOpen, setIsOpen] = useState(false);
+  const [groupIdToDelete, setGroupIdToDelete] = useState(null); // 2. Update openModal to store groupId for itemCollection
+  const [isCollectionOpen, setIsCollectionOpen] = useState(false);
+
+  // Add state for EditGroup modal
+  // Remove EditGroup modal logic and handler
+  // Remove editGroupModalOpen, editGroupData, handleOpenEditGroup, handleCloseEditGroup
+  // In the table for itemCollection, update the edit button:
+  // cell: (e) => (
+  //   <div
+  //     style={{
+  //       display: "flex",
+  //       gap: "15px",
+  //       alignContent: "center",
+  //       justifyContent: "center",
+  //       alignItems: "center",
+  //     }}
+  //   >
+  //     <Link to={{
+  //       pathname: `/app/inventory/edit-group/${e.groupId}`,
+  //       state: { groupData: e }
+  //     }}>
+  //       <Button 
+  //         iconName="edit" 
+  //         variant="inline-link"
+  //       />
+  //     </Link>
+  //     <Button
+  //       iconName="remove"
+  //       variant="icon"
+  //       onClick={() => openModal(e.groupId)}
+  //     ></Button>
+  //   </div>
+  // ),
 
   const dispatch = useDispatch();
 
@@ -199,7 +410,34 @@ const Inventory = () => {
   const [collectionCurrentPage, setCollectionCurrentPage] = useState(1);
   const [collectionFilteringText, setCollectionFilteringText] = useState("");
   const [isCollectionFetched, setIsCollectionFetched] = useState(false);
+  // Add pagination state for collection
+  const [collectionFetchedPages, setCollectionFetchedPages] = useState({});
+  const [collectionNextKeys, setCollectionNextKeys] = useState({});
+  const [collectionPagesCount, setCollectionPagesCount] = useState(1);
 
+  // --- 1. Add state for collection filters ---
+  const [collectionCategory, setCollectionCategory] = useState(null);
+  const [collectionSubCategory, setCollectionSubCategory] = useState(null);
+  const [collectionStatus, setCollectionStatus] = useState(null);
+
+  // --- 2. Add handlers for collection filters ---
+  const handleCollectionCategoryChange = ({ detail }) => {
+    setCollectionCategory(detail.selectedOption);
+    setCollectionSubCategory(null);
+    setCollectionCurrentPage(1);
+  };
+  const handleCollectionSubCategoryChange = ({ detail }) => {
+    setCollectionSubCategory(detail.selectedOption);
+    setCollectionCurrentPage(1);
+  };
+  const handleCollectionStatusChange = ({ detail }) => {
+    setCollectionStatus(detail.selectedOption);
+    setCollectionCurrentPage(1);
+  };
+  const handleCollectionSearchChange = ({ detail }) => {
+    setCollectionFilteringText(detail.filteringText);
+    setCollectionCurrentPage(1);
+  };
 
   // Add loading state for item collection
   const [isItemCollectionLoading, setIsItemCollectionLoading] = useState(false);
@@ -281,20 +519,55 @@ const Inventory = () => {
     fetchedPages,
   ]);
 
+  // --- 3. Update collection fetch logic ---
+  useEffect(() => {
+    if (selectedView === 'itemCollection') {
+      const pageKey = collectionCurrentPage === 1 ? undefined : collectionNextKeys[collectionCurrentPage - 1];
+      const filterKey = `${collectionCategory?.value || ""}-${collectionSubCategory?.value || ""}-${collectionFilteringText || ""}-${collectionStatus?.value === false ? "false" : collectionStatus?.value === true ? "true" : ""}-${collectionCurrentPage}`;
+      if (!collectionFetchedPages[filterKey]) {
+        setIsItemCollectionLoading(true);
+        dispatch(fetchInventoryCollection({
+          category: collectionCategory?.value || "",
+          subCategory: collectionSubCategory?.value || "",
+          search: collectionFilteringText || "",
+          active: collectionStatus?.value === true
+            ? "true"
+            : collectionStatus?.value === false
+            ? "false"
+            : "",
+          pageKey
+        }))
+          .unwrap()
+          .then((result) => {
+            setCollectionFetchedPages((prev) => ({
+              ...prev,
+              [filterKey]: result.data || [],
+            }));
+            if (result.nextKey) {
+              setCollectionNextKeys((prevKeys) => ({
+                ...prevKeys,
+                [collectionCurrentPage]: result.nextKey,
+              }));
+              setCollectionPagesCount((prevCount) => prevCount + 1);
+            }
+          })
+          .finally(() => {
+            setIsItemCollectionLoading(false);
+            setIsCollectionFetched(true);
+          });
+      }
+    }
+  }, [dispatch, collectionCurrentPage, selectedView, collectionCategory, collectionSubCategory, collectionFilteringText, collectionStatus, collectionNextKeys, collectionFetchedPages]);
+
+  // Handler for collection page change
+  const handleCollectionPageChange = (pageIndex) => {
+    setCollectionCurrentPage(pageIndex);
+  };
+
   // Modify handleItemCollectionView to show loading state
   const handleItemCollectionView = () => {
-    if (!isCollectionFetched) {
-      setIsItemCollectionLoading(true);
-      dispatch(fetchInventoryCollection({
-        search: collectionFilteringText,
-        pageKey: collectionCurrentPage === 1 ? undefined : inventoryCollection.nextKey
-      }))
-      .finally(() => {
-        setIsItemCollectionLoading(false);
-        setIsCollectionFetched(true);
-      });
-    }
     setSelectedView('itemCollection');
+    setCollectionCurrentPage(1); // Reset to first page when switching view
   };
 
   // Handle page changes
@@ -389,7 +662,9 @@ const Inventory = () => {
   }
 
   const getStockAlertColor = (stockAlert) => {
-    return stockAlert.toLowerCase().includes("low") ? "red" : "#0492C2";
+    if (stockAlert === "Low Stock") return "red";
+    if (stockAlert === "Available") return "#0492C2";
+    return "black";
   };
 
   const handleProductClick = (product) => {
@@ -400,6 +675,27 @@ const Inventory = () => {
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
     setSelectedProduct(null);
+  };
+
+  const handleCollectionEdit = (groupId) => {
+    dispatch(fetchCollectionById(groupId))
+      .unwrap()
+      .then((data) => {
+        console.log("Collection data fetched:", data);
+        // You can handle the fetched data here or navigate to edit page
+        // For now, just log the data
+      })
+      .catch((error) => {
+        console.error("Error fetching collection:", error);
+        setItems([
+          {
+            type: "error",
+            content: "Failed to fetch collection data",
+            dismissible: true,
+            onDismiss: () => setItems([]),
+          },
+        ]);
+      });
   };
 
   const renderModalButton = () => {
@@ -430,16 +726,59 @@ const Inventory = () => {
   };
 
   const openModal = (id) => {
-    setProductIdToDelete(id); // Set the ID of the product to delete
+    if (selectedView === 'itemCollection') {
+      setGroupIdToDelete(id); // Set the groupId for group deletion
+    } else {
+      setProductIdToDelete(id); // Set the ID of the product to delete
+    }
     setVisible(true);
   };
   const handleConfirmDelete = () => {
-    if (productIdToDelete) {
+    if (selectedView === 'itemCollection' && groupIdToDelete) {
+      dispatch(deleteGroup(groupIdToDelete))
+        .then((response) => {
+          if (response.meta.requestStatus === "fulfilled") {
+            setItems([
+              {
+                type: "success",
+                content: "Group Deleted Successfully!",
+                header: "Deleted Group",
+                dismissible: true,
+                dismissLabel: "Dismiss message",
+                onDismiss: () => setItems([]),
+                id: "delete_group_success",
+              },
+            ]);
+            setTimeout(() => {
+              setItems([]);
+              setVisible(false);
+              setGroupIdToDelete(null);
+              // Optionally refresh collection data
+              window.location.reload();
+            }, 3000);
+          }
+        })
+        .catch((error) => {
+          setItems([
+            {
+              type: "error",
+              content: `Failed to delete group: ${error.message || "Unknown error"}`,
+              dismissible: true,
+              dismissLabel: "Dismiss message",
+              onDismiss: () => setItems([]),
+              id: "delete_group_error",
+            },
+          ]);
+          setTimeout(() => {
+            setItems([]);
+          }, 5000);
+          setVisible(false);
+          setGroupIdToDelete(null);
+        });
+    } else if (productIdToDelete) {
       dispatch(deleteProduct(productIdToDelete))
         .then((response) => {
-          console.log("Delete Response:", response);
           if (response.meta.requestStatus === "fulfilled") {
-            // Display success notification
             setItems([
               {
                 type: "success",
@@ -451,40 +790,30 @@ const Inventory = () => {
                 id: "delete_success",
               },
             ]);
-
-            // Automatically clear the notification after 5 seconds
             setTimeout(() => {
-              setItems([]); // Clear the message
-              window.location.reload(); // Refresh the page
-            }, 3000); // 5000 milliseconds = 5 seconds
+              setItems([]);
+              window.location.reload();
+            }, 3000);
           }
-          setVisible(false); // Close the modal
-          setProductIdToDelete(null); // Clear the product ID
+          setVisible(false);
+          setProductIdToDelete(null);
         })
         .catch((error) => {
-          console.error("Error during deletion:", error); // Log the error for debugging
-
-          // Display error notification
           setItems([
             {
               type: "error",
-              content: `Failed to delete item: ${
-                error.message || "Unknown error"
-              }`,
+              content: `Failed to delete item: ${error.message || "Unknown error"}`,
               dismissible: true,
               dismissLabel: "Dismiss message",
               onDismiss: () => setItems([]),
               id: "delete_error",
             },
           ]);
-
-          // Automatically clear the error message after 5 seconds
           setTimeout(() => {
-            setItems([]); // Clear the message
-          }, 5000); // 5000 milliseconds = 5 seconds
-
-          setVisible(false); // Close the modal in case of error
-          setProductIdToDelete(null); // Clear the product ID
+            setItems([]);
+          }, 5000);
+          setVisible(false);
+          setProductIdToDelete(null);
         });
     }
   };
@@ -492,6 +821,7 @@ const Inventory = () => {
   const handleCancelDelete = () => {
     setVisible(false);
     setProductIdToDelete(null);
+    setGroupIdToDelete(null);
   };
 
   const subcategoryOptions = {
@@ -631,6 +961,12 @@ const Inventory = () => {
     setIsOpen(!isOpen);
   };
 
+  // Add state for collection filter toggle
+  // Add handler for collection filter toggle
+  const toggleCollectionFilter = () => {
+    setIsCollectionOpen((prev) => !prev);
+  };
+
   return (
     <SpaceBetween size="s">
 
@@ -741,116 +1077,259 @@ const Inventory = () => {
             { colspan: { default: isMobile ? 12 : 12, xxs: isMobile ? 12 : 6 } },
           ]}
         >
-          <TextFilter
-            filteringText={filteringText}
-            filteringPlaceholder="Search"
-            filteringAriaLabel="Filter instances"
-            onChange={handleSearchChange}
-          />
-          {/* Filter Toggle */}
-          <span
-            onClick={toggleFilter}
-            style={{
-              display: "flex",
-              justifyContent: isMobile ? "center" : "space-between",
-              alignItems: "center",
-              cursor: "pointer",
-              border: isMobile ? "2px solid #9BA7B6" : "3px solid #9BA7B6",
-              padding: isMobile ? "4px" : "4px 8px",
-              borderRadius: "8px",
-              backgroundColor: "white",
-              width: isMobile ? "32px" : "auto",
-              gap: "5px",
-            }}
-          >
-            {isMobile ? (
-              <Icon variant="link" name="filter" />
-            ) : (
-              <>
-                <div style={{ display: "flex", gap: "5px" }}>
+          {selectedView === 'allProducts' && (
+            <>
+              <TextFilter
+                filteringText={filteringText}
+                filteringPlaceholder="Search"
+                filteringAriaLabel="Filter instances"
+                onChange={handleSearchChange}
+              />
+              {/* Filter Toggle */}
+              <span
+                onClick={toggleFilter}
+                style={{
+                  display: "flex",
+                  justifyContent: isMobile ? "center" : "space-between",
+                  alignItems: "center",
+                  cursor: "pointer",
+                  border: isMobile ? "2px solid #9BA7B6" : "3px solid #9BA7B6",
+                  padding: isMobile ? "4px" : "4px 8px",
+                  borderRadius: "8px",
+                  backgroundColor: "white",
+                  width: isMobile ? "32px" : "auto",
+                  gap: "5px",
+                }}
+              >
+                {isMobile ? (
                   <Icon variant="link" name="filter" />
-                  <span
-                    style={{
-                      fontWeight: "normal", 
-                      color: "#9BA7B6",
-                      fontStyle: "italic",
-                    }}
-                  >
-                    Filters
-                  </span>
-                </div>
-                <Icon
-                  variant="link"
-                  name={isOpen ? "caret-up-filled" : "caret-down-filled"}
-                />
-              </>
-            )}
-          </span>
-          <Box float="right">
-            {!isMobile && (
-              <SpaceBetween size="xs" direction="horizontal">
-                <Button href="/app/Inventory/addItem">Add Item</Button>
-                <div>
-                  <Popover
-                    onDismiss={() => setIsPopoverOpen(false)}
-                    position="left"
-                    align="start"
-                    size="small"
-                    wrapTriggerText={false}
-                    triggerType="custom"
-                    content={
-                      <div
+                ) : (
+                  <>
+                    <div style={{ display: "flex", gap: "5px" }}>
+                      <Icon variant="link" name="filter" />
+                      <span
                         style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "8px",
+                          fontWeight: "normal", 
+                          color: "#9BA7B6",
+                          fontStyle: "italic",
                         }}
                       >
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          onChange={handleFileImport}
-                          accept=".xlsx"
-                          style={{ display: "none" }}
-                        />
-                        <Button
-                          variant="inline-link"
-                          iconName="upload"
-                          onClick={handleImport}
-                        >
-                          Import
-                        </Button>
-                        <Button
-                          variant="inline-link"
-                          iconName="download"
-                          onClick={handleExport}
-                        >
-                          Export
-                        </Button>
-                        <ProductPDF products={getCombinedProducts()} onDownloadSuccess={() => {
-                          showFlashMessage("success", "PDF downloaded successfully");
-                          setTimeout(() => {
-                            setFlashMessages([]);
-                          }, 3000);
-                        }}/>
-                      </div>
-                    }
-                  >
-                    <Button
-                      iconName="ellipsis"
-                      onClick={handleButtonClick}
-                      ariaLabel="Options menu"
-                      variant="icon"
+                        Filters
+                      </span>
+                    </div>
+                    <Icon
+                      variant="link"
+                      name={isOpen ? "caret-up-filled" : "caret-down-filled"}
                     />
-                  </Popover>
+                  </>
+                )}
+              </span>
+              <Box float="right">
+                {!isMobile && (
+                  <SpaceBetween size="xs" direction="horizontal">
+                    <Button href="/app/Inventory/addItem">Add Item</Button>
+                    <div>
+                      <Popover
+                        onDismiss={() => setIsPopoverOpen(false)}
+                        position="left"
+                        align="start"
+                        size="small"
+                        wrapTriggerText={false}
+                        triggerType="custom"
+                        content={
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: "8px",
+                            }}
+                          >
+                            <input
+                              type="file"
+                              ref={fileInputRef}
+                              onChange={handleFileImport}
+                              accept=".xlsx"
+                              style={{ display: "none" }}
+                            />
+                            <Button
+                              variant="inline-link"
+                              iconName="upload"
+                              onClick={handleImport}
+                            >
+                              Import
+                            </Button>
+                            <Button
+                              variant="inline-link"
+                              iconName="download"
+                              onClick={handleExport}
+                            >
+                              Export
+                            </Button>
+                            <ProductPDF products={getCombinedProducts()} onDownloadSuccess={() => {
+                              showFlashMessage("success", "PDF downloaded successfully");
+                              setTimeout(() => {
+                                setFlashMessages([]);
+                              }, 3000);
+                            }}/>
+                          </div>
+                        }
+                      >
+                        <Button
+                          iconName="ellipsis"
+                          onClick={handleButtonClick}
+                          ariaLabel="Options menu"
+                          variant="icon"
+                        />
+                      </Popover>
+                    </div>
+                  </SpaceBetween>
+                )}
+              </Box>
+            </>
+          )}
+          {selectedView === 'allProducts' && isOpen && (
+            <div style={{ marginBottom: "16px" }}>
+              <Grid
+                gridDefinition={[
+                  { colspan: isMobile ? 12 : 4 },
+                  { colspan: isMobile ? 12 : 4 },
+                  { colspan: isMobile ? 12 : 4 },
+                ]}
+              >
+                <Select
+                  required
+                  selectedOption={selectedCategory}
+                  onChange={handleCategoryChange}
+                  options={[
+                    { label: "All", value: "" },
+                    { label: "Fresh Vegetables", value: "Fresh Vegetables" },
+                    { label: "Fresh Fruits", value: "Fresh Fruits" },
+                    { label: "Dairy", value: "Dairy" },
+                    { label: "Groceries", value: "Groceries" },
+                    { label: "Bengali Special", value: "Bengali Special" },
+                    { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" },
+                  ]}
+                  placeholder="Select Category"
+                />
+                <Select
+                  disabled={!selectedCategory || selectedCategory.value === ""}
+                  required
+                  selectedOption={selectedSubCategory}
+                  onChange={handleSubCategoryChange}
+                  placeholder="Select Sub Category"
+                  options={
+                    selectedCategory
+                      ? subcategoryOptions[selectedCategory.value] || []
+                      : []
+                  }
+                />
+                <Select
+                  required
+                  selectedOption={selectedStatus}
+                  onChange={handleSelectChange}
+                  options={[
+                    { label: "All", value: "" },
+                    { label: "In Stock", value: true },
+                    { label: "Out Of Stock", value: false },
+                  ]}
+                  placeholder="Select Status"
+                />
+              </Grid>
+            </div>
+          )}
+          {selectedView === 'itemCollection' && (
+            <>
+              {/* Always-visible search bar for collection */}
+              <TextFilter
+                filteringText={collectionFilteringText}
+                filteringPlaceholder="Search"
+                filteringAriaLabel="Filter collections"
+                onChange={handleCollectionSearchChange}
+              />
+              {/* Filter toggle for category/subcategory */}
+              <span
+                onClick={toggleCollectionFilter}
+                style={{
+                  display: "flex",
+                  justifyContent: isMobile ? "center" : "space-between",
+                  alignItems: "center",
+                  cursor: "pointer",
+                  border: isMobile ? "2px solid #9BA7B6" : "3px solid #9BA7B6",
+                  padding: isMobile ? "4px" : "4px 8px",
+                  borderRadius: "8px",
+                  backgroundColor: "white",
+                  width: isMobile ? "32px" : "auto",
+                  gap: "5px",
+                  marginBottom: "10px"
+                }}
+              >
+                {isMobile ? (
+                  <Icon variant="link" name="filter" />
+                ) : (
+                  <>
+                    <div style={{ display: "flex", gap: "5px" }}>
+                      <Icon variant="link" name="filter" />
+                      <span
+                        style={{
+                          fontWeight: "normal",
+                          color: "#9BA7B6",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        Filters
+                      </span>
+                    </div>
+                    <Icon
+                      variant="link"
+                      name={isCollectionOpen ? "caret-up-filled" : "caret-down-filled"}
+                    />
+                  </>
+                )}
+              </span>
+              {isCollectionOpen && (
+                <div style={{ marginBottom: "16px" }}>
+                  <Grid
+                    gridDefinition={[
+                      { colspan: isMobile ? 12 : 6 },
+                      { colspan: isMobile ? 12 : 6 },
+                    ]}
+                  >
+                    <Select
+                      required
+                      selectedOption={collectionCategory}
+                      onChange={handleCollectionCategoryChange}
+                      options={[
+                        { label: "All", value: "" },
+                        { label: "Fresh Vegetables", value: "Fresh Vegetables" },
+                        { label: "Fresh Fruits", value: "Fresh Fruits" },
+                        { label: "Dairy", value: "Dairy" },
+                        { label: "Groceries", value: "Groceries" },
+                        { label: "Bengali Special", value: "Bengali Special" },
+                        { label: "Eggs Meat & Fish", value: "Eggs Meat & Fish" },
+                      ]}
+                      placeholder="Select Category"
+                    />
+                    <Select
+                      disabled={!collectionCategory || collectionCategory.value === ""}
+                      required
+                      selectedOption={collectionSubCategory}
+                      onChange={handleCollectionSubCategoryChange}
+                      placeholder="Select Sub Category"
+                      options={
+                        collectionCategory
+                          ? subcategoryOptions[collectionCategory.value] || []
+                          : []
+                      }
+                    />
+                  </Grid>
                 </div>
-              </SpaceBetween>
-            )}
-          </Box>
+              )}
+            </>
+          )}
         </Grid>
         
         {/* Filter UI that appears when toggle is clicked */}
-        {isOpen && (
+        {/* isOpen && (
           <div style={{ 
         
             marginBottom: "16px"
@@ -914,7 +1393,7 @@ const Inventory = () => {
               />
             </Grid>
           </div>
-        )}
+        ) */}
         
         <Grid
      gridDefinition={[
@@ -955,7 +1434,7 @@ const Inventory = () => {
      onClick={handleItemCollectionView}
    >
      <div style={{ marginBottom: '8px' }}>
-       <Header variant="h2">{inventoryCollection?.data[1]?.length || 42}</Header>
+       <Header variant="h2">{inventoryStats?.data?.totalGroups}</Header>
      </div>
      <b style={{fontSize:isMobile ? "12px" : "14px"}}>{isMobile ? "Multiple Variants" : "Multiple-Variants Items"}</b>
    </div>
@@ -1019,11 +1498,13 @@ const Inventory = () => {
             >
               Are you sure you want to change the status of this products?
             </Modal>{" "}
+             {selectedView === 'allProducts' && (
             <CustomPagination
               currentPage={currentPage}
               totalPages={pagesCount}
               onPageChange={handlePageChange}
             />
+          )}
           </div>
         </Box>
         {isModalVisible && (
@@ -1061,7 +1542,7 @@ const Inventory = () => {
           }
           header="Delete Product"
         >
-          Are you sure You want to delete this product?
+          Are you sure You want to delete this product with All its Variants ?
         </Modal>
         {selectedView === 'allProducts' && (
           <>
@@ -1152,11 +1633,11 @@ const Inventory = () => {
                       color:e.availability === true | e.active === true?"green":"red"
                      }}>
                   
-                      {e.availability === true
+                      {/* {e.availability === true
                         ? "In Stock"
                         : e.availability === false
                         ? "Out Of Stock"
-                        : ""}
+                        : ""} */}
                       {e.active === true
                         ? "In Stock"
                         : e.active === false
@@ -1247,16 +1728,49 @@ const Inventory = () => {
                 {
                   id: "quantityOnHand",
                   header: "Quantity In Stock",
-                  cell: (e) => `${e.stockQuantity} ${e.units}`, // Use e.unit to get the unit from the API
+                  cell: (e) => {
+                    // If stockQuantity is null or 0, use overallStock and overallStockUnit
+                    const hasStock =
+                      e.stockQuantity !== null &&
+                      e.stockQuantity !== undefined &&
+                      Number(e.stockQuantity) !== 0;
+                    if (hasStock) {
+                      return `${e.stockQuantity} ${e.units}`;
+                    } else if (
+                      e.overallStock !== null &&
+                      e.overallStock !== undefined &&
+                      e.overallStock !== "" &&
+                      Number(e.overallStock) !== 0
+                    ) {
+                      return `${e.overallStock} ${e.overallStockUnit || ""}`;
+                    } else {
+                      return "-";
+                    }
+                  },
                 },
                 {
                   id: "stockAlert",
                   header: "Stock Alert",
-                  cell: (e) => (
-                    <span style={{ color: getStockAlertColor("Available") }}>
-                      Available
-                    </span>
-                  ),
+                  cell: (e) => {
+                    // Determine which value to use
+                    const stock = (e.stockQuantity !== null && e.stockQuantity !== undefined) ? e.stockQuantity : e.overallStock;
+                    const alertThreshold = e.stockQuantityAlert ?? 0;
+                    let alertType = "Available";
+
+                    if (
+                      typeof stock === "number" &&
+                      typeof alertThreshold === "number" &&
+                      stock <= alertThreshold
+                    ) {
+                      alertType = "Low Stock";
+                    }
+
+                    return (
+                      <span style={{ color: getStockAlertColor(alertType) }}>
+                        {alertType}
+                      </span>
+                    );
+                  },
                 },
 
             
@@ -1320,83 +1834,105 @@ const Inventory = () => {
                 <Spinner size="large" />
               </Box>
             ) : (
-              <Table
-                variant="borderless"
-                columnDefinitions={[
-                  {
-                    id: "name",
-                    header: "Name",
-                    cell: (e) => {
-                      return (
+              <>
+               {/* {selectedView === 'itemCollection' && (
+                <Box float="right">
+                  <CustomPagination
+                    currentPage={collectionCurrentPage}
+                    totalPages={collectionPagesCount}
+                    onPageChange={handleCollectionPageChange}
+                  />
+                </Box>
+                )}   */}
+                <Table
+                
+                  variant="borderless"
+                  columnDefinitions={[
+                    {
+                      id: "name",
+                      header: "Name",
+                      cell: (e) => {
+                        return (
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                            }}
+                          >
+                            <img
+                              src={e.image}
+                              alt={e.name}
+                              style={{
+                                width: "30px",
+                                height: "30px",
+                                marginRight: "0.5rem",
+                              }}
+                            />  
+                            <div>
+                            <p>{e.name}</p>
+                            <p>{e.variations
+?.length} {e.variations?.length === 1 ? 'Variant' : 'Variants'}</p>
+                            </div>
+                          </div>
+                        );
+                      },
+                      width: 200,
+                    },
+                    {
+                      id: "category",
+                      header: "Category",
+                      cell: (e) => e.category,
+                      width: 150,
+                    },
+                    {
+                      id: "subCategory",
+                      header: "Sub Category",
+                      cell: (e) => e.subCategory,
+                      width: 150,
+                    },
+                    {
+                      id: "action",
+                      header: <div style={{textAlign: "center"}}>Action</div>,
+                      cell: (e) => (
                         <div
                           style={{
                             display: "flex",
+                            gap: "15px",
+                            alignContent: "center",
+                            justifyContent: "center",
                             alignItems: "center",
                           }}
                         >
-                          <img
-                            src={e.image}
-                            alt={e.name}
-                            style={{
-                              width: "30px",
-                              height: "30px",
-                              marginRight: "0.5rem",
-                            }}
-                          />  
-                          <div>
-                          <p>{e.name}</p>
-                          <p>{e.variations?.length} {e.variations?.length === 1 ? 'Variant' : 'Variants'}</p>
-                          </div>
+                          <Link to={{
+                            pathname: `/app/inventory/edit-group/${e.groupId}`,
+                            state: { groupData: e }
+                          }}>
+                            <Button 
+                              iconName="edit" 
+                              variant="inline-link"
+                            />
+                          </Link>
+                          <Button
+                            iconName="remove"
+                            variant="icon"
+                            onClick={() => openModal(e.groupId)}
+                          ></Button>
                         </div>
-                      );
+                      ),
                     },
-                    width: 200,
-                  },
-                  {
-                    id: "category",
-                    header: "Category",
-                    cell: (e) => e.category,
-                    width: 150,
-                  },
-                  {
-                    id: "subCategory",
-                    header: "Sub Category",
-                    cell: (e) => e.subCategory,
-                    width: 150,
-                  },
-                  {
-                    id: "action",
-                    header: <div style={{textAlign: "center"}}>Action</div>,
-                    cell: (e) => (
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "15px",
-                          alignContent: "center",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Link to={`/app/inventory/edit?id=${e.groupId}`}>
-                          <Button iconName="edit" variant="inline-link" />
-                        </Link>
-                        <Button
-                          iconName="remove"
-                          variant="icon"
-                          onClick={() => openModal(e.groupId)}
-                        ></Button>
-                      </div>
-                    ),
-                  },
-                ]}
-                items={inventoryCollection.data[collectionCurrentPage] || []}
-                loadingText="Loading inventory collection"
-                empty={
-                  <Box textAlign="center" color="inherit">
-                    <b>No inventory collection items</b>
-                  </Box>
-                }
-              />
+                  ]}
+                  items={collectionFetchedPages[
+                    `${collectionCategory?.value || ""}-${collectionSubCategory?.value || ""}-${collectionFilteringText || ""}-${collectionStatus?.value === false ? "false" : collectionStatus?.value === true ? "true" : ""}-${collectionCurrentPage}`
+                  ] || []}
+                  loadingText="Loading inventory collection"
+                  empty={
+                    <Box textAlign="center" color="inherit">
+                      <b>No inventory collection items</b>
+                    </Box>
+                  }
+                />
+              
+              </>
             )}
           </>
         )}
@@ -1498,6 +2034,7 @@ const Inventory = () => {
           </Box>
         </div>
       )}
+      {/* Remove EditGroup modal */}
     </SpaceBetween>
   );
 };

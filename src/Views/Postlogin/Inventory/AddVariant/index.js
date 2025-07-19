@@ -325,8 +325,8 @@ const AddEditVariant = () => {
           totalquantityB2cUnit: null,
           lowStockAlert: "",
           availability: true,
-          expiryDate: "",
-          imageUrls: [],
+          expiry: "",
+          images: [],
         }))
       );
     }
@@ -350,7 +350,7 @@ const AddEditVariant = () => {
         item.id === id
           ? {
               ...item,
-              [field]: isNaN(value) || value === "" ? value : Number(value), // Convert only if it's a valid number
+              [field]: isNaN(value) || value === "" ? value : Number(value),
             }
           : item
       )
@@ -359,10 +359,11 @@ const AddEditVariant = () => {
   
 
   const unitOptions = [
-    { label: "Pcs", value: "pieces" },
-    { label: "Grms", value: "grams" },
-    { label: "Kgs", value: "kgs" },
-    { label: "Ltrs", value: "litres" },
+    { label: "Pcs", value: "Pcs" },
+    { label: "Pkt", value: "Pkt" },
+    { label: "Gms", value: "Gms" },
+    { label: "Kg", value: "Kg" },
+    { label: "Ltr", value: "Ltr" },
   ];
 
   const handledelete = () => {
@@ -386,7 +387,7 @@ const AddEditVariant = () => {
       setTableData((prevData) =>
         prevData.map((item) =>
           item.id === id
-            ? { ...item, imageUrls: [...item.imageUrls, ...uploadedImages] }
+            ? { ...item, images: [...item.images, ...uploadedImages] }
             : item
         )
       );
@@ -403,7 +404,7 @@ const AddEditVariant = () => {
         item.id === id
           ? {
               ...item,
-              imageUrls: item.imageUrls.filter((_, index) => index !== imageIndex)
+              images: item.images.filter((_, index) => index !== imageIndex)
             }
           : item
       )
@@ -1042,9 +1043,9 @@ const AddEditVariant = () => {
                         <Input
                           type="date"
                           onChange={({ detail }) => 
-                            handleInputChange(item.id, "expiryDate", detail.value)
+                            handleInputChange(item.id, "expiry", detail.value)
                           }
-                          value={item.expiryDate}
+                          value={item.expiry}
                         />
                       </FormField>
                       {/* upload image button with icon */}
@@ -1053,7 +1054,7 @@ const AddEditVariant = () => {
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                          
                           
-                          {item.imageUrls.length < 5 && (
+                          {item.images.length < 5 && (
                          <Button 
                          variant="icon" 
                          size="small" 
@@ -1074,7 +1075,7 @@ const AddEditVariant = () => {
                        />
                           )}
                           
-                          {item.imageUrls.length === 0 && (
+                          {item.images.length === 0 && (
                             <p className="image-upload-hint">
                               Upload Upto 5 images
                             </p>
@@ -1084,7 +1085,7 @@ const AddEditVariant = () => {
                       </div>
                       </Grid>
                       <div className="image-preview-container">
-                            {item.imageUrls.map((image, index) => (
+                            {item.images.map((image, index) => (
                               <div key={index} className="image-preview">
                                 <img 
                                   src={image} 
@@ -1100,7 +1101,7 @@ const AddEditVariant = () => {
                                       fileInput.onchange = (event) => {
                                         const file = event.target.files[0];
                                         if (file) {
-                                          handleVariantImageUpload(item.id, file);
+                                          handleVariantImageUpload(item.id, [file]);
                                         }
                                       };
                                       fileInput.click();
@@ -1304,22 +1305,23 @@ const AddEditVariant = () => {
                       </div>
                     ),
                   },
-                  {
-                    id: "saleLimit",
-                    header: "Sale Limit",
-                    cell: (item) => (
-                      <FormField>
-                        <Input
-                          placeholder="Enter Limit"
-                          type="number"
-                          value={item.saleLimit}
-                          onChange={({ detail }) =>
-                            handleInputChange(item.id, "saleLimit", detail.value) // Use item.id here
-                          }
-                        />
-                      </FormField>
-                    ),
-                  },
+                  // {
+                  //   id: "saleLimit",
+                  //   header: "Sale Limit",
+                  //   cell: (item) => (
+                  //     <FormField>
+                  //       <Input
+                  //         placeholder="Enter Limit"
+                  //         type="number"
+                  //         value={item.saleLimit}
+                  //         onChange={({ detail }) =>
+                  //           handleInputChange(item.id, "saleLimit", detail.value) // Use item.id here
+                  //         }
+                  //       />
+                  //     </FormField>
+                  //   ),
+                  // },
+                  // 
                   {
                     id: "lowStock",
                     header: "Low Stock Alert",
@@ -1349,16 +1351,16 @@ const AddEditVariant = () => {
                     ),
                   },
                   {
-                    id: "expiryDate",
+                    id: "expiry",
                     header: "Expiry Date",
                     cell: (item) => (
                       <FormField>
                         <Input
                           type="date"
                           onChange={({ detail }) => 
-                            handleInputChange(item.id, "expiryDate", detail.value)
+                            handleInputChange(item.id, "expiry", detail.value)
                           }
-                          value={item.expiryDate}
+                          value={item.expiry}
                         />
                       </FormField>
                     )
@@ -1369,7 +1371,7 @@ const AddEditVariant = () => {
                     cell: (item) => (
                       <div className="desktop-variant-image-cell">
                         <div className="image-preview-container">
-                          {item.imageUrls.map((image, index) => (
+                          {item.images.map((image, index) => (
                             <div key={index} className="desktop-variant-image-preview">
                               <img 
                                 src={image} 
@@ -1385,7 +1387,7 @@ const AddEditVariant = () => {
                                     fileInput.onchange = (event) => {
                                       const file = event.target.files[0];
                                       if (file) {
-                                        handleVariantImageUpload(item.id, file);
+                                        handleVariantImageUpload(item.id, [file]);
                                       }
                                     };
                                     fileInput.click();
@@ -1404,7 +1406,7 @@ const AddEditVariant = () => {
                           ))}
                         </div>
                         
-                        {item.imageUrls.length < 5 && (
+                        {item.images.length < 5 && (
                         <Button 
                         variant="icon" 
                         size="small" 
@@ -1426,7 +1428,7 @@ const AddEditVariant = () => {
                       
                         )}
                         
-                        {item.imageUrls.length === 0 && (
+                        {item.images.length === 0 && (
                           <p className="image-upload-hint">
                             Upload up to 5 images
                           </p>

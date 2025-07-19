@@ -138,12 +138,15 @@ const handleStatusToggle = async (item) => {
         id: 'statusToggle',
         header: 'Status',
         cell: (item) => (
+          <div style={{ display: 'flex', alignItems: 'center',width:"100px" }}>
+
           <Toggle 
             checked={item.reviewStatus === 'active'}
             onChange={(e) => handleStatusToggle(item)}
           >
             {item.reviewStatus === 'active' ? 'Active' : 'Inactive'}
           </Toggle>
+          </div>
         ),
       },
       { id: 'action', header: 'Action', cell: (item) => (

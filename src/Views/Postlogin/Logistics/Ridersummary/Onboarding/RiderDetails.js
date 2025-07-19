@@ -261,10 +261,10 @@ const RiderDetails = () => {
 
               <Button
                 variant="primary"
-                disabled={
-                  (!areAllDocumentsVerified() && riderDetails?.bankDetails?.status) || 
-                  riderDetails?.reviewStatus === "rejected"
-                }
+                // disabled={
+                //   (!areAllDocumentsVerified() && riderDetails?.bankDetails?.status) || 
+                //   riderDetails?.reviewStatus === "rejected"
+                // }
                 
                 
                 onClick={handleApprove}
@@ -482,7 +482,12 @@ const RiderDetails = () => {
                   content: (
                     <Container>
                       {riderDetails ? (
-                        <div className="address-info">
+                        <div className="address-info" style={{
+                          // maxWidth: isMobile ? '100%' : 'auto',
+                          overflowX: isMobile ? 'auto' : 'visible',
+                          // padding: isMobile ? '10px' : '0',
+                          whiteSpace: isMobile ? 'nowrap' : 'normal'
+                        }}>
                           <div className="info-item">
                             <span className="label" style={{ width: "180px" }}>
                               Bank Name:{" "}
@@ -496,7 +501,7 @@ const RiderDetails = () => {
                               Account Number:{" "}
                             </span>
                             <span className="value">
-                              {riderDetails.bankDetails.acc}
+                              {riderDetails.bankDetails.acc}iuugfugfugyfuigdyfu
                             </span>
                           </div>
                           <div className="info-item">
@@ -509,7 +514,7 @@ const RiderDetails = () => {
                           </div>
                           <div className="info-item">
                             <span className="label" style={{ width: "180px" }}>
-                              IFC Code:{" "}
+                              IFSC Code:{" "}
                             </span>
                             <span className="value">
                               {riderDetails.bankDetails.ifsc}

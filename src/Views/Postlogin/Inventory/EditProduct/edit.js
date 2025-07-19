@@ -106,10 +106,11 @@ const Edit = () => {
   const [overallStock, setOverallStock] = useState("");
   const [overallStockUnit, setOverallStockUnit] = useState(null);
   const unitOptions = [
-    { label: "Pcs", value: "pieces" },
-    { label: "Grms", value: "grams" },
-    { label: "Kgs", value: "kgs" },
-    { label: "Ltrs", value: "litres" },
+    { label: "Pcs", value: "Pcs" },
+    { label: "Pkt", value: "Pkt" },
+    { label: "Gms", value: "Gms" },
+    { label: "Kg", value: "Kg" },
+    { label: "Ltr", value: "Ltr" },
   ];
   const handleImageUpload = async (file, setImageUrl) => {
     if (file) {
@@ -187,7 +188,8 @@ const Edit = () => {
       setMinimumSellingWeight(productDetail.minimumSellingWeight || "");
       setDiscount(productDetail.discount || 0);
       setImages(productDetail.images || []);
-
+      setOverallStock(productDetail.overallStock || "");
+      setOverallStockUnit(productDetail.overallStockUnit || null);
       // setTotalQuantityB2CUnit(productDetail.TotalquantityB2cUnit || "");
     }
   }, [productDetail]);
@@ -603,8 +605,8 @@ const Edit = () => {
                   />
                   <Select
                     expandToViewport
-                    selectedOption={overallStockUnit}
-                    onChange={({ detail }) => setOverallStockUnit(detail.selectedOption)}
+                    selectedOption={unitOptions.find((u) => u.value === overallStockUnit) || null}
+                    onChange={({ detail }) => setOverallStockUnit(detail.selectedOption.value)}
                     options={unitOptions}
                     placeholder="Select Unit"
                   />
@@ -885,7 +887,7 @@ const Edit = () => {
             <SpaceBetween size="l">
               <Container header={<Header>Inventory</Header>}>
                 <SpaceBetween size="l">
-                  <Grid gridDefinition={[{ colspan: 7 }, { colspan: 5 }]}>
+                  <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
                     <FormField
                       label={
                         <span>
@@ -902,12 +904,11 @@ const Edit = () => {
                         size="xs"
                         placeholder="Add Quantity"
                         value={stockQuantity}
-                        onChange={({ detail }) =>
-                          setStockQuantity(detail.value)
-                        }
+                        onChange={({ detail }) => setStockQuantity(detail.value)}
+                        disabled={!!overallStock}
                       />
                     </FormField>
-                    <FormField label="Units">
+                    <FormField label='unit' >
                       <Select
                         selectedOption={
                           units ? { label: units, value: units } : null
@@ -963,7 +964,7 @@ const Edit = () => {
                         </Popover>
                       }
                     >
-                                        <Grid  gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
+                            <Grid disableGutters gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
 
                       <Input
                         type="number"
@@ -991,7 +992,7 @@ const Edit = () => {
                       />
                       </Grid>
                     </FormField>
-                  
+{/*                   
                     <FormField
                       label="Minimum Weight"
                       info={
@@ -1004,7 +1005,7 @@ const Edit = () => {
                             <span>
                               Set the minimum and maximum weight range for the
                               item (e.g., 500g - 750g). This is useful for items
-                              sold in pieces with varying weights,{" "}
+                              sold in units with varying weights,{" "}
                             </span>
                           }
                         >
@@ -1055,7 +1056,7 @@ const Edit = () => {
                             <span>
                               Set the minimum and maximum weight range for the
                               item (e.g., 500g - 750g). This is useful for items
-                              sold in pieces with varying weights,{" "}
+                              sold in units with varying weights,{" "}
                             </span>
                           }
                         >
@@ -1129,7 +1130,7 @@ const Edit = () => {
                       value={buyerLimit}
                       onChange={({ detail }) => setBuyerLimit(detail.value)}
                     />
-                  </FormField>
+                  </FormField> */}
                 </SpaceBetween>
               </Container>
             </SpaceBetween>

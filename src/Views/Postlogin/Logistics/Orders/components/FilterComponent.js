@@ -61,9 +61,10 @@ const FilterComponent = ({
     // Add other statuses if needed
   ];
   const paymentstatusoptions = [
-    // { label: "All", value: "" },
-    { label: "Pending", value: "pending" },
-    { label: "paid", value: "paid" },
+    { label: "All", value: "" },
+    { label: "Pending", value: "PENDING" },
+    { label: "Paid", value: "PAID" },
+    // { label: "Refund", value: "REFUND" },
     // Add other statuses if needed
   ];
   //shifts options

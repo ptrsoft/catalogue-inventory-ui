@@ -82,6 +82,29 @@ const OrderDetails = ({ selectedOrder, usersbyid }) => {
                   <span className="label">Order Status:</span>
                   <span className="value">{selectedOrder?.status}</span>
                 </div>
+              
+                <div className="info-row">
+                  <span className="label">Delivery Slot:</span>
+                  <span className="value">
+                    {selectedOrder?.deliverySlot
+                      ? (() => {
+                          const slot = selectedOrder.deliverySlot;
+                          // If deliverySlot is an object with start/end times
+                          if (
+                            typeof slot === "object" &&
+                            slot.startTime &&
+                            slot.endTime &&
+                            slot.startAmPm &&
+                            slot.endAmPm
+                          ) {
+                            return `${slot.startTime} ${slot.startAmPm} - ${slot.endTime} ${slot.endAmPm} (${slot.shift ? slot.shift.charAt(0).toUpperCase() + slot.shift.slice(1) : ""})${slot.date ? `, ${slot.date}` : ""}`;
+                          }
+                          // If deliverySlot is a string, just show it
+                          return slot;
+                        })()
+                      : "N/A"}
+                  </span>
+                </div>
                 <div className="info-row">
                   <span className="label">Total Price:</span>
                   <span className="value">{selectedOrder?.finalTotal}</span>

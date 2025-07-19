@@ -362,8 +362,8 @@ function PincodeList() {
           <div style={{ marginBottom: "16px" }}>
             <Grid
               gridDefinition={[
-                { colspan: { default: 12, xs: 12 } },
-                { colspan: { default: 12, xs: 12 } },
+                { colspan: { default: isMobile ? 12 : 2} },
+                { colspan: { default: isMobile ? 12 : 2} },
               ]}
             >
               <Select

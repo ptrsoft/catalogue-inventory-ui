@@ -3,6 +3,22 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import config from 'Views/Config';
 import { postLoginService } from 'Services';
 
+// Async Thunk to fetch rider summary from the API
+export const fetchRiderSummary = createAsyncThunk('riders/fetchRiderSummary', async ({ pageKey = '', search = '' }) => {
+    // Construct the URL
+    let url = `${config.FETCH_RIDER_SUMMARY}`;
+    const params = [];
+    if (pageKey) params.push(`pageKey=${encodeURIComponent(pageKey)}`);
+    if (search) params.push(`search=${encodeURIComponent(search)}`);
+    // If there are any parameters, append them to the URL
+    if (params.length > 0) {
+        url += `?${params.join('&')}`;
+    }
+    const response = await postLoginService.get(url);
+    console.log(url, "rider summary url");
+    return response.data;
+});
+
 // Async Thunk to fetch all riders from the API
 export const fetchRiders = createAsyncThunk('riders/fetchRiders', async ( {status ='', pageKey = '',search=''}) => {
     //  console.log(status,"from thunk");

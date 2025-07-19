@@ -114,10 +114,7 @@ const AddItemForm = () => {
       description: description,
       images: [imageUrl1, imageUrl2, imageUrl3].filter(Boolean),
       units: units.value,
-      minimumSellingWeight: Number(minimumWeight),
-      maximumSellingWeight: Number(maximumWeight),
-      MaximumSellingWeightUnit: minimumWeightUnit.value,
-      MinimumSellingWeightUnit: minimumWeightUnit.value,
+     
       totalQuantityInB2c: Number(totalQuantityInB2C),
       totalquantityB2cUnit: totalQuantityInB2CUnit.value,
       stockQuantity: Number(stockQuantity),
@@ -152,10 +149,7 @@ const AddItemForm = () => {
         setLowStockAlert("");
         setTotalQuantityInB2C("");
         setBuyerLimit("");
-        setMaximumWeight("");
-        setMinimumWeight("");
-        setMaximumWeightUnit("");
-        setMinimumWeightUnit("");
+        
         setTags([]);
         setSelectedCategory(null);
         setSelectedSubCategory(null);
@@ -752,10 +746,11 @@ const AddItemForm = () => {
                               setUnits(detail.selectedOption)
                             }
                             options={[
-                              { label: "Piece", value: "pieces" },
-                              { label: "Grams", value: "grams" },
-                              { label: "Kgs", value: "kgs" },
-                              { label: "Litres", value: "litres" },
+                              { label: "Pcs", value: "Pcs" },
+                              { label: "Pkt", value: "Pkt" },
+                              { label: "Gms", value: "Gms" },
+                              { label: "Kg", value: "Kg" },
+                              { label: "Ltr", value: "Ltr" },
                             ]}
                             placeholder="Select Unit"
                           />
@@ -834,10 +829,11 @@ const AddItemForm = () => {
                               setTotalQuantityInB2CUnit(detail.selectedOption)
                             }
                             options={[
-                              { label: "Piece", value: "pieces" },
-                              { label: "Grams", value: "grams" },
-                              { label: "Kgs", value: "kgs" },
-                              { label: "Litres", value: "litres" },
+                              { label: "Pcs", value: "Pcs" },
+                              { label: "Pkt", value: "Pkt" },
+                              { label: "Gms", value: "Gms" },
+                              { label: "Kg", value: "Kg" },
+                              { label: "Ltr", value: "Ltr" },
                             ]}
                             placeholder="Select Unit"
                           />
@@ -854,7 +850,7 @@ const AddItemForm = () => {
                               content={
                               
                                   <span>
-Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This is useful for items sold in pieces with varying weights,                                  </span>
+Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This is useful for items sold in units with varying weights,                                  </span>
                                
                               }
                             >
@@ -881,10 +877,11 @@ Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This 
                               setMinimumWeightUnit(detail.selectedOption)
                             }
                             options={[
-                              { label: "Piece", value: "pieces" },
-                              { label: "Grams", value: "grams" },
-                              { label: "Kgs", value: "kgs" },
-                              { label: "Litres", value: "litres" },
+                              { label: "Pcs", value: "Pcs" },
+                              { label: "Pkt", value: "Pkt" },
+                              { label: "Gms", value: "Gms" },
+                              { label: "Kg", value: "Kg" },
+                              { label: "Ltr", value: "Ltr" },
                             ]}
                           />
                         </FormField>
@@ -900,7 +897,7 @@ Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This 
                               content={
                               
                                   <span>
-Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This is useful for items sold in pieces with varying weights,                            </span>
+Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This is useful for items sold in units with varying weights,                            </span>
                                
                               }
                             >
@@ -925,10 +922,11 @@ Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This 
                               setMaximumWeightUnit(detail.selectedOption)
                             }
                             options={[
-                              { label: "Piece", value: "pieces" },
-                              { label: "Grams", value: "grams" },
-                              { label: "Kgs", value: "kgs" },
-                              { label: "Litres", value: "litres" },
+                              { label: "Pcs", value: "Pcs" },
+                              { label: "Pkt", value: "Pkt" },
+                              { label: "Gms", value: "Gms" },
+                              { label: "Kg", value: "Kg" },
+                              { label: "Ltr", value: "Ltr" },
                             ]}
                           />
                         </FormField>

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'; 
-import { fetchProducts, PutToggle, updateProductsStatus, deleteProduct, fetchProductById, updateProductDetails, fetchInventoryStats,putPricingById,ImportProducts,exportProducts, fetchInventoryCollection, fetchAllInventory } from './ProductThunk'; // Ensure to import updateProductsStatus
+import { fetchProducts, PutToggle, updateProductsStatus, deleteProduct, fetchProductById, updateProductDetails, fetchInventoryStats,putPricingById,ImportProducts,exportProducts, fetchInventoryCollection, fetchAllInventory, fetchCollectionById, deleteGroup } from './ProductThunk'; // Ensure to import updateProductsStatus
 import status from "Redux-Store/Constants";
 
 const productsSlice = createSlice({
@@ -17,6 +17,7 @@ const productsSlice = createSlice({
       error: null,
       nextKey: null
     },
+    collectionDetail: { status: 'idle', data: null, error: null },
     productDetail: { status: 'idle', data: null, error: null },
     export: { status: 'idle', data: null, error: null },
     allInventory: { 
@@ -134,6 +135,23 @@ const productsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      .addCase(deleteGroup.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteGroup.fulfilled, (state, action) => {
+        state.loading = false;
+        // Remove the deleted group from inventoryCollection.data (all pages)
+        Object.keys(state.inventoryCollection.data).forEach(page => {
+          state.inventoryCollection.data[page] = state.inventoryCollection.data[page].filter(
+            group => group.groupId !== action.payload.groupId
+          );
+        });
+      })
+      .addCase(deleteGroup.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(fetchInventoryStats.pending, (state) => {
         state.inventoryStats.status = 'loading'; // Use a string to represent the status
         state.inventoryStats.error = null; // Reset error state when starting to load
@@ -231,6 +249,19 @@ const productsSlice = createSlice({
       .addCase(fetchAllInventory.rejected, (state, action) => {
         state.allInventory.status = status.FAILURE;
         state.allInventory.error = action.payload || action.error.message;
+      })
+      // Add cases for fetchCollectionById
+      .addCase(fetchCollectionById.pending, (state) => {
+        state.collectionDetail.status = status.IN_PROGRESS;
+        state.collectionDetail.error = null;
+      })
+      .addCase(fetchCollectionById.fulfilled, (state, action) => {
+        state.collectionDetail.status = status.SUCCESS;
+        state.collectionDetail.data = action.payload;
+      })
+      .addCase(fetchCollectionById.rejected, (state, action) => {
+        state.collectionDetail.status = status.FAILURE;
+        state.collectionDetail.error = action.payload || action.error.message;
       });
   },
 });

@@ -64,6 +64,7 @@ const Orders = () => {
     },
     shifts: null,
     pincode: null,
+    paymentstatus: null,
   });
   const getFilterKey = useCallback(() => {
     const category = filters?.category?.value || "";
@@ -71,8 +72,9 @@ const Orders = () => {
     const ageFilter = filters?.ageFilter?.value || "";
     const shifts = filters?.shifts?.value || "";
     const pincode = filters?.pincode?.value || "";
+    const paymentstatus = filters?.paymentstatus?.value || "";
 
-    return `${category}-${statuscategory}-${ageFilter}-${shifts}-${pincode}-${
+    return `${category}-${statuscategory}-${ageFilter}-${shifts}-${pincode}-${paymentstatus}-${
       filteringText || ""
     }-${currentPage}`;
   }, [
@@ -81,6 +83,7 @@ const Orders = () => {
     filters?.ageFilter?.value,
     filters?.shifts?.value,
     filters?.pincode?.value,
+    filters?.paymentstatus?.value,
     currentPage,
     filteringText,
   ]);
@@ -103,6 +106,7 @@ const Orders = () => {
           date: filters.ageFilter?.value || "",
           shift: filters.shifts?.value || "",
           pincode: filters.pincode?.value || "",
+          paymentStatus: filters.paymentstatus?.value || "",
           search: filteringText || "",
           pageKey,
           pageSize: 50,
@@ -312,7 +316,7 @@ const Orders = () => {
           style={{
             color: item.paymentStatus === "PENDING" 
             ? "#B2911C" 
-            : item.paymentStatus === "Paid" 
+            : item.paymentStatus === "PAID" 
             ? "#00B207" 
             : item.paymentStatus === "REFUND" 
             ? "red" 
@@ -566,6 +570,7 @@ const Orders = () => {
             shifts={filters.shifts}
             category={filters.category}
             pincode={filters.pincode}
+            paymentstatus={filters.paymentstatus}
             currentPage={currentPage}
             onFilterChange={handleFilterChange}
           />

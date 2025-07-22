@@ -11,6 +11,8 @@ const unitOptions = [
   { label: "Gms", value: "Gms" },
   { label: "Kg", value: "Kg" },
   { label: "Ltr", value: "Ltr" },
+  { label: "Combo", value: "Combo" },
+
 ];
 
 const EditVariantGroup = () => {
@@ -358,45 +360,61 @@ const EditVariantGroup = () => {
           <Container header={<Header>Item Information</Header>}>
             <SpaceBetween size="l">
               <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}> 
-                <Input value={form.name} onChange={({ detail }) => handleChange("name", detail.value)} placeholder="Name" />
+                <FormField label="Name">
+                  <Input value={form.name} onChange={({ detail }) => handleChange("name", detail.value)} placeholder="Name" />
+                </FormField>
+
+                <FormField label="Over All Stock">
                 <Grid disableGutters gridDefinition={[{ colspan: 9 }, { colspan: 3 }]}> 
 
-                <Input
-                  type="text"
-                  value={overallStock}
-                  onChange={({ detail }) => setOverallStock(detail.value)}
-                  placeholder="Over All Stock"
-                  style={{ minWidth: 0 }}
-                />
-                <Select
-                  selectedOption={unitOptions.find((u) => u.value === overallStockUnit) || null}
-                  onChange={({ detail }) => setOverallStockUnit(detail.selectedOption.value)}
-                  options={unitOptions}
-                  placeholder="Unit"
-                  style={{ minWidth: 80, maxWidth: 120 }}
-                />
-                </Grid>
+                  <Input
+                    type="text"
+                    value={overallStock}
+                    onChange={({ detail }) => setOverallStock(detail.value)}
+                    placeholder="Over All Stock"
+                    style={{ minWidth: 0 }}
+                  />
+               
+                  <Select
+                    selectedOption={unitOptions.find((u) => u.value === overallStockUnit) || null}
+                    onChange={({ detail }) => setOverallStockUnit(detail.selectedOption.value)}
+                    options={unitOptions}
+                    placeholder="Unit"
+                    style={{ minWidth: 80, maxWidth: 120 }}
+                  />
+                       </Grid>
+                </FormField>
+           
               </Grid>
           
-              <Box>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                  {form.tags && form.tags.filter(Boolean).map((tag, idx) => (
-                    <span key={idx} style={{ background: "#f3f3f3", borderRadius: 16, paddingLeft: "6px", paddingRight:'6px', fontSize: 13, color: "#333", border: "1px solid #ddd", display: "flex", alignItems: "center" }}>
-                      {tag.trim()}
-                      <Button iconName="remove" variant="icon" onClick={() => handleRemoveMainTag(idx)} size="small" />
-                    </span>
-                  ))}
-                  <input
-                    value={newTag}
-                    onChange={e => setNewTag(e.target.value)}
-                    onKeyDown={e => e.key === "Enter" && handleAddMainTag()}
-                    placeholder="Add tag"
-                    style={{ padding: "4px 8px", borderRadius: 8, border: "1px solid #ccc", fontSize: 13 }}
-                  />
-                  <Button onClick={handleAddMainTag} iconName="add-plus" size="small" />
-                </div>
-              </Box>
-              <Textarea rows={10} value={form.description} onChange={({ detail }) => handleChange("description", detail.value)} placeholder="Description" />
+            <h3>Tags</h3>
+                <Box>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                    {form.tags && form.tags.filter(Boolean).map((tag, idx) => (
+                      <span key={idx} style={{ background: "#f3f3f3", borderRadius: 16, paddingLeft: "6px", paddingRight:'6px', fontSize: 13, color: "#333", border: "1px solid #ddd", display: "flex", alignItems: "center" }}>
+                        {tag.trim()}
+                        <Button iconName="remove" variant="icon" onClick={() => handleRemoveMainTag(idx)} size="small" />
+                      </span>
+                    ))}
+                    <input
+                      value={newTag}
+                      onChange={e => setNewTag(e.target.value)}
+                      onKeyDown={e => e.key === "Enter" && handleAddMainTag()}
+                      placeholder="Add tag"
+                      style={{ padding: "4px 8px", borderRadius: 8, border: "1px solid #ccc", fontSize: 13 }}
+                    />
+                    <Button onClick={handleAddMainTag} iconName="add-plus" size="small" />
+                  </div>
+                </Box>
+            
+          <h3>Description</h3>
+                <Textarea
+                  rows={10}
+                  value={form.description}
+                  onChange={({ detail }) => handleChange("description", detail.value)}
+                  placeholder="Description"
+                />
+            
               {/* <Container header={<Header>Main Images</Header>}>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               {form.images && form.images.filter(Boolean).map((img, idx) => (
@@ -417,7 +435,7 @@ const EditVariantGroup = () => {
             </SpaceBetween>
           </Container>
           <Container>
-          <Header actions={<Button onClick={handleAddVariant} iconName="add-plus">Add Variant</Button>}>Variants</Header>
+          <Header actions={<Button onClick={handleAddVariant} iconName="add-plus">Add New Variant</Button>}>Variants</Header>
             <Table
           
 

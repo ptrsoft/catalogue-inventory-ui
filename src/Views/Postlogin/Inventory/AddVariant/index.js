@@ -364,6 +364,8 @@ const AddEditVariant = () => {
     { label: "Gms", value: "Gms" },
     { label: "Kg", value: "Kg" },
     { label: "Ltr", value: "Ltr" },
+    { label: "Combo", value: "Combo" },
+
   ];
 
   const handledelete = () => {

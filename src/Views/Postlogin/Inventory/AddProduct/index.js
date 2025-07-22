@@ -751,6 +751,8 @@ const AddItemForm = () => {
                               { label: "Gms", value: "Gms" },
                               { label: "Kg", value: "Kg" },
                               { label: "Ltr", value: "Ltr" },
+                              { label: "Combo", value: "Combo" },
+
                             ]}
                             placeholder="Select Unit"
                           />
@@ -834,6 +836,8 @@ const AddItemForm = () => {
                               { label: "Gms", value: "Gms" },
                               { label: "Kg", value: "Kg" },
                               { label: "Ltr", value: "Ltr" },
+                              { label: "Combo", value: "Combo" },
+
                             ]}
                             placeholder="Select Unit"
                           />
@@ -882,6 +886,8 @@ Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This 
                               { label: "Gms", value: "Gms" },
                               { label: "Kg", value: "Kg" },
                               { label: "Ltr", value: "Ltr" },
+                              { label: "Combo", value: "Combo" },
+
                             ]}
                           />
                         </FormField>
@@ -927,6 +933,8 @@ Set the minimum and maximum weight range for the item (e.g., 500g - 750g). This 
                               { label: "Gms", value: "Gms" },
                               { label: "Kg", value: "Kg" },
                               { label: "Ltr", value: "Ltr" },
+                              { label: "Combo", value: "Combo" },
+
                             ]}
                           />
                         </FormField>

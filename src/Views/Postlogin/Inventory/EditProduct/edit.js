@@ -66,9 +66,9 @@ const Edit = () => {
   const [comparePrice, setComparePrice] = useState("");
   const [discount, setDiscount] = useState(0);
   const [category, setCategory] = useState("");
-  const pPrice = parseFloat(purchasingPrice) || 0;
-  const sPrice = parseFloat(sellingPrice) || 0;
-  const cPrice = parseFloat(comparePrice) || 0;
+  const pPrice = Number(purchasingPrice) || 0;
+  const sPrice = Number(sellingPrice) || 0;
+  const cPrice = Number(comparePrice) || 0;
 
   // Calculate Discount Percentage
   const discountPercentage =
@@ -899,7 +899,7 @@ const Edit = () => {
                           </span>
                         </span>
                       }
-                      errorText={!stockQuantity && "Required"}
+                      // errorText={!stockQuantity && "Required"}
                     >
                       <Input
                         required

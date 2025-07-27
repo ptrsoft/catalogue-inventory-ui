@@ -98,6 +98,7 @@ const Views = () => {
         <Route  path={`${PREFIX_APP_PATH}/settings/rbac/policies`} element={<ProtectedRoute element={<PoliciesContent />} isAuthenticated={isAuthenticated}/>} />
         <Route  path={`${PREFIX_APP_PATH}/settings/rbac/permissions`} element={<ProtectedRoute element={<PermissionsContent />}isAuthenticated={isAuthenticated} />} />
         <Route path="/app/inventory/edit-group/:groupId" element={<ProtectedRoute element={<EditVariantGroup />} isAuthenticated={isAuthenticated} />} />
+        <Route  path={`${PREFIX_APP_PATH}/inventory/create-adjustment/:id`} element={<ProtectedRoute element={<CreateAdjustment />} isAuthenticated={isAuthenticated}/>} />
 
         {/* Public Routes */}
         <Route  path={`${PREFIX_AUTH_PATH}/signin`} element={<Signin />} />

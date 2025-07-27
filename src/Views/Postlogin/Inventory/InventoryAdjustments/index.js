@@ -65,6 +65,10 @@ const InventoryAdjustments = () => {
     navigate("/app/inventory/create-adjustment");
   };
 
+  const handleRowClick = (item) => {
+    navigate(`/app/inventory/create-adjustment/${item.id}`);
+  };
+
   return (
     <>
       <BreadcrumbGroup
@@ -76,8 +80,6 @@ const InventoryAdjustments = () => {
       />
       <div style={{ marginTop: 10 }}>
         <Table
-
-        
           variant='borderless'
           renderAriaLive={({ firstIndex, lastIndex, totalItemsCount }) =>
             `Displaying items ${firstIndex} to ${lastIndex} of ${totalItemsCount}`
@@ -89,7 +91,7 @@ const InventoryAdjustments = () => {
             {
               id: "adjustmentNumber",
               header: "Adjustment No.",
-              cell: e => <span style={{ color: "#192534", fontWeight: "700" }}>
+              cell: e => <span style={{ color: "#192534", fontWeight: "700", cursor: 'pointer' }} onClick={() => handleRowClick(e)}>
                 SA-{e.id}
               </span>,
               isRowHeader: true,

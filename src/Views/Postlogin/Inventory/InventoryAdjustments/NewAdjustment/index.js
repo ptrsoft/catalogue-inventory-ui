@@ -68,12 +68,18 @@ const getToken = () => {
           id: item.id,
           itemCode: item.code,
           name: item.name,
-          stock: parseInt(item.stockOnHold), // Assuming stock is in kg and needs to be a number
-          currentCompareAtPrice: parseInt(item.sellingPrice), // Parsing price
-          currentOnlineStorePrice: parseInt(item.purchasingPrice), // Assuming current online store price is same as purchasing price
-          adjustQuantity: parseInt(item.adjustQuantity), // Set this value based on your need
-          newPurchasingPrice: parseInt(item.adjustPurchasePrice), // Example new price
-          newOnlineStorePrice: parseInt(item.adjustSellingPrice), // Example new price
+          stock: Number(item.stockOnHold), // Use raw value
+          currentCompareAtPrice: Number(item.sellingPrice), // Use raw value
+          currentOnlineStorePrice: Number(item.purchasingPrice), // Use raw value
+          adjustQuantity: Number(item.adjustQuantity), // Use raw value
+          newPurchasingPrice: Number(item.adjustPurchasePrice), // Use raw value
+          newOnlineStorePrice: Number(item.adjustSellingPrice), // Use raw value
+          amount: Number((item.adjustQuantity || 0) * Number(item.purchasingPrice || 0)),
+          units: item.units,
+          overallStockUnit: item.overallStockUnit,
+          image: item.images,
+          totalQuantityInB2c: item.totalQuantityInB2c,
+          totalquantityB2cUnit: item.totalquantityB2cUnit,
         })),
       };
       console.log("Request Body:", requestBody);
@@ -197,7 +203,7 @@ const getToken = () => {
                           }}
                         >
                           <img
-                            src={item.images}
+                            src={item.images||item.image}
                             alt={item.name}
                             style={{
                               width: "30px",
@@ -205,13 +211,25 @@ const getToken = () => {
                               marginRight: "10px",
                             }}
                           />
-                          {item.name}
+                        {(
+                          (item.stockQuantity === null || item.stockQuantity === 0) &&
+                          item.overallStock > 0
+                        ) ? (
+                          item.name
+                        ) : (
+                          <>
+                            {item.name}
+                            {"-"}
+                            {item.totalQuantityInB2c}
+                            {item.totalquantityB2cUnit}
+                          </>
+                        )}
                         </div>
                       ),
                     },
                     {
-                      header: "Stock on Hand",
-                      cell: (item) => item.stockOnHold + " Kg",
+                      header: "Stock Quantity",
+                      cell: (item) => item.stockOnHold ,
                     },
                     {
                       header: (
@@ -310,6 +328,23 @@ const getToken = () => {
                       ),
                       cell: (item) => item.adjustQuantity,
                     },
+                    // Hide "Amount" column when reason is "procure"
+                    ...(
+                      dataToSave?.formData?.reason?.value === "procure" ||
+                      dataToSave?.formData?.reason?.label === "procure"
+                        ? []
+                        : [
+                            {
+                              header: "Amount",
+                              cell: (item) => {
+                                const qty = item.adjustQuantity || 0;
+                                const price = item.purchasingPrice || 0;
+                                const wastage = qty * price;
+                                return `Rs. ${wastage.toFixed(2)}`;
+                              },
+                            }
+                          ]
+                    ),
                     {
                       header: (
                         <span

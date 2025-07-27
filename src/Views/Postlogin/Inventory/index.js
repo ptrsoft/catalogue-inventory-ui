@@ -19,7 +19,8 @@ import {
   FormField,
   Input,
   Popover,
-  Icon
+  Icon,
+  Calendar, // Add Calendar for expiry filter
 } from "@cloudscape-design/components";
 import {
   fetchProducts,
@@ -345,6 +346,8 @@ const Inventory = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [groupIdToDelete, setGroupIdToDelete] = useState(null); // 2. Update openModal to store groupId for itemCollection
   const [isCollectionOpen, setIsCollectionOpen] = useState(false);
+  const [expiryDateFilter, setExpiryDateFilter] = useState(""); // New expiry filter state
+  const [showExpiryCalendar, setShowExpiryCalendar] = useState(false); // Calendar visibility
 
   // Add state for EditGroup modal
   // Remove EditGroup modal logic and handler
@@ -394,7 +397,7 @@ const Inventory = () => {
         : selectedStatus?.value === true
         ? "true"
         : ""
-    }`;
+    }-${expiryDateFilter || ""}`; // Include expiry filter in key
     
     // Get all pages for current filter
     const allPages = Object.keys(fetchedPages)
@@ -459,25 +462,28 @@ const Inventory = () => {
         : selectedStatus?.value === true
         ? "true"
         : ""
-    }-${currentPage}`;
+    }-${expiryDateFilter || ""}-${currentPage}`; // Include expiry filter in key
 
     // Check if the current page with the current filter has already been fetched
     if (!fetchedPages[filterKey]) {
+      const apiParams = {
+        category: selectedCategory?.value || "",
+        subCategory: selectedSubCategory?.value || "",
+        search: filteringText || "",
+        active:
+          selectedStatus?.value === true
+            ? "true"
+            : selectedStatus?.value === false
+            ? "false"
+            : "",
+        expiry: expiryDateFilter, // Pass expiry filter
+        pageKey, // Only pass the nextKey for pages beyond 1
+      };
+      
+      console.log("API Call Parameters:", apiParams); // Debug log
+      
       dispatch(
-        fetchProducts({
-          category: selectedCategory?.value || "",
-          subCategory: selectedSubCategory?.value || "",
-          search: filteringText || "",
-          active:
-            selectedStatus?.value === true
-              ? "true"
-              : selectedStatus?.value === false
-              ? "false"
-              : "",
-          pageKey, // Only pass the nextKey for pages beyond 1
-          // pageSize: 50,
-          // Items per page
-        })
+        fetchProducts(apiParams)
       )
         .unwrap()
         .then((result) => {
@@ -515,6 +521,7 @@ const Inventory = () => {
     selectedCategory,
     selectedSubCategory,
     selectedStatus,
+    expiryDateFilter, // Add expiry filter to deps
     nextKeys,
     fetchedPages,
   ]);
@@ -596,6 +603,19 @@ const Inventory = () => {
 
   };
 
+  // Handler for expiry date selection
+  const handleExpiryDateSelect = ({ detail }) => {
+    setExpiryDateFilter(detail.value);
+    setShowExpiryCalendar(false);
+    setCurrentPage(1); // Reset page when filter changes
+  };
+
+  // Handler to reset expiry filter
+  const handleResetExpiryFilter = () => {
+    setExpiryDateFilter("");
+    setCurrentPage(1); // Reset page when filter changes
+  };
+
   if (status === "LOADING") {
     return (
       <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
@@ -667,14 +687,39 @@ const Inventory = () => {
     return "black";
   };
 
-  const handleProductClick = (product) => {
-    setSelectedProduct(product);
-    setIsDrawerOpen(true);
+  const handleProductClick = (groupId, type) => {
+    if (type === 'variantGroup') {
+      getGroupById(groupId);
+    } else {
+      getGroupById(groupId);
+      setIsDrawerOpen(true);
+    }
   };
 
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
     setSelectedProduct(null);
+  };
+
+  const getGroupById = (groupId) => {
+    dispatch(fetchCollectionById(groupId))
+      .unwrap()
+      .then((data) => {
+        console.log("Collection data fetched:", data);
+        setSelectedProduct(data);
+        setIsDrawerOpen(true);
+      })
+      .catch((error) => {
+        console.error("Error fetching collection:", error);
+        setItems([
+          {
+            type: "error",
+            content: "Failed to fetch collection data",
+            dismissible: true,
+            onDismiss: () => setItems([]),
+          },
+        ]);
+      });
   };
 
   const handleCollectionEdit = (groupId) => {
@@ -1191,9 +1236,10 @@ const Inventory = () => {
             <div style={{ marginBottom: "16px" }}>
               <Grid
                 gridDefinition={[
-                  { colspan: isMobile ? 12 : 4 },
-                  { colspan: isMobile ? 12 : 4 },
-                  { colspan: isMobile ? 12 : 4 },
+                  { colspan: isMobile ? 12 : 3 },
+                  { colspan: isMobile ? 12 : 3 },
+                  { colspan: isMobile ? 12 : 3 },
+                  { colspan: isMobile ? 12 : 3 }, // Add a column for expiry filter
                 ]}
               >
                 <Select
@@ -1234,6 +1280,47 @@ const Inventory = () => {
                   ]}
                   placeholder="Select Status"
                 />
+                {/* Expiry Date Calendar Filter */}
+                <div style={{ display: "flex", gap: "5px" }}>
+                  <Popover
+                  wrapTriggerText={false}
+              triggerType='custom'
+               
+                  
+                    onDismiss={() => setShowExpiryCalendar(false)}
+                    position="left"
+                    align="start"
+                    size="medium"
+                  
+                    content={
+                      <Calendar
+                        onChange={handleExpiryDateSelect}
+                        selectedDate={expiryDateFilter}
+                      />
+                    }
+                    onOpen={() => setShowExpiryCalendar(true)}
+                    isOpen={showExpiryCalendar}
+                  >
+                    <Button
+                      iconName="calendar"
+                      onClick={() => setShowExpiryCalendar((prev) => !prev)}
+                      ariaLabel="Expiry Date Filter"
+                      variant="normal"
+                      style={{ flex: 1 }}
+                    >
+                      {expiryDateFilter ? expiryDateFilter : "Expiry Date"}
+                    </Button>
+                  </Popover>
+                  {expiryDateFilter && (
+                    <Button
+                      iconName="close"
+                      variant="icon"
+                      onClick={handleResetExpiryFilter}
+                      ariaLabel="Reset Expiry Filter"
+                      style={{ minWidth: "32px" }}
+                    />
+                  )}
+                </div>
               </Grid>
             </div>
           )}
@@ -1596,8 +1683,8 @@ const Inventory = () => {
                           alignItems: "center",
                           cursor: "pointer",
                         }}
-                        onClick={() => handleProductClick(e)}
-                        onMouseEnter={() => setHoveredProductId(e.id)}
+                        onClick={() => handleProductClick(e.groupId, 'product')}
+                        onMouseEnter={() => setHoveredProductId(e.groupId)}
                         onMouseLeave={() => setHoveredProductId(null)}
                       >
                         <img
@@ -1811,7 +1898,7 @@ const Inventory = () => {
                       : selectedStatus?.value === true
                       ? "true"
                       : ""
-                  }-${currentPage}`
+                  }-${expiryDateFilter || ""}-${currentPage}`
                 ] || []
               }
               selectionType="multi"
@@ -1858,6 +1945,7 @@ const Inventory = () => {
                               display: "flex",
                               alignItems: "center",
                             }}
+                            onClick={() => handleProductClick(e.groupId, 'variantGroup')}
                           >
                             <img
                               src={e.image}

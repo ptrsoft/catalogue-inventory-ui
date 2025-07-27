@@ -36,3 +36,31 @@ export const createInventoryAdjustment = createAsyncThunk(
     }
   }
 );
+
+// Fetch single adjustment by ID
+export const fetchAdjustmentById = createAsyncThunk(
+  "fetchAdjustmentById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const url = `${config.FETCH_INVENTORY_ADJUSTMENTS}/${String(id)}`;
+      const response = await postLoginService.get(url);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response ? error.response.data : error.message);
+    }
+  }
+);
+
+// Update adjustment by ID
+export const updateAdjustmentById = createAsyncThunk(
+  "updateAdjustmentById",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const url = `${config.FETCH_INVENTORY_ADJUSTMENTS}/${id}`;
+      const response = await postLoginService.put(url, data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response ? error.response.data : error.message);
+    }
+  }
+);

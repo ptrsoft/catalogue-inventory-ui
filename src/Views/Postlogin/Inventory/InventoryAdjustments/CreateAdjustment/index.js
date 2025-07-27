@@ -18,11 +18,12 @@ import {
   Input,
   SpaceBetween,
 } from "@cloudscape-design/components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ErrorMessages, ValidationEngine } from "Utils/helperFunctions";
 import { fetchProducts } from "Redux-Store/Products/ProductThunk";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from 'react-responsive';
+import { fetchAdjustmentById, updateAdjustmentById } from "Redux-Store/InventoryAdjustments/InventoryAdjustmentsThunk";
 
 const useFormState = (initialState) => {
   const [state, setState] = useState(initialState);
@@ -43,6 +44,9 @@ const CreateNewAdjustments = () => {
   // modal table data from redux
   const dispatch = useDispatch();
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+  const { id } = useParams();
+  const [loading, setLoading] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const products = useSelector((state) => state.products.products);
   console.log(products, "prod");
@@ -73,6 +77,40 @@ const CreateNewAdjustments = () => {
   const [currentPage, setCurrentPage] = useState(1);
   console.log("Current Page:", currentPage);
   const [nextKeys, setNextKeys] = useState({}); // Store nextKey per page
+  useEffect(() => {
+    if (id) {
+      setIsEditMode(true);
+      setLoading(true);
+      dispatch(fetchAdjustmentById(String(id)))
+        .unwrap()
+        .then((data) => {
+          // Map API response to form state
+          setState({
+            location: { label: data.location, value: data.location },
+            reason: { label: data.reason, value: data.reason },
+            description: data.description,
+          });
+          setItems(
+            (data.items || []).map((item) => ({
+              ...item,
+              itemCode: item.itemCode,
+              name: item.name,
+              images: item.images || [""],
+              sellingPrice: item.currentCompareAtPrice,
+              stockQuantity: item.stock,
+              overallStock: item.overallStock,
+              overallStockUnit: item.overallStockUnit,
+              purchasingPrice: item.currentOnlineStorePrice,
+              adjustQuantity: item.adjustQuantity,
+              adjustPurchasePrice: item.newPurchasingPrice,
+              adjustSellingPrice: item.newOnlineStorePrice,
+            }))
+          );
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [id, dispatch]);
+
   useEffect(() => {
     // Define the pageKey for pagination (undefined for page 1)
     const pageKey = currentPage === 1 ? undefined : nextKeys[currentPage - 1];
@@ -151,7 +189,7 @@ const CreateNewAdjustments = () => {
     navigate("/app/inventory/adjustments");
   };
 
-  const [formState, handleFormChange] = useFormState({
+  const [formState, handleFormChange, setState] = useFormState({
     location: "",
     reason: "",
     description: "",
@@ -233,30 +271,66 @@ const CreateNewAdjustments = () => {
 
   // console.log(formErrors.itemErrors.missingFields,"error");
 
-  const handleSave = () => {
+  const handleSaveOrUpdate = () => {
     if (validateForm()) {
-      // Collecting form and table data
-      const dataToSave = {
-        formData: formState,
-        itemsData: items.map((item) => ({
+      const requestBody = {
+        reason: formState.reason.label || formState.reason.value || formState.reason,
+        description: formState.description,
+        location: formState.location.label || formState.location.value || formState.location,
+        items: items.map((item) => ({
           id: item.id,
-          code: item.itemCode,
+          itemCode: item.itemCode,
           name: item.name,
-          images: item.images[0],
-          sellingPrice: item.sellingPrice,
-          stockOnHold: item.stockQuantity,
-          purchasingPrice: item.purchasingPrice,
-          adjustQuantity: item.adjustQuantity,
-          adjustPurchasePrice: item.adjustPurchasePrice,
-          adjustSellingPrice: item.adjustSellingPrice,
+          stock: Number(item.stockQuantity || item.overallStock),
+          currentCompareAtPrice: Number(item.sellingPrice),
+          currentOnlineStorePrice: Number(item.purchasingPrice),
+          adjustQuantity: Number(item.adjustQuantity),
+          newPurchasingPrice: Number(item.adjustPurchasePrice),
+          newOnlineStorePrice: Number(item.adjustSellingPrice),
+          overallStock: item.overallStock,
+          overallStockUnit: item.overallStockUnit,
+          totalQuantityInB2c: item.totalQuantityInB2c,
+          totalquantityB2cUnit: item.totalquantityB2cUnit,
+          amount: Number((item.adjustQuantity || 0) * Number(item.purchasingPrice || 0)),
+          units: item.units,
+          image: item.images[0],
+
         })),
       };
-
-      // Log data to check before navigation
-      console.log("Data to save:", dataToSave);
-
-      // Navigate with the data
-      navigate("/app/inventory/new-adjustment", { state: { dataToSave } });
+      if (isEditMode) {
+        // Update
+        dispatch(updateAdjustmentById({ id, data: requestBody }))
+          .unwrap()
+          .then(() => {
+            ErrorMessages.success("Adjustment updated successfully");
+            navigate("/app/inventory/adjustments");
+          })
+          .catch(() => ErrorMessages.error("Failed to update adjustment"));
+      } else {
+        // Add (existing logic)
+        const dataToSave = {
+          formData: formState,
+          itemsData: items.map((item) => ({
+            id: item.id,
+            code: item.itemCode,
+            name: item.name,
+            images: item.images[0],
+            sellingPrice: item.sellingPrice,
+            stockOnHold: item.stockQuantity||item.overallStock,
+            stockQuantity: item.stockQuantity,
+            overallStock: item.overallStock,
+            purchasingPrice: item.purchasingPrice,
+            adjustQuantity: item.adjustQuantity,
+            adjustPurchasePrice: item.adjustPurchasePrice,
+            adjustSellingPrice: item.adjustSellingPrice,
+            units: item.units,
+            overallStockUnit: item.overallStockUnit,
+            totalquantityB2cUnit: item.totalquantityB2cUnit,
+            totalQuantityInB2c: item.totalQuantityInB2c,
+          })),
+        };
+        navigate("/app/inventory/new-adjustment", { state: { dataToSave } });
+      }
     } else {
       ErrorMessages.error("Please fix the errors before submitting.");
     }
@@ -343,14 +417,15 @@ const CreateNewAdjustments = () => {
         ariaLabel="Breadcrumbs"
       />
       <div style={{ marginTop: 10 }}>
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
         <form onSubmit={(e) => e.preventDefault()}>
           <Container
             header={
               <Header
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
-             
-                      
                     <button
                         className="cancel-btn"
                         style={{ borderRadius: "64px", padding:isMobile?"5px":"6px 8px" }}
@@ -363,15 +438,14 @@ const CreateNewAdjustments = () => {
                       <button
                       className="cancel-btn"
                       style={{ borderRadius: "16px",backgroundColor:'#0972D3',borderColor:'#0972D3',color:'white' }}
-                      onClick={handleSave} >
-                      Save
+                      onClick={handleSaveOrUpdate} >
+                      {isEditMode ? "Update" : "Save"}
                     </button>
                   </SpaceBetween>
                 }
                 variant={isMobile ? "h3" : "h1"}
               >
-                
-                New Adjustment
+                {isEditMode ? "Edit Adjustment" : "New Adjustment"}
               </Header>
             }
           >
@@ -481,7 +555,7 @@ const CreateNewAdjustments = () => {
                         }}
                       >
                         <img
-                          src={item.images[0]}
+                          src={item.images[0]||item.image}
                           alt={item.name}
                           style={{
                             width: "30px",
@@ -489,13 +563,44 @@ const CreateNewAdjustments = () => {
                             marginRight: "10px",
                           }}
                         />
-                        {item.name}
+                        {(
+                          (item.stockQuantity === null || item.stockQuantity === 0) &&
+                          item.overallStock > 0
+                        ) ? (
+                          item.name
+                        ) : (
+                          <>
+                            {item.name}
+                            {"-"}
+                            {item.totalQuantityInB2c}
+                            {item.totalquantityB2cUnit}
+                          </>
+                        )}
                       </div>
                     ),
                   },
                   {
-                    header: "Stock on Hand",
-                    cell: (item) => item.stockQuantity + " Kg",
+                    id: "quantityOnHand",
+                    header: "Quantity In Stock",
+                    cell: (e) => {
+                      // If stockQuantity is null or 0, use overallStock and overallStockUnit
+                      const hasStock =
+                        e.stockQuantity !== null &&
+                        e.stockQuantity !== undefined &&
+                        Number(e.stockQuantity) !== 0;
+                      if (hasStock) {
+                        return `${e.stockQuantity} ${e.units}`;
+                      } else if (
+                        e.overallStock !== null &&
+                        e.overallStock !== undefined &&
+                        e.overallStock !== "" &&
+                        Number(e.overallStock) !== 0
+                      ) {
+                        return `${e.overallStock} ${e.overallStockUnit || ""}`;
+                      } else {
+                        return "-";
+                      }
+                    },
                   },
                   {
                     header: (
@@ -605,6 +710,21 @@ const CreateNewAdjustments = () => {
                       />
                     ),
                   },
+                  // Hide "Wastage Amount" column when reason is "procure"
+                  ...(formState?.reason === "Procure" || formState?.reason?.label === "Procure"
+                    ? []
+                    : [
+                        {
+                          header: " Amount",
+                          cell: (item) => {
+                            const qty = item.adjustQuantity || 0;
+                            const price = item.purchasingPrice || 0;
+                            const wastage = qty * price;
+                            return `Rs. ${wastage.toFixed(2)}`;
+                          },
+                        },
+                      ]
+                  ),
                   {
                     header: (
                       <span
@@ -732,6 +852,7 @@ const CreateNewAdjustments = () => {
             </Container>
           </div>
         </form>
+        )}
       </div>
 
       {/* Modal for Selecting Items */}
@@ -925,14 +1046,26 @@ const CreateNewAdjustments = () => {
               ),
             },
             {
+              id: "quantityOnHand",
               header: "Quantity In Stock",
-              sortingField: "StockQuantity",
-              cell: (item) => {
-                // Show quantity with unit if available
-                if (item.stockQuantity !== undefined && item.stockQuantity !== null) {
-                  return `${item.stockQuantity} ${item.units || ""}`.trim();
+              cell: (e) => {
+                // If stockQuantity is null or 0, use overallStock and overallStockUnit
+                const hasStock =
+                  e.stockQuantity !== null &&
+                  e.stockQuantity !== undefined &&
+                  Number(e.stockQuantity) !== 0;
+                if (hasStock) {
+                  return `${e.stockQuantity} ${e.units}`;
+                } else if (
+                  e.overallStock !== null &&
+                  e.overallStock !== undefined &&
+                  e.overallStock !== "" &&
+                  Number(e.overallStock) !== 0
+                ) {
+                  return `${e.overallStock} ${e.overallStockUnit || ""}`;
+                } else {
+                  return "-";
                 }
-                return "-";
               },
             },
             {

@@ -316,9 +316,9 @@ const AddItemForm = () => {
       return updatedValues;
     });
   };
-  const pPrice = parseFloat(purchasingPrice) || 0;
-  const sPrice = parseFloat(sellingPrice) || 0;
-  const cPrice = parseFloat(comparePrice) || 0;
+  const pPrice = Number(purchasingPrice) || 0;
+  const sPrice = Number(sellingPrice) || 0;
+  const cPrice = Number(comparePrice) || 0;
 
   // Calculate Discount Percentage
   const discountPercentage =

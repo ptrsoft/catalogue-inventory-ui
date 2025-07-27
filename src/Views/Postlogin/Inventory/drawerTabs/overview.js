@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   ColumnLayout,
   Box,
@@ -6,46 +6,104 @@ import {
   Header,
   Container,
   SpaceBetween,
+  Tabs,
+  StatusIndicator,
 } from "@cloudscape-design/components";
-import {useMediaQuery} from "react-responsive";
-
+import { useMediaQuery } from "react-responsive";
 import BarChart from "@cloudscape-design/components/bar-chart";
 
 const Overview = ({ selectedProduct }) => {
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+  const [activeVariantTab, setActiveVariantTab] = useState(0);
 
   if (!selectedProduct) {
     return <div>No product selected</div>;
   }
 
+  // Variants array fallback
+  const variants = selectedProduct.variations || [];
+  const activeVariant = variants[activeVariantTab] || {};
+
   return (
     <div>
-      <div className="overview" style={{ display: isMobile ? "block" : "flex" }}>
-        {isMobile && (
-          <div
-            style={{
-              borderRadius: "10px",
-              backgroundColor: "#E9EBED",
-              padding: "15px",
-              marginBottom: "30px",
-            }}
-          >
-            <div>
-              <img
-                style={{
-                  border: "1px solid #D9D9D9",
-                  width: "100%",
-                  height: "100%",
-                }}
-                src={selectedProduct.image}
-                alt="product"
-              />
-            </div>
-            <div style={{ display: "flex", gap: "15px", paddingTop: "7px" }}>
-            </div>
+      {/* Top Bar: Name, Stock, Status, Action/Edit/Active */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div>
+          <h1 style={{ color: "#0972D3", margin: 0 }}>{selectedProduct.name}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontWeight: 600, fontSize: 18 }}>
+              Stock : {selectedProduct.stockQuantity} {selectedProduct.units}
+            </span>
+            {selectedProduct.stockAlert && (
+              <span style={{ fontSize: 14, marginLeft: 8 }}>
+                {selectedProduct.stockAlert === "Low Stock" ? (
+                  <StatusIndicator type="warning" size="small">
+                    {selectedProduct.stockAlert}
+                  </StatusIndicator>
+                ) : (
+                  <span style={{ color: "#0972D3" }}>{selectedProduct.stockAlert}</span>
+                )}
+              </span>
+            )}
           </div>
-        )}
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button variant="primary">Action</Button>
+          <Button variant="normal">Edit</Button>
+          <Button variant={selectedProduct.active ? "primary" : "normal"}>
+            {selectedProduct.active ? "Active" : "Inactive"}
+          </Button>
+        </div>
+      </div>
 
+      {/* Variant Tabs */}
+      {variants.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {variants.map((variant, idx) => (
+              <Button
+                key={idx}
+                variant={activeVariantTab === idx ? "primary" : "normal"}
+                onClick={() => setActiveVariantTab(idx)}
+                style={{ borderRadius: 20 }}
+              >
+                {variant.name || `Variant ${idx + 1}`}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="overview" style={{ display: isMobile ? "block" : "flex" }}>
+        {/* Image Section */}
+        <div
+          style={{
+            borderRadius: "10px",
+            backgroundColor: "#E9EBED",
+            padding: "15px",
+            marginBottom: isMobile ? "30px" : 0,
+            marginRight: isMobile ? 0 : "30px",
+            width: isMobile ? "100%" : 250,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <img
+            style={{
+              border: "1px solid #D9D9D9",
+              width: 200,
+              height: 200,
+              objectFit: 'cover',
+              borderRadius: 10,
+            }}
+            src={selectedProduct.image}
+            alt="product"
+          />
+          <Button iconName="add-plus" variant="icon" style={{ marginTop: 10 }} />
+        </div>
+
+        {/* Info Section */}
         <div style={{ width: isMobile ? "100%" : "38vw" }}>
           <ColumnLayout columns={1}>
             <div
@@ -68,7 +126,9 @@ const Overview = ({ selectedProduct }) => {
                     <p>Units :</p>
                     <p>{selectedProduct.units}</p>
                     <p>Created Source :</p>
-                    <p>Admin</p>
+                    <p>{selectedProduct.createdSource || "Admin"}</p>
+                    <p>Description :</p>
+                    <p>{selectedProduct.description || "-"}</p>
                   </ColumnLayout>
                 </SpaceBetween>
               </Container>
@@ -79,9 +139,9 @@ const Overview = ({ selectedProduct }) => {
                   <Header variant={isMobile ? "h3" : "h2"}>Purchase and Sales Information</Header>
                   <ColumnLayout columns={2} minColumnWidth={isMobile ? 120 : 170}>
                     <p>Purchasing Price :</p>
-                    <p>Rs. {selectedProduct.purchasingPrice}</p>
-                    <p style={{width:isMobile ? "155px" : "100%"}}>Minimum Selling Price :</p>
-                    <p>Rs. {selectedProduct.msp}</p>
+                    <p>Rs. {activeVariant.purchasingPrice || selectedProduct.purchasingPrice}</p>
+                    <p style={{ width: isMobile ? "155px" : "100%" }}>Minimum Selling Price :</p>
+                    <p>Rs. {activeVariant.sellingPrice || selectedProduct.msp}</p>
                   </ColumnLayout>
                 </SpaceBetween>
               </Container>
@@ -91,63 +151,32 @@ const Overview = ({ selectedProduct }) => {
                 <SpaceBetween size="s">
                   <Header variant={isMobile ? "h3" : "h2"}>Quantity on Hand</Header>
                   <h1
-                      style={{
-                        backgroundColor: "#E9EBED",
-                        padding: "15px",
-                        fontSize: "20px",
-                        fontWeight: "700",
-                        borderRadius: "10px",
-                        display: "inline-block",
-                        color: "#354150",
-                      }}
-                    >
-                      {selectedProduct.stockQuantity}
-                      {selectedProduct.units}
-                    </h1>
+                    style={{
+                      backgroundColor: "#E9EBED",
+                      padding: "15px",
+                      fontSize: "20px",
+                      fontWeight: "700",
+                      borderRadius: "10px",
+                      display: "inline-block",
+                      color: "#354150",
+                    }}
+                  >
+                    {activeVariant.stockQuantity || selectedProduct.stockQuantity}
+                    {selectedProduct.units}
+                  </h1>
                   <ColumnLayout columns={2} minColumnWidth={isMobile ? 120 : 170}>
                     <p>
-                      <b>Main Warehouse :</b> 
+                      <b>Main Warehouse :</b>
                     </p>
-                    <p>{selectedProduct.stockQuantity}{selectedProduct.units}
-                    </p>
-                    <p>
-                      Girdhari Store :
-                    </p>
-                    <p> {selectedProduct.stockQuantity}
-                    {selectedProduct.units}</p>
+                    <p>{activeVariant.stockQuantity || selectedProduct.stockQuantity}{selectedProduct.units}</p>
+                    <p>Girdhari Store :</p>
+                    <p>{activeVariant.stockQuantity || selectedProduct.stockQuantity}{selectedProduct.units}</p>
                   </ColumnLayout>
                 </SpaceBetween>
               </Container>
             </div>
           </ColumnLayout>
         </div>
-
-        {!isMobile && (
-          <div
-            style={{
-              borderRadius: "10px",
-              backgroundColor: "#E9EBED",
-              height: "47vh",
-              padding: "15px",
-              marginTop: "30px",
-              marginBottom: "30px",
-            }}
-          >
-            <div>
-              <img
-                style={{
-                  border: "1px solid #D9D9D9",
-                  width: "228px",
-                  height: "250px",
-                }}
-                src={selectedProduct.image}
-                alt="product"
-              />
-            </div>
-            <div style={{ display: "flex", gap: "15px", paddingTop: "7px" }}>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Sales Order Summary with Bar Chart */}

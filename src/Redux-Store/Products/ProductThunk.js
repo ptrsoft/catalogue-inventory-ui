@@ -29,8 +29,8 @@ export const fetchProducts = createAsyncThunk(
       if (params?.active !== undefined) {
         queryParams.push(`active=${encodeURIComponent(params.active)}`);
       }
-      
-      
+      // Add expiry filter if provided
+      if (params?.expiry) queryParams.push(`expiry=${encodeURIComponent(params.expiry)}`);
       // Add pageKey for pagination (use categoryNextKey if category is selected)
       if (params?.pageKey && !params.category) queryParams.push(`pageKey=${encodeURIComponent(params.pageKey)}`);
       if (params?.categoryNextKey && params.category) queryParams.push(`pageKey=${encodeURIComponent(params.categoryNextKey)}`);
